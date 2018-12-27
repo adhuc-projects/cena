@@ -1,0 +1,16 @@
+language: java
+jdk: openjdk11
+sudo: required
+dist: trusty
+
+jobs:
+  include:
+    - stage: commit stage
+      script:
+        - ./gradlew clean
+        - ./gradlew test bootJar
+
+notifications:
+  email:
+    on_success: change
+    on_failure: always

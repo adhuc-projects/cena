@@ -50,6 +50,7 @@ task acceptance(type: Test) {
 	outputs.upToDateWhen { false }
 	testClassesDirs = sourceSets.acceptance.output.classesDirs
 	classpath = sourceSets.acceptance.runtimeClasspath
+	doFirst { dockerCompose.exposeAsSystemProperties(acceptance) }
 }
 dockerCompose.isRequiredBy(acceptance)
 

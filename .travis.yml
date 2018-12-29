@@ -3,12 +3,13 @@ jdk: openjdk11
 sudo: required
 dist: trusty
 
+install: true
+
 jobs:
   include:
     - stage: commit stage
       script:
-        - ./gradlew clean
-        - ./gradlew test bootJar
+        - make build
 
 notifications:
   email:

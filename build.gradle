@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'eclipse'
 	id 'org.springframework.boot' version '2.1.1.RELEASE'
+	id "com.palantir.docker" version "0.20.1"
 }
 
 group = 'org.adhuc.cena'
@@ -26,4 +27,14 @@ dependencies {
 	compileOnly('org.projectlombok:lombok')
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
 	testImplementation('org.springframework.restdocs:spring-restdocs-mockmvc')
+}
+
+bootJar {
+	archiveName = "${rootProject.name}.jar"
+}
+
+docker {
+	name "${rootProject.name}:latest"
+	files tasks.bootJar.outputs
+	copySpec.into("build")
 }

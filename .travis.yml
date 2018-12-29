@@ -3,6 +3,9 @@ jdk: openjdk11
 sudo: required
 dist: trusty
 
+services:
+  - docker
+
 install: true
 
 jobs:
@@ -10,6 +13,15 @@ jobs:
     - stage: commit stage
       script:
         - make build
+        - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+        - docker tag menu-generation:latest $DOCKER_USERNAME/menu-generation:$TRAVIS_BUILD_NUMBER
+        - docker push $DOCKER_USERNAME/menu-generation:$TRAVIS_BUILD_NUMBER
+    - stage: promote image
+      script:
+        - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+        - docker pull $DOCKER_USERNAME/menu-generation:$TRAVIS_BUILD_NUMBER
+        - docker tag $DOCKER_USERNAME/menu-generation:$TRAVIS_BUILD_NUMBER $DOCKER_USERNAME/menu-generation:latest
+        - docker push $DOCKER_USERNAME/menu-generation:latest
 
 notifications:
   email:

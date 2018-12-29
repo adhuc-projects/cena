@@ -10,6 +10,15 @@ build: ## Build the application
 run: ## Run the application
 	$(gradle) bootRun
 
+up: ## Start the application and its dependencies
+	docker-compose -f docker-compose.yml up -d
+
+down: ## Stop the application and its dependencies
+	docker-compose -f docker-compose.yml down
+
+acceptance: ## Run acceptance testing
+	$(gradle) acceptance
+
 clean: ## Clean the project folder
 	$(gradle) clean
 

@@ -3,6 +3,7 @@ plugins {
 	id 'eclipse'
 	id 'org.springframework.boot' version '2.1.1.RELEASE'
 	id "com.palantir.docker" version "0.20.1"
+	id 'com.avast.gradle.docker-compose' version '0.7.1'
 }
 
 group = 'org.adhuc.cena'
@@ -11,6 +12,22 @@ sourceCompatibility = 11
 
 repositories {
 	mavenCentral()
+}
+
+sourceSets {
+	acceptance {
+		java {
+			compileClasspath += main.compileClasspath + test.compileClasspath + main.output + test.output
+			runtimeClasspath += main.runtimeClasspath + test.runtimeClasspath + main.output + test.output
+			srcDir file('src/acceptance/java')
+		}
+		resources.srcDir file('src/acceptance/resources')
+	}
+}
+
+configurations {
+	acceptanceTestCompile.extendsFrom testCompile
+	acceptanceTestRuntime.extendsFrom testRuntime
 }
 
 def springBootVersion = '2.1.1.RELEASE'
@@ -29,6 +46,13 @@ dependencies {
 	testImplementation('org.springframework.restdocs:spring-restdocs-mockmvc')
 }
 
+task acceptance(type: Test) {
+	outputs.upToDateWhen { false }
+	testClassesDirs = sourceSets.acceptance.output.classesDirs
+	classpath = sourceSets.acceptance.runtimeClasspath
+}
+dockerCompose.isRequiredBy(acceptance)
+
 bootJar {
 	archiveName = "${rootProject.name}.jar"
 }
@@ -37,4 +61,8 @@ docker {
 	name "${rootProject.name}:latest"
 	files tasks.bootJar.outputs
 	copySpec.into("build")
+}
+
+dockerCompose {
+	useComposeFiles = ['docker-compose.yml']
 }

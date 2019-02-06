@@ -17,7 +17,7 @@ down: ## Stop the application and its dependencies
 	docker-compose -f docker-compose.yml down
 
 acceptance: ## Run acceptance testing
-	$(gradle) acceptance
+	$(gradle) acceptance aggregate checkOutcomes
 
 clean: ## Clean the project folder
 	$(gradle) clean

@@ -1,3 +1,9 @@
+buildscript {
+	dependencies {
+		classpath('net.serenity-bdd:serenity-gradle-plugin:2.0.30')
+	}
+}
+
 plugins {
 	id 'java'
 	id 'eclipse'
@@ -5,6 +11,7 @@ plugins {
 	id "com.palantir.docker" version "0.20.1"
 	id 'com.avast.gradle.docker-compose' version '0.7.1'
 }
+apply plugin: 'net.serenity-bdd.aggregator'
 
 group = 'org.adhuc.cena'
 version = '0.0.1-SNAPSHOT'
@@ -33,6 +40,9 @@ configurations {
 def moduleName = 'org.adhuc.cena.menu.generation'
 def springBootVersion = '2.1.1.RELEASE'
 def springBootAdminVersion = '2.1.1'
+def hamcrestVersion = '2.1'
+def serenityVersion = '2.0.39'
+def serenityCucumberVersion = '1.9.22'
 
 dependencies {
 	implementation platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
@@ -42,13 +52,18 @@ dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-web')
 	implementation('de.codecentric:spring-boot-admin-starter-client')
 	runtimeOnly('org.springframework.boot:spring-boot-devtools')
-	compileOnly('org.projectlombok:lombok')
+	compileOnly('org.projectlombok:lombok:1.18.4')
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
 	testImplementation('org.springframework.restdocs:spring-restdocs-mockmvc')
 	testImplementation('org.junit.jupiter:junit-jupiter-api')
-	testImplementation('org.hamcrest:hamcrest:2.1')
-	testImplementation('org.hamcrest:hamcrest-library:2.1')
+	testImplementation('org.junit.vintage:junit-vintage-engine')
+	testImplementation("org.hamcrest:hamcrest:${hamcrestVersion}")
+	testImplementation("org.hamcrest:hamcrest-library:${hamcrestVersion}")
 	testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine')
+	acceptanceImplementation("net.serenity-bdd:serenity-core:${serenityVersion}")
+	acceptanceImplementation("net.serenity-bdd:serenity-junit:${serenityVersion}")
+	acceptanceImplementation("net.serenity-bdd:serenity-rest-assured:${serenityVersion}")
+	acceptanceImplementation("net.serenity-bdd:serenity-cucumber:${serenityCucumberVersion}")
 }
 
 configurations {
@@ -90,6 +105,7 @@ test {
 task acceptance(type: Test) {
 	useJUnitPlatform()
 	outputs.upToDateWhen { false }
+	ignoreFailures = true
 	testClassesDirs = sourceSets.acceptance.output.classesDirs
 	classpath = sourceSets.acceptance.runtimeClasspath
 	doFirst { dockerCompose.exposeAsSystemProperties(acceptance) }

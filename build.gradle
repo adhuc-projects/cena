@@ -37,7 +37,6 @@ configurations {
 	acceptanceTestRuntime.extendsFrom testRuntime
 }
 
-def moduleName = 'org.adhuc.cena.menu.generation'
 def springBootVersion = '2.1.1.RELEASE'
 def springBootAdminVersion = '2.1.1'
 def hamcrestVersion = '2.1'
@@ -74,27 +73,6 @@ configurations {
 	testImplementation {
 		exclude group: 'com.vaadin.external.google', module: 'android-json'
 		exclude group: 'org.apache.tomcat.embed', module: 'tomcat-embed-core'
-	}
-}
-
-compileJava {
-	inputs.property("moduleName", moduleName)
-	doFirst {
-		options.compilerArgs = [
-				'--module-path', classpath.asPath,
-		]
-		classpath = files()
-	}
-}
-
-compileTestJava {
-	inputs.property("moduleName", moduleName)
-	doFirst {
-		options.compilerArgs = [
-				'--module-path', classpath.asPath,
-				'--patch-module', "$moduleName=" + files(sourceSets.test.java.srcDirs).asPath,
-		]
-		classpath = files()
 	}
 }
 

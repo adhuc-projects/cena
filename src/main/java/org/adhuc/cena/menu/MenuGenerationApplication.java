@@ -21,6 +21,13 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
 
+/**
+ * The menu-generation application starter.
+ *
+ * @author Alexandre Carbenay
+ * @version 0.0.1
+ * @since 0.0.1
+ */
 @SpringBootApplication
 @EnableConfigurationProperties(MenuGenerationProperties.class)
 public class MenuGenerationApplication {

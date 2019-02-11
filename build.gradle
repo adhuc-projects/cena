@@ -10,6 +10,8 @@ plugins {
 	id 'org.springframework.boot' version '2.1.1.RELEASE'
 	id "com.palantir.docker" version "0.20.1"
 	id 'com.avast.gradle.docker-compose' version '0.7.1'
+	id 'org.asciidoctor.convert' version '1.5.3'
+	id 'io.franzbecker.gradle-lombok' version '2.0'
 }
 apply plugin: 'net.serenity-bdd.aggregator'
 
@@ -38,10 +40,13 @@ configurations {
 }
 
 def springBootVersion = '2.1.1.RELEASE'
+def springRestDocsVersion = '2.0.3.RELEASE'
 def springBootAdminVersion = '2.1.1'
+def lombokVersion = '1.18.4'
 def hamcrestVersion = '2.1'
 def serenityVersion = '2.0.39'
 def serenityCucumberVersion = '1.9.22'
+def snippetsDir = file('build/generated-snippets')
 
 dependencies {
 	implementation platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
@@ -51,7 +56,6 @@ dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-web')
 	implementation('de.codecentric:spring-boot-admin-starter-client')
 	runtimeOnly('org.springframework.boot:spring-boot-devtools')
-	compileOnly('org.projectlombok:lombok:1.18.4')
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
 	testImplementation('org.springframework.restdocs:spring-restdocs-mockmvc')
 	testImplementation('org.junit.jupiter:junit-jupiter-api')
@@ -63,6 +67,7 @@ dependencies {
 	acceptanceImplementation("net.serenity-bdd:serenity-junit:${serenityVersion}")
 	acceptanceImplementation("net.serenity-bdd:serenity-rest-assured:${serenityVersion}")
 	acceptanceImplementation("net.serenity-bdd:serenity-cucumber:${serenityCucumberVersion}")
+	asciidoctor("org.springframework.restdocs:spring-restdocs-asciidoctor:${springRestDocsVersion}")
 }
 
 configurations {
@@ -76,8 +81,19 @@ configurations {
 	}
 }
 
+lombok {
+	version = "${lombokVersion}"
+	sha256 = ""
+}
+
 test {
 	useJUnitPlatform()
+	outputs.dir snippetsDir
+}
+
+asciidoctor {
+	inputs.dir snippetsDir
+	dependsOn test
 }
 
 task acceptance(type: Test) {
@@ -91,6 +107,10 @@ task acceptance(type: Test) {
 dockerCompose.isRequiredBy(acceptance)
 
 bootJar {
+	dependsOn asciidoctor
+	from("${asciidoctor.outputDir}/html5") {
+		into 'static/docs'
+	}
 	archiveName = "${rootProject.name}.jar"
 }
 

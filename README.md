@@ -1,0 +1,81 @@
+# Cena - Menu generation
+
+This project contains all the sources for the cena's menu generation.
+
+## [TL;DR]
+
+Considering you have installed the [prerequesite](#general-prerequisites) tools `Make`, `Docker` and `Java` follow these steps to get started:
+
+- To build the project, from the root folder, run:
+`make`
+
+- To start up the application and its dependencies, run:
+`make up`
+
+- You can access the API documentation page at the following address: [`http://localhost:8080/api/docs/api-guide.html`](http://localhost:8080/api/docs/api-guide.html)
+
+## Project resources
+
+- [Github](https://github.com/adhuc-projects/cena)
+- [Travis CI](https://travis-ci.com/adhuc-projects/cena/)
+- [Codacy](https://app.codacy.com/project/adhuc-projects/cena/dashboard)
+
+## General prerequisites
+
+### Tools installation
+
+- [Git](http://help.github.com/set-up-git-redirect)
+- [Open JDK 11](https://openjdk.java.net/install/)
+- [Docker](https://www.docker.com/) and [docker-compose](https://docs.docker.com/compose/install/)
+
+### Makefile
+
+The following sections propose to use `Makefile` targets in the form of`make` commands to abstract development lifecycle goals from technologies (mvn, npm,...) and practical details of implementation (locations, profiles,...).
+
+## Usage
+
+This project is designed to be usable in both development situation and in classical gradle build.
+
+### Development Usage
+
+Execute `org.adhuc.cena.menu.MenuGenerationApplication` in your favorite IDE. The application uses [Spring Devtools](https://docs.spring.io/spring-boot/docs/current/reference/html/using-boot-devtools.html), which means that the application does not need to be restarted after each modification in the project source, but will be re-compiled and reloaded each time.
+
+### Build
+
+From `cena` project folder, execute either `make`, `make build` or `./gradlew test bootJar docker` command. The latter command will be used in all cases to run the build.
+
+This build execution creates a docker image based on a `openjdk:11-slim` image. More information about this build execution can be found in `cena/Dockerfile` file. See [Running with docker-compose](#running-with-docker-compose) to know how to run the built docker image.
+
+This build results in a `cena/build/libs/menu-generation.jar` JAR file and a `menu-generation:latest` docker image. See [Running jar](#running-jar) section to know how to run directly from JAR file, or [Running with docker-compose](#running-with-docker-compose) section to know how to run the dockerized environment.
+
+### Execution
+
+#### Running with gradle
+
+The application can run directly from the compiled classes using [Gradle Spring Boot plugin](https://docs.spring.io/spring-boot/docs/2.1.2.RELEASE/gradle-plugin/reference/html/). From `cena` project folder, execute either `make run` or `./gradlew bootRun` command. The latter command will be used in all cases to run the application from compiled classes.
+
+Once started, the application will be available at [http://localhost:8080](http://localhost:8080).
+
+#### Running jar
+
+Once the build ends successfully (see [Build](#build) section), the application can be started using `make runJar` or `java -jar build/libs/menu-generation.jar` command. The latter will be used in all cases to run the application from the JAR.
+
+Once started, the application will be available at [http://localhost:8080](http://localhost:8080).
+
+#### Running with docker-compose
+
+Once the build ends successfully (see [Build](#build) section), a docker environment can be executed using `make up` or `docker-compose -f docker-compose.yml -f docker-compose.port.yml up -d` command. The latter command will be used in all cases to run the docker containers. The `docker-compose` configuration files are located at `docker-compose.yml` and `docker-compose.port.yml`. The latter contains port binding to ensure that application is available at [http://localhost:8080](http://localhost:8080).
+
+The docker environment can be stopped using `make down` or `docker-compose -f docker-compose.yml -f docker-compose.port.yml down` command. The latter command will be used in all cases.
+
+## Acceptance tests
+
+From `cena` project folder, execute either `make acceptance` or `./gradlew acceptance aggregate checkOutcomes` command. The latter command will be used in all cases to run the acceptance tests.
+
+The acceptance tests are run against a docker-compose environment. The acceptance tests results are available through `cena/build/reports/serenity/index.html` page.
+
+## Restful API documentation
+
+The API documentation is generated using [Spring-RestDocs](http://projects.spring.io/spring-restdocs/).
+
+Once the application is started (see [Running with docker-compose](#running-with-docker-compose) section), the Rest API documentation will be available at [`http://localhost:8080/api/docs/api-guide.html`](http://localhost:8080/api/docs/api-guide.html).

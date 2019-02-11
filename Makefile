@@ -10,11 +10,14 @@ build: ## Build the application
 run: ## Run the application
 	$(gradle) bootRun
 
+runJar: build ## Run the application from the JAR file
+	java -jar build/libs/menu-generation.jar
+
 up: ## Start the application and its dependencies
-	docker-compose -f docker-compose.yml up -d
+	docker-compose -f docker-compose.yml -f docker-compose.port.yml up -d
 
 down: ## Stop the application and its dependencies
-	docker-compose -f docker-compose.yml down
+	docker-compose -f docker-compose.yml -f docker-compose.port.yml down
 
 acceptance: ## Run acceptance testing
 	$(gradle) acceptance aggregate checkOutcomes

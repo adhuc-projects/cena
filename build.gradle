@@ -97,7 +97,6 @@ asciidoctor {
 }
 
 task acceptance(type: Test) {
-	useJUnitPlatform()
 	outputs.upToDateWhen { false }
 	ignoreFailures = true
 	testClassesDirs = sourceSets.acceptance.output.classesDirs

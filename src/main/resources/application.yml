@@ -1,7 +1,14 @@
+management:
+  endpoint:
+    health:
+      show-details: when_authorized
+      roles: ACTUATOR
+
 ### Logging configuration
 logging:
   level:
     org.adhuc.cena.menu: TRACE
     org.springframework:
       web: ERROR
+      security: ERROR
       boot.autoconfigure: ERROR

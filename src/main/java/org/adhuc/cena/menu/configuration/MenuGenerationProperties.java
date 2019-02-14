@@ -30,6 +30,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class MenuGenerationProperties {
 
     private Documentation documentation = new Documentation();
+    private Management management = new Management();
 
     @Data
     public static class Documentation {
@@ -41,6 +42,23 @@ public class MenuGenerationProperties {
          * Path to documentation resources. Default is '/api/docs'.
          */
         private String path = "/api/docs";
+    }
+
+    @Data
+    public static class Management {
+        private Security security = new Security();
+
+        @Data
+        public static class Security {
+            /**
+             * Defines management services basic authentication username. Default is 'actuator'.
+             */
+            private String username = "actuator";
+            /**
+             * Defines management services basic authentication password. Default is 'actuator'.
+             */
+            private String password = "actuator";
+        }
     }
 
 }

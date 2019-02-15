@@ -114,6 +114,11 @@ bootJar {
 	archiveName = "${rootProject.name}.jar"
 }
 
+bootRun {
+	// support passing -Dsystem.property=value to bootRun task
+	systemProperties = System.properties
+}
+
 docker {
 	name "${rootProject.name}:latest"
 	files tasks.bootJar.outputs

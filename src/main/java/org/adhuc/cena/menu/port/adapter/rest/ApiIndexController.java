@@ -52,6 +52,7 @@ class ApiIndexController {
         if (documentation.isEnabled()) {
             index.add(linkTo(ApiIndexController.class).slash("docs").slash("api-guide.html").withRel("documentation"));
         }
+        index.add(linkTo(ApiIndexController.class).slash("management").withRel("management"));
         return index;
     }
 

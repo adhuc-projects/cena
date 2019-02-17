@@ -13,15 +13,14 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.steps.management;
+package org.adhuc.cena.menu.steps.serenity;
 
 import static net.serenitybdd.rest.SerenityRest.rest;
-import static org.springframework.http.HttpStatus.OK;
 
 import io.restassured.response.ValidatableResponse;
 import net.thucydides.core.annotations.Step;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import org.adhuc.cena.menu.steps.serenity.support.resource.HateoasClientResourceSupport;
 
 /**
  * The spring management service client steps.
@@ -30,13 +29,7 @@ import org.slf4j.LoggerFactory;
  * @version 0.0.1
  * @since 0.0.1
  */
-public class ManagementServiceClientSteps {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ManagementServiceClientSteps.class);
-
-    private static final String SERVICE_NAME = "menu-generation";
-    private static final String EXPOSED_PORT = "8080";
-    private static final String PORT_PROPERTY_NAME = SERVICE_NAME + ".tcp." + EXPOSED_PORT;
+public class ManagementServiceClientSteps extends AbstractServiceClientSteps {
 
     private ValidatableResponse healthCheckResponse;
 
@@ -45,15 +38,23 @@ public class ManagementServiceClientSteps {
         healthCheckResponse = rest().get(getHealthUrl()).then();
     }
 
-    @Step("Assert rest-service response is OK")
+    @Step("Assert health response is OK")
     public void assertResponseIsOk() {
-        healthCheckResponse.statusCode(OK.value());
+        assertOk(healthCheckResponse);
     }
 
     private String getHealthUrl() {
-        String port = System.getProperty(PORT_PROPERTY_NAME);
-        LOGGER.info("Call health with port {}", port);
-        return String.format("http://localhost:%s/actuator/health", port);
+        return getManagementResource().getHealthUrl();
+    }
+
+    private ManagementResource getManagementResource() {
+        return getResource(getApiClientResource().getManagement(), ManagementResource.class);
+    }
+
+    private static class ManagementResource extends HateoasClientResourceSupport {
+        String getHealthUrl() {
+            return getLink("health");
+        }
     }
 
 }

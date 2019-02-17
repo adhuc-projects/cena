@@ -16,6 +16,7 @@
 package org.adhuc.cena.menu.port.adapter.rest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.DisplayName;
@@ -49,7 +50,10 @@ class ApiIndexControllerTest {
     @Test
     @DisplayName("return accessible links while getting index")
     void getIndex() throws Exception {
-        mvc.perform(get(API_URL)).andExpect(status().isOk());
+        mvc.perform(get(API_URL))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("_links.documentation").exists())
+                .andExpect(jsonPath("_links.management").exists());
     }
 
 }

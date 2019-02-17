@@ -13,42 +13,36 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.steps.serenity;
+package org.adhuc.cena.menu.steps.documentation;
 
-import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
-import org.adhuc.cena.menu.steps.management.ManagementServiceClientSteps;
+import org.adhuc.cena.menu.steps.serenity.DocumentationServiceClientSteps;
 
 /**
- * The health steps definitions for rest-services acceptance tests.
+ * The documentation steps definitions for rest-services acceptance tests.
  *
  * @author Alexandre Carbenay
  * @version 0.0.1
  * @since 0.0.1
  */
 @StepDefAnnotation
-public class HealthStepDefinitions {
+public class DocumentationStepDefinitions {
 
     @Steps
-    private ManagementServiceClientSteps managementServiceClient;
+    private DocumentationServiceClientSteps documentationServiceClient;
 
-    @Given("^a running service$")
-    public void runningService() {
-        // nothing to do here
+    @When("^I access to the documentation$")
+    public void accessToDocumentation() {
+        documentationServiceClient.getDocumentation();
     }
 
-    @When("^I check the service health$")
-    public void checkServiceHealth() {
-        managementServiceClient.callHealthCheckService();
-    }
-
-    @Then("^the service health is ok$")
-    public void serviceHealthIsOk() {
-        managementServiceClient.assertResponseIsOk();
+    @Then("^the documentation is available$")
+    public void documentationIsAvailable() {
+        documentationServiceClient.assertDocumentationIsAvailable();
     }
 
 }

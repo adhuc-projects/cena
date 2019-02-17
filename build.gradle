@@ -64,6 +64,8 @@ dependencies {
 	testImplementation("org.hamcrest:hamcrest:${hamcrestVersion}")
 	testImplementation("org.hamcrest:hamcrest-library:${hamcrestVersion}")
 	testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine')
+	acceptanceCompileOnly("org.projectlombok:lombok:${lombokVersion}")
+	acceptanceAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
 	acceptanceImplementation("net.serenity-bdd:serenity-core:${serenityVersion}")
 	acceptanceImplementation("net.serenity-bdd:serenity-junit:${serenityVersion}")
 	acceptanceImplementation("net.serenity-bdd:serenity-rest-assured:${serenityVersion}")

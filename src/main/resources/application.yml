@@ -1,6 +1,9 @@
 server.port: ${API_PORT:8080}
 
 management:
+  endpoints:
+    web:
+      base-path: /api/management
   endpoint:
     health:
       show-details: when_authorized

@@ -71,7 +71,8 @@ class ApiDocumentation {
     @DisplayName("generates index example")
     void indexExample() throws Exception {
         mvc.perform(get(API_URL)).andExpect(status().isOk()).andDo(documentationHandler.document(links(
-                linkWithRel("documentation").description("This documentation")),
+                linkWithRel("documentation").description("This documentation"),
+                linkWithRel("management").description("The https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-endpoints[Spring Boot Actuator] endpoints")),
                 responseFields(subsectionWithPath("_links").description("<<resources-index-links,Links>> to other resources"))));
     }
 

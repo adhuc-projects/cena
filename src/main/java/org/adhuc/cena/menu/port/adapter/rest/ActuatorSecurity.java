@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,6 +27,7 @@ class ActuatorSecurity extends WebSecurityConfigurerAdapter {
         http.requestMatcher(toAnyEndpoint().excluding(HEALTH_ENDPOINT_ID)).authorizeRequests().anyRequest().hasRole("ACTUATOR")
                 .and().requestMatcher(to(HEALTH_ENDPOINT_ID)).authorizeRequests().anyRequest().permitAll()
                 .and().authorizeRequests().mvcMatchers("/**").permitAll()
+                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().httpBasic();
     }
 

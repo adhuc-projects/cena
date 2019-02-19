@@ -38,6 +38,7 @@ configurations {
 	acceptanceTestCompile.extendsFrom testCompile
 	acceptanceTestRuntime.extendsFrom testRuntime
 }
+gradle.startParameter.continueOnFailure = true
 
 def springBootVersion = '2.1.1.RELEASE'
 def springRestDocsVersion = '2.0.3.RELEASE'
@@ -101,7 +102,6 @@ asciidoctor {
 
 task acceptance(type: Test) {
 	outputs.upToDateWhen { false }
-	ignoreFailures = true
 	testClassesDirs = sourceSets.acceptance.output.classesDirs
 	classpath = sourceSets.acceptance.runtimeClasspath
 	doFirst { dockerCompose.exposeAsSystemProperties(acceptance) }

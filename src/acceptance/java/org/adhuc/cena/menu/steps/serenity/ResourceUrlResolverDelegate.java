@@ -15,11 +15,13 @@
  */
 package org.adhuc.cena.menu.steps.serenity;
 
-import static net.serenitybdd.rest.SerenityRest.rest;
 import static org.springframework.http.HttpStatus.OK;
 
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationProvider;
 import org.adhuc.cena.menu.steps.serenity.support.resource.ApiClientResource;
 
 /**
@@ -30,18 +32,22 @@ import org.adhuc.cena.menu.steps.serenity.support.resource.ApiClientResource;
  * @since 0.0.1
  */
 @Slf4j
-public class ResourceUrlResolverDelegate {
+@RequiredArgsConstructor
+class ResourceUrlResolverDelegate {
 
     private static final String SERVICE_NAME = "menu-generation";
     private static final String EXPOSED_PORT = "8080";
     private static final String PORT_PROPERTY_NAME = SERVICE_NAME + ".tcp." + EXPOSED_PORT;
+
+    @NonNull
+    private AuthenticationProvider authenticationProvider;
 
     public ApiClientResource getApiClientResource() {
         return getResource(getApiIndexUrl(), ApiClientResource.class);
     }
 
     public <T> T getResource(String url, Class<T> resourceClass) {
-        return rest().get(url).then().statusCode(OK.value()).extract().as(resourceClass);
+        return authenticationProvider.rest().get(url).then().statusCode(OK.value()).extract().as(resourceClass);
     }
 
     private String getApiIndexUrl() {

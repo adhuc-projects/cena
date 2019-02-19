@@ -15,10 +15,12 @@
  */
 package org.adhuc.cena.menu.steps.serenity;
 
-import static net.serenitybdd.rest.SerenityRest.rest;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
 
 import io.restassured.response.ValidatableResponse;
 import net.thucydides.core.annotations.Step;
+import org.springframework.boot.actuate.health.Status;
 
 import org.adhuc.cena.menu.steps.serenity.support.resource.HateoasClientResourceSupport;
 
@@ -41,6 +43,16 @@ public class ManagementServiceClientSteps extends AbstractServiceClientSteps {
     @Step("Assert health response is OK")
     public void assertResponseIsOk() {
         assertOk(healthCheckResponse);
+    }
+
+    @Step("Assert detail is not available")
+    public void assertDetailIsNotAvailable() {
+        healthCheckResponse.assertThat().body("details", nullValue());
+    }
+
+    @Step("Assert disk usage detail is available")
+    public void assertDiskUsageIsAvailable() {
+        healthCheckResponse.assertThat().body("details.diskSpace.status", equalTo(Status.UP.getCode()));
     }
 
     private String getHealthUrl() {

@@ -13,32 +13,31 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.steps.serenity;
+package org.adhuc.cena.menu.steps;
 
-import io.restassured.specification.RequestSpecification;
-import lombok.experimental.Delegate;
-import lombok.extern.slf4j.Slf4j;
+import cucumber.api.java.Before;
+import cucumber.runtime.java.StepDefAnnotation;
+import net.serenitybdd.core.Serenity;
+import net.serenitybdd.rest.SerenityRest;
 
 import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationProvider;
 
 /**
- * An abstract service client steps, providing convenient methods for resource resolution and assertions.
+ * An initialization step definitions, configuring rest-assured properties.
  *
  * @author Alexandre Carbenay
  * @version 0.0.1
  * @since 0.0.1
  */
-@Slf4j
-public abstract class AbstractServiceClientSteps {
+@StepDefAnnotation
+public class InitializationStepDefinitions {
 
-    final AuthenticationProvider authenticationProvider = AuthenticationProvider.instance();
-    @Delegate
-    private ResourceUrlResolverDelegate resourceUrlResolverDelegate = new ResourceUrlResolverDelegate(authenticationProvider);
-    @Delegate
-    private StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
+    @Before
+    public void init() {
+        Serenity.initializeTestSession();
+        SerenityRest.reset();
 
-    public RequestSpecification rest() {
-        return authenticationProvider.rest();
+        AuthenticationProvider.instance().clean();
     }
 
 }

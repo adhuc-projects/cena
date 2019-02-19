@@ -15,30 +15,20 @@
  */
 package org.adhuc.cena.menu.steps.serenity;
 
-import io.restassured.specification.RequestSpecification;
-import lombok.experimental.Delegate;
-import lombok.extern.slf4j.Slf4j;
-
-import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationProvider;
+import net.thucydides.core.annotations.Step;
 
 /**
- * An abstract service client steps, providing convenient methods for resource resolution and assertions.
+ * The authentication rest-service client steps definition.
  *
  * @author Alexandre Carbenay
  * @version 0.0.1
  * @since 0.0.1
  */
-@Slf4j
-public abstract class AbstractServiceClientSteps {
+public class AuthenticationServiceClientSteps extends AbstractServiceClientSteps {
 
-    final AuthenticationProvider authenticationProvider = AuthenticationProvider.instance();
-    @Delegate
-    private ResourceUrlResolverDelegate resourceUrlResolverDelegate = new ResourceUrlResolverDelegate(authenticationProvider);
-    @Delegate
-    private StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
-
-    public RequestSpecification rest() {
-        return authenticationProvider.rest();
+    @Step("Given an actuator manager")
+    public void withActuatorManager() {
+        authenticationProvider.withActuatorManager();
     }
 
 }

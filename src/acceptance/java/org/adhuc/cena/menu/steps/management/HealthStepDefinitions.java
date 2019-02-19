@@ -51,4 +51,14 @@ public class HealthStepDefinitions {
         managementServiceClient.assertResponseIsOk();
     }
 
+    @Then("^the health detail is not available$")
+    public void healthDetailIsNotAvailable() {
+        managementServiceClient.assertDetailIsNotAvailable();
+    }
+
+    @Then("^the health detail is available$")
+    public void healthDetailIsAvailable() {
+        managementServiceClient.assertDiskUsageIsAvailable();
+    }
+
 }

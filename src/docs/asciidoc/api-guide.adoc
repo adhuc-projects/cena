@@ -65,7 +65,7 @@ include::{snippets}/headers-example/response-headers.adoc[]
 [[overview-hypermedia]]
 == Hypermedia
 
-Menu Generation RESTful API uses hypermedia and resources include links to other resources in their responses. Responses are in http://stateless.co/hal_specification.html[Hypertext Application from resource to resource. Language (HAL)] format.
+Menu Generation RESTful API uses hypermedia and resources include links to other resources in their responses. Responses are in http://stateless.co/hal_specification.html[Hypertext Application Language (HAL)] format.
 Links can be found beneath the `_links` key. Users of the API should not create URIs themselves, instead they should use the above-described links to navigate.
 
 [[resources]]

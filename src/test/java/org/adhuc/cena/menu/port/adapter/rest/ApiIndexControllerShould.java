@@ -40,7 +40,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(ApiIndexController.class)
 @DisplayName("API index controller should")
-class ApiIndexControllerTest {
+class ApiIndexControllerShould {
 
     private static final String API_URL = "/api";
 
@@ -49,7 +49,7 @@ class ApiIndexControllerTest {
 
     @Test
     @DisplayName("return accessible links while getting index")
-    void getIndex() throws Exception {
+    void returnAccessibleLinks() throws Exception {
         mvc.perform(get(API_URL))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("_links.documentation").exists())

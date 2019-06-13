@@ -21,12 +21,17 @@ import net.thucydides.core.annotations.Step;
  * The authentication rest-service client steps definition.
  *
  * @author Alexandre Carbenay
- * @version 0.0.1
+ * @version 0.1.0
  * @since 0.0.1
  */
 public class AuthenticationServiceClientSteps extends AbstractServiceClientSteps {
 
-    @Step("Given an actuator manager")
+    @Step("Defines a community user")
+    public void withCommunityUser() {
+        authenticationProvider.withCommunityUser();
+    }
+
+    @Step("Authenticate as actuator manager")
     public void withActuatorManager() {
         authenticationProvider.withActuatorManager();
     }

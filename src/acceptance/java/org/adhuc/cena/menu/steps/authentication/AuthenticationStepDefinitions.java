@@ -25,7 +25,7 @@ import org.adhuc.cena.menu.steps.serenity.AuthenticationServiceClientSteps;
  * The authentication steps definitions for rest-services acceptance tests.
  *
  * @author Alexandre Carbenay
- * @version 0.0.1
+ * @version 0.1.0
  * @since 0.0.1
  */
 @StepDefAnnotation
@@ -33,6 +33,11 @@ public class AuthenticationStepDefinitions {
 
     @Steps
     private AuthenticationServiceClientSteps authenticationServiceClient;
+
+    @Given("^a community user$")
+    public void communityUser() {
+        authenticationServiceClient.withCommunityUser();
+    }
 
     @Given("^an authenticated actuator manager$")
     public void authenticatedActuatorManager() {

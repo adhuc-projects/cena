@@ -29,7 +29,7 @@ import net.serenitybdd.rest.SerenityRest;
  * Must be used as a singleton, using {@link #instance()} to ensure that it is shared between all steps.
  *
  * @author Alexandre Carbenay
- * @version 0.0.1
+ * @version 0.1.0
  * @since 0.0.1
  */
 public class AuthenticationProvider {
@@ -58,6 +58,13 @@ public class AuthenticationProvider {
      */
     public RequestSpecification rest() {
         return authentication.authenticate(SerenityRest.rest());
+    }
+
+    /**
+     * Authenticates with community user.
+     */
+    public void withCommunityUser() {
+        clean();
     }
 
     /**

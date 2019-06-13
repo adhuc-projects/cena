@@ -32,7 +32,7 @@ import org.springframework.hateoas.hal.Jackson2HalModule.HalLinkListDeserializer
  * An abstract REST resource providing HATEOAS support on the client side.
  *
  * @author Alexandre Carbenay
- * @version 0.0.1
+ * @version 0.1.0
  * @since 0.0.1
  */
 @Getter
@@ -50,12 +50,7 @@ public abstract class HateoasClientResourceSupport {
     }
 
     Optional<String> getMaybeLink(String rel) {
-        for (Link link : links()) {
-            if (link.getRel().equals(rel)) {
-                return Optional.of(link.getHref());
-            }
-        }
-        return Optional.empty();
+        return links.stream().filter(link -> link.getRel().equals(rel)).map(Link::getHref).findFirst();
     }
 
     public String getLink(String rel) {

@@ -19,7 +19,7 @@ package org.adhuc.cena.menu.steps.serenity.support.resource;
  * A REST resource encapsulating API information on the client side.
  *
  * @author Alexandre Carbenay
- * @version 0.0.1
+ * @version 0.1.0
  * @since 0.0.1
  */
 public class ApiClientResource extends HateoasClientResourceSupport {
@@ -30,6 +30,10 @@ public class ApiClientResource extends HateoasClientResourceSupport {
 
     public String getDocumentation() {
         return getLink("documentation");
+    }
+
+    public String getIngredients() {
+        return getLink("ingredients");
     }
 
 }

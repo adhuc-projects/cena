@@ -27,12 +27,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
+import org.adhuc.cena.menu.port.adapter.rest.ingredient.IngredientsController;
 
 /**
  * A REST controller providing links to all general resources.
  *
  * @author Alexandre Carbenay
- * @version 0.0.1
+ * @version 0.1.0
  * @since 0.0.1
  */
 @RestController
@@ -53,6 +54,7 @@ class ApiIndexController {
             index.add(linkTo(ApiIndexController.class).slash("docs").slash("api-guide.html").withRel("documentation"));
         }
         index.add(linkTo(ApiIndexController.class).slash("management").withRel("management"));
+        index.add(linkTo(IngredientsController.class).withRel("ingredients"));
         return index;
     }
 

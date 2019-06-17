@@ -15,9 +15,6 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.support;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.NonNull;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 
 /**
@@ -59,6 +57,17 @@ public class HalResource extends ResourceSupport {
      */
     public HalResource embedResource(@NonNull String relationship, @NonNull Object resource) {
         embedded.put(relationship, resource);
+        return this;
+    }
+
+    /**
+     * Adds the specified link to the resource links.
+     *
+     * @param link the link to add.
+     * @return this.
+     */
+    public HalResource withLink(@NonNull Link link) {
+        add(link);
         return this;
     }
 

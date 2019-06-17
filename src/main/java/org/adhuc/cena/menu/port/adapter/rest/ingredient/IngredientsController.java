@@ -20,11 +20,15 @@ import static org.springframework.http.HttpStatus.OK;
 
 import java.util.Collections;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityLinks;
+import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.adhuc.cena.menu.ingredients.Ingredient;
 import org.adhuc.cena.menu.port.adapter.rest.support.HalResource;
 
 /**
@@ -35,8 +39,14 @@ import org.adhuc.cena.menu.port.adapter.rest.support.HalResource;
  * @since 0.1.0
  */
 @RestController
+@ExposesResourceFor(Ingredient.class)
 @RequestMapping(path = "/api/ingredients", produces = HAL_JSON_VALUE)
 public class IngredientsController {
+
+    public static final String EMBEDDED_DATA_KEY = "data";
+
+    @Autowired
+    EntityLinks links;
 
     /**
      * Gets the ingredient information for all ingredients.
@@ -45,9 +55,10 @@ public class IngredientsController {
      */
     @GetMapping
     @ResponseStatus(OK)
-    public HalResource getIngredients() {
+    HalResource getIngredients() {
         // TODO implementation
-        return new HalResource().embedResource("data", Collections.emptyList());
+        return new HalResource().withLink(links.linkToCollectionResource(Ingredient.class))
+                .embedResource(EMBEDDED_DATA_KEY, Collections.emptyList());
     }
 
 }

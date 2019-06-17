@@ -39,6 +39,11 @@ public class AuthenticationStepDefinitions {
         authenticationServiceClient.withCommunityUser();
     }
 
+    @Given("^an authenticated ingredient manager$")
+    public void authenticatedIngredientManager() {
+        authenticationServiceClient.withIngredientManager();
+    }
+
     @Given("^an authenticated actuator manager$")
     public void authenticatedActuatorManager() {
         authenticationServiceClient.withActuatorManager();

@@ -31,6 +31,11 @@ public class AuthenticationServiceClientSteps extends AbstractServiceClientSteps
         authenticationProvider.withCommunityUser();
     }
 
+    @Step("Authenticate as ingredient manager")
+    public void withIngredientManager() {
+        authenticationProvider.withIngredientManager();
+    }
+
     @Step("Authenticate as actuator manager")
     public void withActuatorManager() {
         authenticationProvider.withActuatorManager();

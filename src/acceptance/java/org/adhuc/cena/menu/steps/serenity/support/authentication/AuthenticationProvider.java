@@ -68,10 +68,16 @@ public class AuthenticationProvider {
     }
 
     /**
+     * Authenticates with ingredient manager.
+     */
+    public void withIngredientManager() {
+        authentication = new BasicAuthentication("ingredientManager", "ingredientManager");
+    }
+
+    /**
      * Authenticates with actuator manager.
      */
     public void withActuatorManager() {
         authentication = new BasicAuthentication("actuator", "actuator");
     }
-
 }

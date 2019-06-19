@@ -22,6 +22,7 @@ import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.ingredient.IngredientListServiceClientSteps;
+import org.adhuc.cena.menu.steps.serenity.ingredient.IngredientValue;
 
 /**
  * The ingredients list steps definitions for rest-services acceptance tests.
@@ -39,6 +40,11 @@ public class IngredientListStepDefinitions {
     @Given("^no existing ingredient$")
     public void noExistingIngredient() {
         ingredientListServiceClient.assumeEmptyIngredientsList();
+    }
+
+    @Given("^a non-existent \"(.*)\" ingredient$")
+    public void nonExistentIngredient(String ingredientName) {
+        ingredientListServiceClient.assumeNotInIngredientsList(new IngredientValue(ingredientName));
     }
 
     @When("^he lists the ingredients$")

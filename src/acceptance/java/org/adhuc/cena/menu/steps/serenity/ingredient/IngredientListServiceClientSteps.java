@@ -48,6 +48,12 @@ public class IngredientListServiceClientSteps extends AbstractServiceClientSteps
         assertThat(getSessionStoredIngredients()).isEmpty();
     }
 
+    @Step("Assume ingredient {0} is not in ingredients list")
+    public void assumeNotInIngredientsList(IngredientValue ingredient) {
+        // TODO remove ingredient if existing
+        assumeThat(fetchIngredients()).doesNotContain(ingredient);
+    }
+
     @Step("Get ingredients list (session)")
     public List<IngredientValue> getIngredients() {
         return getSessionStoredIngredients();

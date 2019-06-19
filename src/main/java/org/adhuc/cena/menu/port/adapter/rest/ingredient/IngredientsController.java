@@ -16,17 +16,18 @@
 package org.adhuc.cena.menu.port.adapter.rest.ingredient;
 
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.ExposesResourceFor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.bind.annotation.*;
 
 import org.adhuc.cena.menu.ingredients.Ingredient;
 import org.adhuc.cena.menu.port.adapter.rest.support.HalResource;
@@ -59,6 +60,18 @@ public class IngredientsController {
         // TODO implementation
         return new HalResource().withLink(links.linkToCollectionResource(Ingredient.class))
                 .embedResource(EMBEDDED_DATA_KEY, Collections.emptyList());
+    }
+
+    /**
+     * Creates an ingredient.
+     */
+    @PostMapping
+    @ResponseStatus(CREATED)
+    HttpHeaders createIngredient() throws URISyntaxException {
+        // TODO implementation
+        var httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation(new URI("http://cena.adhuc.org/ingredients/1"));
+        return httpHeaders;
     }
 
 }

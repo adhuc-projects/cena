@@ -24,8 +24,6 @@ import java.util.List;
 import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Step;
 
-import org.adhuc.cena.menu.steps.serenity.AbstractServiceClientSteps;
-
 /**
  * The ingredients list rest-service client steps definition.
  *
@@ -33,7 +31,7 @@ import org.adhuc.cena.menu.steps.serenity.AbstractServiceClientSteps;
  * @version 0.1.0
  * @since 0.1.0
  */
-public class IngredientListServiceClientSteps extends AbstractServiceClientSteps {
+public class IngredientListServiceClientSteps extends AbstractIngredientServiceClientSteps {
 
     private static final String INGREDIENTS = "ingredients";
 
@@ -50,6 +48,7 @@ public class IngredientListServiceClientSteps extends AbstractServiceClientSteps
 
     @Step("Assume ingredient {0} is not in ingredients list")
     public void assumeNotInIngredientsList(IngredientValue ingredient) {
+        storeIngredient(ingredient);
         // TODO remove ingredient if existing
         assumeThat(fetchIngredients()).doesNotContain(ingredient);
     }
@@ -77,10 +76,6 @@ public class IngredientListServiceClientSteps extends AbstractServiceClientSteps
         var ingredients = fetchIngredients();
         Serenity.setSessionVariable(INGREDIENTS).to(ingredients);
         return ingredients;
-    }
-
-    private String getIngredientsResourceUrl() {
-        return getApiClientResource().getIngredients();
     }
 
 }

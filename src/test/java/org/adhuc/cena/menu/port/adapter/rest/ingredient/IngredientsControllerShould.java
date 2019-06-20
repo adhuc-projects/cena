@@ -20,8 +20,7 @@ import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_XML;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.junit.jupiter.api.DisplayName;
@@ -112,6 +111,13 @@ class IngredientsControllerShould {
                 .contentType(HAL_JSON)
                 .content("{\"name\":\"Tomato\"}")
             ).andExpect(header().exists(LOCATION));
+    }
+
+    @Test
+    @DisplayName("respond No Content when deleting ingredients")
+    void respond204OnDeletion() throws Exception {
+        mvc.perform(delete(INGREDIENTS_API_URL))
+            .andExpect(status().isNoContent());
     }
 
 }

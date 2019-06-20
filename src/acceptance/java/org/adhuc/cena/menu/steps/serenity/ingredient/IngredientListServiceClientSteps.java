@@ -17,6 +17,7 @@ package org.adhuc.cena.menu.steps.serenity.ingredient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 
 import java.util.List;
@@ -38,7 +39,7 @@ public class IngredientListServiceClientSteps extends AbstractIngredientServiceC
 
     @Step("Assume empty ingredients list")
     public void assumeEmptyIngredientsList() {
-        // TODO remove existing ingredients
+        deleteIngredients();
         assumeThat(fetchIngredients()).isEmpty();
     }
 
@@ -93,6 +94,10 @@ public class IngredientListServiceClientSteps extends AbstractIngredientServiceC
         var jsonPath = rest().get(getIngredientsResourceUrl()).then().statusCode(OK.value()).extract().jsonPath();
         return Optional.ofNullable(jsonPath.param("name", ingredient.name())
                 .getObject("_embedded.data.find { ingredient->ingredient.name == name }", IngredientValue.class));
+    }
+
+    private void deleteIngredients() {
+        rest().delete(getIngredientsResourceUrl()).then().statusCode(NO_CONTENT.value());
     }
 
 }

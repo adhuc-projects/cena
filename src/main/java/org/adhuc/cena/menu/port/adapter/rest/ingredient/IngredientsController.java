@@ -16,8 +16,7 @@
 package org.adhuc.cena.menu.port.adapter.rest.ingredient;
 
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.net.URI;
@@ -80,6 +79,13 @@ public class IngredientsController {
         var httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(new URI("http://cena.adhuc.org/ingredients/1"));
         return httpHeaders;
+    }
+
+    @DeleteMapping
+    @ResponseStatus(NO_CONTENT)
+    void deleteIngredients() {
+        // TODO set security constraint: only super administrator can delete all ingredients
+        ingredients.clear();
     }
 
 }

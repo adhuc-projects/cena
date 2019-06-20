@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.springframework.http.HttpStatus.OK;
 
 import java.util.List;
+import java.util.Optional;
 
 import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Step;
@@ -53,6 +54,16 @@ public class IngredientListServiceClientSteps extends AbstractIngredientServiceC
         assumeThat(fetchIngredients()).doesNotContain(ingredient);
     }
 
+    @Step("Assert ingredient is in ingredients list")
+    public void assertIngredientInIngredientsList() {
+        assertIngredientInIngredientsList(ingredient());
+    }
+
+    @Step("Assert ingredient {0} is in ingredients list")
+    public void assertIngredientInIngredientsList(IngredientValue ingredient) {
+        assertThat(getIngredientFromIngredientsList(ingredient)).isPresent();
+    }
+
     @Step("Get ingredients list (session)")
     public List<IngredientValue> getIngredients() {
         return getSessionStoredIngredients();
@@ -76,6 +87,12 @@ public class IngredientListServiceClientSteps extends AbstractIngredientServiceC
         var ingredients = fetchIngredients();
         Serenity.setSessionVariable(INGREDIENTS).to(ingredients);
         return ingredients;
+    }
+
+    private Optional<IngredientValue> getIngredientFromIngredientsList(IngredientValue ingredient) {
+        var jsonPath = rest().get(getIngredientsResourceUrl()).then().statusCode(OK.value()).extract().jsonPath();
+        return Optional.ofNullable(jsonPath.param("name", ingredient.name())
+                .getObject("_embedded.data.find { ingredient->ingredient.name == name }", IngredientValue.class));
     }
 
 }

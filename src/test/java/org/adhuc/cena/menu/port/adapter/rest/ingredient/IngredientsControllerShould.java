@@ -16,9 +16,13 @@
 package org.adhuc.cena.menu.port.adapter.rest.ingredient;
 
 import static org.hamcrest.Matchers.endsWith;
+import static org.springframework.hateoas.MediaTypes.HAL_JSON;
+import static org.springframework.http.HttpHeaders.LOCATION;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.APPLICATION_XML;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -47,8 +51,24 @@ class IngredientsControllerShould {
 
     @Test
     @DisplayName("respond OK when getting ingredients")
-    void respondOKOnList() throws Exception {
-        mvc.perform(get(INGREDIENTS_API_URL)).andExpect(status().isOk());
+    void respond200OnList() throws Exception {
+        mvc.perform(get(INGREDIENTS_API_URL))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("respond with HAL content")
+    void respondHalOnList() throws Exception {
+        mvc.perform(get(INGREDIENTS_API_URL))
+                .andExpect(content().contentTypeCompatibleWith(HAL_JSON));
+    }
+
+    @Test
+    @DisplayName("respond with JSON content when requested")
+    void respondJSONOnList() throws Exception {
+        mvc.perform(get(INGREDIENTS_API_URL)
+                .accept(APPLICATION_JSON)
+            ).andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON));
     }
 
     @Test
@@ -56,6 +76,42 @@ class IngredientsControllerShould {
     void haveSelfOnList() throws Exception {
         mvc.perform(get(INGREDIENTS_API_URL))
                 .andExpect(jsonPath("$._links.self.href", endsWith(INGREDIENTS_API_URL)));
+    }
+
+    @Test
+    @DisplayName("respond Unsupported Media Type when creating ingredient with XML content")
+    void respond415OnCreationXML() throws Exception {
+        mvc.perform(post(INGREDIENTS_API_URL)
+                .contentType(APPLICATION_XML)
+                .content("<ingredient><name>Tomato</name></ingredient>")
+            ).andExpect(status().isUnsupportedMediaType());
+    }
+
+    @Test
+    @DisplayName("respond Created when creating ingredient with JSON content")
+    void respond201OnCreationJson() throws Exception {
+        mvc.perform(post(INGREDIENTS_API_URL)
+                .contentType(APPLICATION_JSON)
+                .content("{\"name\":\"Tomato\"}")
+            ).andExpect(status().isCreated());
+    }
+
+    @Test
+    @DisplayName("respond Created when creating ingredient with HAL content")
+    void respond201OnCreationHal() throws Exception {
+        mvc.perform(post(INGREDIENTS_API_URL)
+                .contentType(HAL_JSON)
+                .content("{\"name\":\"Tomato\"}")
+            ).andExpect(status().isCreated());
+    }
+
+    @Test
+    @DisplayName("respond with a Location header")
+    void respondWithLocation() throws Exception {
+        mvc.perform(post(INGREDIENTS_API_URL)
+                .contentType(HAL_JSON)
+                .content("{\"name\":\"Tomato\"}")
+            ).andExpect(header().exists(LOCATION));
     }
 
 }

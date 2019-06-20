@@ -57,4 +57,9 @@ public class IngredientListStepDefinitions {
         ingredientListServiceClient.assertEmptyIngredientsList();
     }
 
+    @Then("^the ingredient can be found in the list$")
+    public void ingredientFoundInList() {
+        ingredientListServiceClient.assertIngredientInIngredientsList();
+    }
+
 }

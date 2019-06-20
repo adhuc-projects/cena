@@ -18,10 +18,12 @@ package org.adhuc.cena.menu.port.adapter.rest.ingredient;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityLinks;
@@ -41,13 +43,15 @@ import org.adhuc.cena.menu.port.adapter.rest.support.HalResource;
  */
 @RestController
 @ExposesResourceFor(Ingredient.class)
-@RequestMapping(path = "/api/ingredients", produces = HAL_JSON_VALUE)
+@RequestMapping(path = "/api/ingredients", produces = { HAL_JSON_VALUE, APPLICATION_JSON_VALUE })
 public class IngredientsController {
 
     public static final String EMBEDDED_DATA_KEY = "data";
 
     @Autowired
-    EntityLinks links;
+    private EntityLinks links;
+
+    private List<Ingredient> ingredients = new ArrayList<>();
 
     /**
      * Gets the ingredient information for all ingredients.
@@ -59,15 +63,19 @@ public class IngredientsController {
     HalResource getIngredients() {
         // TODO implementation
         return new HalResource().withLink(links.linkToCollectionResource(Ingredient.class))
-                .embedResource(EMBEDDED_DATA_KEY, Collections.emptyList());
+                .embedResource(EMBEDDED_DATA_KEY, ingredients);
     }
 
     /**
      * Creates an ingredient.
      */
-    @PostMapping
+    @PostMapping(consumes = { APPLICATION_JSON_VALUE, HAL_JSON_VALUE })
     @ResponseStatus(CREATED)
-    HttpHeaders createIngredient() throws URISyntaxException {
+    HttpHeaders createIngredient(@RequestBody CreateIngredientRequest request) throws URISyntaxException {
+        // TODO validate incoming request
+        var ingredient = new Ingredient(request.getName());
+        ingredients.add(ingredient);
+
         // TODO implementation
         var httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(new URI("http://cena.adhuc.org/ingredients/1"));

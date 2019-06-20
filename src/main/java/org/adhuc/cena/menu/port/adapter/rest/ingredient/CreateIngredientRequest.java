@@ -13,25 +13,20 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.ingredients;
+package org.adhuc.cena.menu.port.adapter.rest.ingredient;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
+import lombok.Data;
 
 /**
- * An ingredient definition.
+ * A request to create an ingredient.
  *
  * @author Alexandre Carbenay
  * @version 0.1.0
  * @since 0.1.0
  */
-@AllArgsConstructor
-@JsonAutoDetect(fieldVisibility = Visibility.ANY)
-public class Ingredient {
+@Data
+class CreateIngredientRequest {
 
-    @NonNull
     private String name;
 
 }

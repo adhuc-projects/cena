@@ -22,6 +22,8 @@ import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
 
 import org.junit.jupiter.api.*;
 
+import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryIngredientRepository;
+
 /**
  * The {@link IngredientAppServiceImpl} test class.
  *
@@ -38,7 +40,7 @@ class IngredientAppServiceImplShould {
 
     @BeforeEach
     void setUp() {
-        service = new IngredientAppServiceImpl();
+        service = new IngredientAppServiceImpl(new InMemoryIngredientRepository());
     }
 
     @Test

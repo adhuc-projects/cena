@@ -15,40 +15,38 @@
  */
 package org.adhuc.cena.menu.ingredients;
 
-import java.util.List;
-
-import lombok.NonNull;
-import org.springframework.stereotype.Service;
+import java.util.Collection;
 
 /**
- * An {@link IngredientAppService} implementation.
+ * An {@link Ingredient} repository.
  *
  * @author Alexandre Carbenay
+ *
  * @version 0.1.0
  * @since 0.1.0
  */
-@Service
-class IngredientAppServiceImpl implements IngredientAppService {
+public interface IngredientRepository {
 
-    private IngredientRepository repository;
+    /**
+     * Finds all the ingredients stored in the repository.
+     *
+     * @return all the ingredients.
+     */
+    Collection<Ingredient> findAll();
 
-    public IngredientAppServiceImpl(IngredientRepository repository) {
-        this.repository = repository;
-    }
+    /**
+     * Saves the specified ingredient.
+     *
+     * @param ingredient
+     *            the ingredient to save.
+     *
+     * @return the saved ingredient.
+     */
+    <S extends Ingredient> S save(S ingredient);
 
-    @Override
-    public List<Ingredient> getIngredients() {
-        return List.copyOf(repository.findAll());
-    }
-
-    @Override
-    public Ingredient addIngredient(@NonNull Ingredient ingredient) {
-        return repository.save(ingredient);
-    }
-
-    @Override
-    public void deleteIngredients() {
-        repository.deleteAll();
-    }
+    /**
+     * Deletes all the ingredients stored in the repository.
+     */
+    void deleteAll();
 
 }

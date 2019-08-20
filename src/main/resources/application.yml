@@ -1,5 +1,10 @@
 server.port: ${API_PORT:8080}
 
+spring:
+  profiles:
+    active:
+      - in-memory
+
 management:
   endpoints:
     web:

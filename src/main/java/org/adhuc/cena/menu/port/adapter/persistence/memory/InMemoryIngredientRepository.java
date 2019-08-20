@@ -13,42 +13,48 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.ingredients;
+package org.adhuc.cena.menu.port.adapter.persistence.memory;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import lombok.NonNull;
-import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
+
+import org.adhuc.cena.menu.ingredients.Ingredient;
+import org.adhuc.cena.menu.ingredients.IngredientRepository;
 
 /**
- * An {@link IngredientAppService} implementation.
+ * An in-memory {@link IngredientRepository} implementation.
  *
  * @author Alexandre Carbenay
+ *
  * @version 0.1.0
  * @since 0.1.0
  */
-@Service
-class IngredientAppServiceImpl implements IngredientAppService {
+@Repository
+@Profile("in-memory")
+public class InMemoryIngredientRepository implements IngredientRepository {
 
-    private IngredientRepository repository;
+    private List<Ingredient> ingredients = new ArrayList<>();
 
-    public IngredientAppServiceImpl(IngredientRepository repository) {
-        this.repository = repository;
+    @Override
+    public Collection<Ingredient> findAll() {
+        return Collections.unmodifiableList(ingredients);
     }
 
     @Override
-    public List<Ingredient> getIngredients() {
-        return List.copyOf(repository.findAll());
+    public <S extends Ingredient> S save(@NonNull S ingredient) {
+        ingredients.add(ingredient);
+        return ingredient;
     }
 
     @Override
-    public Ingredient addIngredient(@NonNull Ingredient ingredient) {
-        return repository.save(ingredient);
-    }
-
-    @Override
-    public void deleteIngredients() {
-        repository.deleteAll();
+    public void deleteAll() {
+        ingredients.clear();
     }
 
 }

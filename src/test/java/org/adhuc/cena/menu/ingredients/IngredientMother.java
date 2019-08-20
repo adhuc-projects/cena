@@ -15,25 +15,27 @@
  */
 package org.adhuc.cena.menu.ingredients;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NonNull;
-
 /**
- * An ingredient definition.
+ * An object mother to create testing domain elements related to {@link Ingredient}s.
  *
  * @author Alexandre Carbenay
  * @version 0.1.0
  * @since 0.1.0
+ * @see https://www.martinfowler.com/bliki/ObjectMother.html
  */
-@Data
-@AllArgsConstructor
-@JsonAutoDetect(fieldVisibility = Visibility.ANY)
-public class Ingredient {
+public class IngredientMother {
 
-    @NonNull
-    private String name;
+    public static final String TOMATO = "Tomato";
+    public static final String CUCUMBER = "Cucumber";
+
+    public static final String NAME = TOMATO;
+
+    public static Ingredient ingredient() {
+        return ingredient(NAME);
+    }
+
+    public static Ingredient ingredient(String name) {
+        return new Ingredient(name);
+    }
 
 }

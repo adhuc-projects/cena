@@ -15,25 +15,39 @@
  */
 package org.adhuc.cena.menu.ingredients;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import lombok.NonNull;
+import org.springframework.stereotype.Service;
 
 /**
- * An ingredient definition.
+ * An {@link IngredientAppService} implementation.
  *
  * @author Alexandre Carbenay
  * @version 0.1.0
  * @since 0.1.0
  */
-@Data
-@AllArgsConstructor
-@JsonAutoDetect(fieldVisibility = Visibility.ANY)
-public class Ingredient {
+@Service
+class IngredientAppServiceImpl implements IngredientAppService {
 
-    @NonNull
-    private String name;
+    private List<Ingredient> ingredients = new ArrayList<>();
+
+    @Override
+    public List<Ingredient> getIngredients() {
+        return Collections.unmodifiableList(ingredients);
+    }
+
+    @Override
+    public Ingredient addIngredient(@NonNull Ingredient ingredient) {
+        ingredients.add(ingredient);
+        return ingredient;
+    }
+
+    @Override
+    public void deleteIngredients() {
+        ingredients.clear();
+    }
 
 }

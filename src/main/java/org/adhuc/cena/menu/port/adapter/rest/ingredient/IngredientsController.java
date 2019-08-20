@@ -21,16 +21,14 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
 import org.adhuc.cena.menu.ingredients.Ingredient;
+import org.adhuc.cena.menu.ingredients.IngredientAppService;
 import org.adhuc.cena.menu.port.adapter.rest.support.HalResource;
 
 /**
@@ -47,22 +45,23 @@ public class IngredientsController {
 
     public static final String EMBEDDED_DATA_KEY = "data";
 
-    @Autowired
     private EntityLinks links;
+    private IngredientAppService ingredientAppService;
 
-    private List<Ingredient> ingredients = new ArrayList<>();
+    IngredientsController(EntityLinks links, IngredientAppService ingredientAppService) {
+        this.links = links;
+        this.ingredientAppService = ingredientAppService;
+    }
 
     /**
      * Gets the ingredient information for all ingredients.
-     *
-     * @return the ingredient information for all ingredients.
      */
     @GetMapping
     @ResponseStatus(OK)
     HalResource getIngredients() {
         // TODO implementation
         return new HalResource().withLink(links.linkToCollectionResource(Ingredient.class))
-                .embedResource(EMBEDDED_DATA_KEY, ingredients);
+                .embedResource(EMBEDDED_DATA_KEY, ingredientAppService.getIngredients());
     }
 
     /**
@@ -72,8 +71,7 @@ public class IngredientsController {
     @ResponseStatus(CREATED)
     HttpHeaders createIngredient(@RequestBody CreateIngredientRequest request) throws URISyntaxException {
         // TODO validate incoming request
-        var ingredient = new Ingredient(request.getName());
-        ingredients.add(ingredient);
+        ingredientAppService.addIngredient(new Ingredient(request.getName()));
 
         // TODO implementation
         var httpHeaders = new HttpHeaders();
@@ -81,11 +79,14 @@ public class IngredientsController {
         return httpHeaders;
     }
 
+    /**
+     * Deletes all ingredients.
+     */
     @DeleteMapping
     @ResponseStatus(NO_CONTENT)
     void deleteIngredients() {
         // TODO set security constraint: only super administrator can delete all ingredients
-        ingredients.clear();
+        ingredientAppService.deleteIngredients();
     }
 
 }

@@ -15,25 +15,35 @@
  */
 package org.adhuc.cena.menu.ingredients;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NonNull;
+import java.util.List;
 
 /**
- * An ingredient definition.
+ * An application service for ingredients.
  *
  * @author Alexandre Carbenay
  * @version 0.1.0
  * @since 0.1.0
  */
-@Data
-@AllArgsConstructor
-@JsonAutoDetect(fieldVisibility = Visibility.ANY)
-public class Ingredient {
+public interface IngredientAppService {
 
-    @NonNull
-    private String name;
+    /**
+     * Gets the ingredients.
+     *
+     * @return the ingredients (not modifiable).
+     */
+    List<Ingredient> getIngredients();
+
+    /**
+     * Adds an ingredient.
+     *
+     * @param ingredient
+     *            the ingredient.
+     */
+    Ingredient addIngredient(Ingredient ingredient);
+
+    /**
+     * Deletes the ingredients.
+     */
+    void deleteIngredients();
 
 }

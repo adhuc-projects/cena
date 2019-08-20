@@ -15,7 +15,9 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.ingredient;
 
-import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -23,12 +25,19 @@ import static org.springframework.http.MediaType.APPLICATION_XML;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
+
+import java.util.List;
+
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+
+import org.adhuc.cena.menu.ingredients.Ingredient;
+import org.adhuc.cena.menu.ingredients.IngredientAppService;
 
 /**
  * The {@link IngredientsController} test class.
@@ -47,34 +56,77 @@ class IngredientsControllerShould {
 
     @Autowired
     private MockMvc mvc;
+    @MockBean
+    private IngredientAppService ingredientAppServiceMock;
 
-    @Test
-    @DisplayName("respond OK when getting ingredients")
-    void respond200OnList() throws Exception {
-        mvc.perform(get(INGREDIENTS_API_URL))
-                .andExpect(status().isOk());
-    }
+    @Nested
+    @DisplayName("with 2 ingredients")
+    class with2Ingredients {
 
-    @Test
-    @DisplayName("respond with HAL content")
-    void respondHalOnList() throws Exception {
-        mvc.perform(get(INGREDIENTS_API_URL))
-                .andExpect(content().contentTypeCompatibleWith(HAL_JSON));
-    }
+        private List<Ingredient> ingredients;
 
-    @Test
-    @DisplayName("respond with JSON content when requested")
-    void respondJSONOnList() throws Exception {
-        mvc.perform(get(INGREDIENTS_API_URL)
-                .accept(APPLICATION_JSON)
+        @BeforeEach
+        void setUp() {
+            ingredients = List.of(ingredient(TOMATO), ingredient(CUCUMBER));
+            when(ingredientAppServiceMock.getIngredients()).thenReturn(ingredients);
+        }
+
+        @Test
+        @DisplayName("respond OK when retrieving ingredients")
+        void respond200OnList() throws Exception {
+            mvc.perform(get(INGREDIENTS_API_URL))
+                    .andExpect(status().isOk());
+        }
+
+        @Test
+        @DisplayName("respond with HAL content when retrieving ingredients with no specific requested content")
+        void respondHalOnList() throws Exception {
+            mvc.perform(get(INGREDIENTS_API_URL))
+                    .andExpect(content().contentTypeCompatibleWith(HAL_JSON));
+        }
+
+        @Test
+        @DisplayName("respond with JSON content when requested while retrieving ingredients")
+        void respondJSONOnList() throws Exception {
+            mvc.perform(get(INGREDIENTS_API_URL)
+                    .accept(APPLICATION_JSON)
             ).andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON));
+        }
+
+        @Test
+        @DisplayName("have self link with correct value when retrieving ingredients")
+        void haveSelfOnList() throws Exception {
+            mvc.perform(get(INGREDIENTS_API_URL))
+                    .andExpect(jsonPath("$._links.self.href", endsWith(INGREDIENTS_API_URL)));
+        }
+
+        @Test
+        @DisplayName("have embedded data with 2 ingredients when retrieving ingredients")
+        void haveDataWith2Ingredients() throws Exception {
+            var result = mvc.perform(get(INGREDIENTS_API_URL))
+                    .andExpect(jsonPath("$._embedded.data").isArray())
+                    .andExpect(jsonPath("$._embedded.data").isNotEmpty())
+                    .andExpect(jsonPath("$._embedded.data", hasSize(2)));
+            assertJsonContainsIngredient(result, "$._embedded.data[0]", ingredients.get(0));
+            assertJsonContainsIngredient(result, "$._embedded.data[1]", ingredients.get(1));
+        }
     }
 
-    @Test
-    @DisplayName("have self link with correct value when getting ingredients")
-    void haveSelfOnList() throws Exception {
-        mvc.perform(get(INGREDIENTS_API_URL))
-                .andExpect(jsonPath("$._links.self.href", endsWith(INGREDIENTS_API_URL)));
+    @Nested
+    @DisplayName("with empty list")
+    class WithEmptyList {
+        @BeforeEach
+        void setUp() {
+            when(ingredientAppServiceMock.getIngredients()).thenReturn(List.of());
+        }
+
+        @Test
+        @DisplayName("have empty embedded data when retrieving ingredients")
+        void haveEmptyDataOnEmptyList() throws Exception {
+            mvc.perform(get(INGREDIENTS_API_URL))
+                    .andExpect(jsonPath("$._embedded.data").isArray())
+                    .andExpect(jsonPath("$._embedded.data").isEmpty());
+        }
     }
 
     @Test
@@ -105,8 +157,8 @@ class IngredientsControllerShould {
     }
 
     @Test
-    @DisplayName("respond with a Location header")
-    void respondWithLocation() throws Exception {
+    @DisplayName("respond with a Location header when creating ingredient successfully")
+    void respondWithLocationAfterCreationSuccess() throws Exception {
         mvc.perform(post(INGREDIENTS_API_URL)
                 .contentType(HAL_JSON)
                 .content("{\"name\":\"Tomato\"}")
@@ -114,10 +166,36 @@ class IngredientsControllerShould {
     }
 
     @Test
+    @DisplayName("call application service when creating ingredient")
+    void callServiceOnCreation() throws Exception {
+        mvc.perform(post(INGREDIENTS_API_URL)
+                .contentType(HAL_JSON)
+                .content(String.format("{\"name\":\"%s\"}", NAME))
+        ).andExpect(status().isCreated());
+
+        verify(ingredientAppServiceMock).addIngredient(ingredient());
+    }
+
+    @Test
     @DisplayName("respond No Content when deleting ingredients")
     void respond204OnDeletion() throws Exception {
         mvc.perform(delete(INGREDIENTS_API_URL))
             .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("call application service when deleting ingredients")
+    void callServiceOnDeletion() throws Exception {
+        mvc.perform(delete(INGREDIENTS_API_URL))
+                .andExpect(status().isNoContent());
+
+        verify(ingredientAppServiceMock).deleteIngredients();
+    }
+
+    void assertJsonContainsIngredient(ResultActions resultActions, String jsonPath,
+                                      Ingredient ingredient) throws Exception {
+        resultActions.andExpect(jsonPath(jsonPath + ".name").exists())
+                .andExpect(jsonPath(jsonPath + ".name", equalTo(ingredient.getName())));
     }
 
 }

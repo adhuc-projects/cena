@@ -139,6 +139,24 @@ class IngredientsControllerShould {
     }
 
     @Test
+    @DisplayName("respond Bad Request when creating ingredient without name")
+    void respond400OnCreationWithoutName() throws Exception {
+        mvc.perform(post(INGREDIENTS_API_URL)
+                .contentType(APPLICATION_JSON)
+                .content("{}")
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("respond Bad Request when creating ingredient with blank name")
+    void respond400OnCreationWithBlankName() throws Exception {
+        mvc.perform(post(INGREDIENTS_API_URL)
+                .contentType(APPLICATION_JSON)
+                .content("{\"name\":\" \t\"}")
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
     @DisplayName("respond Created when creating ingredient with JSON content")
     void respond201OnCreationJson() throws Exception {
         mvc.perform(post(INGREDIENTS_API_URL)

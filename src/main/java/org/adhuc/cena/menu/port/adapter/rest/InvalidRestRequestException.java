@@ -13,34 +13,26 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.port.adapter.rest.ingredient;
+package org.adhuc.cena.menu.port.adapter.rest;
 
-import javax.validation.constraints.NotBlank;
-
-import lombok.Data;
-
-import org.adhuc.cena.menu.ingredients.CreateIngredient;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
- * A request to create an ingredient.
+ * An exception occurring while executing a rest-service call with invalid request.
  *
  * @author Alexandre Carbenay
  * @version 0.1.0
  * @since 0.1.0
  */
-@Data
-class CreateIngredientRequest {
-
-    @NotBlank
-    private String name;
+@ResponseStatus(HttpStatus.BAD_REQUEST)
+public class InvalidRestRequestException extends RuntimeException {
 
     /**
-     * Converts this request to a {@code CreateIngredient} command.
-     *
-     * @return the ingredient creation command.
+     * Constructs a new {@code InvalidRestRequestException}.
      */
-    CreateIngredient toCommand() {
-        return new CreateIngredient(name);
+    public InvalidRestRequestException() {
+
     }
 
 }

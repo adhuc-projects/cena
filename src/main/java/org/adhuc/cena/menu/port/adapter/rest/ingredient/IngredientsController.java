@@ -21,14 +21,18 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import javax.validation.Valid;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import org.adhuc.cena.menu.ingredients.Ingredient;
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
+import org.adhuc.cena.menu.port.adapter.rest.InvalidRestRequestException;
 import org.adhuc.cena.menu.port.adapter.rest.support.HalResource;
 
 /**
@@ -38,6 +42,7 @@ import org.adhuc.cena.menu.port.adapter.rest.support.HalResource;
  * @version 0.1.0
  * @since 0.1.0
  */
+@Slf4j
 @RestController
 @ExposesResourceFor(Ingredient.class)
 @RequestMapping(path = "/api/ingredients", produces = {HAL_JSON_VALUE, APPLICATION_JSON_VALUE})
@@ -69,8 +74,8 @@ public class IngredientsController {
      */
     @PostMapping(consumes = {APPLICATION_JSON_VALUE, HAL_JSON_VALUE})
     @ResponseStatus(CREATED)
-    HttpHeaders createIngredient(@RequestBody CreateIngredientRequest request) throws URISyntaxException {
-        // TODO validate incoming request
+    HttpHeaders createIngredient(@RequestBody @Valid CreateIngredientRequest request, Errors errors) throws URISyntaxException {
+        validateRequest(errors);
         ingredientAppService.createIngredient(request.toCommand());
 
         // TODO implementation
@@ -87,6 +92,13 @@ public class IngredientsController {
     void deleteIngredients() {
         // TODO set security constraint: only super administrator can delete all ingredients
         ingredientAppService.deleteIngredients();
+    }
+
+    private void validateRequest(Errors errors) {
+        if (errors.hasErrors()) {
+            log.debug("Request validation raises errors : {}", errors);
+            throw new InvalidRestRequestException();
+        }
     }
 
 }

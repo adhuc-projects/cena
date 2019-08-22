@@ -19,10 +19,9 @@ import static net.serenitybdd.rest.SerenityRest.then;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpHeaders.LOCATION;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
-import java.util.Map;
 
 import net.thucydides.core.annotations.Step;
 
@@ -43,8 +42,13 @@ public class IngredientCreationServiceClientSteps extends AbstractIngredientServ
     @Step("Create the ingredient {0}")
     public void createIngredient(IngredientValue ingredient) {
         var ingredientsResourceUrl = getIngredientsResourceUrl();
-        rest().header(CONTENT_TYPE, APPLICATION_JSON_VALUE).body(Map.of("name", ingredient.name()))
-                .post(ingredientsResourceUrl).andReturn();
+        rest().header(CONTENT_TYPE, APPLICATION_JSON_VALUE).body(ingredient).post(ingredientsResourceUrl).andReturn();
+    }
+
+    @Step("Create an ingredient without name")
+    public void createIngredientWithoutName() {
+        storeIngredient(new IngredientValue(null));
+        createIngredient(ingredient());
     }
 
     @Step("Assert ingredient has been successfully created")
@@ -52,6 +56,11 @@ public class IngredientCreationServiceClientSteps extends AbstractIngredientServ
         var ingredientLocation = then().statusCode(CREATED.value()).extract().header(LOCATION);
         assertThat(ingredientLocation).isNotBlank();
         // TODO assert ingredient retrieved from the location URL is the same as the created one
+    }
+
+    @Step("Assert ingredient creation results in invalid request error")
+    public void assertInvalidRequestError() {
+        then().statusCode(BAD_REQUEST.value());
     }
 
 }

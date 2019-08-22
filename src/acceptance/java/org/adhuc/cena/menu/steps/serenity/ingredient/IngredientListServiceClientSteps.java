@@ -65,6 +65,16 @@ public class IngredientListServiceClientSteps extends AbstractIngredientServiceC
         assertThat(getIngredientFromIngredientsList(ingredient)).isPresent();
     }
 
+    @Step("Assert ingredient is not in ingredients list")
+    public void assertIngredientNotInIngredientsList() {
+        assertIngredientNotInIngredientsList(ingredient());
+    }
+
+    @Step("Assert ingredient {0} is not in ingredients list")
+    public void assertIngredientNotInIngredientsList(IngredientValue ingredient) {
+        assertThat(getIngredientFromIngredientsList(ingredient)).isNotPresent();
+    }
+
     @Step("Get ingredients list (session)")
     public List<IngredientValue> getIngredients() {
         return getSessionStoredIngredients();

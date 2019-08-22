@@ -62,4 +62,9 @@ public class IngredientListStepDefinitions {
         ingredientListServiceClient.assertIngredientInIngredientsList();
     }
 
+    @Then("^the ingredient cannot be found in the list$")
+    public void ingredientNotFoundInList() {
+        ingredientListServiceClient.assertIngredientNotInIngredientsList();
+    }
+
 }

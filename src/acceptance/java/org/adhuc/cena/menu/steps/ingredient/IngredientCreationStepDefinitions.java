@@ -40,9 +40,19 @@ public class IngredientCreationStepDefinitions {
         ingredientCreationServiceClient.createIngredient();
     }
 
+    @When("^he creates an ingredient without name$")
+    public void createIngredientWithoutName() {
+        ingredientCreationServiceClient.createIngredientWithoutName();
+    }
+
     @Then("^the ingredient is created$")
     public void ingredientCreated() {
         ingredientCreationServiceClient.assertIngredientSuccessfullyCreated();
+    }
+
+    @Then("^an error notifies that ingredient must have a name$")
+    public void errorOnIngredientCreationWithoutName() {
+        ingredientCreationServiceClient.assertInvalidRequestError();
     }
 
 }

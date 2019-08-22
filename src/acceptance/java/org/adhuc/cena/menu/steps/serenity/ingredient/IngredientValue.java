@@ -15,9 +15,12 @@
  */
 package org.adhuc.cena.menu.steps.serenity.ingredient;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -34,6 +37,7 @@ import lombok.experimental.Accessors;
 @RequiredArgsConstructor
 @Accessors(fluent = true)
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonInclude(NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class IngredientValue {
     private String id;

@@ -21,7 +21,6 @@ import java.util.Collection;
  * An {@link Ingredient} repository.
  *
  * @author Alexandre Carbenay
- *
  * @version 0.1.0
  * @since 0.1.0
  */
@@ -37,9 +36,7 @@ public interface IngredientRepository {
     /**
      * Saves the specified ingredient.
      *
-     * @param ingredient
-     *            the ingredient to save.
-     *
+     * @param ingredient the ingredient to save.
      * @return the saved ingredient.
      */
     <S extends Ingredient> S save(S ingredient);

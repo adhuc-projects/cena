@@ -15,13 +15,12 @@
  */
 package org.adhuc.cena.menu.steps.serenity.ingredient;
 
+import static net.serenitybdd.rest.SerenityRest.then;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
-import static net.serenitybdd.rest.SerenityRest.then;
 
 import java.util.Map;
 

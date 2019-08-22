@@ -20,8 +20,8 @@ package org.adhuc.cena.menu.ingredients;
  *
  * @author Alexandre Carbenay
  * @version 0.1.0
- * @since 0.1.0
  * @see https://www.martinfowler.com/bliki/ObjectMother.html
+ * @since 0.1.0
  */
 public class IngredientMother {
 

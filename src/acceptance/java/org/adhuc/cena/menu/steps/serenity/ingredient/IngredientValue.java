@@ -25,18 +25,17 @@ import lombok.experimental.Accessors;
  * An ingredient value on the client side.
  *
  * @author Alexandre Carbenay
- *
  * @version 0.1.0
  * @since 0.1.0
  */
 @Data
-@ToString(exclude = { "id" }, includeFieldNames = false)
+@ToString(exclude = {"id"}, includeFieldNames = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @RequiredArgsConstructor
 @Accessors(fluent = true)
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class IngredientValue {
-    private String       id;
+    private String id;
     private final String name;
 }

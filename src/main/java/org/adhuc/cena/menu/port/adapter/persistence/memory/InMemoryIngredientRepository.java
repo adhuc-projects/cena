@@ -31,7 +31,6 @@ import org.adhuc.cena.menu.ingredients.IngredientRepository;
  * An in-memory {@link IngredientRepository} implementation.
  *
  * @author Alexandre Carbenay
- *
  * @version 0.1.0
  * @since 0.1.0
  */

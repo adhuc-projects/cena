@@ -30,8 +30,8 @@ import org.springframework.hateoas.ResourceSupport;
  *
  * @author Alexandre Carbenay
  * @version 0.1.0
- * @since 0.1.0
  * @see http://stateless.co/hal_specification.html
+ * @since 0.1.0
  */
 public class HalResource extends ResourceSupport {
 

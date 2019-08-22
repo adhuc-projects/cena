@@ -28,7 +28,6 @@ import org.adhuc.cena.menu.ingredients.Ingredient;
  * The {@link InMemoryIngredientRepository} test class.
  *
  * @author Alexandre Carbenay
- *
  * @version 0.1.0
  * @since 0.1.0
  */

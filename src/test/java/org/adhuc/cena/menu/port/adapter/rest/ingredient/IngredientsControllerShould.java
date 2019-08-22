@@ -135,7 +135,7 @@ class IngredientsControllerShould {
         mvc.perform(post(INGREDIENTS_API_URL)
                 .contentType(APPLICATION_XML)
                 .content("<ingredient><name>Tomato</name></ingredient>")
-            ).andExpect(status().isUnsupportedMediaType());
+        ).andExpect(status().isUnsupportedMediaType());
     }
 
     @Test
@@ -144,7 +144,7 @@ class IngredientsControllerShould {
         mvc.perform(post(INGREDIENTS_API_URL)
                 .contentType(APPLICATION_JSON)
                 .content("{\"name\":\"Tomato\"}")
-            ).andExpect(status().isCreated());
+        ).andExpect(status().isCreated());
     }
 
     @Test
@@ -153,7 +153,7 @@ class IngredientsControllerShould {
         mvc.perform(post(INGREDIENTS_API_URL)
                 .contentType(HAL_JSON)
                 .content("{\"name\":\"Tomato\"}")
-            ).andExpect(status().isCreated());
+        ).andExpect(status().isCreated());
     }
 
     @Test
@@ -162,7 +162,7 @@ class IngredientsControllerShould {
         mvc.perform(post(INGREDIENTS_API_URL)
                 .contentType(HAL_JSON)
                 .content("{\"name\":\"Tomato\"}")
-            ).andExpect(header().exists(LOCATION));
+        ).andExpect(header().exists(LOCATION));
     }
 
     @Test
@@ -180,7 +180,7 @@ class IngredientsControllerShould {
     @DisplayName("respond No Content when deleting ingredients")
     void respond204OnDeletion() throws Exception {
         mvc.perform(delete(INGREDIENTS_API_URL))
-            .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent());
     }
 
     @Test

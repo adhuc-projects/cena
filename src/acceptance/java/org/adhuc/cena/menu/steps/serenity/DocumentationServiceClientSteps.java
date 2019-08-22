@@ -15,8 +15,6 @@
  */
 package org.adhuc.cena.menu.steps.serenity;
 
-import static net.serenitybdd.rest.SerenityRest.rest;
-
 import net.thucydides.core.annotations.Step;
 
 /**

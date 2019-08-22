@@ -40,7 +40,7 @@ import org.adhuc.cena.menu.port.adapter.rest.support.HalResource;
  */
 @RestController
 @ExposesResourceFor(Ingredient.class)
-@RequestMapping(path = "/api/ingredients", produces = { HAL_JSON_VALUE, APPLICATION_JSON_VALUE })
+@RequestMapping(path = "/api/ingredients", produces = {HAL_JSON_VALUE, APPLICATION_JSON_VALUE})
 public class IngredientsController {
 
     public static final String EMBEDDED_DATA_KEY = "data";
@@ -67,7 +67,7 @@ public class IngredientsController {
     /**
      * Creates an ingredient.
      */
-    @PostMapping(consumes = { APPLICATION_JSON_VALUE, HAL_JSON_VALUE })
+    @PostMapping(consumes = {APPLICATION_JSON_VALUE, HAL_JSON_VALUE})
     @ResponseStatus(CREATED)
     HttpHeaders createIngredient(@RequestBody CreateIngredientRequest request) throws URISyntaxException {
         // TODO validate incoming request

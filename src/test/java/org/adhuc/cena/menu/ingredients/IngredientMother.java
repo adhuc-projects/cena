@@ -30,6 +30,14 @@ public class IngredientMother {
 
     public static final String NAME = TOMATO;
 
+    public static CreateIngredient createCommand() {
+        return createCommand(ingredient());
+    }
+
+    public static CreateIngredient createCommand(Ingredient ingredient) {
+        return new CreateIngredient(ingredient.getName());
+    }
+
     public static Ingredient ingredient() {
         return ingredient(NAME);
     }

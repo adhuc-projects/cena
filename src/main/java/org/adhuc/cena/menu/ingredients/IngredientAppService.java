@@ -34,12 +34,11 @@ public interface IngredientAppService {
     List<Ingredient> getIngredients();
 
     /**
-     * Adds an ingredient.
+     * Creates an ingredient.
      *
-     * @param ingredient
-     *            the ingredient.
+     * @param command the ingredient creation command.
      */
-    Ingredient addIngredient(Ingredient ingredient);
+    Ingredient createIngredient(CreateIngredient command);
 
     /**
      * Deletes the ingredients.

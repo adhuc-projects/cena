@@ -71,7 +71,7 @@ public class IngredientsController {
     @ResponseStatus(CREATED)
     HttpHeaders createIngredient(@RequestBody CreateIngredientRequest request) throws URISyntaxException {
         // TODO validate incoming request
-        ingredientAppService.addIngredient(new Ingredient(request.getName()));
+        ingredientAppService.createIngredient(request.toCommand());
 
         // TODO implementation
         var httpHeaders = new HttpHeaders();

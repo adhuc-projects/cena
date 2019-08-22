@@ -50,9 +50,9 @@ class IngredientAppServiceImplShould {
     }
 
     @Test
-    @DisplayName("throw IllegalArgumentException when adding null ingredient")
-    void throwIAEAddingNullIngredient() {
-        assertThrows(IllegalArgumentException.class, () -> service.addIngredient(null));
+    @DisplayName("throw IllegalArgumentException when creating ingredient from null command")
+    void throwIAECreateIngredientNullCommand() {
+        assertThrows(IllegalArgumentException.class, () -> service.createIngredient(null));
     }
 
     @Nested
@@ -76,7 +76,7 @@ class IngredientAppServiceImplShould {
         @BeforeEach
         void setUp() {
             tomato = ingredient(TOMATO);
-            service.addIngredient(tomato);
+            service.createIngredient(createCommand(tomato));
         }
 
         @Test
@@ -95,7 +95,7 @@ class IngredientAppServiceImplShould {
             @BeforeEach
             void setUp() {
                 cucumber = ingredient(CUCUMBER);
-                service.addIngredient(cucumber);
+                service.createIngredient(createCommand(cucumber));
             }
 
             @Test

@@ -173,7 +173,7 @@ class IngredientsControllerShould {
                 .content(String.format("{\"name\":\"%s\"}", NAME))
         ).andExpect(status().isCreated());
 
-        verify(ingredientAppServiceMock).addIngredient(ingredient());
+        verify(ingredientAppServiceMock).createIngredient(createCommand());
     }
 
     @Test

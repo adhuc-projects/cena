@@ -88,7 +88,7 @@ class InMemoryIngredientRepositoryShould {
 
             @BeforeEach
             void setUp() {
-                cucumber = new Ingredient(CUCUMBER);
+                cucumber = ingredient(CUCUMBER);
                 repository.save(cucumber);
             }
 

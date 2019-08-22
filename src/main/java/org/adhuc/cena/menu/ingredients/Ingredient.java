@@ -17,6 +17,7 @@ package org.adhuc.cena.menu.ingredients;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
@@ -29,11 +30,20 @@ import lombok.NonNull;
  * @since 0.1.0
  */
 @Data
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 public class Ingredient {
 
     @NonNull
     private String name;
+
+    /**
+     * Creates an ingredient based on the specified creation command.
+     *
+     * @param command the ingredient creation command.
+     */
+    public Ingredient(@NonNull CreateIngredient command) {
+        this(command.ingredientName());
+    }
 
 }

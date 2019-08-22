@@ -18,6 +18,7 @@ package org.adhuc.cena.menu.ingredients;
 import java.util.List;
 
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
  * @version 0.1.0
  * @since 0.1.0
  */
+@Slf4j
 @Service
 class IngredientAppServiceImpl implements IngredientAppService {
 
@@ -42,8 +44,9 @@ class IngredientAppServiceImpl implements IngredientAppService {
     }
 
     @Override
-    public Ingredient addIngredient(@NonNull Ingredient ingredient) {
-        return repository.save(ingredient);
+    public Ingredient createIngredient(@NonNull CreateIngredient command) {
+        log.info("Create ingredient from command {}", command);
+        return repository.save(new Ingredient(command));
     }
 
     @Override

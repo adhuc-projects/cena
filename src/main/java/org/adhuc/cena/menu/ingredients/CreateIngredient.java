@@ -13,31 +13,35 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.port.adapter.rest.ingredient;
+package org.adhuc.cena.menu.ingredients;
 
-import lombok.Data;
+import static org.springframework.util.Assert.hasText;
 
-import org.adhuc.cena.menu.ingredients.CreateIngredient;
+import lombok.NonNull;
+import lombok.Value;
+import lombok.experimental.Accessors;
 
 /**
- * A request to create an ingredient.
+ * An ingredient creation command.
  *
  * @author Alexandre Carbenay
  * @version 0.1.0
  * @since 0.1.0
  */
-@Data
-class CreateIngredientRequest {
+@Value
+@Accessors(fluent = true)
+public class CreateIngredient {
 
-    private String name;
+    private final String ingredientName;
 
     /**
-     * Converts this request to a {@code CreateIngredient} command.
+     * Creates an ingredient creation command.
      *
-     * @return the ingredient creation command.
+     * @param ingredientName the ingredient name.
      */
-    CreateIngredient toCommand() {
-        return new CreateIngredient(name);
+    public CreateIngredient(@NonNull String ingredientName) {
+        hasText(ingredientName, "Cannot create ingredient creation command with invalid ingredient name");
+        this.ingredientName = ingredientName;
     }
 
 }

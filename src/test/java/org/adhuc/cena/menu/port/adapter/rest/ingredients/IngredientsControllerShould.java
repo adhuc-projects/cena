@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.port.adapter.rest.ingredient;
+package org.adhuc.cena.menu.port.adapter.rest.ingredients;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.verify;

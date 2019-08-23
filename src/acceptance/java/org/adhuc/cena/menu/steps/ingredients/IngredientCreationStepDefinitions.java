@@ -13,14 +13,14 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.steps.ingredient;
+package org.adhuc.cena.menu.steps.ingredients;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
-import org.adhuc.cena.menu.steps.serenity.ingredient.IngredientCreationServiceClientSteps;
+import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientCreationServiceClientSteps;
 
 /**
  * The ingredient creation steps definitions for rest-services acceptance tests.

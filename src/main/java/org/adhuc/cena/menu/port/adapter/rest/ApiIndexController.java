@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
-import org.adhuc.cena.menu.port.adapter.rest.ingredient.IngredientsController;
+import org.adhuc.cena.menu.port.adapter.rest.ingredients.IngredientsController;
 
 /**
  * A REST controller providing links to all general resources.

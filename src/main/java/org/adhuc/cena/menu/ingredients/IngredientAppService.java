@@ -34,6 +34,15 @@ public interface IngredientAppService {
     List<Ingredient> getIngredients();
 
     /**
+     * Gets the ingredient corresponding to the specified identity.
+     *
+     * @param ingredientId the ingredient identity.
+     * @return the ingredient.
+     * @throws org.adhuc.cena.menu.EntityNotFoundException if no ingredient corresponds to identity.
+     */
+    Ingredient getIngredient(String ingredientId);
+
+    /**
      * Creates an ingredient.
      *
      * @param command the ingredient creation command.
@@ -44,5 +53,4 @@ public interface IngredientAppService {
      * Deletes the ingredients.
      */
     void deleteIngredients();
-
 }

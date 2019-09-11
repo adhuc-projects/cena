@@ -22,6 +22,7 @@ import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
 
 import org.junit.jupiter.api.*;
 
+import org.adhuc.cena.menu.EntityNotFoundException;
 import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryIngredientRepository;
 
 /**
@@ -50,6 +51,12 @@ class IngredientAppServiceImplShould {
     }
 
     @Test
+    @DisplayName("throw IllegalArgumentException when getting ingredient from null identity")
+    void throwIAEGetIngredientNullId() {
+        assertThrows(IllegalArgumentException.class, () -> service.getIngredient(null));
+    }
+
+    @Test
     @DisplayName("throw IllegalArgumentException when creating ingredient from null command")
     void throwIAECreateIngredientNullCommand() {
         assertThrows(IllegalArgumentException.class, () -> service.createIngredient(null));
@@ -75,7 +82,7 @@ class IngredientAppServiceImplShould {
 
         @BeforeEach
         void setUp() {
-            tomato = ingredient(TOMATO);
+            tomato = ingredient(TOMATO_ID, TOMATO);
             service.createIngredient(createCommand(tomato));
         }
 
@@ -86,6 +93,18 @@ class IngredientAppServiceImplShould {
                     .containsExactly(tomato);
         }
 
+        @Test
+        @DisplayName("throw EntityNotFoundException when getting ingredient from unknown identity")
+        void throwEntityNotFoundExceptionUnknownId() {
+            assertThrows(EntityNotFoundException.class, () -> service.getIngredient(CUCUMBER_ID));
+        }
+
+        @Test
+        @DisplayName("return tomato when getting ingredient from tomato id")
+        void returnTomato() {
+            assertThat(service.getIngredient(TOMATO_ID)).isEqualToComparingFieldByField(tomato);
+        }
+
         @Nested
         @DisplayName("and cucumber")
         class AndCucumber {
@@ -94,7 +113,7 @@ class IngredientAppServiceImplShould {
 
             @BeforeEach
             void setUp() {
-                cucumber = ingredient(CUCUMBER);
+                cucumber = ingredient(CUCUMBER_ID, CUCUMBER);
                 service.createIngredient(createCommand(cucumber));
             }
 

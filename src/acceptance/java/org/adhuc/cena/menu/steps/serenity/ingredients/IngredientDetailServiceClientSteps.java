@@ -13,36 +13,30 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.port.adapter.rest.ingredients;
+package org.adhuc.cena.menu.steps.serenity.ingredients;
 
-import javax.validation.constraints.NotBlank;
+import static net.serenitybdd.rest.SerenityRest.rest;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import lombok.Data;
-import lombok.NonNull;
-
-import org.adhuc.cena.menu.ingredients.CreateIngredient;
+import net.thucydides.core.annotations.Step;
 
 /**
- * A request to create an ingredient.
+ * The ingredient detail rest-service client steps definition.
  *
  * @author Alexandre Carbenay
  * @version 0.1.0
  * @since 0.1.0
  */
-@Data
-class CreateIngredientRequest {
+public class IngredientDetailServiceClientSteps {
 
-    @NotBlank
-    private String name;
+    @Step("Get ingredient from {0}")
+    public IngredientValue getIngredientFromUrl(String ingredientDetailUrl) {
+        return rest().get(ingredientDetailUrl).then().extract().as(IngredientValue.class);
+    }
 
-    /**
-     * Converts this request to a {@code CreateIngredient} command.
-     *
-     * @param  id the ingredient identity.
-     * @return the ingredient creation command.
-     */
-    CreateIngredient toCommand(@NonNull String id) {
-        return new CreateIngredient(id, name);
+    @Step("Assert ingredient {1} corresponds to expected {0}")
+    public void assertIngredientInfoIsEqualToExpected(IngredientValue expected, IngredientValue actual) {
+        assertThat(actual.name()).isEqualTo(expected.name());
     }
 
 }

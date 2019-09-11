@@ -16,7 +16,8 @@
 package org.adhuc.cena.menu.port.adapter.rest.ingredients;
 
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.net.URI;
@@ -26,7 +27,7 @@ import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.ExposesResourceFor;
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
@@ -73,15 +74,13 @@ public class IngredientsController {
      * Creates an ingredient.
      */
     @PostMapping(consumes = {APPLICATION_JSON_VALUE, HAL_JSON_VALUE})
-    @ResponseStatus(CREATED)
-    HttpHeaders createIngredient(@RequestBody @Valid CreateIngredientRequest request, Errors errors) throws URISyntaxException {
+    ResponseEntity<Void> createIngredient(@RequestBody @Valid CreateIngredientRequest request, Errors errors) throws URISyntaxException {
+        var identity = "tomatoId";
         validateRequest(errors);
-        ingredientAppService.createIngredient(request.toCommand());
+        ingredientAppService.createIngredient(request.toCommand(identity));
 
         // TODO implementation
-        var httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(new URI("http://cena.adhuc.org/ingredients/1"));
-        return httpHeaders;
+        return ResponseEntity.created(new URI(links.linkToSingleResource(Ingredient.class, identity).getHref())).build();
     }
 
     /**

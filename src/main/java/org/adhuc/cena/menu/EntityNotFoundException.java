@@ -13,36 +13,19 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.port.adapter.rest.ingredients;
+package org.adhuc.cena.menu;
 
-import javax.validation.constraints.NotBlank;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
-import lombok.Data;
-import lombok.NonNull;
-
-import org.adhuc.cena.menu.ingredients.CreateIngredient;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
- * A request to create an ingredient.
+ * An exception occurring while requesting a resource that cannot be found.
  *
  * @author Alexandre Carbenay
  * @version 0.1.0
  * @since 0.1.0
  */
-@Data
-class CreateIngredientRequest {
-
-    @NotBlank
-    private String name;
-
-    /**
-     * Converts this request to a {@code CreateIngredient} command.
-     *
-     * @param  id the ingredient identity.
-     * @return the ingredient creation command.
-     */
-    CreateIngredient toCommand(@NonNull String id) {
-        return new CreateIngredient(id, name);
-    }
-
+@ResponseStatus(NOT_FOUND)
+public class EntityNotFoundException extends RuntimeException {
 }

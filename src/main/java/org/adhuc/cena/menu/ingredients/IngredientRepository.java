@@ -16,6 +16,11 @@
 package org.adhuc.cena.menu.ingredients;
 
 import java.util.Collection;
+import java.util.Optional;
+
+import lombok.NonNull;
+
+import org.adhuc.cena.menu.EntityNotFoundException;
 
 /**
  * An {@link Ingredient} repository.
@@ -34,6 +39,29 @@ public interface IngredientRepository {
     Collection<Ingredient> findAll();
 
     /**
+     * Finds the ingredient corresponding to the specified identity.
+     *
+     * @param ingredientId the ingredient identity.
+     * @return the ingredient if existing, empty otherwise.
+     */
+    Optional<Ingredient> findById(String ingredientId);
+
+    /**
+     * Finds the ingredient corresponding to the specified identity.
+     *
+     * @param ingredientId the ingredient identity.
+     * @return the ingredient if existing.
+     * @throws EntityNotFoundException if no ingredient could be found for identity.
+     */
+    default Ingredient findNotNullById(@NonNull String ingredientId) {
+        var ingredient = findById(ingredientId);
+        if (ingredient.isPresent()) {
+            return ingredient.get();
+        }
+        throw new EntityNotFoundException();
+    }
+
+    /**
      * Saves the specified ingredient.
      *
      * @param ingredient the ingredient to save.
@@ -45,5 +73,4 @@ public interface IngredientRepository {
      * Deletes all the ingredients stored in the repository.
      */
     void deleteAll();
-
 }

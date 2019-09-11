@@ -44,6 +44,11 @@ class IngredientAppServiceImpl implements IngredientAppService {
     }
 
     @Override
+    public Ingredient getIngredient(@NonNull String ingredientId) {
+        return repository.findNotNullById(ingredientId);
+    }
+
+    @Override
     public Ingredient createIngredient(@NonNull CreateIngredient command) {
         log.info("Create ingredient from command {}", command);
         return repository.save(new Ingredient(command));

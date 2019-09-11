@@ -22,6 +22,7 @@ import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
 
 import org.junit.jupiter.api.*;
 
+import org.adhuc.cena.menu.EntityNotFoundException;
 import org.adhuc.cena.menu.ingredients.Ingredient;
 
 /**
@@ -69,7 +70,7 @@ class InMemoryIngredientRepositoryShould {
 
         @BeforeEach
         void setUp() {
-            tomato = ingredient(TOMATO);
+            tomato = ingredient(TOMATO_ID, TOMATO);
             repository.save(tomato);
         }
 
@@ -77,6 +78,42 @@ class InMemoryIngredientRepositoryShould {
         @DisplayName("return a collection containing tomato")
         void returnCollectionContainingIngredient() {
             assertThat(repository.findAll()).containsExactly(tomato);
+        }
+
+        @Test
+        @DisplayName("throw IllegalArgumentException when getting ingredient from null identity")
+        void throwIAEFindByIdNullId() {
+            assertThrows(IllegalArgumentException.class, () -> repository.findById(null));
+        }
+
+        @Test
+        @DisplayName("throw IllegalArgumentException when getting not null ingredient from null identity")
+        void throwIAEFindNotNullByIdNullId() {
+            assertThrows(IllegalArgumentException.class, () -> repository.findNotNullById(null));
+        }
+
+        @Test
+        @DisplayName("return empty ingredient when getting ingredient with unknown id")
+        void returnEmptyUnknownId() {
+            assertThat(repository.findById(CUCUMBER_ID)).isNotPresent();
+        }
+
+        @Test
+        @DisplayName("throw EntityNotFoundException when getting not null ingredient with unknown id")
+        void throwEntityNotFoundExceptionUnknownId() {
+            assertThrows(EntityNotFoundException.class, () -> repository.findNotNullById(CUCUMBER_ID));
+        }
+
+        @Test
+        @DisplayName("return tomato when getting ingredient with tomato id")
+        void returnTomato() {
+            assertThat(repository.findById(TOMATO_ID)).isPresent().contains(tomato);
+        }
+
+        @Test
+        @DisplayName("return tomato when getting not null ingredient with tomato id")
+        void returnTomatoNotNull() {
+            assertThat(repository.findNotNullById(TOMATO_ID)).isEqualToComparingFieldByField(tomato);
         }
 
         @Nested
@@ -87,7 +124,7 @@ class InMemoryIngredientRepositoryShould {
 
             @BeforeEach
             void setUp() {
-                cucumber = ingredient(CUCUMBER);
+                cucumber = ingredient(CUCUMBER_ID, CUCUMBER);
                 repository.save(cucumber);
             }
 

@@ -67,7 +67,7 @@ class IngredientsControllerShould {
 
         @BeforeEach
         void setUp() {
-            ingredients = List.of(ingredient(TOMATO), ingredient(CUCUMBER));
+            ingredients = List.of(ingredient(TOMATO_ID, TOMATO), ingredient(CUCUMBER_ID, CUCUMBER));
             when(ingredientAppServiceMock.getIngredients()).thenReturn(ingredients);
         }
 

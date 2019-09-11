@@ -15,10 +15,7 @@
  */
 package org.adhuc.cena.menu.port.adapter.persistence.memory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import lombok.NonNull;
 import org.springframework.context.annotation.Profile;
@@ -38,16 +35,21 @@ import org.adhuc.cena.menu.ingredients.IngredientRepository;
 @Profile("in-memory")
 public class InMemoryIngredientRepository implements IngredientRepository {
 
-    private List<Ingredient> ingredients = new ArrayList<>();
+    private Map<String, Ingredient> ingredients = new HashMap<>();
 
     @Override
     public Collection<Ingredient> findAll() {
-        return Collections.unmodifiableList(ingredients);
+        return Collections.unmodifiableCollection(ingredients.values());
+    }
+
+    @Override
+    public Optional<Ingredient> findById(@NonNull String ingredientId) {
+        return Optional.ofNullable(ingredients.get(ingredientId));
     }
 
     @Override
     public <S extends Ingredient> S save(@NonNull S ingredient) {
-        ingredients.add(ingredient);
+        ingredients.put(ingredient.getId(), ingredient);
         return ingredient;
     }
 

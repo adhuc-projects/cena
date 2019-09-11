@@ -24,6 +24,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import net.thucydides.core.annotations.Step;
+import net.thucydides.core.annotations.Steps;
 
 /**
  * The ingredient creation rest-service client steps definition.
@@ -33,6 +34,9 @@ import net.thucydides.core.annotations.Step;
  * @since 0.1.0
  */
 public class IngredientCreationServiceClientSteps extends AbstractIngredientServiceClientSteps {
+
+    @Steps
+    private IngredientDetailServiceClientSteps ingredientDetailServiceClient;
 
     @Step("Create the ingredient")
     public void createIngredient() {
@@ -55,7 +59,8 @@ public class IngredientCreationServiceClientSteps extends AbstractIngredientServ
     public void assertIngredientSuccessfullyCreated() {
         var ingredientLocation = then().statusCode(CREATED.value()).extract().header(LOCATION);
         assertThat(ingredientLocation).isNotBlank();
-        // TODO assert ingredient retrieved from the location URL is the same as the created one
+        var ingredient = ingredientDetailServiceClient.getIngredientFromUrl(ingredientLocation);
+        ingredientDetailServiceClient.assertIngredientInfoIsEqualToExpected(ingredient(), ingredient);
     }
 
     @Step("Assert ingredient creation results in invalid request error")

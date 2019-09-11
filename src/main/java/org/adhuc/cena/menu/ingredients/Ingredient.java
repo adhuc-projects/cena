@@ -35,6 +35,8 @@ import lombok.NonNull;
 public class Ingredient {
 
     @NonNull
+    private String id;
+    @NonNull
     private String name;
 
     /**
@@ -43,7 +45,7 @@ public class Ingredient {
      * @param command the ingredient creation command.
      */
     public Ingredient(@NonNull CreateIngredient command) {
-        this(command.ingredientName());
+        this(command.ingredientId(), command.ingredientName());
     }
 
 }

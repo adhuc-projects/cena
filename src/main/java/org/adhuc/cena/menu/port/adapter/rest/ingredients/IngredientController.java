@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import org.adhuc.cena.menu.ingredients.Ingredient;
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
+import org.adhuc.cena.menu.ingredients.IngredientId;
 import org.adhuc.cena.menu.port.adapter.rest.support.HalResource;
 
 /**
@@ -55,7 +56,7 @@ public class IngredientController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public IngredientResource getIngredient(@PathVariable String ingredientId) {
-        var ingredient = ingredientAppService.getIngredient(ingredientId);
+        var ingredient = ingredientAppService.getIngredient(new IngredientId(ingredientId));
         var resource = new IngredientResource(ingredient);
         resource.withLink(links.linkToSingleResource(Ingredient.class, ingredientId));
         return resource;

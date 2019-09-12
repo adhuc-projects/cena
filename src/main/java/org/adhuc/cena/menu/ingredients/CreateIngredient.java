@@ -32,7 +32,7 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public class CreateIngredient {
 
-    private final String ingredientId;
+    private final IngredientId ingredientId;
     private final String ingredientName;
 
     /**
@@ -41,8 +41,7 @@ public class CreateIngredient {
      * @param ingredientId the ingredient identity.
      * @param ingredientName the ingredient name.
      */
-    public CreateIngredient(@NonNull String ingredientId, @NonNull String ingredientName) {
-        hasText(ingredientId, "Cannot create ingredient creation command with invalid ingredient id");
+    public CreateIngredient(@NonNull IngredientId ingredientId, @NonNull String ingredientName) {
         hasText(ingredientName, "Cannot create ingredient creation command with invalid ingredient name");
         this.ingredientId = ingredientId;
         this.ingredientName = ingredientName;

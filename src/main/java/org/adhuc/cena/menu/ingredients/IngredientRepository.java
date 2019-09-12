@@ -44,7 +44,7 @@ public interface IngredientRepository {
      * @param ingredientId the ingredient identity.
      * @return the ingredient if existing, empty otherwise.
      */
-    Optional<Ingredient> findById(String ingredientId);
+    Optional<Ingredient> findById(IngredientId ingredientId);
 
     /**
      * Finds the ingredient corresponding to the specified identity.
@@ -53,7 +53,7 @@ public interface IngredientRepository {
      * @return the ingredient if existing.
      * @throws EntityNotFoundException if no ingredient could be found for identity.
      */
-    default Ingredient findNotNullById(@NonNull String ingredientId) {
+    default Ingredient findNotNullById(@NonNull IngredientId ingredientId) {
         var ingredient = findById(ingredientId);
         if (ingredient.isPresent()) {
             return ingredient.get();

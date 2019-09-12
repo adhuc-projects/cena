@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import org.adhuc.cena.menu.ingredients.Ingredient;
+import org.adhuc.cena.menu.ingredients.IngredientId;
 import org.adhuc.cena.menu.ingredients.IngredientRepository;
 
 /**
@@ -35,7 +36,7 @@ import org.adhuc.cena.menu.ingredients.IngredientRepository;
 @Profile("in-memory")
 public class InMemoryIngredientRepository implements IngredientRepository {
 
-    private Map<String, Ingredient> ingredients = new HashMap<>();
+    private Map<IngredientId, Ingredient> ingredients = new HashMap<>();
 
     @Override
     public Collection<Ingredient> findAll() {
@@ -43,7 +44,7 @@ public class InMemoryIngredientRepository implements IngredientRepository {
     }
 
     @Override
-    public Optional<Ingredient> findById(@NonNull String ingredientId) {
+    public Optional<Ingredient> findById(@NonNull IngredientId ingredientId) {
         return Optional.ofNullable(ingredients.get(ingredientId));
     }
 

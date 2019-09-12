@@ -44,7 +44,7 @@ class IngredientAppServiceImpl implements IngredientAppService {
     }
 
     @Override
-    public Ingredient getIngredient(@NonNull String ingredientId) {
+    public Ingredient getIngredient(@NonNull IngredientId ingredientId) {
         return repository.findNotNullById(ingredientId);
     }
 

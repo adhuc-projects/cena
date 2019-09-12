@@ -40,7 +40,7 @@ public interface IngredientAppService {
      * @return the ingredient.
      * @throws org.adhuc.cena.menu.EntityNotFoundException if no ingredient corresponds to identity.
      */
-    Ingredient getIngredient(String ingredientId);
+    Ingredient getIngredient(IngredientId ingredientId);
 
     /**
      * Creates an ingredient.

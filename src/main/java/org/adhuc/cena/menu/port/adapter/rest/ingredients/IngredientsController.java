@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 
 import org.adhuc.cena.menu.ingredients.Ingredient;
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
+import org.adhuc.cena.menu.ingredients.IngredientId;
 import org.adhuc.cena.menu.port.adapter.rest.InvalidRestRequestException;
 import org.adhuc.cena.menu.port.adapter.rest.support.HalResource;
 
@@ -75,7 +76,7 @@ public class IngredientsController {
      */
     @PostMapping(consumes = {APPLICATION_JSON_VALUE, HAL_JSON_VALUE})
     ResponseEntity<Void> createIngredient(@RequestBody @Valid CreateIngredientRequest request, Errors errors) throws URISyntaxException {
-        var identity = "tomatoId";
+        var identity = IngredientId.generate();
         validateRequest(errors);
         ingredientAppService.createIngredient(request.toCommand(identity));
 

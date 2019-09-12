@@ -21,6 +21,7 @@ import lombok.Data;
 import lombok.NonNull;
 
 import org.adhuc.cena.menu.ingredients.CreateIngredient;
+import org.adhuc.cena.menu.ingredients.IngredientId;
 
 /**
  * A request to create an ingredient.
@@ -41,7 +42,7 @@ class CreateIngredientRequest {
      * @param  id the ingredient identity.
      * @return the ingredient creation command.
      */
-    CreateIngredient toCommand(@NonNull String id) {
+    CreateIngredient toCommand(@NonNull IngredientId id) {
         return new CreateIngredient(id, name);
     }
 

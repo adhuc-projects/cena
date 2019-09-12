@@ -25,13 +25,13 @@ package org.adhuc.cena.menu.ingredients;
  */
 public class IngredientMother {
 
-    public static final String TOMATO_ID = "tomatoId";
-    public static final String CUCUMBER_ID = "cucumberId";
+    public static final IngredientId TOMATO_ID = IngredientId.generate();
+    public static final IngredientId CUCUMBER_ID = IngredientId.generate();
 
     public static final String TOMATO = "Tomato";
     public static final String CUCUMBER = "Cucumber";
 
-    public static final String ID = TOMATO_ID;
+    public static final IngredientId ID = TOMATO_ID;
     public static final String NAME = TOMATO;
 
     public static CreateIngredient createCommand() {
@@ -46,7 +46,7 @@ public class IngredientMother {
         return ingredient(ID, NAME);
     }
 
-    public static Ingredient ingredient(String id, String name) {
+    public static Ingredient ingredient(IngredientId id, String name) {
         return new Ingredient(id, name);
     }
 

@@ -94,7 +94,7 @@ class IngredientControllerShould {
         @DisplayName("contain tomato data")
         void getIngredientFoundContainsData() throws Exception {
             mvc.perform(get(INGREDIENT_API_URL, ID))
-                    .andExpect(jsonPath("$.id").value(ingredient().getId()))
+                    .andExpect(jsonPath("$.id").value(ingredient().getId().toString()))
                     .andExpect(jsonPath("$.name").value(ingredient().getName()));
         }
 

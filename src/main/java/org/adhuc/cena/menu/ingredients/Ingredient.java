@@ -35,7 +35,7 @@ import lombok.NonNull;
 public class Ingredient {
 
     @NonNull
-    private String id;
+    private IngredientId id;
     @NonNull
     private String name;
 

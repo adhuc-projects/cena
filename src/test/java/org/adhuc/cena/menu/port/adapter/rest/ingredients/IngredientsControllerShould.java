@@ -15,6 +15,7 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.ingredients;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,12 +31,14 @@ import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
 import java.util.List;
 
 import org.junit.jupiter.api.*;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import org.adhuc.cena.menu.ingredients.CreateIngredient;
 import org.adhuc.cena.menu.ingredients.Ingredient;
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
 
@@ -186,12 +189,15 @@ class IngredientsControllerShould {
     @Test
     @DisplayName("call application service when creating ingredient")
     void callServiceOnCreation() throws Exception {
+        var commandCaptor = ArgumentCaptor.forClass(CreateIngredient.class);
+
         mvc.perform(post(INGREDIENTS_API_URL)
                 .contentType(HAL_JSON)
                 .content(String.format("{\"name\":\"%s\"}", NAME))
         ).andExpect(status().isCreated());
 
-        verify(ingredientAppServiceMock).createIngredient(createCommand());
+        verify(ingredientAppServiceMock).createIngredient(commandCaptor.capture());
+        assertThat(commandCaptor.getValue()).isEqualToIgnoringGivenFields(createCommand(), "ingredientId");
     }
 
     @Test

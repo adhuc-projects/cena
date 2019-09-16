@@ -22,7 +22,7 @@ import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
 
 import org.junit.jupiter.api.*;
 
-import org.adhuc.cena.menu.EntityNotFoundException;
+import org.adhuc.cena.menu.common.EntityNotFoundException;
 import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryIngredientRepository;
 
 /**

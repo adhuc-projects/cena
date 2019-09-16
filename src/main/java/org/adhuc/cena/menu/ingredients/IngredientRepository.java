@@ -20,7 +20,7 @@ import java.util.Optional;
 
 import lombok.NonNull;
 
-import org.adhuc.cena.menu.EntityNotFoundException;
+import org.adhuc.cena.menu.common.EntityNotFoundException;
 
 /**
  * An {@link Ingredient} repository.
@@ -58,7 +58,7 @@ public interface IngredientRepository {
         if (ingredient.isPresent()) {
             return ingredient.get();
         }
-        throw new EntityNotFoundException();
+        throw new EntityNotFoundException(Ingredient.class, ingredientId);
     }
 
     /**

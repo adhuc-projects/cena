@@ -50,7 +50,7 @@ public class InMemoryIngredientRepository implements IngredientRepository {
 
     @Override
     public <S extends Ingredient> S save(@NonNull S ingredient) {
-        ingredients.put(ingredient.getId(), ingredient);
+        ingredients.put(ingredient.id(), ingredient);
         return ingredient;
     }
 

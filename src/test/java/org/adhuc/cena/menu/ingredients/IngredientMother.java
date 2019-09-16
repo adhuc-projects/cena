@@ -39,7 +39,7 @@ public class IngredientMother {
     }
 
     public static CreateIngredient createCommand(Ingredient ingredient) {
-        return new CreateIngredient(ingredient.getId(), ingredient.getName());
+        return new CreateIngredient(ingredient.id(), ingredient.name());
     }
 
     public static Ingredient ingredient() {

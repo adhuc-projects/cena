@@ -13,19 +13,27 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu;
+package org.adhuc.cena.menu.common;
 
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-
-import org.springframework.web.bind.annotation.ResponseStatus;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import lombok.Data;
+import lombok.NonNull;
+import lombok.experimental.Accessors;
 
 /**
- * An exception occurring while requesting a resource that cannot be found.
+ * An abstract entity definition, containing the entity identity.
  *
+ * @param <I> the identity type.
  * @author Alexandre Carbenay
  * @version 0.1.0
  * @since 0.1.0
  */
-@ResponseStatus(NOT_FOUND)
-public class EntityNotFoundException extends RuntimeException {
+@Data
+@Accessors(fluent = true)
+public abstract class BasicEntity<I extends Identity> implements Entity<I> {
+
+    @NonNull
+    @JsonUnwrapped
+    private final I id;
+
 }

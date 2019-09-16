@@ -219,7 +219,7 @@ class IngredientsControllerShould {
     void assertJsonContainsIngredient(ResultActions resultActions, String jsonPath,
                                       Ingredient ingredient) throws Exception {
         resultActions.andExpect(jsonPath(jsonPath + ".name").exists())
-                .andExpect(jsonPath(jsonPath + ".name", equalTo(ingredient.getName())));
+                .andExpect(jsonPath(jsonPath + ".name", equalTo(ingredient.name())));
     }
 
 }

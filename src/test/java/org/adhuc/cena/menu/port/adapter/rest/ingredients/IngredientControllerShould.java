@@ -31,7 +31,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import org.adhuc.cena.menu.EntityNotFoundException;
+import org.adhuc.cena.menu.common.EntityNotFoundException;
+import org.adhuc.cena.menu.ingredients.Ingredient;
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
 
 /**
@@ -57,7 +58,7 @@ class IngredientControllerShould {
     @Test
     @DisplayName("respond Not Found when retrieving unknown ingredient")
     void respond404UnknownIngredient() throws Exception {
-        when(ingredientAppServiceMock.getIngredient(ID)).thenThrow(new EntityNotFoundException());
+        when(ingredientAppServiceMock.getIngredient(ID)).thenThrow(new EntityNotFoundException(Ingredient.class, ID));
         mvc.perform(get(INGREDIENT_API_URL, ID)).andExpect(status().isNotFound());
     }
 
@@ -94,8 +95,8 @@ class IngredientControllerShould {
         @DisplayName("contain tomato data")
         void getIngredientFoundContainsData() throws Exception {
             mvc.perform(get(INGREDIENT_API_URL, ID))
-                    .andExpect(jsonPath("$.id").value(ingredient().getId().toString()))
-                    .andExpect(jsonPath("$.name").value(ingredient().getName()));
+                    .andExpect(jsonPath("$.id").value(ingredient().id().toString()))
+                    .andExpect(jsonPath("$.name").value(ingredient().name()));
         }
 
         @Test

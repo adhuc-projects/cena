@@ -15,50 +15,34 @@
  */
 package org.adhuc.cena.menu.ingredients;
 
-import static org.springframework.util.Assert.notNull;
-
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import lombok.Value;
 
-import org.adhuc.cena.menu.EntityNotFoundException;
+import org.adhuc.cena.menu.common.UuidIdentity;
 
 /**
  * An ingredient identity.
  *
  * @author Alexandre Carbenay
- *
  * @version 0.1.0
  * @since 0.1.0
  */
-@Value
-@EqualsAndHashCode
-public class IngredientId {
-
-    @NonNull
-    private final UUID id;
+@EqualsAndHashCode(callSuper = true)
+public class IngredientId extends UuidIdentity {
 
     /**
      * Creates an ingredient identity with the specified value.
      *
-     * @param id
-     *            the identity value.
+     * @param id the identity value.
      */
     public IngredientId(@NonNull String id) {
-        this(parseUUID(id));
+        this(parseUUID(Ingredient.class, id));
     }
 
     private IngredientId(@NonNull UUID id) {
-        this.id = id;
-    }
-
-    @Override
-    @JsonValue
-    public String toString() {
-        return id.toString();
+        super(id);
     }
 
     /**
@@ -68,23 +52,6 @@ public class IngredientId {
      */
     public static IngredientId generate() {
         return new IngredientId(UUID.randomUUID());
-    }
-
-    /**
-     * Parse the identity value to an UUID value.
-     *
-     * @param value
-     *            the identity value.
-     *
-     * @return the UUID identity value.
-     */
-    private static UUID parseUUID(String value) {
-        try {
-            notNull(value, "Cannot parse identity from null value");
-            return UUID.fromString(value);
-        } catch (final IllegalArgumentException e) {
-            throw new EntityNotFoundException();
-        }
     }
 
 }

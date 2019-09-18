@@ -35,7 +35,7 @@ import org.adhuc.cena.menu.ingredients.Ingredient;
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
 import org.adhuc.cena.menu.ingredients.IngredientId;
 import org.adhuc.cena.menu.port.adapter.rest.InvalidRestRequestException;
-import org.adhuc.cena.menu.port.adapter.rest.support.HalResource;
+import org.adhuc.cena.menu.port.adapter.rest.support.ListResource;
 
 /**
  * A REST controller exposing /api/ingredients resource.
@@ -50,14 +50,14 @@ import org.adhuc.cena.menu.port.adapter.rest.support.HalResource;
 @RequestMapping(path = "/api/ingredients", produces = {HAL_JSON_VALUE, APPLICATION_JSON_VALUE})
 public class IngredientsController {
 
-    public static final String EMBEDDED_DATA_KEY = "data";
-
     private EntityLinks links;
     private IngredientAppService ingredientAppService;
+    private IngredientResourceAssembler resourceAssembler;
 
-    IngredientsController(EntityLinks links, IngredientAppService ingredientAppService) {
+    IngredientsController(EntityLinks links, IngredientAppService ingredientAppService, IngredientResourceAssembler resourceAssembler) {
         this.links = links;
         this.ingredientAppService = ingredientAppService;
+        this.resourceAssembler = resourceAssembler;
     }
 
     /**
@@ -65,10 +65,10 @@ public class IngredientsController {
      */
     @GetMapping
     @ResponseStatus(OK)
-    HalResource getIngredients() {
-        // TODO implementation
-        return new HalResource().withLink(links.linkToCollectionResource(Ingredient.class))
-                .embedResource(EMBEDDED_DATA_KEY, ingredientAppService.getIngredients());
+    ListResource<IngredientResource> getIngredients() {
+        var ingredients = ingredientAppService.getIngredients();
+        return new ListResource<>(resourceAssembler.toResources(ingredients))
+                .withLink(links.linkToCollectionResource(Ingredient.class).withSelfRel());
     }
 
     /**
@@ -80,7 +80,6 @@ public class IngredientsController {
         validateRequest(errors);
         ingredientAppService.createIngredient(request.toCommand(identity));
 
-        // TODO implementation
         return ResponseEntity.created(new URI(links.linkToSingleResource(Ingredient.class, identity).getHref())).build();
     }
 

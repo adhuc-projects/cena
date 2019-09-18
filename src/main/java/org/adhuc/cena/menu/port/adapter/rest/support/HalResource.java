@@ -55,9 +55,10 @@ public class HalResource extends ResourceSupport {
      * @param resource     the embedded resource.
      * @return this.
      */
-    public HalResource embedResource(@NonNull String relationship, @NonNull Object resource) {
+    @SuppressWarnings("unchecked")
+    public <R extends HalResource> R embedResource(@NonNull String relationship, @NonNull Object resource) {
         embedded.put(relationship, resource);
-        return this;
+        return (R) this;
     }
 
     /**
@@ -66,9 +67,10 @@ public class HalResource extends ResourceSupport {
      * @param link the link to add.
      * @return this.
      */
-    public HalResource withLink(@NonNull Link link) {
+    @SuppressWarnings("unchecked")
+    public <R extends HalResource> R withLink(@NonNull Link link) {
         add(link);
-        return this;
+        return (R) this;
     }
 
 }

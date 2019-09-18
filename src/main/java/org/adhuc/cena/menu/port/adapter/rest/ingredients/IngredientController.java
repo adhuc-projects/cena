@@ -18,7 +18,6 @@ package org.adhuc.cena.menu.port.adapter.rest.ingredients;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import org.adhuc.cena.menu.ingredients.Ingredient;
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
 import org.adhuc.cena.menu.ingredients.IngredientId;
-import org.adhuc.cena.menu.port.adapter.rest.support.HalResource;
 
 /**
  * A REST controller exposing /api/ingredients/{ingredientId} resource.
@@ -58,17 +56,8 @@ public class IngredientController {
     public IngredientResource getIngredient(@PathVariable String ingredientId) {
         var ingredient = ingredientAppService.getIngredient(new IngredientId(ingredientId));
         var resource = new IngredientResource(ingredient);
-        resource.withLink(links.linkToSingleResource(Ingredient.class, ingredientId));
+        resource.withLink(links.linkToSingleResource(Ingredient.class, ingredientId).withSelfRel());
         return resource;
-    }
-
-    private static class IngredientResource extends HalResource {
-        @JsonUnwrapped
-        private Ingredient ingredient;
-
-        IngredientResource(Ingredient ingredient) {
-            this.ingredient = ingredient;
-        }
     }
 
 }

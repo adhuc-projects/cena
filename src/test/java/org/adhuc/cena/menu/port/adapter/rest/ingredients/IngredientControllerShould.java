@@ -44,7 +44,7 @@ import org.adhuc.cena.menu.ingredients.IngredientAppService;
  */
 @Tag("integration")
 @Tag("restController")
-@WebMvcTest({IngredientsController.class, IngredientController.class})
+@WebMvcTest({IngredientsController.class, IngredientController.class, IngredientResourceAssembler.class})
 @DisplayName("Ingredient controller should")
 class IngredientControllerShould {
 

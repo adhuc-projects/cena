@@ -38,11 +38,6 @@ public class IngredientCreationServiceClientSteps extends AbstractIngredientServ
     @Steps
     private IngredientDetailServiceClientSteps ingredientDetailServiceClient;
 
-    @Step("Create the ingredient")
-    public void createIngredient() {
-        createIngredient(ingredient());
-    }
-
     @Step("Create the ingredient {0}")
     public void createIngredient(IngredientValue ingredient) {
         var ingredientsResourceUrl = getIngredientsResourceUrl();
@@ -51,16 +46,16 @@ public class IngredientCreationServiceClientSteps extends AbstractIngredientServ
 
     @Step("Create an ingredient without name")
     public void createIngredientWithoutName() {
-        storeIngredient(new IngredientValue(null));
-        createIngredient(ingredient());
+        var ingredient = storeIngredient(new IngredientValue(null));
+        createIngredient(ingredient);
     }
 
     @Step("Assert ingredient has been successfully created")
-    public void assertIngredientSuccessfullyCreated() {
+    public void assertIngredientSuccessfullyCreated(IngredientValue ingredient) {
         var ingredientLocation = then().statusCode(CREATED.value()).extract().header(LOCATION);
         assertThat(ingredientLocation).isNotBlank();
-        var ingredient = ingredientDetailServiceClient.getIngredientFromUrl(ingredientLocation);
-        ingredientDetailServiceClient.assertIngredientInfoIsEqualToExpected(ingredient(), ingredient);
+        var retrievedIngredient = ingredientDetailServiceClient.getIngredientFromUrl(ingredientLocation);
+        ingredientDetailServiceClient.assertIngredientInfoIsEqualToExpected(ingredient, retrievedIngredient);
     }
 
     @Step("Assert ingredient creation results in invalid request error")

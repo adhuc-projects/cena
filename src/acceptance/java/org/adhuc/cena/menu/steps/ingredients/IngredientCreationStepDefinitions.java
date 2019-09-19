@@ -37,7 +37,7 @@ public class IngredientCreationStepDefinitions {
 
     @When("^he creates the ingredient$")
     public void createIngredient() {
-        ingredientCreationServiceClient.createIngredient();
+        ingredientCreationServiceClient.createIngredient(ingredientCreationServiceClient.storedIngredient());
     }
 
     @When("^he creates an ingredient without name$")
@@ -47,7 +47,7 @@ public class IngredientCreationStepDefinitions {
 
     @Then("^the ingredient is created$")
     public void ingredientCreated() {
-        ingredientCreationServiceClient.assertIngredientSuccessfullyCreated();
+        ingredientCreationServiceClient.assertIngredientSuccessfullyCreated(ingredientCreationServiceClient.storedIngredient());
     }
 
     @Then("^an error notifies that ingredient must have a name$")

@@ -15,6 +15,9 @@
  */
 package org.adhuc.cena.menu.steps.ingredients;
 
+import static java.util.stream.Collectors.toList;
+
+import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -34,12 +37,21 @@ import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue;
 @StepDefAnnotation
 public class IngredientListStepDefinitions {
 
+    private static final String NAME_ATTRIBUTE = "name";
+
     @Steps
     private IngredientListServiceClientSteps ingredientListServiceClient;
 
     @Given("^no existing ingredient$")
     public void noExistingIngredient() {
         ingredientListServiceClient.assumeEmptyIngredientsList();
+    }
+
+    @Given("^the following existing ingredients$")
+    public void existingIngredients(DataTable dataTable) {
+        ingredientListServiceClient.assumeInIngredientsList(dataTable.asMaps(String.class, String.class).stream()
+                .map(attributes -> new IngredientValue(attributes.get(NAME_ATTRIBUTE))).collect(toList())
+        );
     }
 
     @Given("^a non-existent \"(.*)\" ingredient$")
@@ -57,14 +69,19 @@ public class IngredientListStepDefinitions {
         ingredientListServiceClient.assertEmptyIngredientsList();
     }
 
+    @Then("^the ingredients list contains the existing ingredients$")
+    public void existingIngredientsFoundInList() {
+        ingredientListServiceClient.assertInIngredientsList(ingredientListServiceClient.getAssumedIngredients());
+    }
+
     @Then("^the ingredient can be found in the list$")
     public void ingredientFoundInList() {
-        ingredientListServiceClient.assertIngredientInIngredientsList();
+        ingredientListServiceClient.assertInIngredientsList(ingredientListServiceClient.storedIngredient());
     }
 
     @Then("^the ingredient cannot be found in the list$")
     public void ingredientNotFoundInList() {
-        ingredientListServiceClient.assertIngredientNotInIngredientsList();
+        ingredientListServiceClient.assertNotInIngredientsList(ingredientListServiceClient.storedIngredient());
     }
 
 }

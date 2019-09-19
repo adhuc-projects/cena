@@ -31,15 +31,23 @@ import org.adhuc.cena.menu.steps.serenity.AbstractServiceClientSteps;
  */
 abstract class AbstractIngredientServiceClientSteps extends AbstractServiceClientSteps {
 
-    private static final String INGREDIENT_SESSION_KEY = "ingredient";
+    static final String INGREDIENT_SESSION_KEY = "ingredient";
 
     final <I extends IngredientValue> I storeIngredient(I ingredient) {
-        Serenity.setSessionVariable(INGREDIENT_SESSION_KEY).to(ingredient);
+        return storeIngredient(INGREDIENT_SESSION_KEY, ingredient);
+    }
+
+    final <I extends IngredientValue> I storeIngredient(String sessionKey, I ingredient) {
+        Serenity.setSessionVariable(sessionKey).to(ingredient);
         return ingredient;
     }
 
-    final IngredientValue ingredient() {
-        IngredientValue ingredient = Serenity.sessionVariableCalled(INGREDIENT_SESSION_KEY);
+    public final IngredientValue storedIngredient() {
+        return ingredient(INGREDIENT_SESSION_KEY);
+    }
+
+    final IngredientValue ingredient(String sessionKey) {
+        IngredientValue ingredient = Serenity.sessionVariableCalled(sessionKey);
         assertThat(ingredient).isNotNull();
         return ingredient;
     }

@@ -17,6 +17,8 @@ package org.adhuc.cena.menu.steps.serenity.ingredients;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
+import java.util.Comparator;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -42,4 +44,11 @@ import lombok.experimental.Accessors;
 public class IngredientValue {
     private String id;
     private final String name;
+
+    public static class IngredientNameComparator implements Comparator<IngredientValue> {
+        @Override
+        public int compare(IngredientValue ingredient1, IngredientValue ingredient2) {
+            return Comparator.comparing(IngredientValue::name, String::compareTo).compare(ingredient1, ingredient2);
+        }
+    }
 }

@@ -93,3 +93,108 @@ include::{snippets}/index-example/http-response.adoc[]
 ==== Links
 
 include::{snippets}/index-example/links.adoc[]
+
+[[resources-ingredients]]
+== Ingredients
+
+The Ingredients resources is used to create and list ingredients.
+
+[[resources-ingredients-list]]
+=== Listing ingredients
+
+A `GET` request will list all of the ingredients.
+
+==== Response structure
+
+include::{snippets}/ingredients-list-example/response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/ingredients-list-example/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/ingredients-list-example/http-response.adoc[]
+
+[[resources-ingredients-links]]
+==== Links
+
+include::{snippets}/ingredients-list-example/links.adoc[]
+
+[[resources-ingredients-create]]
+=== Creating an ingredient
+
+A `POST` request will create an ingredient.
+
+==== Request structure
+
+include::{snippets}/ingredients-create-example/request-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/ingredients-create-example/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/ingredients-create-example/http-response.adoc[]
+
+[[resources-ingredients-delete]]
+=== Deleting ingredients
+
+A `DELETE` request will delete all of the ingredients.
+
+==== Example request
+
+include::{snippets}/ingredients-delete-example/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/ingredients-delete-example/http-response.adoc[]
+
+[[resources-ingredient]]
+== Ingredient
+
+The Ingredient resource is used to retrieve, update, and delete individual ingredients.
+
+[[resources-ingredient-links]]
+=== Links
+
+include::{snippets}/ingredient-detail-example/links.adoc[]
+
+[[resources-ingredient-retrieve]]
+=== Retrieve an ingredient
+
+A `GET` request will retrieve the details of an ingredient.
+
+==== Path Parameters
+
+include::{snippets}/ingredient-detail-example/path-parameters.adoc[]
+
+==== Response structure
+
+include::{snippets}/ingredient-detail-example/response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/ingredient-detail-example/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/ingredient-detail-example/http-response.adoc[]
+
+[[resources-ingredient-delete]]
+=== Delete an ingredient
+
+A `DELETE` request will delete the ingredient.
+
+==== Path Parameters
+
+include::{snippets}/ingredient-delete-example/path-parameters.adoc[]
+
+==== Example request
+
+include::{snippets}/ingredient-delete-example/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/ingredient-delete-example/http-response.adoc[]

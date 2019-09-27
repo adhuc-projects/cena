@@ -30,7 +30,7 @@ import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
  * @since 0.0.1
  */
 @TestConfiguration
-class ResultHandlerConfiguration {
+public class ResultHandlerConfiguration {
 
     @Bean
     RestDocumentationResultHandler restDocumentation() {

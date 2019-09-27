@@ -17,8 +17,6 @@ package org.adhuc.cena.menu.ingredients;
 
 import static org.springframework.util.Assert.hasText;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
@@ -36,7 +34,6 @@ import org.adhuc.cena.menu.common.BasicEntity;
 @Data
 @Accessors(fluent = true)
 @EqualsAndHashCode(callSuper = true)
-@JsonAutoDetect(fieldVisibility = Visibility.ANY)
 public class Ingredient extends BasicEntity<IngredientId> {
 
     @NonNull

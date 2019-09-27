@@ -15,7 +15,7 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.ingredients;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
@@ -35,7 +35,15 @@ import org.adhuc.cena.menu.port.adapter.rest.support.HalResource;
 class IngredientResource extends HalResource {
 
     @NonNull
-    @JsonUnwrapped
-    private final Ingredient ingredient;
+    @JsonProperty("id")
+    private final String ingredientId;
+    @NonNull
+    @JsonProperty("name")
+    private final String ingredientName;
+
+    IngredientResource(@NonNull Ingredient ingredient) {
+        ingredientId = ingredient.id().toString();
+        ingredientName = ingredient.name();
+    }
 
 }

@@ -15,7 +15,6 @@
  */
 package org.adhuc.cena.menu.common;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.experimental.Accessors;
@@ -33,7 +32,6 @@ import lombok.experimental.Accessors;
 public abstract class BasicEntity<I extends Identity> implements Entity<I> {
 
     @NonNull
-    @JsonUnwrapped
     private final I id;
 
 }

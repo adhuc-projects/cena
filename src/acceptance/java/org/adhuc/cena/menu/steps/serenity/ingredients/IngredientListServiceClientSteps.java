@@ -22,11 +22,10 @@ import static org.springframework.http.HttpStatus.OK;
 import java.util.List;
 import java.util.Optional;
 
+import io.restassured.path.json.JsonPath;
 import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
-
-import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue.IngredientNameComparator;
 
 /**
  * The ingredients list rest-service client steps definition.
@@ -44,7 +43,6 @@ public class IngredientListServiceClientSteps extends AbstractIngredientServiceC
     private IngredientCreationServiceClientSteps ingredientCreationServiceClient;
     @Steps
     private IngredientDeletionServiceClientSteps ingredientDeletionServiceClient;
-    private IngredientNameComparator ingredientNameComparator = new IngredientNameComparator();
 
     @Step("Assume empty ingredients list")
     public void assumeEmptyIngredientsList() {
@@ -62,21 +60,22 @@ public class IngredientListServiceClientSteps extends AbstractIngredientServiceC
         storeIngredient(ingredient);
         // TODO add ingredient only if not already present
         ingredientCreationServiceClient.createIngredient(ingredient);
-        assumeThat(fetchIngredients()).usingElementComparator(ingredientNameComparator).contains(ingredient);
+        assumeThat(fetchIngredients()).usingElementComparator(INGREDIENT_COMPARATOR).contains(ingredient);
     }
 
     @Step("Assume ingredients {0} are in ingredients list")
     public void assumeInIngredientsList(List<IngredientValue> ingredients) {
         storeIngredients(ASSUMED_INGREDIENTS_SESSION_KEY, ingredients);
+        // TODO add ingredients only if not already present
         ingredients.forEach(ingredient -> ingredientCreationServiceClient.createIngredient(ingredient));
-        assumeThat(fetchIngredients()).usingElementComparator(ingredientNameComparator).containsAll(ingredients);
+        assumeThat(fetchIngredients()).usingElementComparator(INGREDIENT_COMPARATOR).containsAll(ingredients);
     }
 
     @Step("Assume ingredient {0} is not in ingredients list")
     public void assumeNotInIngredientsList(IngredientValue ingredient) {
         storeIngredient(ingredient);
         getFromIngredientsList(ingredient).ifPresent(i -> ingredientDeletionServiceClient.deleteIngredient(i));
-        assumeThat(fetchIngredients()).usingElementComparator(ingredientNameComparator).doesNotContain(ingredient);
+        assumeThat(fetchIngredients()).usingElementComparator(INGREDIENT_COMPARATOR).doesNotContain(ingredient);
     }
 
     @Step("Assert ingredient {0} is in ingredients list")
@@ -86,7 +85,7 @@ public class IngredientListServiceClientSteps extends AbstractIngredientServiceC
 
     @Step("Assert ingredients {0} are in ingredients list")
     public void assertInIngredientsList(List<IngredientValue> ingredients) {
-        assertThat(fetchIngredients()).usingElementComparator(ingredientNameComparator).containsAll(ingredients);
+        assertThat(fetchIngredients()).usingElementComparator(INGREDIENT_COMPARATOR).containsAll(ingredients);
     }
 
     @Step("Assert ingredient {0} is not in ingredients list")
@@ -109,8 +108,7 @@ public class IngredientListServiceClientSteps extends AbstractIngredientServiceC
      * Fetches the ingredients from server.
      */
     private List<IngredientValue> fetchIngredients() {
-        var jsonPath = rest().get(getIngredientsResourceUrl()).then().statusCode(OK.value()).extract().jsonPath();
-        return jsonPath.getList("_embedded.data", IngredientValue.class);
+        return getRawIngredientList().getList("_embedded.data", IngredientValue.class);
     }
 
     /**
@@ -130,9 +128,12 @@ public class IngredientListServiceClientSteps extends AbstractIngredientServiceC
     }
 
     private Optional<IngredientValue> getFromIngredientsList(IngredientValue ingredient) {
-        var jsonPath = rest().get(getIngredientsResourceUrl()).then().statusCode(OK.value()).extract().jsonPath();
-        return Optional.ofNullable(jsonPath.param("name", ingredient.name())
+        return Optional.ofNullable(getRawIngredientList().param("name", ingredient.name())
                 .getObject("_embedded.data.find { ingredient->ingredient.name == name }", IngredientValue.class));
+    }
+
+    private JsonPath getRawIngredientList() {
+        return rest().get(getIngredientsResourceUrl()).then().statusCode(OK.value()).extract().jsonPath();
     }
 
 }

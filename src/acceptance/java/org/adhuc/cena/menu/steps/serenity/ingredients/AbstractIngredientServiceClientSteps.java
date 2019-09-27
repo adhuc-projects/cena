@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import net.serenitybdd.core.Serenity;
 
 import org.adhuc.cena.menu.steps.serenity.AbstractServiceClientSteps;
+import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue.IngredientNameComparator;
 
 /**
  * An abstract ingredient rest-service client steps definition, providing convenient methods to store ingredient
@@ -32,6 +33,7 @@ import org.adhuc.cena.menu.steps.serenity.AbstractServiceClientSteps;
 abstract class AbstractIngredientServiceClientSteps extends AbstractServiceClientSteps {
 
     static final String INGREDIENT_SESSION_KEY = "ingredient";
+    static final IngredientNameComparator INGREDIENT_COMPARATOR = new IngredientNameComparator();
 
     final <I extends IngredientValue> I storeIngredient(I ingredient) {
         return storeIngredient(INGREDIENT_SESSION_KEY, ingredient);

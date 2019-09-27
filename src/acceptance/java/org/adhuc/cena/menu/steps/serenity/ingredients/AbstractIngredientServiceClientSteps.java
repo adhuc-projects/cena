@@ -32,8 +32,10 @@ import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue.Ingredient
  */
 abstract class AbstractIngredientServiceClientSteps extends AbstractServiceClientSteps {
 
+    private static final String INGREDIENTS_URL_SESSION_KEY = "ingredientsResourceUrl";
     static final String INGREDIENT_SESSION_KEY = "ingredient";
     static final IngredientNameComparator INGREDIENT_COMPARATOR = new IngredientNameComparator();
+
 
     final <I extends IngredientValue> I storeIngredient(I ingredient) {
         return storeIngredient(INGREDIENT_SESSION_KEY, ingredient);
@@ -55,7 +57,10 @@ abstract class AbstractIngredientServiceClientSteps extends AbstractServiceClien
     }
 
     final String getIngredientsResourceUrl() {
-        return getApiClientResource().getIngredients();
+        if (!Serenity.hasASessionVariableCalled(INGREDIENTS_URL_SESSION_KEY)) {
+            Serenity.setSessionVariable(INGREDIENTS_URL_SESSION_KEY).to(getApiClientResource().getIngredients());
+        }
+        return Serenity.sessionVariableCalled(INGREDIENTS_URL_SESSION_KEY);
     }
 
 }

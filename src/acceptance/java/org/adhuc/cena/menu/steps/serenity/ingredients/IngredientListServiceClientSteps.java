@@ -58,16 +58,20 @@ public class IngredientListServiceClientSteps extends AbstractIngredientServiceC
     @Step("Assume ingredient {0} is in ingredients list")
     public void assumeInIngredientsList(IngredientValue ingredient) {
         storeIngredient(ingredient);
-        // TODO add ingredient only if not already present
-        ingredientCreationServiceClient.createIngredient(ingredient);
+        if (getFromIngredientsList(ingredient).isEmpty()) {
+            ingredientCreationServiceClient.createIngredient(ingredient);
+        }
         assumeThat(fetchIngredients()).usingElementComparator(INGREDIENT_COMPARATOR).contains(ingredient);
     }
 
     @Step("Assume ingredients {0} are in ingredients list")
     public void assumeInIngredientsList(List<IngredientValue> ingredients) {
         storeIngredients(ASSUMED_INGREDIENTS_SESSION_KEY, ingredients);
-        // TODO add ingredients only if not already present
-        ingredients.forEach(ingredient -> ingredientCreationServiceClient.createIngredient(ingredient));
+        var existingIngredients = fetchIngredients();
+        ingredients.stream()
+                .filter(ingredient -> existingIngredients.stream()
+                        .noneMatch(existing -> INGREDIENT_COMPARATOR.compare(existing, ingredient) == 0))
+                .forEach(ingredient -> ingredientCreationServiceClient.createIngredient(ingredient));
         assumeThat(fetchIngredients()).usingElementComparator(INGREDIENT_COMPARATOR).containsAll(ingredients);
     }
 

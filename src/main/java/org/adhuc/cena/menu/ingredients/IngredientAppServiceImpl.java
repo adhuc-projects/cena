@@ -59,4 +59,9 @@ class IngredientAppServiceImpl implements IngredientAppService {
         repository.deleteAll();
     }
 
+    @Override
+    public void deleteIngredient(@NonNull DeleteIngredient command) {
+        repository.delete(repository.findNotNullById(command.ingredientId()));
+    }
+
 }

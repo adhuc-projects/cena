@@ -59,4 +59,9 @@ public class InMemoryIngredientRepository implements IngredientRepository {
         ingredients.clear();
     }
 
+    @Override
+    public void delete(@NonNull Ingredient ingredient) {
+        ingredients.remove(ingredient.id());
+    }
+
 }

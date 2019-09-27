@@ -17,7 +17,6 @@ package org.adhuc.cena.menu.steps.serenity.ingredients;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 
 import java.util.List;
@@ -43,11 +42,13 @@ public class IngredientListServiceClientSteps extends AbstractIngredientServiceC
 
     @Steps
     private IngredientCreationServiceClientSteps ingredientCreationServiceClient;
+    @Steps
+    private IngredientDeletionServiceClientSteps ingredientDeletionServiceClient;
     private IngredientNameComparator ingredientNameComparator = new IngredientNameComparator();
 
     @Step("Assume empty ingredients list")
     public void assumeEmptyIngredientsList() {
-        deleteIngredients();
+        ingredientDeletionServiceClient.deleteIngredients();
         assumeThat(fetchIngredients()).isEmpty();
     }
 
@@ -59,8 +60,9 @@ public class IngredientListServiceClientSteps extends AbstractIngredientServiceC
     @Step("Assume ingredient {0} is in ingredients list")
     public void assumeInIngredientsList(IngredientValue ingredient) {
         storeIngredient(ingredient);
+        // TODO add ingredient only if not already present
         ingredientCreationServiceClient.createIngredient(ingredient);
-        assumeThat(fetchIngredients()).contains(ingredient);
+        assumeThat(fetchIngredients()).usingElementComparator(ingredientNameComparator).contains(ingredient);
     }
 
     @Step("Assume ingredients {0} are in ingredients list")
@@ -73,8 +75,8 @@ public class IngredientListServiceClientSteps extends AbstractIngredientServiceC
     @Step("Assume ingredient {0} is not in ingredients list")
     public void assumeNotInIngredientsList(IngredientValue ingredient) {
         storeIngredient(ingredient);
-        // TODO remove ingredient if existing
-        assumeThat(fetchIngredients()).doesNotContain(ingredient);
+        getFromIngredientsList(ingredient).ifPresent(i -> ingredientDeletionServiceClient.deleteIngredient(i));
+        assumeThat(fetchIngredients()).usingElementComparator(ingredientNameComparator).doesNotContain(ingredient);
     }
 
     @Step("Assert ingredient {0} is in ingredients list")
@@ -131,10 +133,6 @@ public class IngredientListServiceClientSteps extends AbstractIngredientServiceC
         var jsonPath = rest().get(getIngredientsResourceUrl()).then().statusCode(OK.value()).extract().jsonPath();
         return Optional.ofNullable(jsonPath.param("name", ingredient.name())
                 .getObject("_embedded.data.find { ingredient->ingredient.name == name }", IngredientValue.class));
-    }
-
-    private void deleteIngredients() {
-        rest().delete(getIngredientsResourceUrl()).then().statusCode(NO_CONTENT.value());
     }
 
 }

@@ -42,6 +42,14 @@ public class IngredientMother {
         return new CreateIngredient(ingredient.id(), ingredient.name());
     }
 
+    public static DeleteIngredient deleteCommand() {
+        return deleteCommand(TOMATO_ID);
+    }
+
+    public static DeleteIngredient deleteCommand(IngredientId ingredientId) {
+        return new DeleteIngredient(ingredientId);
+    }
+
     public static Ingredient ingredient() {
         return ingredient(ID, NAME);
     }

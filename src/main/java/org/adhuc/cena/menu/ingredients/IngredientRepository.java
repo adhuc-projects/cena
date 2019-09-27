@@ -73,4 +73,12 @@ public interface IngredientRepository {
      * Deletes all the ingredients stored in the repository.
      */
     void deleteAll();
+
+    /**
+     * Deletes the specified ingredient.
+     *
+     * @param ingredient the ingredient to delete.
+     */
+    void delete(Ingredient ingredient);
+
 }

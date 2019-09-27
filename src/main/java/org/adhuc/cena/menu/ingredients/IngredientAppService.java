@@ -53,4 +53,11 @@ public interface IngredientAppService {
      * Deletes the ingredients.
      */
     void deleteIngredients();
+
+    /**
+     * Deletes an ingredient.
+     *
+     * @param command the ingredient deletion command.
+     */
+    void deleteIngredient(DeleteIngredient command);
 }

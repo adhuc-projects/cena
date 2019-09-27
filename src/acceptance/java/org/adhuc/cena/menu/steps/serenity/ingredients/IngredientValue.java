@@ -18,13 +18,19 @@ package org.adhuc.cena.menu.steps.serenity.ingredients;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
 import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.hal.Jackson2HalModule;
 
 /**
  * An ingredient value on the client side.
@@ -34,7 +40,7 @@ import lombok.experimental.Accessors;
  * @since 0.1.0
  */
 @Data
-@ToString(exclude = {"id"}, includeFieldNames = false)
+@ToString(exclude = {"id", "links"}, includeFieldNames = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @RequiredArgsConstructor
 @Accessors(fluent = true)
@@ -44,6 +50,14 @@ import lombok.experimental.Accessors;
 public class IngredientValue {
     private String id;
     private final String name;
+    @JsonProperty("_links")
+    @JsonDeserialize(using = Jackson2HalModule.HalLinkListDeserializer.class)
+    @JsonIgnoreProperties(allowSetters = true)
+    private List<Link> links;
+
+    public Optional<String> link(String rel) {
+        return links.stream().filter(l -> l.getRel().equals(rel)).map(Link::getHref).findFirst();
+    }
 
     public static class IngredientNameComparator implements Comparator<IngredientValue> {
         @Override
@@ -51,4 +65,5 @@ public class IngredientValue {
             return Comparator.comparing(IngredientValue::name, String::compareTo).compare(ingredient1, ingredient2);
         }
     }
+
 }

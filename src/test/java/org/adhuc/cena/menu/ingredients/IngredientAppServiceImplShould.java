@@ -16,6 +16,7 @@
 package org.adhuc.cena.menu.ingredients;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
@@ -62,6 +63,12 @@ class IngredientAppServiceImplShould {
         assertThrows(IllegalArgumentException.class, () -> service.createIngredient(null));
     }
 
+    @Test
+    @DisplayName("throw IllegalArgumentException when deleting ingredient from null command")
+    void throwIAEDeleteIngredientNullCommand() {
+        assertThrows(IllegalArgumentException.class, () -> service.deleteIngredient(null));
+    }
+
     @Nested
     @DisplayName("with no ingredient")
     class WithNoIngredient {
@@ -103,6 +110,21 @@ class IngredientAppServiceImplShould {
         @DisplayName("return tomato when getting ingredient from tomato id")
         void returnTomato() {
             assertThat(service.getIngredient(TOMATO_ID)).isEqualToComparingFieldByField(tomato);
+        }
+
+        @Test
+        @DisplayName("delete tomato successfully")
+        void deleteTomato() {
+            assumeThat(service.getIngredient(ID)).isNotNull();
+            service.deleteIngredient(deleteCommand());
+            assertThrows(EntityNotFoundException.class, () -> service.getIngredient(ID));
+        }
+
+        @Test
+        @DisplayName("throw EntityNotFoundException when deleting unknown ingredient")
+        void throwEntityNotFoundDeleteUnknownIngredient() {
+            var exception = assertThrows(EntityNotFoundException.class, () -> service.deleteIngredient(deleteCommand(CUCUMBER_ID)));
+            assertThat(exception.getIdentity()).isEqualTo(CUCUMBER_ID.toString());
         }
 
         @Nested

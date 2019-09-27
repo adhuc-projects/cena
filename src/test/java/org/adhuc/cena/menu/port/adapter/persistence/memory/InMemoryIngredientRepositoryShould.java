@@ -50,6 +50,12 @@ class InMemoryIngredientRepositoryShould {
         assertThrows(IllegalArgumentException.class, () -> repository.save(null));
     }
 
+    @Test
+    @DisplayName("throw IllegalArgumentException when deleting null ingredient")
+    void throwIAEDeletingNullIngredient() {
+        assertThrows(IllegalArgumentException.class, () -> repository.delete(null));
+    }
+
     @Nested
     @DisplayName("with no ingredient")
     class WithNoEntity {
@@ -64,7 +70,7 @@ class InMemoryIngredientRepositoryShould {
 
     @Nested
     @DisplayName("with tomato")
-    class WithIngredient {
+    class WithTomato {
 
         private Ingredient tomato;
 
@@ -114,6 +120,27 @@ class InMemoryIngredientRepositoryShould {
         @DisplayName("return tomato when getting not null ingredient with tomato id")
         void returnTomatoNotNull() {
             assertThat(repository.findNotNullById(TOMATO_ID)).isEqualToComparingFieldByField(tomato);
+        }
+
+        @Test
+        @DisplayName("delete tomato successfully")
+        void deleteTomato() {
+            repository.delete(tomato);
+            assertThat(repository.findAll()).doesNotContain(tomato);
+        }
+
+        @Test
+        @DisplayName("delete ingredient with tomato identity and cucumber name")
+        void deleteWithTomatoIdAndCucumberName() {
+            repository.delete(ingredient(TOMATO_ID, CUCUMBER));
+            assertThat(repository.findAll()).doesNotContain(tomato);
+        }
+
+        @Test
+        @DisplayName("do nothing when deleting unknown ingredient")
+        void deleteUnknownIngredient() {
+            repository.delete(ingredient(CUCUMBER_ID, TOMATO));
+            assertThat(repository.findAll()).containsOnly(tomato);
         }
 
         @Nested

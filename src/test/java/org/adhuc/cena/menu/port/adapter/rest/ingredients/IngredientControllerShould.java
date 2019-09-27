@@ -16,14 +16,14 @@
 package org.adhuc.cena.menu.port.adapter.rest.ingredients;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import static org.adhuc.cena.menu.ingredients.IngredientMother.ID;
-import static org.adhuc.cena.menu.ingredients.IngredientMother.ingredient;
+import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
 
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,9 +57,23 @@ class IngredientControllerShould {
 
     @Test
     @DisplayName("respond Not Found when retrieving unknown ingredient")
-    void respond404UnknownIngredient() throws Exception {
+    void respond404GetUnknownIngredient() throws Exception {
         when(ingredientAppServiceMock.getIngredient(ID)).thenThrow(new EntityNotFoundException(Ingredient.class, ID));
         mvc.perform(get(INGREDIENT_API_URL, ID)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("respond Not Found when deleting unknown ingredient")
+    void respond404DeleteUnknownIngredient() throws Exception {
+        doThrow(new EntityNotFoundException(Ingredient.class, ID)).when(ingredientAppServiceMock).deleteIngredient(deleteCommand());
+        mvc.perform(delete(INGREDIENT_API_URL, ID)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("respond No Content when deleting ingredient successfully")
+    void respond204DeleteIngredient() throws Exception {
+        mvc.perform(delete(INGREDIENT_API_URL, ID)).andExpect(status().isNoContent());
+        verify(ingredientAppServiceMock).deleteIngredient(deleteCommand());
     }
 
     @Nested

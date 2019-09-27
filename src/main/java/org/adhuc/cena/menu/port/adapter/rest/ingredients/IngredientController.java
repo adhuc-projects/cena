@@ -22,6 +22,7 @@ import org.springframework.hateoas.EntityLinks;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import org.adhuc.cena.menu.ingredients.DeleteIngredient;
 import org.adhuc.cena.menu.ingredients.Ingredient;
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
 import org.adhuc.cena.menu.ingredients.IngredientId;
@@ -58,6 +59,12 @@ public class IngredientController {
         var resource = new IngredientResource(ingredient);
         resource.withLink(links.linkToSingleResource(Ingredient.class, ingredientId).withSelfRel());
         return resource;
+    }
+
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteIngredient(@PathVariable String ingredientId) {
+        ingredientAppService.deleteIngredient(new DeleteIngredient(new IngredientId(ingredientId)));
     }
 
 }

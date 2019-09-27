@@ -19,6 +19,7 @@ import static java.lang.String.format;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @since 0.1.0
  */
 @Value
+@EqualsAndHashCode(callSuper = true)
 @ResponseStatus(NOT_FOUND)
 public class EntityNotFoundException extends RuntimeException {
 

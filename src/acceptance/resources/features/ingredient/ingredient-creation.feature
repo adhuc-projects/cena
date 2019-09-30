@@ -13,3 +13,4 @@ Feature: Create an ingredient in the system
     When he creates the ingredient
     Then the ingredient is created
     And the ingredient can be found in the list
+    And the ingredient details is accessible

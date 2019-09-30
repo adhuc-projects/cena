@@ -33,6 +33,11 @@ public class IngredientDetailServiceClientSteps extends AbstractIngredientServic
         return rest().get(ingredientDetailUrl).then().extract().as(IngredientValue.class);
     }
 
+    @Step("Assert ingredient {0} is accessible")
+    public void assertIngredientInfoIsAccessible(IngredientValue expected) {
+        assertThat(listClient().getFromIngredientsList(expected)).isPresent();
+    }
+
     @Step("Assert ingredient {1} corresponds to expected {0}")
     public void assertIngredientInfoIsEqualToExpected(IngredientValue expected, IngredientValue actual) {
         assertThat(actual).usingComparator(INGREDIENT_COMPARATOR).isEqualTo(expected);

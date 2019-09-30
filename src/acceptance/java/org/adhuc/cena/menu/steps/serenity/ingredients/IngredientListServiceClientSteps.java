@@ -17,12 +17,11 @@ package org.adhuc.cena.menu.steps.serenity.ingredients;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
-import static org.springframework.http.HttpStatus.OK;
+
+import static org.adhuc.cena.menu.steps.serenity.ingredients.IngredientListClientDelegate.ASSUMED_INGREDIENTS_SESSION_KEY;
 
 import java.util.List;
-import java.util.Optional;
 
-import io.restassured.path.json.JsonPath;
 import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
@@ -36,9 +35,6 @@ import net.thucydides.core.annotations.Steps;
  */
 public class IngredientListServiceClientSteps extends AbstractIngredientServiceClientSteps {
 
-    private static final String ASSUMED_INGREDIENTS_SESSION_KEY = "assumedIngredients";
-    private static final String INGREDIENTS_SESSION_KEY = "ingredients";
-
     @Steps
     private IngredientCreationServiceClientSteps ingredientCreationServiceClient;
     @Steps
@@ -47,54 +43,54 @@ public class IngredientListServiceClientSteps extends AbstractIngredientServiceC
     @Step("Assume empty ingredients list")
     public void assumeEmptyIngredientsList() {
         ingredientDeletionServiceClient.deleteIngredients();
-        assumeThat(fetchIngredients()).isEmpty();
+        assumeThat(listClient().fetchIngredients()).isEmpty();
     }
 
     @Step("Assert empty ingredients list")
     public void assertEmptyIngredientsList() {
-        assertThat(getSessionStoredIngredients()).isEmpty();
+        assertThat(listClient().getSessionStoredIngredients()).isEmpty();
     }
 
     @Step("Assume ingredient {0} is in ingredients list")
     public void assumeInIngredientsList(IngredientValue ingredient) {
         storeIngredient(ingredient);
-        if (getFromIngredientsList(ingredient).isEmpty()) {
+        if (listClient().getFromIngredientsList(ingredient).isEmpty()) {
             ingredientCreationServiceClient.createIngredient(ingredient);
         }
-        assumeThat(fetchIngredients()).usingElementComparator(INGREDIENT_COMPARATOR).contains(ingredient);
+        assumeThat(listClient().fetchIngredients()).usingElementComparator(INGREDIENT_COMPARATOR).contains(ingredient);
     }
 
     @Step("Assume ingredients {0} are in ingredients list")
     public void assumeInIngredientsList(List<IngredientValue> ingredients) {
-        storeIngredients(ASSUMED_INGREDIENTS_SESSION_KEY, ingredients);
-        var existingIngredients = fetchIngredients();
+        listClient().storeIngredients(ASSUMED_INGREDIENTS_SESSION_KEY, ingredients);
+        var existingIngredients = listClient().fetchIngredients();
         ingredients.stream()
                 .filter(ingredient -> existingIngredients.stream()
                         .noneMatch(existing -> INGREDIENT_COMPARATOR.compare(existing, ingredient) == 0))
                 .forEach(ingredient -> ingredientCreationServiceClient.createIngredient(ingredient));
-        assumeThat(fetchIngredients()).usingElementComparator(INGREDIENT_COMPARATOR).containsAll(ingredients);
+        assumeThat(listClient().fetchIngredients()).usingElementComparator(INGREDIENT_COMPARATOR).containsAll(ingredients);
     }
 
     @Step("Assume ingredient {0} is not in ingredients list")
     public void assumeNotInIngredientsList(IngredientValue ingredient) {
         storeIngredient(ingredient);
-        getFromIngredientsList(ingredient).ifPresent(i -> ingredientDeletionServiceClient.deleteIngredient(i));
-        assumeThat(fetchIngredients()).usingElementComparator(INGREDIENT_COMPARATOR).doesNotContain(ingredient);
+        listClient().getFromIngredientsList(ingredient).ifPresent(i -> ingredientDeletionServiceClient.deleteIngredient(i));
+        assumeThat(listClient().fetchIngredients()).usingElementComparator(INGREDIENT_COMPARATOR).doesNotContain(ingredient);
     }
 
     @Step("Assert ingredient {0} is in ingredients list")
     public void assertInIngredientsList(IngredientValue ingredient) {
-        assertThat(getFromIngredientsList(ingredient)).isPresent();
+        assertThat(listClient().getFromIngredientsList(ingredient)).isPresent();
     }
 
     @Step("Assert ingredients {0} are in ingredients list")
     public void assertInIngredientsList(List<IngredientValue> ingredients) {
-        assertThat(fetchIngredients()).usingElementComparator(INGREDIENT_COMPARATOR).containsAll(ingredients);
+        assertThat(listClient().fetchIngredients()).usingElementComparator(INGREDIENT_COMPARATOR).containsAll(ingredients);
     }
 
     @Step("Assert ingredient {0} is not in ingredients list")
     public void assertNotInIngredientsList(IngredientValue ingredient) {
-        assertThat(getFromIngredientsList(ingredient)).isNotPresent();
+        assertThat(listClient().getFromIngredientsList(ingredient)).isNotPresent();
     }
 
     public List<IngredientValue> getAssumedIngredients() {
@@ -105,39 +101,7 @@ public class IngredientListServiceClientSteps extends AbstractIngredientServiceC
 
     @Step("Get ingredients list (session)")
     public List<IngredientValue> getIngredients() {
-        return getSessionStoredIngredients();
-    }
-
-    /**
-     * Fetches the ingredients from server.
-     */
-    private List<IngredientValue> fetchIngredients() {
-        return getRawIngredientList().getList("_embedded.data", IngredientValue.class);
-    }
-
-    /**
-     * Gets the ingredients from Serenity session, or fetches the list and stores it in Serenity session.
-     */
-    private List<IngredientValue> getSessionStoredIngredients() {
-        if (Serenity.hasASessionVariableCalled(INGREDIENTS_SESSION_KEY)) {
-            return Serenity.sessionVariableCalled(INGREDIENTS_SESSION_KEY);
-        }
-        var ingredients = fetchIngredients();
-        return storeIngredients(INGREDIENTS_SESSION_KEY, ingredients);
-    }
-
-    private List<IngredientValue> storeIngredients(String sessionKey, List<IngredientValue> ingredients) {
-        Serenity.setSessionVariable(sessionKey).to(ingredients);
-        return ingredients;
-    }
-
-    private Optional<IngredientValue> getFromIngredientsList(IngredientValue ingredient) {
-        return Optional.ofNullable(getRawIngredientList().param("name", ingredient.name())
-                .getObject("_embedded.data.find { ingredient->ingredient.name == name }", IngredientValue.class));
-    }
-
-    private JsonPath getRawIngredientList() {
-        return rest().get(getIngredientsResourceUrl()).then().statusCode(OK.value()).extract().jsonPath();
+        return listClient().getSessionStoredIngredients();
     }
 
 }

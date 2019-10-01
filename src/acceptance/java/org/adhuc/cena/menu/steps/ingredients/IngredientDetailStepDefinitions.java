@@ -16,6 +16,7 @@
 package org.adhuc.cena.menu.steps.ingredients;
 
 import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
@@ -34,9 +35,24 @@ public class IngredientDetailStepDefinitions {
     @Steps
     private IngredientDetailServiceClientSteps ingredientDetailServiceClient;
 
+    @When("^he retrieves \"(.*)\" ingredient$")
+    public void retrieveIngredient(String ingredientName) {
+        ingredientDetailServiceClient.storeIngredient(ingredientDetailServiceClient.retrieveIngredient(ingredientName));
+    }
+
+    @When("^he attempts retrieving \"(.*)\" ingredient$")
+    public void tryToRetrieveIngredient(String ingredientName) {
+        ingredientDetailServiceClient.attemptRetrievingIngredient(ingredientName);
+    }
+
     @Then("^the ingredient details is accessible$")
     public void accessibleIngredientDetails() {
         ingredientDetailServiceClient.assertIngredientInfoIsAccessible(ingredientDetailServiceClient.storedIngredient());
+    }
+
+    @Then("^an error notifies that ingredient has not been found$")
+    public void errorNotFoundIngredient() {
+        ingredientDetailServiceClient.assertNotFoundError();
     }
 
 }

@@ -15,7 +15,11 @@
  */
 package org.adhuc.cena.menu.steps.serenity.ingredients;
 
+import static net.serenitybdd.rest.SerenityRest.then;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
+import static org.springframework.http.HttpStatus.*;
 
 import net.thucydides.core.annotations.Step;
 
@@ -30,17 +34,39 @@ public class IngredientDetailServiceClientSteps extends AbstractIngredientServic
 
     @Step("Get ingredient from {0}")
     public IngredientValue getIngredientFromUrl(String ingredientDetailUrl) {
-        return rest().get(ingredientDetailUrl).then().extract().as(IngredientValue.class);
+        fetchIngredient(ingredientDetailUrl);
+        return then().statusCode(OK.value()).extract().as(IngredientValue.class);
+    }
+
+    @Step("Retrieve ingredient with name {0}")
+    public IngredientValue retrieveIngredient(String ingredientName) {
+        var ingredient = listClient().getFromIngredientsList(new IngredientValue(ingredientName));
+        return ingredient.orElseGet(() -> fail("Unable to retrieve ingredient with name " + ingredientName));
+    }
+
+    @Step("Attempt retrieving ingredient with name {0}")
+    public void attemptRetrievingIngredient(String ingredientName) {
+        var ingredient = listClient().getFromIngredientsList(new IngredientValue(ingredientName));
+        assertThat(ingredient).isNotPresent();
+        fetchIngredient(generateNotFoundIngredientUrl());
     }
 
     @Step("Assert ingredient {0} is accessible")
     public void assertIngredientInfoIsAccessible(IngredientValue expected) {
-        assertThat(listClient().getFromIngredientsList(expected)).isPresent();
+        var actual = getIngredientFromUrl(expected.selfLink());
+        actual.assertEqualTo(expected);
     }
 
-    @Step("Assert ingredient {1} corresponds to expected {0}")
-    public void assertIngredientInfoIsEqualToExpected(IngredientValue expected, IngredientValue actual) {
-        assertThat(actual).usingComparator(INGREDIENT_COMPARATOR).isEqualTo(expected);
+    @Step("Assert ingredient details retrieval results in not found error")
+    public void assertNotFoundError() {
+        then().statusCode(NOT_FOUND.value());
     }
 
+    private void fetchIngredient(String ingredientDetailUrl) {
+        rest().accept(HAL_JSON_VALUE).get(ingredientDetailUrl).andReturn();
+    }
+
+    private String generateNotFoundIngredientUrl() {
+        return getIngredientsResourceUrl() + "/unknown";
+    }
 }

@@ -16,6 +16,8 @@
 package org.adhuc.cena.menu.steps.serenity.ingredients;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Comparator;
 import java.util.List;
@@ -48,6 +50,9 @@ import org.springframework.hateoas.hal.Jackson2HalModule;
 @JsonInclude(NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class IngredientValue {
+
+    public static final Comparator<IngredientValue> COMPARATOR = new IngredientNameComparator();
+
     private String id;
     private final String name;
     @JsonProperty("_links")
@@ -55,8 +60,17 @@ public class IngredientValue {
     @JsonIgnoreProperties(allowSetters = true)
     private List<Link> links;
 
-    public Optional<String> link(String rel) {
+    String selfLink() {
+        Optional<String> self = link("self");
+        return self.orElseGet(() -> fail("Unable to get self link from links " + links));
+    }
+
+    Optional<String> link(String rel) {
         return links.stream().filter(l -> l.getRel().equals(rel)).map(Link::getHref).findFirst();
+    }
+
+    void assertEqualTo(IngredientValue expected) {
+        assertThat(this).usingComparator(COMPARATOR).isEqualTo(expected);
     }
 
     public static class IngredientNameComparator implements Comparator<IngredientValue> {

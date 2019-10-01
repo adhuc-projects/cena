@@ -17,11 +17,10 @@ package org.adhuc.cena.menu.steps.serenity.ingredients;
 
 import static net.serenitybdd.rest.SerenityRest.then;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
@@ -41,7 +40,7 @@ public class IngredientCreationServiceClientSteps extends AbstractIngredientServ
     @Step("Create the ingredient {0}")
     public void createIngredient(IngredientValue ingredient) {
         var ingredientsResourceUrl = getIngredientsResourceUrl();
-        rest().header(CONTENT_TYPE, APPLICATION_JSON_VALUE).body(ingredient).post(ingredientsResourceUrl).andReturn();
+        rest().contentType(HAL_JSON_VALUE).body(ingredient).post(ingredientsResourceUrl).andReturn();
     }
 
     @Step("Create an ingredient without name")
@@ -55,7 +54,7 @@ public class IngredientCreationServiceClientSteps extends AbstractIngredientServ
         var ingredientLocation = then().statusCode(CREATED.value()).extract().header(LOCATION);
         assertThat(ingredientLocation).isNotBlank();
         var retrievedIngredient = ingredientDetailServiceClient.getIngredientFromUrl(ingredientLocation);
-        ingredientDetailServiceClient.assertIngredientInfoIsEqualToExpected(ingredient, retrievedIngredient);
+        retrievedIngredient.assertEqualTo(ingredient);
     }
 
     @Step("Assert ingredient creation results in invalid request error")

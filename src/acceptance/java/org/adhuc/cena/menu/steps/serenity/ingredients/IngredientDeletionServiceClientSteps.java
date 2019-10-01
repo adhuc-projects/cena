@@ -28,7 +28,7 @@ public class IngredientDeletionServiceClientSteps extends AbstractIngredientServ
 
     @Step("Delete ingredients")
     public void deleteIngredients() {
-        var response = rest().delete(getIngredientsResourceUrl()).then();
+        var response = rest().delete(ingredientsResourceUrl()).then();
         assertNoContent(response);
     }
 

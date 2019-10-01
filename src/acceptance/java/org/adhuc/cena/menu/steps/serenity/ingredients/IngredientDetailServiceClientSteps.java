@@ -60,6 +60,6 @@ public class IngredientDetailServiceClientSteps extends AbstractIngredientServic
     }
 
     private String generateNotFoundIngredientUrl() {
-        return getIngredientsResourceUrl() + "/unknown";
+        return ingredientsResourceUrl() + "/unknown";
     }
 }

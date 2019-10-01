@@ -36,7 +36,7 @@ public class IngredientCreationServiceClientSteps extends AbstractIngredientServ
 
     @Step("Create the ingredient {0}")
     public void createIngredient(IngredientValue ingredient) {
-        var ingredientsResourceUrl = getIngredientsResourceUrl();
+        var ingredientsResourceUrl = ingredientsResourceUrl();
         rest().contentType(HAL_JSON_VALUE).body(ingredient).post(ingredientsResourceUrl).andReturn();
     }
 

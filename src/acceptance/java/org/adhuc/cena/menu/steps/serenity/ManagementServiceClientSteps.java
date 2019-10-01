@@ -28,7 +28,7 @@ import org.adhuc.cena.menu.steps.serenity.support.resource.HateoasClientResource
  * The spring management service client steps.
  *
  * @author Alexandre Carbenay
- * @version 0.0.1
+ * @version 0.1.0
  * @since 0.0.1
  */
 public class ManagementServiceClientSteps extends AbstractServiceClientSteps {
@@ -60,7 +60,7 @@ public class ManagementServiceClientSteps extends AbstractServiceClientSteps {
     }
 
     private ManagementResource getManagementResource() {
-        return getResource(getApiClientResource().getManagement(), ManagementResource.class);
+        return getResource(apiClientResource().getManagement(), ManagementResource.class);
     }
 
     private static class ManagementResource extends HateoasClientResourceSupport {

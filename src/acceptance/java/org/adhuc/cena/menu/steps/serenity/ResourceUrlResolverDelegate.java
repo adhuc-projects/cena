@@ -20,6 +20,7 @@ import static org.springframework.http.HttpStatus.OK;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.serenitybdd.core.Serenity;
 
 import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationProvider;
 import org.adhuc.cena.menu.steps.serenity.support.resource.ApiClientResource;
@@ -28,22 +29,29 @@ import org.adhuc.cena.menu.steps.serenity.support.resource.ApiClientResource;
  * A delegate providing convenient methods for resolving resource URLs.
  *
  * @author Alexandre Carbenay
- * @version 0.0.1
+ * @version 0.1.0
  * @since 0.0.1
  */
 @Slf4j
 @RequiredArgsConstructor
 class ResourceUrlResolverDelegate {
 
+    private static final String API_RESOURCE_SESSION_KEY = "apiClientResource";
+
     private static final String SERVICE_NAME = "menu-generation";
     private static final String EXPOSED_PORT = "8080";
     private static final String PORT_PROPERTY_NAME = SERVICE_NAME + ".tcp." + EXPOSED_PORT;
 
+    private final String port = System.getProperty(PORT_PROPERTY_NAME, EXPOSED_PORT);
+
     @NonNull
     private AuthenticationProvider authenticationProvider;
 
-    public ApiClientResource getApiClientResource() {
-        return getResource(getApiIndexUrl(), ApiClientResource.class);
+    public ApiClientResource apiClientResource() {
+        if (!Serenity.hasASessionVariableCalled(API_RESOURCE_SESSION_KEY)) {
+            Serenity.setSessionVariable(API_RESOURCE_SESSION_KEY).to(getResource(getApiIndexUrl(), ApiClientResource.class));
+        }
+        return Serenity.sessionVariableCalled(API_RESOURCE_SESSION_KEY);
     }
 
     public <T> T getResource(String url, Class<T> resourceClass) {
@@ -51,8 +59,7 @@ class ResourceUrlResolverDelegate {
     }
 
     private String getApiIndexUrl() {
-        String port = System.getProperty(PORT_PROPERTY_NAME, EXPOSED_PORT);
-        log.info("Call health with port {}", port);
+        log.info("Call API index with port {}", port);
         return String.format("http://localhost:%s/api", port);
     }
 

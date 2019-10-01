@@ -21,7 +21,7 @@ import net.thucydides.core.annotations.Step;
  * The documentation service client steps.
  *
  * @author Alexandre Carbenay
- * @version 0.0.1
+ * @version 0.1.0
  * @since 0.0.1
  */
 public class DocumentationServiceClientSteps extends AbstractServiceClientSteps {
@@ -37,7 +37,7 @@ public class DocumentationServiceClientSteps extends AbstractServiceClientSteps 
     }
 
     private String getDocumentationResourceUrl() {
-        return getApiClientResource().getDocumentation();
+        return apiClientResource().getDocumentation();
     }
 
 }

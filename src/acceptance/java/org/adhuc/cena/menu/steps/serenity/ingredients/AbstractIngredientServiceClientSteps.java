@@ -32,7 +32,6 @@ import org.adhuc.cena.menu.steps.serenity.AbstractServiceClientSteps;
 abstract class AbstractIngredientServiceClientSteps extends AbstractServiceClientSteps {
 
     private static final String INGREDIENTS_LIST_CLIENT = "ingredientsListClient";
-    private static final String INGREDIENTS_URL_SESSION_KEY = "ingredientsResourceUrl";
     static final String INGREDIENT_SESSION_KEY = "ingredient";
 
     public final <I extends IngredientValue> I storeIngredient(I ingredient) {
@@ -56,16 +55,13 @@ abstract class AbstractIngredientServiceClientSteps extends AbstractServiceClien
 
     final IngredientListClientDelegate listClient() {
         if (!Serenity.hasASessionVariableCalled(INGREDIENTS_LIST_CLIENT)) {
-            Serenity.setSessionVariable(INGREDIENTS_LIST_CLIENT).to(new IngredientListClientDelegate(getIngredientsResourceUrl()));
+            Serenity.setSessionVariable(INGREDIENTS_LIST_CLIENT).to(new IngredientListClientDelegate(ingredientsResourceUrl()));
         }
         return Serenity.sessionVariableCalled(INGREDIENTS_LIST_CLIENT);
     }
 
-    final String getIngredientsResourceUrl() {
-        if (!Serenity.hasASessionVariableCalled(INGREDIENTS_URL_SESSION_KEY)) {
-            Serenity.setSessionVariable(INGREDIENTS_URL_SESSION_KEY).to(getApiClientResource().getIngredients());
-        }
-        return Serenity.sessionVariableCalled(INGREDIENTS_URL_SESSION_KEY);
+    final String ingredientsResourceUrl() {
+        return apiClientResource().getIngredients();
     }
 
 }

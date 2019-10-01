@@ -15,12 +15,9 @@
  */
 package org.adhuc.cena.menu.steps.serenity.ingredients;
 
-import static net.serenitybdd.rest.SerenityRest.then;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpHeaders.LOCATION;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.CREATED;
 
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
@@ -51,15 +48,10 @@ public class IngredientCreationServiceClientSteps extends AbstractIngredientServ
 
     @Step("Assert ingredient has been successfully created")
     public void assertIngredientSuccessfullyCreated(IngredientValue ingredient) {
-        var ingredientLocation = then().statusCode(CREATED.value()).extract().header(LOCATION);
+        var ingredientLocation = assertCreated().extract().header(LOCATION);
         assertThat(ingredientLocation).isNotBlank();
         var retrievedIngredient = ingredientDetailServiceClient.getIngredientFromUrl(ingredientLocation);
         retrievedIngredient.assertEqualTo(ingredient);
-    }
-
-    @Step("Assert ingredient creation results in invalid request error")
-    public void assertInvalidRequestError() {
-        then().statusCode(BAD_REQUEST.value());
     }
 
 }

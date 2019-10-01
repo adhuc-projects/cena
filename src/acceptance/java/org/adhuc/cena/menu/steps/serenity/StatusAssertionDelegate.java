@@ -16,25 +16,62 @@
 package org.adhuc.cena.menu.steps.serenity;
 
 import static net.serenitybdd.rest.SerenityRest.then;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 
 import io.restassured.response.ValidatableResponse;
+import org.springframework.http.HttpStatus;
 
 /**
  * A delegate providing convenient methods for response status assertions.
  *
  * @author Alexandre Carbenay
- * @version 0.0.1
+ * @version 0.1.0
  * @since 0.0.1
  */
-class StatusAssertionDelegate {
+public class StatusAssertionDelegate {
 
     public ValidatableResponse assertOk() {
         return assertOk(then());
     }
 
     public ValidatableResponse assertOk(ValidatableResponse response) {
-        return response.statusCode(OK.value());
+        return assertStatus(response, OK);
+    }
+
+    public ValidatableResponse assertCreated() {
+        return assertCreated(then());
+    }
+
+    public ValidatableResponse assertCreated(ValidatableResponse response) {
+        return assertStatus(response, CREATED);
+    }
+
+    public ValidatableResponse assertNoContent() {
+        return assertNoContent(then());
+    }
+
+    public ValidatableResponse assertNoContent(ValidatableResponse response) {
+        return assertStatus(response, NO_CONTENT);
+    }
+
+    public ValidatableResponse assertBadRequest() {
+        return assertBadRequest(then());
+    }
+
+    public ValidatableResponse assertBadRequest(ValidatableResponse response) {
+        return assertStatus(response, BAD_REQUEST);
+    }
+
+    public ValidatableResponse assertNotFound() {
+        return assertNotFound(then());
+    }
+
+    public ValidatableResponse assertNotFound(ValidatableResponse response) {
+        return assertStatus(response, NOT_FOUND);
+    }
+
+    private ValidatableResponse assertStatus(ValidatableResponse response, HttpStatus status) {
+        return response.statusCode(status.value());
     }
 
 }

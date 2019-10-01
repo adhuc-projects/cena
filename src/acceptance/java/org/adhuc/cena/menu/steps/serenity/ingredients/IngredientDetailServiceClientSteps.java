@@ -15,11 +15,9 @@
  */
 package org.adhuc.cena.menu.steps.serenity.ingredients;
 
-import static net.serenitybdd.rest.SerenityRest.then;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
-import static org.springframework.http.HttpStatus.*;
 
 import net.thucydides.core.annotations.Step;
 
@@ -35,7 +33,7 @@ public class IngredientDetailServiceClientSteps extends AbstractIngredientServic
     @Step("Get ingredient from {0}")
     public IngredientValue getIngredientFromUrl(String ingredientDetailUrl) {
         fetchIngredient(ingredientDetailUrl);
-        return then().statusCode(OK.value()).extract().as(IngredientValue.class);
+        return assertOk().extract().as(IngredientValue.class);
     }
 
     @Step("Retrieve ingredient with name {0}")
@@ -55,11 +53,6 @@ public class IngredientDetailServiceClientSteps extends AbstractIngredientServic
     public void assertIngredientInfoIsAccessible(IngredientValue expected) {
         var actual = getIngredientFromUrl(expected.selfLink());
         actual.assertEqualTo(expected);
-    }
-
-    @Step("Assert ingredient details retrieval results in not found error")
-    public void assertNotFoundError() {
-        then().statusCode(NOT_FOUND.value());
     }
 
     private void fetchIngredient(String ingredientDetailUrl) {

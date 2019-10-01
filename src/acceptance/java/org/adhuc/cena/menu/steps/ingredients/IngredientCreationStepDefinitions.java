@@ -52,7 +52,7 @@ public class IngredientCreationStepDefinitions {
 
     @Then("^an error notifies that ingredient must have a name$")
     public void errorOnIngredientCreationWithoutName() {
-        ingredientCreationServiceClient.assertInvalidRequestError();
+        ingredientCreationServiceClient.assertBadRequest();
     }
 
 }

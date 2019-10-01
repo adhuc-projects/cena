@@ -15,8 +15,6 @@
  */
 package org.adhuc.cena.menu.steps.serenity.ingredients;
 
-import static org.springframework.http.HttpStatus.NO_CONTENT;
-
 import net.thucydides.core.annotations.Step;
 
 /**
@@ -30,7 +28,8 @@ public class IngredientDeletionServiceClientSteps extends AbstractIngredientServ
 
     @Step("Delete ingredients")
     public void deleteIngredients() {
-        rest().delete(getIngredientsResourceUrl()).then().statusCode(NO_CONTENT.value());
+        var response = rest().delete(getIngredientsResourceUrl()).then();
+        assertNoContent(response);
     }
 
     @Step("Delete ingredient")

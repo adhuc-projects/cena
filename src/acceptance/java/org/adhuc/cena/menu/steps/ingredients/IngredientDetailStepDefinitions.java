@@ -52,7 +52,7 @@ public class IngredientDetailStepDefinitions {
 
     @Then("^an error notifies that ingredient has not been found$")
     public void errorNotFoundIngredient() {
-        ingredientDetailServiceClient.assertNotFoundError();
+        ingredientDetailServiceClient.assertNotFound();
     }
 
 }

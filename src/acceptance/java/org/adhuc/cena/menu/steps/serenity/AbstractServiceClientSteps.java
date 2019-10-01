@@ -25,7 +25,7 @@ import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationP
  * An abstract service client steps, providing convenient methods for resource resolution and assertions.
  *
  * @author Alexandre Carbenay
- * @version 0.0.1
+ * @version 0.1.0
  * @since 0.0.1
  */
 @Slf4j
@@ -33,9 +33,9 @@ public abstract class AbstractServiceClientSteps {
 
     final AuthenticationProvider authenticationProvider = AuthenticationProvider.instance();
     @Delegate
-    private ResourceUrlResolverDelegate resourceUrlResolverDelegate = new ResourceUrlResolverDelegate(authenticationProvider);
+    private final ResourceUrlResolverDelegate resourceUrlResolverDelegate = new ResourceUrlResolverDelegate(authenticationProvider);
     @Delegate
-    private StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
+    private final StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
 
     public RequestSpecification rest() {
         return authenticationProvider.rest();

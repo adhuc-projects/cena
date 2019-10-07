@@ -16,102 +16,38 @@
 package org.adhuc.cena.menu.steps.serenity.ingredients;
 
 import static net.serenitybdd.rest.SerenityRest.rest;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import io.restassured.path.json.JsonPath;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.Delegate;
-import net.serenitybdd.core.Serenity;
 
-import org.adhuc.cena.menu.steps.serenity.StatusAssertionDelegate;
+import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
 
 /**
- * A client used to retrieve and store ingredients list from the server.
+ * A client used to retrieve ingredients from the server.
  *
  * @author Alexandre Carbenay
  * @version 0.1.0
  * @since 0.1.0
  */
 @RequiredArgsConstructor
-class IngredientListClientDelegate {
+final class IngredientListClientDelegate {
 
-    @Delegate
     private final StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
 
-    static final String ASSUMED_INGREDIENTS_SESSION_KEY = "assumedIngredients";
-    static final String INGREDIENTS_SESSION_KEY = "ingredients";
-
+    @NonNull
     private final String ingredientsResourceUrl;
-
-    /**
-     * Gets the ingredients from Serenity session, or fetches the list and stores it in Serenity session. By default,
-     * the {#value INGREDIENTS_SESSION_KEY} key is used.
-     *
-     * @return the session stored ingredients.
-     */
-    List<IngredientValue> getSessionStoredIngredients() {
-        return getSessionStoredIngredients(INGREDIENTS_SESSION_KEY, () -> fetchIngredients());
-    }
-
-    /**
-     * Gets the ingredients from Serenity session, or retrieves it through the specified supplier and stores it in session.
-     *
-     * @param sessionKey the Serenity session key.
-     * @param ingredientsSupplier the ingredients supplier.
-     * @return the session stored ingredients.
-     */
-    List<IngredientValue> getSessionStoredIngredients(String sessionKey, Supplier<List<IngredientValue>> ingredientsSupplier) {
-        if (Serenity.hasASessionVariableCalled(sessionKey)) {
-            return Serenity.sessionVariableCalled(sessionKey);
-        }
-        return storeIngredients(sessionKey, ingredientsSupplier.get());
-    }
-
-    /**
-     * Gets the ingredients from Serenity session, or fails if session does not contain those ingredients. By default,
-     * the {#value INGREDIENTS_SESSION_KEY} key is used.
-     *
-     * @return the session stored ingredients.
-     */
-    List<IngredientValue> getStrictSessionStoredIngredients() {
-        return getStrictSessionStoredIngredients(INGREDIENTS_SESSION_KEY);
-    }
-
-    /**
-     * Gets the ingredients from Serenity session, or fails if session does not contain those ingredients.
-     *
-     * @param sessionKey the Serenity session key.
-     * @return the session stored ingredients.
-     */
-    List<IngredientValue> getStrictSessionStoredIngredients(String sessionKey) {
-        assertThat(Serenity.hasASessionVariableCalled(sessionKey))
-                .as("Ingredients in session (%s) must have been set previously", sessionKey).isTrue();
-        return Serenity.sessionVariableCalled(sessionKey);
-    }
 
     /**
      * Fetches the ingredients from server.
      *
      * @return the fetched ingredients.
      */
-    List<IngredientValue> fetchIngredients() {
+    public List<IngredientValue> fetchIngredients() {
         return getRawIngredientList().getList("_embedded.data", IngredientValue.class);
-    }
-
-    /**
-     * Stores the ingredients in session.
-     *
-     * @param sessionKey  the session key associated with stored ingredient.
-     * @param ingredients the ingredients to store.
-     * @return the ingredients.
-     */
-    List<IngredientValue> storeIngredients(String sessionKey, List<IngredientValue> ingredients) {
-        Serenity.setSessionVariable(sessionKey).to(ingredients);
-        return ingredients;
     }
 
     /**
@@ -122,7 +58,7 @@ class IngredientListClientDelegate {
      * @param ingredient the ingredient to retrieve in the list.
      * @return the ingredient retrieved from list.
      */
-    Optional<IngredientValue> getFromIngredientsList(IngredientValue ingredient) {
+    public Optional<IngredientValue> getFromIngredientsList(IngredientValue ingredient) {
         return Optional.ofNullable(getRawIngredientList().param("name", ingredient.name())
                 .getObject("_embedded.data.find { ingredient->ingredient.name == name }", IngredientValue.class));
     }
@@ -134,7 +70,7 @@ class IngredientListClientDelegate {
      */
     private JsonPath getRawIngredientList() {
         var response = rest().get(ingredientsResourceUrl).then();
-        return assertOk(response).extract().jsonPath();
+        return statusAssertionDelegate.assertOk(response).extract().jsonPath();
     }
 
 }

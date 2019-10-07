@@ -17,6 +17,8 @@ package org.adhuc.cena.menu.steps.serenity;
 
 import net.thucydides.core.annotations.Step;
 
+import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationProvider;
+
 /**
  * The authentication rest-service client steps definition.
  *
@@ -24,7 +26,9 @@ import net.thucydides.core.annotations.Step;
  * @version 0.1.0
  * @since 0.0.1
  */
-public class AuthenticationServiceClientSteps extends AbstractServiceClientSteps {
+public class AuthenticationServiceClientSteps {
+
+    private final AuthenticationProvider authenticationProvider = AuthenticationProvider.instance();
 
     @Step("Defines a community user")
     public void withCommunityUser() {

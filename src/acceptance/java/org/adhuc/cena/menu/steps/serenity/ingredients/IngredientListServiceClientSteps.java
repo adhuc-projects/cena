@@ -18,14 +18,17 @@ package org.adhuc.cena.menu.steps.serenity.ingredients;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
 
-import static org.adhuc.cena.menu.steps.serenity.ingredients.IngredientListClientDelegate.ASSUMED_INGREDIENTS_SESSION_KEY;
+import static org.adhuc.cena.menu.steps.serenity.ingredients.IngredientStorageDelegate.ASSUMED_INGREDIENTS_SESSION_KEY;
 import static org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue.COMPARATOR;
 
 import java.util.List;
 
+import lombok.experimental.Delegate;
 import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
+
+import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
 
 /**
  * The ingredients list rest-service client steps definition.
@@ -34,7 +37,14 @@ import net.thucydides.core.annotations.Steps;
  * @version 0.1.0
  * @since 0.1.0
  */
-public class IngredientListServiceClientSteps extends AbstractIngredientServiceClientSteps {
+public class IngredientListServiceClientSteps {
+
+    @Delegate
+    private final ResourceUrlResolverDelegate resourceUrlResolverDelegate = new ResourceUrlResolverDelegate();
+    @Delegate
+    private final IngredientListClientDelegate listClient = new IngredientListClientDelegate(ingredientsResourceUrl());
+    @Delegate
+    private final IngredientStorageDelegate ingredientStorage = new IngredientStorageDelegate(ingredientsResourceUrl());
 
     @Steps
     private IngredientCreationServiceClientSteps ingredientCreationServiceClient;
@@ -44,54 +54,54 @@ public class IngredientListServiceClientSteps extends AbstractIngredientServiceC
     @Step("Assume empty ingredients list")
     public void assumeEmptyIngredientsList() {
         ingredientDeletionServiceClient.deleteIngredients();
-        assumeThat(listClient().fetchIngredients()).isEmpty();
+        assumeThat(fetchIngredients()).isEmpty();
     }
 
     @Step("Assert empty ingredients list")
     public void assertEmptyIngredientsList() {
-        assertThat(listClient().getSessionStoredIngredients()).isEmpty();
+        assertThat(storedOrRetrievedIngredients()).isEmpty();
     }
 
     @Step("Assume ingredient {0} is in ingredients list")
     public void assumeInIngredientsList(IngredientValue ingredient) {
         storeIngredient(ingredient);
-        if (listClient().getFromIngredientsList(ingredient).isEmpty()) {
+        if (getFromIngredientsList(ingredient).isEmpty()) {
             ingredientCreationServiceClient.createIngredient(ingredient);
         }
-        assumeThat(listClient().fetchIngredients()).usingElementComparator(COMPARATOR).contains(ingredient);
+        assumeThat(fetchIngredients()).usingElementComparator(COMPARATOR).contains(ingredient);
     }
 
     @Step("Assume ingredients {0} are in ingredients list")
     public void assumeInIngredientsList(List<IngredientValue> ingredients) {
-        listClient().storeIngredients(ASSUMED_INGREDIENTS_SESSION_KEY, ingredients);
-        var existingIngredients = listClient().fetchIngredients();
+        storeIngredients(ASSUMED_INGREDIENTS_SESSION_KEY, ingredients);
+        var existingIngredients = fetchIngredients();
         ingredients.stream()
                 .filter(ingredient -> existingIngredients.stream()
                         .noneMatch(existing -> COMPARATOR.compare(existing, ingredient) == 0))
                 .forEach(ingredient -> ingredientCreationServiceClient.createIngredient(ingredient));
-        assumeThat(listClient().fetchIngredients()).usingElementComparator(COMPARATOR).containsAll(ingredients);
+        assumeThat(fetchIngredients()).usingElementComparator(COMPARATOR).containsAll(ingredients);
     }
 
     @Step("Assume ingredient {0} is not in ingredients list")
     public void assumeNotInIngredientsList(IngredientValue ingredient) {
         storeIngredient(ingredient);
-        listClient().getFromIngredientsList(ingredient).ifPresent(i -> ingredientDeletionServiceClient.deleteIngredient(i));
-        assumeThat(listClient().fetchIngredients()).usingElementComparator(COMPARATOR).doesNotContain(ingredient);
+        getFromIngredientsList(ingredient).ifPresent(i -> ingredientDeletionServiceClient.deleteIngredient(i));
+        assumeThat(fetchIngredients()).usingElementComparator(COMPARATOR).doesNotContain(ingredient);
     }
 
     @Step("Assert ingredient {0} is in ingredients list")
     public void assertInIngredientsList(IngredientValue ingredient) {
-        assertThat(listClient().getFromIngredientsList(ingredient)).isPresent();
+        assertThat(getFromIngredientsList(ingredient)).isPresent();
     }
 
     @Step("Assert ingredients {0} are in ingredients list")
     public void assertInIngredientsList(List<IngredientValue> ingredients) {
-        assertThat(listClient().fetchIngredients()).usingElementComparator(COMPARATOR).containsAll(ingredients);
+        assertThat(fetchIngredients()).usingElementComparator(COMPARATOR).containsAll(ingredients);
     }
 
     @Step("Assert ingredient {0} is not in ingredients list")
     public void assertNotInIngredientsList(IngredientValue ingredient) {
-        assertThat(listClient().getFromIngredientsList(ingredient)).isNotPresent();
+        assertThat(getFromIngredientsList(ingredient)).isNotPresent();
     }
 
     public List<IngredientValue> getAssumedIngredients() {
@@ -102,7 +112,7 @@ public class IngredientListServiceClientSteps extends AbstractIngredientServiceC
 
     @Step("Get ingredients list (session)")
     public List<IngredientValue> getIngredients() {
-        return listClient().getSessionStoredIngredients();
+        return storedOrRetrievedIngredients();
     }
 
 }

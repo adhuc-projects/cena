@@ -19,9 +19,13 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 
 import io.restassured.response.ValidatableResponse;
+import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 import org.springframework.boot.actuate.health.Status;
 
+import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
+import org.adhuc.cena.menu.steps.serenity.support.RestClientDelegate;
+import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.resource.HateoasClientResourceSupport;
 
 /**
@@ -31,7 +35,14 @@ import org.adhuc.cena.menu.steps.serenity.support.resource.HateoasClientResource
  * @version 0.1.0
  * @since 0.0.1
  */
-public class ManagementServiceClientSteps extends AbstractServiceClientSteps {
+public class ManagementServiceClientSteps {
+
+    @Delegate
+    private final RestClientDelegate restClientDelegate = new RestClientDelegate();
+    @Delegate
+    private final ResourceUrlResolverDelegate resourceUrlResolverDelegate = new ResourceUrlResolverDelegate();
+    @Delegate
+    private final StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
 
     private ValidatableResponse healthCheckResponse;
 

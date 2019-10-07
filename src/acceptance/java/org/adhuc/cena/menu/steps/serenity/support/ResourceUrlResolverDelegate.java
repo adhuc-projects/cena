@@ -13,16 +13,13 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.steps.serenity;
+package org.adhuc.cena.menu.steps.serenity.support;
 
 import static org.springframework.http.HttpStatus.OK;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.core.Serenity;
 
-import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationProvider;
 import org.adhuc.cena.menu.steps.serenity.support.resource.ApiClientResource;
 
 /**
@@ -33,8 +30,7 @@ import org.adhuc.cena.menu.steps.serenity.support.resource.ApiClientResource;
  * @since 0.0.1
  */
 @Slf4j
-@RequiredArgsConstructor
-class ResourceUrlResolverDelegate {
+public final class ResourceUrlResolverDelegate {
 
     private static final String API_RESOURCE_SESSION_KEY = "apiClientResource";
 
@@ -44,8 +40,7 @@ class ResourceUrlResolverDelegate {
 
     private final String port = System.getProperty(PORT_PROPERTY_NAME, EXPOSED_PORT);
 
-    @NonNull
-    private AuthenticationProvider authenticationProvider;
+    private final RestClientDelegate restClientDelegate = new RestClientDelegate();
 
     public ApiClientResource apiClientResource() {
         if (!Serenity.hasASessionVariableCalled(API_RESOURCE_SESSION_KEY)) {
@@ -54,8 +49,12 @@ class ResourceUrlResolverDelegate {
         return Serenity.sessionVariableCalled(API_RESOURCE_SESSION_KEY);
     }
 
+    public String ingredientsResourceUrl() {
+        return apiClientResource().getIngredients();
+    }
+
     public <T> T getResource(String url, Class<T> resourceClass) {
-        return authenticationProvider.rest().get(url).then().statusCode(OK.value()).extract().as(resourceClass);
+        return restClientDelegate.rest().get(url).then().statusCode(OK.value()).extract().as(resourceClass);
     }
 
     private String getApiIndexUrl() {

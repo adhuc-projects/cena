@@ -19,8 +19,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpHeaders.LOCATION;
 
+import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
+
+import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
+import org.adhuc.cena.menu.steps.serenity.support.RestClientDelegate;
+import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
 
 /**
  * The ingredient creation rest-service client steps definition.
@@ -29,7 +34,16 @@ import net.thucydides.core.annotations.Steps;
  * @version 0.1.0
  * @since 0.1.0
  */
-public class IngredientCreationServiceClientSteps extends AbstractIngredientServiceClientSteps {
+public class IngredientCreationServiceClientSteps {
+
+    @Delegate
+    private final RestClientDelegate restClientDelegate = new RestClientDelegate();
+    @Delegate
+    private final ResourceUrlResolverDelegate resourceUrlResolverDelegate = new ResourceUrlResolverDelegate();
+    @Delegate
+    private final StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
+    @Delegate
+    private final IngredientStorageDelegate ingredientStorage = new IngredientStorageDelegate(ingredientsResourceUrl());
 
     @Steps
     private IngredientDetailServiceClientSteps ingredientDetailServiceClient;

@@ -19,7 +19,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 
+import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
+
+import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
+import org.adhuc.cena.menu.steps.serenity.support.RestClientDelegate;
+import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
 
 /**
  * The ingredient detail rest-service client steps definition.
@@ -28,7 +33,18 @@ import net.thucydides.core.annotations.Step;
  * @version 0.1.0
  * @since 0.1.0
  */
-public class IngredientDetailServiceClientSteps extends AbstractIngredientServiceClientSteps {
+public class IngredientDetailServiceClientSteps {
+
+    @Delegate
+    private final RestClientDelegate restClientDelegate = new RestClientDelegate();
+    @Delegate
+    private final ResourceUrlResolverDelegate resourceUrlResolverDelegate = new ResourceUrlResolverDelegate();
+    @Delegate
+    private final StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
+    @Delegate
+    private final IngredientListClientDelegate listClient = new IngredientListClientDelegate(ingredientsResourceUrl());
+    @Delegate
+    private final IngredientStorageDelegate ingredientStorage = new IngredientStorageDelegate(ingredientsResourceUrl());
 
     @Step("Get ingredient from {0}")
     public IngredientValue getIngredientFromUrl(String ingredientDetailUrl) {
@@ -38,13 +54,13 @@ public class IngredientDetailServiceClientSteps extends AbstractIngredientServic
 
     @Step("Retrieve ingredient with name {0}")
     public IngredientValue retrieveIngredient(String ingredientName) {
-        var ingredient = listClient().getFromIngredientsList(new IngredientValue(ingredientName));
+        var ingredient = getFromIngredientsList(new IngredientValue(ingredientName));
         return ingredient.orElseGet(() -> fail("Unable to retrieve ingredient with name " + ingredientName));
     }
 
     @Step("Attempt retrieving ingredient with name {0}")
     public void attemptRetrievingIngredient(String ingredientName) {
-        var ingredient = listClient().getFromIngredientsList(new IngredientValue(ingredientName));
+        var ingredient = getFromIngredientsList(new IngredientValue(ingredientName));
         assertThat(ingredient).isNotPresent();
         fetchIngredient(generateNotFoundIngredientUrl());
     }

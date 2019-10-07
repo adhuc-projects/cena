@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.steps.serenity;
+package org.adhuc.cena.menu.steps.serenity.support;
 
 import static net.serenitybdd.rest.SerenityRest.then;
 import static org.springframework.http.HttpStatus.*;
@@ -28,7 +28,7 @@ import org.springframework.http.HttpStatus;
  * @version 0.1.0
  * @since 0.0.1
  */
-public class StatusAssertionDelegate {
+public final class StatusAssertionDelegate {
 
     public ValidatableResponse assertOk() {
         return assertOk(then());

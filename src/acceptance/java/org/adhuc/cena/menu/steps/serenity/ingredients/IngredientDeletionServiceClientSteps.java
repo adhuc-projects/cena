@@ -15,7 +15,12 @@
  */
 package org.adhuc.cena.menu.steps.serenity.ingredients;
 
+import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
+
+import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
+import org.adhuc.cena.menu.steps.serenity.support.RestClientDelegate;
+import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
 
 /**
  * The ingredient deletion rest-service client steps definition.
@@ -24,7 +29,14 @@ import net.thucydides.core.annotations.Step;
  * @version 0.1.0
  * @since 0.1.0
  */
-public class IngredientDeletionServiceClientSteps extends AbstractIngredientServiceClientSteps {
+public class IngredientDeletionServiceClientSteps {
+
+    @Delegate
+    private final RestClientDelegate restClientDelegate = new RestClientDelegate();
+    @Delegate
+    private final ResourceUrlResolverDelegate resourceUrlResolverDelegate = new ResourceUrlResolverDelegate();
+    @Delegate
+    private final StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
 
     @Step("Delete ingredients")
     public void deleteIngredients() {

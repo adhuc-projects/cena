@@ -15,7 +15,12 @@
  */
 package org.adhuc.cena.menu.steps.serenity;
 
+import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
+
+import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
+import org.adhuc.cena.menu.steps.serenity.support.RestClientDelegate;
+import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
 
 /**
  * The documentation service client steps.
@@ -24,7 +29,14 @@ import net.thucydides.core.annotations.Step;
  * @version 0.1.0
  * @since 0.0.1
  */
-public class DocumentationServiceClientSteps extends AbstractServiceClientSteps {
+public class DocumentationServiceClientSteps {
+
+    @Delegate
+    private final RestClientDelegate restClientDelegate = new RestClientDelegate();
+    @Delegate
+    private final ResourceUrlResolverDelegate resourceUrlResolverDelegate = new ResourceUrlResolverDelegate();
+    @Delegate
+    private final StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
 
     @Step("Get documentation")
     public void getDocumentation() {

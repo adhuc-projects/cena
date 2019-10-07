@@ -13,30 +13,26 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.steps.serenity;
+package org.adhuc.cena.menu.steps.serenity.support;
 
 import io.restassured.specification.RequestSpecification;
-import lombok.experimental.Delegate;
-import lombok.extern.slf4j.Slf4j;
 
 import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationProvider;
 
 /**
- * An abstract service client steps, providing convenient methods for resource resolution and assertions.
+ * A delegate providing access to underlying {@link RequestSpecification} for requests execution.
  *
  * @author Alexandre Carbenay
  * @version 0.1.0
  * @since 0.0.1
  */
-@Slf4j
-public abstract class AbstractServiceClientSteps {
+public final class RestClientDelegate {
 
-    final AuthenticationProvider authenticationProvider = AuthenticationProvider.instance();
-    @Delegate
-    private final ResourceUrlResolverDelegate resourceUrlResolverDelegate = new ResourceUrlResolverDelegate(authenticationProvider);
-    @Delegate
-    private final StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
+    private final AuthenticationProvider authenticationProvider = AuthenticationProvider.instance();
 
+    /**
+     * Provides a {@link RequestSpecification}.
+     */
     public RequestSpecification rest() {
         return authenticationProvider.rest();
     }

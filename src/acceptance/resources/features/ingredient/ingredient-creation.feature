@@ -13,3 +13,10 @@ Feature: Create an ingredient in the system
     When he creates the ingredient
     Then the ingredient is created
     And the ingredient can be found in the list
+
+  Scenario: Create an ingredient with already used name
+    Given an authenticated ingredient manager
+    And an existing "Tomato" ingredient
+    When he creates the ingredient
+    Then an error notifies that ingredient name already exists
+    And the ingredient can be found in the list

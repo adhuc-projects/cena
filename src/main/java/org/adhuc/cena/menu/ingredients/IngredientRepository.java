@@ -62,6 +62,14 @@ public interface IngredientRepository {
     }
 
     /**
+     * Finds the ingredient corresponding to the specified name.
+     *
+     * @param ingredientName the ingredient name.
+     * @return the ingredient if existing, empty otherwise.
+     */
+    Optional<Ingredient> findByName(String ingredientName);
+
+    /**
      * Saves the specified ingredient.
      *
      * @param ingredient the ingredient to save.

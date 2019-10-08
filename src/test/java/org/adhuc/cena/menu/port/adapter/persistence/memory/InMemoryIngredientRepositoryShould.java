@@ -101,7 +101,7 @@ class InMemoryIngredientRepositoryShould {
         @Test
         @DisplayName("return empty ingredient when getting ingredient with unknown id")
         void returnEmptyUnknownId() {
-            assertThat(repository.findById(CUCUMBER_ID)).isNotPresent();
+            assertThat(repository.findById(CUCUMBER_ID)).isEmpty();
         }
 
         @Test
@@ -120,6 +120,18 @@ class InMemoryIngredientRepositoryShould {
         @DisplayName("return tomato when getting not null ingredient with tomato id")
         void returnTomatoNotNull() {
             assertThat(repository.findNotNullById(TOMATO_ID)).isEqualToComparingFieldByField(tomato);
+        }
+
+        @Test
+        @DisplayName("return empty ingredient when getting ingredient with unknown name")
+        void returnEmptyUnknownName() {
+            assertThat(repository.findByName(CUCUMBER)).isEmpty();
+        }
+
+        @Test
+        @DisplayName("return tomato when getting ingredient with tomato name")
+        void returnTomatoByName() {
+            assertThat(repository.findByName(TOMATO)).isPresent().contains(tomato);
         }
 
         @Test

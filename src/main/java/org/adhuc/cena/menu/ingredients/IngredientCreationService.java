@@ -15,51 +15,40 @@
  */
 package org.adhuc.cena.menu.ingredients;
 
-import java.util.List;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 /**
- * An application service for ingredients.
+ * An domain service dedicated to ingredient creation. This service ensures that an ingredient can be created only if its
+ * name is not already used.
  *
  * @author Alexandre Carbenay
  * @version 0.1.0
  * @since 0.1.0
  */
-public interface IngredientAppService {
+@Slf4j
+@Service
+@RequiredArgsConstructor
+class IngredientCreationService {
+
+    @NonNull
+    private final IngredientRepository repository;
 
     /**
-     * Gets the ingredients.
-     *
-     * @return the ingredients (not modifiable).
-     */
-    List<Ingredient> getIngredients();
-
-    /**
-     * Gets the ingredient corresponding to the specified identity.
-     *
-     * @param ingredientId the ingredient identity.
-     * @return the ingredient.
-     * @throws org.adhuc.cena.menu.common.EntityNotFoundException if no ingredient corresponds to identity.
-     */
-    Ingredient getIngredient(IngredientId ingredientId);
-
-    /**
-     * Creates an ingredient.
+     * Creates an ingredient, ensuring the ingredient name is not already used.
      *
      * @param command the ingredient creation command.
+     * @return the created ingredient.
      * @throws IngredientNameAlreadyUsedException if the ingredient name specified in creation command is already used
      *                                            by another ingredient.
      */
-    Ingredient createIngredient(CreateIngredient command);
+    Ingredient createIngredient(CreateIngredient command) {
+        if (repository.findByName(command.ingredientName()).isPresent()) {
+            throw new IngredientNameAlreadyUsedException();
+        }
+        return repository.save(new Ingredient(command));
+    }
 
-    /**
-     * Deletes the ingredients.
-     */
-    void deleteIngredients();
-
-    /**
-     * Deletes an ingredient.
-     *
-     * @param command the ingredient deletion command.
-     */
-    void deleteIngredient(DeleteIngredient command);
 }

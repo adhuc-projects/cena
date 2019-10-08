@@ -54,6 +54,11 @@ public class IngredientListStepDefinitions {
         ingredientListServiceClient.assumeInIngredientsList(ingredientListServiceClient.storeAssumedIngredients(ingredients));
     }
 
+    @Given("^an existing \"(.*)\" ingredient$")
+    public void existingIngredient(String ingredientName) {
+        ingredientListServiceClient.assumeInIngredientsList(ingredientListServiceClient.storeIngredient(new IngredientValue(ingredientName)));
+    }
+
     @Given("^a non-existent \"(.*)\" ingredient$")
     public void nonExistentIngredient(String ingredientName) {
         ingredientListServiceClient.assumeNotInIngredientsList(ingredientListServiceClient.storeIngredient(new IngredientValue(ingredientName)));

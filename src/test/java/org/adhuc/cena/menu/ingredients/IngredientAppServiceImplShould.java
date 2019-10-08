@@ -38,11 +38,13 @@ import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryIngredientRep
 @DisplayName("Ingredient service should")
 class IngredientAppServiceImplShould {
 
+    private IngredientRepository ingredientRepository;
     private IngredientAppServiceImpl service;
 
     @BeforeEach
     void setUp() {
-        service = new IngredientAppServiceImpl(new InMemoryIngredientRepository());
+        ingredientRepository = new InMemoryIngredientRepository();
+        service = new IngredientAppServiceImpl(new IngredientCreationService(ingredientRepository), ingredientRepository);
     }
 
     @Test
@@ -79,6 +81,14 @@ class IngredientAppServiceImplShould {
             assertThat(service.getIngredients()).isEmpty();
         }
 
+        @Test
+        @DisplayName("create ingredient successfully")
+        void createIngredient() {
+            var ingredient = ingredient();
+            service.createIngredient(createCommand(ingredient));
+            assertThat(service.getIngredient(ingredient.id())).isNotNull().isEqualTo(ingredient);
+        }
+
     }
 
     @Nested
@@ -90,7 +100,7 @@ class IngredientAppServiceImplShould {
         @BeforeEach
         void setUp() {
             tomato = ingredient(TOMATO_ID, TOMATO);
-            service.createIngredient(createCommand(tomato));
+            ingredientRepository.save(tomato);
         }
 
         @Test
@@ -110,6 +120,20 @@ class IngredientAppServiceImplShould {
         @DisplayName("return tomato when getting ingredient from tomato id")
         void returnTomato() {
             assertThat(service.getIngredient(TOMATO_ID)).isEqualToComparingFieldByField(tomato);
+        }
+
+        @Test
+        @DisplayName("create cucumber successfully")
+        void createIngredient() {
+            var ingredient = ingredient(CUCUMBER_ID, CUCUMBER);
+            service.createIngredient(createCommand(ingredient));
+            assertThat(service.getIngredient(ingredient.id())).isNotNull().isEqualTo(ingredient);
+        }
+
+        @Test
+        @DisplayName("fail during duplicated tomato creation")
+        void failCreatingDuplicateTomato() {
+            assertThrows(IngredientNameAlreadyUsedException.class, () -> service.createIngredient(createCommand(tomato)));
         }
 
         @Test
@@ -136,7 +160,7 @@ class IngredientAppServiceImplShould {
             @BeforeEach
             void setUp() {
                 cucumber = ingredient(CUCUMBER_ID, CUCUMBER);
-                service.createIngredient(createCommand(cucumber));
+                ingredientRepository.save(cucumber);
             }
 
             @Test

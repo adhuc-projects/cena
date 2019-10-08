@@ -49,6 +49,11 @@ public class InMemoryIngredientRepository implements IngredientRepository {
     }
 
     @Override
+    public Optional<Ingredient> findByName(String ingredientName) {
+        return ingredients.values().stream().filter(i -> i.name().equals(ingredientName)).findFirst();
+    }
+
+    @Override
     public <S extends Ingredient> S save(@NonNull S ingredient) {
         ingredients.put(ingredient.id(), ingredient);
         return ingredient;

@@ -17,8 +17,7 @@ package org.adhuc.cena.menu.port.adapter.rest.ingredients;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -30,6 +29,7 @@ import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
 
 import java.util.List;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +41,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.adhuc.cena.menu.ingredients.CreateIngredient;
 import org.adhuc.cena.menu.ingredients.Ingredient;
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
+import org.adhuc.cena.menu.ingredients.IngredientNameAlreadyUsedException;
 
 /**
  * The {@link IngredientsController} test class.
@@ -100,7 +101,7 @@ class IngredientsControllerShould {
         @DisplayName("have self link with correct value when retrieving ingredients")
         void haveSelfOnList() throws Exception {
             mvc.perform(get(INGREDIENTS_API_URL))
-                    .andExpect(jsonPath("$._links.self.href", endsWith(INGREDIENTS_API_URL)));
+                    .andExpect(jsonPath("$._links.self.href", Matchers.endsWith(INGREDIENTS_API_URL)));
         }
 
         @Test
@@ -156,6 +157,16 @@ class IngredientsControllerShould {
         mvc.perform(post(INGREDIENTS_API_URL)
                 .contentType(APPLICATION_JSON)
                 .content("{\"name\":\" \t\"}")
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("respond Bad Request when ingredient service throws IngredientNameAlreadyUsedException")
+    void respond400OnCreationIngredientNameAlreadyUsed() throws Exception {
+        doThrow(new IngredientNameAlreadyUsedException()).when(ingredientAppServiceMock).createIngredient(any());
+        mvc.perform(post(INGREDIENTS_API_URL)
+                .contentType(APPLICATION_JSON)
+                .content("{\"name\":\"Tomato\"}")
         ).andExpect(status().isBadRequest());
     }
 

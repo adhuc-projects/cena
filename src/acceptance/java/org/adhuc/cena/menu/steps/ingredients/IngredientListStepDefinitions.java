@@ -49,29 +49,32 @@ public class IngredientListStepDefinitions {
 
     @Given("^the following existing ingredients$")
     public void existingIngredients(DataTable dataTable) {
-        ingredientListServiceClient.assumeInIngredientsList(dataTable.asMaps(String.class, String.class).stream()
-                .map(attributes -> new IngredientValue(attributes.get(NAME_ATTRIBUTE))).collect(toList())
-        );
+        var ingredients = dataTable.asMaps(String.class, String.class).stream()
+                .map(attributes -> new IngredientValue(attributes.get(NAME_ATTRIBUTE))).collect(toList());
+        ingredientListServiceClient.assumeInIngredientsList(ingredientListServiceClient.storeAssumedIngredients(ingredients));
     }
 
     @Given("^a non-existent \"(.*)\" ingredient$")
     public void nonExistentIngredient(String ingredientName) {
-        ingredientListServiceClient.assumeNotInIngredientsList(new IngredientValue(ingredientName));
+        ingredientListServiceClient.assumeNotInIngredientsList(ingredientListServiceClient.storeIngredient(new IngredientValue(ingredientName)));
     }
 
     @When("^he lists the ingredients$")
     public void listIngredients() {
-        ingredientListServiceClient.getIngredients();
+        var ingredients = ingredientListServiceClient.getIngredients();
+        ingredientListServiceClient.storeIngredients(ingredients);
     }
 
     @Then("^the ingredients list is empty$")
     public void emptyIngredientList() {
-        ingredientListServiceClient.assertEmptyIngredientsList();
+        ingredientListServiceClient.assertEmptyIngredientsList(ingredientListServiceClient.storedIngredients());
     }
 
     @Then("^the ingredients list contains the existing ingredients$")
     public void existingIngredientsFoundInList() {
-        ingredientListServiceClient.assertInIngredientsList(ingredientListServiceClient.getAssumedIngredients());
+        ingredientListServiceClient.assertInIngredientsList(
+                ingredientListServiceClient.storedAssumedIngredients(),
+                ingredientListServiceClient.storedIngredients());
     }
 
     @Then("^the ingredient can be found in the list$")

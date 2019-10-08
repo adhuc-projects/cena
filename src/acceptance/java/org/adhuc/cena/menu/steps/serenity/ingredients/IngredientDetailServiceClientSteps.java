@@ -44,7 +44,7 @@ public class IngredientDetailServiceClientSteps {
     @Delegate
     private final IngredientListClientDelegate listClient = new IngredientListClientDelegate(ingredientsResourceUrl());
     @Delegate
-    private final IngredientStorageDelegate ingredientStorage = new IngredientStorageDelegate(ingredientsResourceUrl());
+    private final IngredientStorageDelegate ingredientStorage = new IngredientStorageDelegate();
 
     @Step("Get ingredient from {0}")
     public IngredientValue getIngredientFromUrl(String ingredientDetailUrl) {

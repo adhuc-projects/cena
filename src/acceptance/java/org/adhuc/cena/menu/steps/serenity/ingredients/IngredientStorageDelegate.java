@@ -2,8 +2,7 @@ package org.adhuc.cena.menu.steps.serenity.ingredients;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
-import java.util.function.Supplier;
+import java.util.Collection;
 
 import net.serenitybdd.core.Serenity;
 
@@ -20,20 +19,24 @@ final class IngredientStorageDelegate {
     static final String INGREDIENTS_SESSION_KEY = "ingredients";
     static final String INGREDIENT_SESSION_KEY = "ingredient";
 
-    private final IngredientListClientDelegate listClient;
-
-    IngredientStorageDelegate(String ingredientsResourceUrl) {
-        listClient = new IngredientListClientDelegate(ingredientsResourceUrl);
-    }
-
     /**
      * Stores the ingredients, using the default {#value INGREDIENTS_SESSION_KEY} key.
      *
      * @param ingredients the ingredients to store.
      * @return the ingredients.
      */
-    public List<IngredientValue> storeIngredients(List<IngredientValue> ingredients) {
+    public Collection<IngredientValue> storeIngredients(Collection<IngredientValue> ingredients) {
         return storeIngredients(INGREDIENTS_SESSION_KEY, ingredients);
+    }
+
+    /**
+     * Stores the assumed ingredients.
+     *
+     * @param ingredients the ingredients to store.
+     * @return the ingredients.
+     */
+    public Collection<IngredientValue> storeAssumedIngredients(Collection<IngredientValue> ingredients) {
+        return storeIngredients(ASSUMED_INGREDIENTS_SESSION_KEY, ingredients);
     }
 
     /**
@@ -43,7 +46,7 @@ final class IngredientStorageDelegate {
      * @param ingredients the ingredients to store.
      * @return the ingredients.
      */
-    public List<IngredientValue> storeIngredients(String sessionKey, List<IngredientValue> ingredients) {
+    Collection<IngredientValue> storeIngredients(String sessionKey, Collection<IngredientValue> ingredients) {
         Serenity.setSessionVariable(sessionKey).to(ingredients);
         return ingredients;
     }
@@ -55,8 +58,18 @@ final class IngredientStorageDelegate {
      * @return the stored ingredients.
      * @throws AssertionError if ingredients were not previously stored.
      */
-    public List<IngredientValue> storedIngredients() {
+    public Collection<IngredientValue> storedIngredients() {
         return storedIngredients(INGREDIENTS_SESSION_KEY);
+    }
+
+    /**
+     * Gets the stored assumed ingredients, or fails if ingredients were not previously stored.
+     *
+     * @return the stored assumed ingredients.
+     * @throws AssertionError if ingredients were not previously stored.
+     */
+    public Collection<IngredientValue> storedAssumedIngredients() {
+        return storedIngredients(ASSUMED_INGREDIENTS_SESSION_KEY);
     }
 
     /**
@@ -66,34 +79,10 @@ final class IngredientStorageDelegate {
      * @return the stored ingredients.
      * @throws AssertionError if ingredients were not previously stored.
      */
-    public List<IngredientValue> storedIngredients(String sessionKey) {
+    Collection<IngredientValue> storedIngredients(String sessionKey) {
         assertThat(Serenity.hasASessionVariableCalled(sessionKey))
                 .as("Ingredients in session (%s) must have been set previously", sessionKey).isTrue();
         return Serenity.sessionVariableCalled(sessionKey);
-    }
-
-    /**
-     * Gets the stored ingredients, or fetches the list and stores it. By default, the {#value INGREDIENTS_SESSION_KEY}
-     * key is used.
-     *
-     * @return the stored ingredients.
-     */
-    public List<IngredientValue> storedOrRetrievedIngredients() {
-        return storedOrRetrievedIngredients(INGREDIENTS_SESSION_KEY, () -> listClient.fetchIngredients());
-    }
-
-    /**
-     * Gets the stored ingredients, or retrieves it through the specified supplier and stores it.
-     *
-     * @param sessionKey          the session key.
-     * @param ingredientsSupplier the ingredients supplier.
-     * @return the stored ingredients.
-     */
-    public List<IngredientValue> storedOrRetrievedIngredients(String sessionKey, Supplier<List<IngredientValue>> ingredientsSupplier) {
-        if (Serenity.hasASessionVariableCalled(sessionKey)) {
-            return Serenity.sessionVariableCalled(sessionKey);
-        }
-        return storeIngredients(sessionKey, ingredientsSupplier.get());
     }
 
     /**
@@ -113,7 +102,7 @@ final class IngredientStorageDelegate {
      * @param ingredient the ingredient to store.
      * @return the ingredient.
      */
-    public IngredientValue storeIngredient(String sessionKey, IngredientValue ingredient) {
+    IngredientValue storeIngredient(String sessionKey, IngredientValue ingredient) {
         Serenity.setSessionVariable(sessionKey).to(ingredient);
         return ingredient;
     }
@@ -136,7 +125,7 @@ final class IngredientStorageDelegate {
      * @return the stored ingredient.
      * @throws AssertionError if ingredient was not previously stored.
      */
-    public IngredientValue storedIngredient(String sessionKey) {
+    IngredientValue storedIngredient(String sessionKey) {
         IngredientValue ingredient = Serenity.sessionVariableCalled(sessionKey);
         assertThat(ingredient).isNotNull();
         return ingredient;

@@ -18,13 +18,11 @@ package org.adhuc.cena.menu.steps.serenity.ingredients;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
 
-import static org.adhuc.cena.menu.steps.serenity.ingredients.IngredientStorageDelegate.ASSUMED_INGREDIENTS_SESSION_KEY;
 import static org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue.COMPARATOR;
 
-import java.util.List;
+import java.util.Collection;
 
 import lombok.experimental.Delegate;
-import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
 
@@ -44,7 +42,7 @@ public class IngredientListServiceClientSteps {
     @Delegate
     private final IngredientListClientDelegate listClient = new IngredientListClientDelegate(ingredientsResourceUrl());
     @Delegate
-    private final IngredientStorageDelegate ingredientStorage = new IngredientStorageDelegate(ingredientsResourceUrl());
+    private final IngredientStorageDelegate ingredientStorage = new IngredientStorageDelegate();
 
     @Steps
     private IngredientCreationServiceClientSteps ingredientCreationServiceClient;
@@ -58,13 +56,12 @@ public class IngredientListServiceClientSteps {
     }
 
     @Step("Assert empty ingredients list")
-    public void assertEmptyIngredientsList() {
-        assertThat(storedOrRetrievedIngredients()).isEmpty();
+    public void assertEmptyIngredientsList(Collection<IngredientValue> ingredients) {
+        assertThat(ingredients).isEmpty();
     }
 
     @Step("Assume ingredient {0} is in ingredients list")
     public void assumeInIngredientsList(IngredientValue ingredient) {
-        storeIngredient(ingredient);
         if (getFromIngredientsList(ingredient).isEmpty()) {
             ingredientCreationServiceClient.createIngredient(ingredient);
         }
@@ -72,8 +69,7 @@ public class IngredientListServiceClientSteps {
     }
 
     @Step("Assume ingredients {0} are in ingredients list")
-    public void assumeInIngredientsList(List<IngredientValue> ingredients) {
-        storeIngredients(ASSUMED_INGREDIENTS_SESSION_KEY, ingredients);
+    public void assumeInIngredientsList(Collection<IngredientValue> ingredients) {
         var existingIngredients = fetchIngredients();
         ingredients.stream()
                 .filter(ingredient -> existingIngredients.stream()
@@ -84,7 +80,6 @@ public class IngredientListServiceClientSteps {
 
     @Step("Assume ingredient {0} is not in ingredients list")
     public void assumeNotInIngredientsList(IngredientValue ingredient) {
-        storeIngredient(ingredient);
         getFromIngredientsList(ingredient).ifPresent(i -> ingredientDeletionServiceClient.deleteIngredient(i));
         assumeThat(fetchIngredients()).usingElementComparator(COMPARATOR).doesNotContain(ingredient);
     }
@@ -94,9 +89,9 @@ public class IngredientListServiceClientSteps {
         assertThat(getFromIngredientsList(ingredient)).isPresent();
     }
 
-    @Step("Assert ingredients {0} are in ingredients list")
-    public void assertInIngredientsList(List<IngredientValue> ingredients) {
-        assertThat(fetchIngredients()).usingElementComparator(COMPARATOR).containsAll(ingredients);
+    @Step("Assert ingredients {0} are in ingredients list {1}")
+    public void assertInIngredientsList(Collection<IngredientValue> expected, Collection<IngredientValue> actual) {
+        assertThat(actual).usingElementComparator(COMPARATOR).containsAll(expected);
     }
 
     @Step("Assert ingredient {0} is not in ingredients list")
@@ -104,15 +99,9 @@ public class IngredientListServiceClientSteps {
         assertThat(getFromIngredientsList(ingredient)).isNotPresent();
     }
 
-    public List<IngredientValue> getAssumedIngredients() {
-        assertThat(Serenity.hasASessionVariableCalled(ASSUMED_INGREDIENTS_SESSION_KEY))
-                .as("Assumed ingredients must have been set previously").isTrue();
-        return Serenity.sessionVariableCalled(ASSUMED_INGREDIENTS_SESSION_KEY);
-    }
-
-    @Step("Get ingredients list (session)")
-    public List<IngredientValue> getIngredients() {
-        return storedOrRetrievedIngredients();
+    @Step("Get ingredients list")
+    public Collection<IngredientValue> getIngredients() {
+        return fetchIngredients();
     }
 
 }

@@ -43,7 +43,7 @@ public class IngredientCreationServiceClientSteps {
     @Delegate
     private final StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
     @Delegate
-    private final IngredientStorageDelegate ingredientStorage = new IngredientStorageDelegate(ingredientsResourceUrl());
+    private final IngredientStorageDelegate ingredientStorage = new IngredientStorageDelegate();
 
     @Steps
     private IngredientDetailServiceClientSteps ingredientDetailServiceClient;

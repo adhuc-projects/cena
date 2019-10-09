@@ -16,6 +16,7 @@
 package org.adhuc.cena.menu.steps.authentication;
 
 import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
 import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
@@ -47,6 +48,11 @@ public class AuthenticationStepDefinitions {
     @Given("^an authenticated actuator manager$")
     public void authenticatedActuatorManager() {
         authenticationServiceClient.withActuatorManager();
+    }
+
+    @Then("^an error notifies that user is not authenticated$")
+    public void errorUserNotAuthenticated() {
+        authenticationServiceClient.assertUserNotAuthenticated();
     }
 
 }

@@ -42,6 +42,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
 import org.adhuc.cena.menu.port.adapter.rest.ResultHandlerConfiguration;
 import org.adhuc.cena.menu.port.adapter.rest.documentation.support.ConstrainedFields;
+import org.adhuc.cena.menu.support.WithIngredientManager;
 
 /**
  * The ingredients related rest-services documentation.
@@ -84,6 +85,7 @@ class IngredientsDocumentation {
     }
 
     @Test
+    @WithIngredientManager
     @DisplayName("generates ingredient creation example")
     void ingredientsCreateExample() throws Exception {
         when(ingredientAppServiceMock.createIngredient(any())).thenReturn(ingredient());

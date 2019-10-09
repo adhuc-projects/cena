@@ -63,7 +63,7 @@ public class IngredientListServiceClientSteps {
     @Step("Assume ingredient {0} is in ingredients list")
     public void assumeInIngredientsList(IngredientValue ingredient) {
         if (getFromIngredientsList(ingredient).isEmpty()) {
-            ingredientCreationServiceClient.createIngredient(ingredient);
+            ingredientCreationServiceClient.createIngredientAsIngredientManager(ingredient);
         }
         assumeThat(fetchIngredients()).usingElementComparator(COMPARATOR).contains(ingredient);
     }
@@ -74,7 +74,7 @@ public class IngredientListServiceClientSteps {
         ingredients.stream()
                 .filter(ingredient -> existingIngredients.stream()
                         .noneMatch(existing -> COMPARATOR.compare(existing, ingredient) == 0))
-                .forEach(ingredient -> ingredientCreationServiceClient.createIngredient(ingredient));
+                .forEach(ingredient -> ingredientCreationServiceClient.createIngredientAsIngredientManager(ingredient));
         assumeThat(fetchIngredients()).usingElementComparator(COMPARATOR).containsAll(ingredients);
     }
 

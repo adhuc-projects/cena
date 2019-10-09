@@ -15,35 +15,38 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest;
 
-import static org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest.to;
-import static org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest.toAnyEndpoint;
-
-import static org.adhuc.cena.menu.common.security.RolesDefinition.ACTUATOR_ROLE;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
 /**
- * Security configuration for actuator services.
+ * Security configuration for REST API.
  *
  * @author Alexandre Carbenay
  * @version 0.1.0
- * @since 0.0.1
+ * @since 0.1.0
  */
 @Configuration
-class ActuatorSecurity extends WebSecurityConfigurerAdapter {
+@Order(99)
+public class ApiSecurity extends WebSecurityConfigurerAdapter {
 
-    private static final String HEALTH_ENDPOINT_ID = "health";
+    private static final String BASE_API_PATH = "/api/**";
+    private static final String BASE_INGREDIENTS_PATH = "/api/ingredients/**";
 
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.requestMatcher(toAnyEndpoint().excluding(HEALTH_ENDPOINT_ID)).authorizeRequests().anyRequest().hasRole(ACTUATOR_ROLE)
-                .and().requestMatcher(to(HEALTH_ENDPOINT_ID)).authorizeRequests().anyRequest().permitAll()
-                .and().authorizeRequests().mvcMatchers("/**").permitAll()
-                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().httpBasic();
+    protected void configure(final HttpSecurity http) throws Exception {
+        var authorizationConfigurer = http.authorizeRequests();
+        authorizationConfigurer.mvcMatchers(HttpMethod.POST, BASE_INGREDIENTS_PATH).authenticated();
+        authorizationConfigurer.mvcMatchers(BASE_API_PATH).permitAll();
+        http.csrf().disable();
+        http.httpBasic().authenticationEntryPoint(new HttpStatusEntryPoint(UNAUTHORIZED));
+        http.sessionManagement().sessionCreationPolicy(STATELESS);
     }
 
 }

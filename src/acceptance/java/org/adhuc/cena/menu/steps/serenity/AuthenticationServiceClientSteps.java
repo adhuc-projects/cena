@@ -15,8 +15,10 @@
  */
 package org.adhuc.cena.menu.steps.serenity;
 
+import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 
+import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationProvider;
 
 /**
@@ -29,6 +31,9 @@ import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationP
 public class AuthenticationServiceClientSteps {
 
     private final AuthenticationProvider authenticationProvider = AuthenticationProvider.instance();
+
+    @Delegate
+    private final StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
 
     @Step("Defines a community user")
     public void withCommunityUser() {
@@ -43,6 +48,11 @@ public class AuthenticationServiceClientSteps {
     @Step("Authenticate as actuator manager")
     public void withActuatorManager() {
         authenticationProvider.withActuatorManager();
+    }
+
+    @Step("Assert user is not authenticated")
+    public void assertUserNotAuthenticated() {
+        assertUnauthorized();
     }
 
 }

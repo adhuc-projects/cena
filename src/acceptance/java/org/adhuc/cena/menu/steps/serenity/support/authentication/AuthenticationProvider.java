@@ -15,6 +15,8 @@
  */
 package org.adhuc.cena.menu.steps.serenity.support.authentication;
 
+import static org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType.*;
+
 import io.restassured.specification.RequestSpecification;
 import net.serenitybdd.rest.SerenityRest;
 
@@ -25,6 +27,10 @@ import net.serenitybdd.rest.SerenityRest;
  * This provider also manages the initialization of the underlying {@link SerenityRest#rest()}'s
  * {@link RequestSpecification}, to ensure that only one is created for each new test execution, and is used for each
  * call to {@link #rest()}.
+ * <p>
+ * It is still possible to execute requests with specific authentication, by-passing the general authentication for the
+ * test execution. This can be useful to ensure assuming steps are run with appropriate authentication level without
+ * impacting the rest of the test execution. Refer to {@link #restWithAuth(AuthenticationType)} for this specific usage.
  * <p>
  * Must be used as a singleton, using {@link #instance()} to ensure that it is shared between all steps.
  *
@@ -50,14 +56,30 @@ public class AuthenticationProvider {
      * Cleans the currently defined authentication.
      */
     public void clean() {
-        authentication = new AnonymousAuthentication();
+        authentication = authentication(COMMUNITY_USER);
     }
 
     /**
-     * Provides a {@link RequestSpecification} enhanced with potential authentication.
+     * Provides a {@link RequestSpecification} enhanced with potential authentication, based on previously specified
+     * authentication type.
+     *
+     * @return the {@link RequestSpecification} to execute request.
+     * @see #withCommunityUser()
+     * @see #withActuatorManager()
+     * @see #withIngredientManager()
      */
     public RequestSpecification rest() {
         return authentication.authenticate(SerenityRest.rest());
+    }
+
+    /**
+     * Provides a {@link RequestSpecification} enhanced with potential authentication as requested.
+     *
+     * @param authenticationType the authentication type.
+     * @return the {@link RequestSpecification} to execute request.
+     */
+    public RequestSpecification restWithAuth(AuthenticationType authenticationType) {
+        return authentication(authenticationType).authenticate(SerenityRest.rest());
     }
 
     /**
@@ -71,13 +93,18 @@ public class AuthenticationProvider {
      * Authenticates with ingredient manager.
      */
     public void withIngredientManager() {
-        authentication = new BasicAuthentication("ingredientManager", "ingredientManager");
+        authentication = authentication(INGREDIENT_MANAGER);
     }
 
     /**
      * Authenticates with actuator manager.
      */
     public void withActuatorManager() {
-        authentication = new BasicAuthentication("actuator", "actuator");
+        authentication = authentication(ACTUATOR_MANAGER);
     }
+
+    private Authentication authentication(AuthenticationType authenticationType) {
+        return authenticationType.getAuthenticationSupplier().get();
+    }
+
 }

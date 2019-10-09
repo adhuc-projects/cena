@@ -15,11 +15,14 @@
  */
 package org.adhuc.cena.menu.ingredients;
 
+import static org.adhuc.cena.menu.common.security.RolesDefinition.HAS_INGREDIENT_MANAGER_ROLE_PREDICATE;
+
 import java.util.List;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 /**
@@ -50,6 +53,7 @@ class IngredientAppServiceImpl implements IngredientAppService {
     }
 
     @Override
+    @PreAuthorize(HAS_INGREDIENT_MANAGER_ROLE_PREDICATE)
     public Ingredient createIngredient(@NonNull CreateIngredient command) {
         log.info("Create ingredient from command {}", command);
         return ingredientCreationService.createIngredient(command);

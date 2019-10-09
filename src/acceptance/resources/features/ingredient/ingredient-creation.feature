@@ -20,3 +20,10 @@ Feature: Create an ingredient in the system
     When he creates the ingredient
     Then an error notifies that ingredient name already exists
     And the ingredient can be found in the list
+
+  Scenario: Create an ingredient as community user
+    Given a community user
+    And a non-existent "Tomato" ingredient
+    When he creates the ingredient
+    Then an error notifies that user is not authenticated
+    And the ingredient cannot be found in the list

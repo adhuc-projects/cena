@@ -19,6 +19,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpHeaders.LOCATION;
 
+import static org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType.INGREDIENT_MANAGER;
+
+import io.restassured.specification.RequestSpecification;
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
@@ -51,8 +54,17 @@ public class IngredientCreationServiceClientSteps {
 
     @Step("Create the ingredient {0}")
     public void createIngredient(IngredientValue ingredient) {
+        createIngredient(ingredient, rest());
+    }
+
+    @Step("Create the ingredient {0} as ingredient manager")
+    void createIngredientAsIngredientManager(IngredientValue ingredient) {
+        createIngredient(ingredient, rest(INGREDIENT_MANAGER));
+    }
+
+    private void createIngredient(IngredientValue ingredient, RequestSpecification specification) {
         var ingredientsResourceUrl = ingredientsResourceUrl();
-        rest().contentType(HAL_JSON_VALUE).body(ingredient).post(ingredientsResourceUrl).andReturn();
+        specification.contentType(HAL_JSON_VALUE).body(ingredient).post(ingredientsResourceUrl).andReturn();
     }
 
     @Step("Create an ingredient without name")

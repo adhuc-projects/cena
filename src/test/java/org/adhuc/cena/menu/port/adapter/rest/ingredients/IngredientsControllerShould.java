@@ -16,7 +16,8 @@
 package org.adhuc.cena.menu.port.adapter.rest.ingredients;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.*;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 import static org.springframework.http.HttpHeaders.LOCATION;
@@ -35,6 +36,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -42,6 +44,9 @@ import org.adhuc.cena.menu.ingredients.CreateIngredient;
 import org.adhuc.cena.menu.ingredients.Ingredient;
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
 import org.adhuc.cena.menu.ingredients.IngredientNameAlreadyUsedException;
+import org.adhuc.cena.menu.port.adapter.rest.ApiSecurity;
+import org.adhuc.cena.menu.support.WithCommunityUser;
+import org.adhuc.cena.menu.support.WithIngredientManager;
 
 /**
  * The {@link IngredientsController} test class.
@@ -53,6 +58,7 @@ import org.adhuc.cena.menu.ingredients.IngredientNameAlreadyUsedException;
 @Tag("integration")
 @Tag("restController")
 @WebMvcTest({IngredientsController.class, IngredientResourceAssembler.class})
+@Import(ApiSecurity.class)
 @DisplayName("Ingredients controller should")
 class IngredientsControllerShould {
 
@@ -134,6 +140,17 @@ class IngredientsControllerShould {
     }
 
     @Test
+    @WithCommunityUser
+    @DisplayName("respond Unauthorized when creating ingredient as an anonymous user")
+    void respond401OnCreationAsAnonymous() throws Exception {
+        mvc.perform(post(INGREDIENTS_API_URL)
+                .contentType(APPLICATION_JSON)
+                .content("{\"name\":\"Tomato\"}")
+        ).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithIngredientManager
     @DisplayName("respond Unsupported Media Type when creating ingredient with XML content")
     void respond415OnCreationXML() throws Exception {
         mvc.perform(post(INGREDIENTS_API_URL)
@@ -143,6 +160,7 @@ class IngredientsControllerShould {
     }
 
     @Test
+    @WithIngredientManager
     @DisplayName("respond Bad Request when creating ingredient without name")
     void respond400OnCreationWithoutName() throws Exception {
         mvc.perform(post(INGREDIENTS_API_URL)
@@ -152,6 +170,7 @@ class IngredientsControllerShould {
     }
 
     @Test
+    @WithIngredientManager
     @DisplayName("respond Bad Request when creating ingredient with blank name")
     void respond400OnCreationWithBlankName() throws Exception {
         mvc.perform(post(INGREDIENTS_API_URL)
@@ -161,6 +180,7 @@ class IngredientsControllerShould {
     }
 
     @Test
+    @WithIngredientManager
     @DisplayName("respond Bad Request when ingredient service throws IngredientNameAlreadyUsedException")
     void respond400OnCreationIngredientNameAlreadyUsed() throws Exception {
         doThrow(new IngredientNameAlreadyUsedException("Tomato")).when(ingredientAppServiceMock).createIngredient(any());
@@ -171,6 +191,7 @@ class IngredientsControllerShould {
     }
 
     @Test
+    @WithIngredientManager
     @DisplayName("respond Created when creating ingredient with JSON content")
     void respond201OnCreationJson() throws Exception {
         mvc.perform(post(INGREDIENTS_API_URL)
@@ -180,6 +201,7 @@ class IngredientsControllerShould {
     }
 
     @Test
+    @WithIngredientManager
     @DisplayName("respond Created when creating ingredient with HAL content")
     void respond201OnCreationHal() throws Exception {
         mvc.perform(post(INGREDIENTS_API_URL)
@@ -189,6 +211,7 @@ class IngredientsControllerShould {
     }
 
     @Test
+    @WithIngredientManager
     @DisplayName("respond with a Location header when creating ingredient successfully")
     void respondWithLocationAfterCreationSuccess() throws Exception {
         mvc.perform(post(INGREDIENTS_API_URL)
@@ -198,6 +221,7 @@ class IngredientsControllerShould {
     }
 
     @Test
+    @WithIngredientManager
     @DisplayName("call application service when creating ingredient")
     void callServiceOnCreation() throws Exception {
         var commandCaptor = ArgumentCaptor.forClass(CreateIngredient.class);

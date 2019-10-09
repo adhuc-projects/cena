@@ -18,6 +18,7 @@ package org.adhuc.cena.menu.steps.serenity.support;
 import io.restassured.specification.RequestSpecification;
 
 import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationProvider;
+import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType;
 
 /**
  * A delegate providing access to underlying {@link RequestSpecification} for requests execution.
@@ -35,6 +36,15 @@ public final class RestClientDelegate {
      */
     public RequestSpecification rest() {
         return authenticationProvider.rest();
+    }
+
+    /**
+     * Provides a {@link RequestSpecification} depending on the authentication type.
+     *
+     * @param authenticationType the authentication type.
+     */
+    public RequestSpecification rest(AuthenticationType authenticationType) {
+        return authenticationProvider.restWithAuth(authenticationType);
     }
 
 }

@@ -46,7 +46,7 @@ class IngredientCreationService {
      */
     Ingredient createIngredient(CreateIngredient command) {
         if (repository.findByName(command.ingredientName()).isPresent()) {
-            throw new IngredientNameAlreadyUsedException();
+            throw new IngredientNameAlreadyUsedException(command.ingredientName());
         }
         return repository.save(new Ingredient(command));
     }

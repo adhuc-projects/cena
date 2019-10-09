@@ -62,6 +62,26 @@ Every response has the following header(s), if relevant:
 
 include::{snippets}/headers-example/response-headers.adoc[]
 
+[[overview-errors]]
+== Errors
+
+Whenever an error response (status code >= 400) is returned, the body will contain a JSON object that describes the
+problem. The error object has the following structure:
+
+include::{snippets}/error-example/response-fields.adoc[]
+
+For example, a request that attempts to create an ingredient with an already used name will produce a
+`400 Bad Request` response:
+
+include::{snippets}/error-example/http-response.adoc[]
+
+[[errors-list]]
+=== Errors list
+
+Here is the list of all error codes that an error response can reference
+
+include::{snippets}/errors-list/errors.adoc[]
+
 [[overview-hypermedia]]
 == Hypermedia
 

@@ -22,6 +22,7 @@ import static org.springframework.http.HttpHeaders.LOCATION;
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
+import org.assertj.core.api.SoftAssertions;
 
 import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.RestClientDelegate;
@@ -66,6 +67,15 @@ public class IngredientCreationServiceClientSteps {
         assertThat(ingredientLocation).isNotBlank();
         var retrievedIngredient = ingredientDetailServiceClient.getIngredientFromUrl(ingredientLocation);
         retrievedIngredient.assertEqualTo(ingredient);
+    }
+
+    @Step("Assert ingredient name {0} already exists")
+    public void assertIngredientNameAlreadyExists(String name) {
+        var jsonPath = assertBadRequest().extract().jsonPath();
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(jsonPath.getString("message")).contains("Ingredient name '" + name + "' already used by an existing ingredient");
+            softly.assertThat(jsonPath.getInt("code")).isEqualTo(900100);
+        });
     }
 
 }

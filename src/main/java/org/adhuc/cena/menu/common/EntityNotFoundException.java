@@ -33,7 +33,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Value
 @EqualsAndHashCode(callSuper = true)
 @ResponseStatus(NOT_FOUND)
-public class EntityNotFoundException extends RuntimeException {
+public class EntityNotFoundException extends CenaException {
+
+    private static final ExceptionCode EXCEPTION_CODE = ExceptionCode.ENTITY_NOT_FOUND;
 
     private final Class<? extends Entity<?>> entityType;
     private final String identity;
@@ -55,7 +57,7 @@ public class EntityNotFoundException extends RuntimeException {
      * @param identity   the identity value.
      */
     public EntityNotFoundException(Class<? extends Entity<?>> entityType, String identity) {
-        super(format("Cannot find entity of type %s with identity %s", entityType, identity));
+        super(format("Cannot find entity of type %s with identity %s", entityType, identity), EXCEPTION_CODE);
         this.entityType = entityType;
         this.identity = identity;
     }

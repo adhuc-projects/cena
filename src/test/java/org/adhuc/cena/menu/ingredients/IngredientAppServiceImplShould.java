@@ -133,7 +133,8 @@ class IngredientAppServiceImplShould {
         @Test
         @DisplayName("fail during duplicated tomato creation")
         void failCreatingDuplicateTomato() {
-            assertThrows(IngredientNameAlreadyUsedException.class, () -> service.createIngredient(createCommand(tomato)));
+            var exception = assertThrows(IngredientNameAlreadyUsedException.class, () -> service.createIngredient(createCommand(tomato)));
+            assertThat(exception).hasMessage("Ingredient name 'Tomato' already used by an existing ingredient");
         }
 
         @Test

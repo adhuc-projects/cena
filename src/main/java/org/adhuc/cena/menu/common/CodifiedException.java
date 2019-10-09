@@ -13,36 +13,22 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.port.adapter.rest;
-
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-
-import lombok.EqualsAndHashCode;
-import lombok.Value;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-import org.adhuc.cena.menu.common.CenaException;
-import org.adhuc.cena.menu.common.ExceptionCode;
+package org.adhuc.cena.menu.common;
 
 /**
- * An exception occurring while executing a rest-service call with invalid request.
+ * Defines an exception containing an {@link ExceptionCode}.
  *
  * @author Alexandre Carbenay
  * @version 0.1.0
  * @since 0.1.0
  */
-@Value
-@EqualsAndHashCode(callSuper = true)
-@ResponseStatus(BAD_REQUEST)
-public class InvalidRestRequestException extends CenaException {
-
-    private static final ExceptionCode EXCEPTION_CODE = ExceptionCode.INVALID_REQUEST;
+public interface CodifiedException {
 
     /**
-     * Constructs a new {@code InvalidRestRequestException}.
+     * Gets the exception code from the exception.
+     *
+     * @return the exception code.
      */
-    public InvalidRestRequestException() {
-        super(EXCEPTION_CODE);
-    }
+    ExceptionCode exceptionCode();
 
 }

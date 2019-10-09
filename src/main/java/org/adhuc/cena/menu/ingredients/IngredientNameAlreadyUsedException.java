@@ -18,8 +18,12 @@ package org.adhuc.cena.menu.ingredients;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.Value;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
+import org.adhuc.cena.menu.common.CenaException;
+import org.adhuc.cena.menu.common.ExceptionCode;
 
 /**
  * An exception occurring while creating an ingredient with already used name.
@@ -31,5 +35,17 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Value
 @EqualsAndHashCode(callSuper = true)
 @ResponseStatus(BAD_REQUEST)
-public class IngredientNameAlreadyUsedException extends RuntimeException {
+public class IngredientNameAlreadyUsedException extends CenaException {
+
+    private static final ExceptionCode EXCEPTION_CODE = ExceptionCode.INGREDIENT_NAME_ALREADY_USED;
+
+    /**
+     * Creates an {@code IngredientNameAlreadyUsedException} based on the specified ingredient name.
+     *
+     * @param ingredientName the already used ingredient name.
+     */
+    public IngredientNameAlreadyUsedException(@NonNull String ingredientName) {
+        super(String.format("Ingredient name '%s' already used by an existing ingredient", ingredientName), EXCEPTION_CODE);
+    }
+
 }

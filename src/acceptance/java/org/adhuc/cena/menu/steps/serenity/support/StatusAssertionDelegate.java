@@ -19,6 +19,7 @@ import static net.serenitybdd.rest.SerenityRest.then;
 import static org.springframework.http.HttpStatus.*;
 
 import io.restassured.response.ValidatableResponse;
+import org.assertj.core.api.SoftAssertions;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -60,6 +61,15 @@ public final class StatusAssertionDelegate {
 
     public ValidatableResponse assertBadRequest(ValidatableResponse response) {
         return assertStatus(response, BAD_REQUEST);
+    }
+
+    public ValidatableResponse assertInvalidRequest() {
+        var response = assertBadRequest();
+        var jsonPath = response.extract().jsonPath();
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(jsonPath.getInt("code")).isEqualTo(101000);
+        });
+        return response;
     }
 
     public ValidatableResponse assertNotFound() {

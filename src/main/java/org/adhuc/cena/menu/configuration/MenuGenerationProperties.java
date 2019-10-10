@@ -15,6 +15,7 @@
  */
 package org.adhuc.cena.menu.configuration;
 
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -22,7 +23,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties to configure the menu generation application.
  *
  * @author Alexandre Carbenay
- * @version 0.0.1
+ * @version 0.1.0
  * @since 0.0.1
  */
 @Data
@@ -31,6 +32,7 @@ public class MenuGenerationProperties {
 
     private Documentation documentation = new Documentation();
     private Management management = new Management();
+    private Security security = new Security();
 
     @Data
     public static class Documentation {
@@ -45,11 +47,11 @@ public class MenuGenerationProperties {
     }
 
     @Data
-    public static class Management {
+    static class Management {
         private Security security = new Security();
 
         @Data
-        public static class Security {
+        static class Security {
             /**
              * Defines management services basic authentication username. Default is 'actuator'.
              */
@@ -58,6 +60,27 @@ public class MenuGenerationProperties {
              * Defines management services basic authentication password. Default is 'actuator'.
              */
             private String password = "actuator";
+        }
+    }
+
+    @Data
+    static class Security {
+        /**
+         * Defines ingredient manager credentials. Default is 'ingredient-manager' username and 'ingredient-manager' password.
+         */
+        private Credentials ingredientManager = Credentials.builder().username("ingredientManager").password("ingredientManager").build();
+
+        @Data
+        @Builder
+        static class Credentials {
+            /**
+             * The username.
+             */
+            private String username;
+            /**
+             * The password.
+             */
+            private String password;
         }
     }
 

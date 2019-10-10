@@ -15,6 +15,7 @@
  */
 package org.adhuc.cena.menu.configuration;
 
+import static org.adhuc.cena.menu.common.security.RolesDefinition.ACTUATOR_ROLE;
 import static org.adhuc.cena.menu.common.security.RolesDefinition.INGREDIENT_MANAGER_ROLE;
 
 import lombok.NonNull;
@@ -22,10 +23,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.User.UserBuilder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+
+import org.adhuc.cena.menu.configuration.MenuGenerationProperties.Security.Credentials;
 
 /**
  * Configures application security, by providing a {@link UserDetailsService}.
@@ -43,17 +48,20 @@ class ApplicationSecurityConfiguration {
                                           @NonNull MenuGenerationProperties menuGenerationProperties) {
         var users = User.builder().passwordEncoder(passwordEncoder::encode);
         var manager = new InMemoryUserDetailsManager();
-        // TODO configure ingredient manager from properties
-        manager.createUser(users.username("ingredientManager").password("ingredientManager").roles(INGREDIENT_MANAGER_ROLE).build());
+        manager.createUser(buildIngredientManager(users, menuGenerationProperties.getSecurity().getIngredientManager()));
         manager.createUser(users.username(menuGenerationProperties.getManagement().getSecurity().getUsername())
                 .password(menuGenerationProperties.getManagement().getSecurity().getPassword())
-                .roles("ACTUATOR").build());
+                .roles(ACTUATOR_ROLE).build());
         return manager;
     }
 
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    private UserDetails buildIngredientManager(UserBuilder users, Credentials credentials) {
+        return users.username(credentials.getUsername()).password(credentials.getPassword()).roles(INGREDIENT_MANAGER_ROLE).build();
     }
 
 }

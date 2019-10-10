@@ -34,13 +34,11 @@ import org.adhuc.cena.menu.common.ExceptionCode;
  * @since 0.1.0
  */
 @Component
-public class RestControllerErrorAttributes extends DefaultErrorAttributes {
+class RestControllerErrorAttributes extends DefaultErrorAttributes {
 
     @Override
     public Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
         var errorAttributes = super.getErrorAttributes(webRequest, includeStackTrace);
-        // Explicitly remove "exception" attribute
-        errorAttributes.remove("exception");
         addExceptionCode(errorAttributes, webRequest);
         return errorAttributes;
     }

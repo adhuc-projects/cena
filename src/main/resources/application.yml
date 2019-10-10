@@ -1,4 +1,7 @@
-server.port: ${API_PORT:8080}
+server:
+  port: ${API_PORT:8080}
+  error:
+    include-stacktrace: never
 
 spring:
   profiles:

@@ -97,6 +97,7 @@ class IngredientsDocumentation {
     }
 
     @Test
+    @WithIngredientManager
     @DisplayName("generates ingredients deletion example")
     void ingredientsDeleteExample() throws Exception {
         mvc.perform(delete(INGREDIENTS_API_URL))

@@ -18,6 +18,8 @@ package org.adhuc.cena.menu.port.adapter.rest;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
+import static org.adhuc.cena.menu.common.security.RolesDefinition.INGREDIENT_MANAGER_ROLE;
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
@@ -42,7 +44,8 @@ public class ApiSecurity extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         var authorizationConfigurer = http.authorizeRequests();
-        authorizationConfigurer.mvcMatchers(HttpMethod.POST, BASE_INGREDIENTS_PATH).authenticated();
+        authorizationConfigurer.mvcMatchers(HttpMethod.POST, BASE_INGREDIENTS_PATH).hasRole(INGREDIENT_MANAGER_ROLE);
+        authorizationConfigurer.mvcMatchers(HttpMethod.DELETE, BASE_INGREDIENTS_PATH).hasRole(INGREDIENT_MANAGER_ROLE);
         authorizationConfigurer.mvcMatchers(BASE_API_PATH).permitAll();
         http.csrf().disable();
         http.httpBasic().authenticationEntryPoint(new HttpStatusEntryPoint(UNAUTHORIZED));

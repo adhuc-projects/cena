@@ -51,17 +51,17 @@ public class IngredientListStepDefinitions {
     public void existingIngredients(DataTable dataTable) {
         var ingredients = dataTable.asMaps(String.class, String.class).stream()
                 .map(attributes -> new IngredientValue(attributes.get(NAME_ATTRIBUTE))).collect(toList());
-        ingredientListServiceClient.assumeInIngredientsList(ingredientListServiceClient.storeAssumedIngredients(ingredients));
+        ingredientListServiceClient.storeAssumedIngredients(ingredientListServiceClient.assumeInIngredientsList(ingredients));
     }
 
     @Given("^an existing \"(.*)\" ingredient$")
     public void existingIngredient(String ingredientName) {
-        ingredientListServiceClient.assumeInIngredientsList(ingredientListServiceClient.storeIngredient(new IngredientValue(ingredientName)));
+        ingredientListServiceClient.storeIngredient(ingredientListServiceClient.assumeInIngredientsList(new IngredientValue(ingredientName)));
     }
 
     @Given("^a non-existent \"(.*)\" ingredient$")
     public void nonExistentIngredient(String ingredientName) {
-        ingredientListServiceClient.assumeNotInIngredientsList(ingredientListServiceClient.storeIngredient(new IngredientValue(ingredientName)));
+        ingredientListServiceClient.storeIngredient(ingredientListServiceClient.assumeNotInIngredientsList(new IngredientValue(ingredientName)));
     }
 
     @When("^he lists the ingredients$")

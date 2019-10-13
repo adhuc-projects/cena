@@ -15,6 +15,8 @@
  */
 package org.adhuc.cena.menu.steps.serenity.ingredients;
 
+import static java.util.stream.Collectors.toList;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
 
@@ -51,7 +53,7 @@ public class IngredientListServiceClientSteps {
 
     @Step("Assume empty ingredients list")
     public void assumeEmptyIngredientsList() {
-        ingredientDeletionServiceClient.deleteIngredients();
+        ingredientDeletionServiceClient.deleteIngredientsAsIngredientManager();
         assumeThat(fetchIngredients()).isEmpty();
     }
 
@@ -61,27 +63,32 @@ public class IngredientListServiceClientSteps {
     }
 
     @Step("Assume ingredient {0} is in ingredients list")
-    public void assumeInIngredientsList(IngredientValue ingredient) {
+    public IngredientValue assumeInIngredientsList(IngredientValue ingredient) {
         if (getFromIngredientsList(ingredient).isEmpty()) {
             ingredientCreationServiceClient.createIngredientAsIngredientManager(ingredient);
         }
-        assumeThat(fetchIngredients()).usingElementComparator(COMPARATOR).contains(ingredient);
+        var ingredients = fetchIngredients();
+        assumeThat(ingredients).usingElementComparator(COMPARATOR).contains(ingredient);
+        return ingredients.stream().filter(i -> COMPARATOR.compare(i, ingredient) == 0).findFirst().get();
     }
 
     @Step("Assume ingredients {0} are in ingredients list")
-    public void assumeInIngredientsList(Collection<IngredientValue> ingredients) {
+    public Collection<IngredientValue> assumeInIngredientsList(Collection<IngredientValue> ingredients) {
         var existingIngredients = fetchIngredients();
         ingredients.stream()
                 .filter(ingredient -> existingIngredients.stream()
                         .noneMatch(existing -> COMPARATOR.compare(existing, ingredient) == 0))
                 .forEach(ingredient -> ingredientCreationServiceClient.createIngredientAsIngredientManager(ingredient));
-        assumeThat(fetchIngredients()).usingElementComparator(COMPARATOR).containsAll(ingredients);
+        var allIngredients = fetchIngredients();
+        assumeThat(allIngredients).usingElementComparator(COMPARATOR).containsAll(ingredients);
+        return allIngredients.stream().filter(i -> ingredients.stream().anyMatch(i2 -> COMPARATOR.compare(i, i2) == 0)).collect(toList());
     }
 
     @Step("Assume ingredient {0} is not in ingredients list")
-    public void assumeNotInIngredientsList(IngredientValue ingredient) {
-        getFromIngredientsList(ingredient).ifPresent(i -> ingredientDeletionServiceClient.deleteIngredient(i));
+    public IngredientValue assumeNotInIngredientsList(IngredientValue ingredient) {
+        getFromIngredientsList(ingredient).ifPresent(i -> ingredientDeletionServiceClient.deleteIngredientAsIngredientManager(i));
         assumeThat(fetchIngredients()).usingElementComparator(COMPARATOR).doesNotContain(ingredient);
+        return ingredient;
     }
 
     @Step("Assert ingredient {0} is in ingredients list")

@@ -19,8 +19,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.*;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
@@ -34,6 +33,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.adhuc.cena.menu.common.EntityNotFoundException;
 import org.adhuc.cena.menu.ingredients.Ingredient;
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
+import org.adhuc.cena.menu.support.WithCommunityUser;
+import org.adhuc.cena.menu.support.WithIngredientManager;
 
 /**
  * The {@link IngredientController} test class.
@@ -63,6 +64,14 @@ class IngredientControllerShould {
     }
 
     @Test
+    @WithCommunityUser
+    @DisplayName("respond Unauthorized when deleting ingredient as an anonymous user")
+    void respond401OnDeletionAsAnonymous() throws Exception {
+        mvc.perform(delete(INGREDIENT_API_URL, ID)).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithIngredientManager
     @DisplayName("respond Not Found when deleting unknown ingredient")
     void respond404DeleteUnknownIngredient() throws Exception {
         doThrow(new EntityNotFoundException(Ingredient.class, ID)).when(ingredientAppServiceMock).deleteIngredient(deleteCommand());
@@ -70,6 +79,7 @@ class IngredientControllerShould {
     }
 
     @Test
+    @WithIngredientManager
     @DisplayName("respond No Content when deleting ingredient successfully")
     void respond204DeleteIngredient() throws Exception {
         mvc.perform(delete(INGREDIENT_API_URL, ID)).andExpect(status().isNoContent());

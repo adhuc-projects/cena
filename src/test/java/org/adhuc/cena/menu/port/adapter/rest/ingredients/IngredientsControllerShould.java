@@ -236,6 +236,14 @@ class IngredientsControllerShould {
     }
 
     @Test
+    @WithCommunityUser
+    @DisplayName("respond Unauthorized when deleting ingredients as an anonymous user")
+    void respond401OnDeletionAsAnonymous() throws Exception {
+        mvc.perform(delete(INGREDIENTS_API_URL)).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithIngredientManager
     @DisplayName("respond No Content when deleting ingredients")
     void respond204OnDeletion() throws Exception {
         mvc.perform(delete(INGREDIENTS_API_URL))
@@ -243,6 +251,7 @@ class IngredientsControllerShould {
     }
 
     @Test
+    @WithIngredientManager
     @DisplayName("call application service when deleting ingredients")
     void callServiceOnDeletion() throws Exception {
         mvc.perform(delete(INGREDIENTS_API_URL))

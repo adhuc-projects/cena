@@ -73,7 +73,7 @@ public class IngredientCreationServiceClientSteps {
         createIngredient(ingredient);
     }
 
-    @Step("Assert ingredient has been successfully created")
+    @Step("Assert ingredient {0} has been successfully created")
     public void assertIngredientSuccessfullyCreated(IngredientValue ingredient) {
         var ingredientLocation = assertCreated().extract().header(LOCATION);
         assertThat(ingredientLocation).isNotBlank();

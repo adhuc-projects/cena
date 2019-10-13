@@ -41,6 +41,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
 import org.adhuc.cena.menu.port.adapter.rest.ResultHandlerConfiguration;
+import org.adhuc.cena.menu.support.WithIngredientManager;
 
 /**
  * The ingredient related rest-services documentation.
@@ -80,6 +81,7 @@ class IngredientDocumentation {
     }
 
     @Test
+    @WithIngredientManager
     @DisplayName("generates ingredient deletion example")
     void ingredientDeleteExample() throws Exception {
         mvc.perform(delete(INGREDIENT_API_URL, ID.toString())).andExpect(status().isNoContent())

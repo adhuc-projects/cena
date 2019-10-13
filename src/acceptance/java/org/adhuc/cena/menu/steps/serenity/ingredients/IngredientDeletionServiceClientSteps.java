@@ -15,6 +15,10 @@
  */
 package org.adhuc.cena.menu.steps.serenity.ingredients;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import static org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType.INGREDIENT_MANAGER;
+
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 
@@ -37,16 +41,41 @@ public class IngredientDeletionServiceClientSteps {
     private final ResourceUrlResolverDelegate resourceUrlResolverDelegate = new ResourceUrlResolverDelegate();
     @Delegate
     private final StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
+    @Delegate
+    private final IngredientListClientDelegate listClient = new IngredientListClientDelegate(ingredientsResourceUrl());
+    @Delegate
+    private final IngredientStorageDelegate ingredientStorage = new IngredientStorageDelegate();
 
-    @Step("Delete ingredients")
-    public void deleteIngredients() {
-        var response = rest().delete(ingredientsResourceUrl()).then();
+    @Step("Delete ingredients as ingredient manager")
+    public void deleteIngredientsAsIngredientManager() {
+        var response = rest(INGREDIENT_MANAGER).delete(ingredientsResourceUrl()).then();
         assertNoContent(response);
     }
 
-    @Step("Delete ingredient")
+    @Step("Delete ingredient {0}")
     public void deleteIngredient(IngredientValue ingredient) {
         ingredient.link("self").ifPresent(self -> rest().delete(self));
+    }
+
+    @Step("Delete ingredient {0} as ingredient manager")
+    public void deleteIngredientAsIngredientManager(IngredientValue ingredient) {
+        ingredient.link("self").ifPresent(self -> rest(INGREDIENT_MANAGER).delete(self));
+    }
+
+    @Step("Attempt deleting ingredient {0}")
+    public void attemptDeletingIngredient(IngredientValue ingredient) {
+        var existingIngredient = getFromIngredientsList(new IngredientValue(ingredient.name()));
+        assertThat(existingIngredient).isNotPresent();
+        rest().delete(generateNotFoundIngredientUrl());
+    }
+
+    @Step("Assert ingredient {0} has been successfully deleted")
+    public void assertIngredientSuccessfullyDeleted(IngredientValue ingredient) {
+        assertNoContent();
+    }
+
+    private String generateNotFoundIngredientUrl() {
+        return ingredientsResourceUrl() + "/unknown";
     }
 
 }

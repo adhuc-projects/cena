@@ -19,6 +19,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -58,7 +59,7 @@ public class IngredientValue {
     @JsonProperty("_links")
     @JsonDeserialize(using = Jackson2HalModule.HalLinkListDeserializer.class)
     @JsonIgnoreProperties(allowSetters = true)
-    private List<Link> links;
+    private List<Link> links = new ArrayList<>();
 
     String selfLink() {
         Optional<String> self = link("self");

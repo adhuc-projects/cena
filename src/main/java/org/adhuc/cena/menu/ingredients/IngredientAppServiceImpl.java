@@ -65,6 +65,7 @@ class IngredientAppServiceImpl implements IngredientAppService {
     }
 
     @Override
+    @PreAuthorize(HAS_INGREDIENT_MANAGER_ROLE_PREDICATE)
     public void deleteIngredient(@NonNull DeleteIngredient command) {
         repository.delete(repository.findNotNullById(command.ingredientId()));
     }

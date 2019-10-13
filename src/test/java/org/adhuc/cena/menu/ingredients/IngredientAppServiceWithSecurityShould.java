@@ -105,11 +105,10 @@ class IngredientAppServiceWithSecurityShould {
 
     @Test
     @WithCommunityUser
-    @DisplayName("grant ingredient deletion access to community user")
-    void grantIngredientDeletionAsCommunityUser() {
+    @DisplayName("deny ingredient deletion access to community user")
+    void denyIngredientDeletionAsCommunityUser() {
         assumeThat(service.getIngredient(CUCUMBER_ID)).isNotNull();
-        service.deleteIngredient(deleteCommand(CUCUMBER_ID));
-        assertThrows(EntityNotFoundException.class, () -> service.getIngredient(ID));
+        assertThrows(AccessDeniedException.class, () -> service.deleteIngredient(deleteCommand(CUCUMBER_ID)));
     }
 
     @Test

@@ -68,7 +68,12 @@ public class MenuGenerationProperties {
         /**
          * Defines ingredient manager credentials. Default is 'ingredient-manager' username and 'ingredient-manager' password.
          */
-        private Credentials ingredientManager = Credentials.builder().username("ingredientManager").password("ingredientManager").build();
+        private Credentials ingredientManager = Credentials.builder().username("ingredient-manager").password("ingredient-manager").build();
+
+        /**
+         * Defines ingredient manager credentials. Default is 'ingredient-manager' username and 'ingredient-manager' password.
+         */
+        private Credentials superAdministrator = Credentials.builder().username("super-admin").password("super-admin").build();
 
         @Data
         @Builder

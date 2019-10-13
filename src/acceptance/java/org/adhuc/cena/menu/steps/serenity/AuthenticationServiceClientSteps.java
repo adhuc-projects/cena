@@ -50,9 +50,19 @@ public class AuthenticationServiceClientSteps {
         authenticationProvider.withActuatorManager();
     }
 
+    @Step("Authenticate as super administrator")
+    public void withSuperAdministrator() {
+        authenticationProvider.withSuperAdministrator();
+    }
+
     @Step("Assert user is not authenticated")
     public void assertUserNotAuthenticated() {
         assertUnauthorized();
+    }
+
+    @Step("Assert user is not authorized")
+    public void assertUserNotAuthorized() {
+        assertForbidden();
     }
 
 }

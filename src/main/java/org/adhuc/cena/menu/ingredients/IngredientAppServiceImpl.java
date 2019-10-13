@@ -16,6 +16,7 @@
 package org.adhuc.cena.menu.ingredients;
 
 import static org.adhuc.cena.menu.common.security.RolesDefinition.HAS_INGREDIENT_MANAGER_ROLE_PREDICATE;
+import static org.adhuc.cena.menu.common.security.RolesDefinition.HAS_SUPER_ADMINISTRATOR_ROLE_PREDICATE;
 
 import java.util.List;
 
@@ -60,6 +61,7 @@ class IngredientAppServiceImpl implements IngredientAppService {
     }
 
     @Override
+    @PreAuthorize(HAS_SUPER_ADMINISTRATOR_ROLE_PREDICATE)
     public void deleteIngredients() {
         repository.deleteAll();
     }

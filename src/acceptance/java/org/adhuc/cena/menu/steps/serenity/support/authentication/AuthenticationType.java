@@ -35,7 +35,8 @@ public enum AuthenticationType {
 
     COMMUNITY_USER(() -> new AnonymousAuthentication()),
     ACTUATOR_MANAGER(() -> new BasicAuthentication("actuator", "actuator")),
-    INGREDIENT_MANAGER(() -> new BasicAuthentication("ingredientManager", "ingredientManager"));
+    INGREDIENT_MANAGER(() -> new BasicAuthentication("ingredient-manager", "ingredient-manager")),
+    SUPER_ADMINISTRATOR(() -> new BasicAuthentication("super-admin", "super-admin"));
 
     private Supplier<Authentication> authenticationSupplier;
 

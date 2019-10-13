@@ -30,7 +30,10 @@ public final class RolesDefinition {
 
     public static final String ACTUATOR_ROLE = "ACTUATOR";
     public static final String INGREDIENT_MANAGER_ROLE = "INGREDIENT_MANAGER";
+    public static final String SUPER_ADMINISTRATOR_ROLE = "SUPER_ADMIN";
 
-    public static final String HAS_INGREDIENT_MANAGER_ROLE_PREDICATE = "hasRole('" + INGREDIENT_MANAGER_ROLE + "')";
+    public static final String HAS_INGREDIENT_MANAGER_ROLE_PREDICATE =
+            "hasRole('" + INGREDIENT_MANAGER_ROLE + "') || hasRole('" + SUPER_ADMINISTRATOR_ROLE + "')";
+    public static final String HAS_SUPER_ADMINISTRATOR_ROLE_PREDICATE = "hasRole('" + SUPER_ADMINISTRATOR_ROLE + "')";
 
 }

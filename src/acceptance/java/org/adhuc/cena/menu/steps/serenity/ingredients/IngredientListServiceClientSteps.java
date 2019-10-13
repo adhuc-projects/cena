@@ -53,11 +53,16 @@ public class IngredientListServiceClientSteps {
 
     @Step("Assume empty ingredients list")
     public void assumeEmptyIngredientsList() {
-        ingredientDeletionServiceClient.deleteIngredientsAsIngredientManager();
+        ingredientDeletionServiceClient.deleteIngredientsAsSuperAdministrator();
         assumeThat(fetchIngredients()).isEmpty();
     }
 
     @Step("Assert empty ingredients list")
+    public void assertEmptyIngredientsList() {
+        assertEmptyIngredientsList(fetchIngredients());
+    }
+
+    @Step("Assert empty ingredients list {0}")
     public void assertEmptyIngredientsList(Collection<IngredientValue> ingredients) {
         assertThat(ingredients).isEmpty();
     }

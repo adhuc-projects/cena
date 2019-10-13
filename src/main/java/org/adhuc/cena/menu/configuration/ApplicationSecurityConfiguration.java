@@ -15,8 +15,7 @@
  */
 package org.adhuc.cena.menu.configuration;
 
-import static org.adhuc.cena.menu.common.security.RolesDefinition.ACTUATOR_ROLE;
-import static org.adhuc.cena.menu.common.security.RolesDefinition.INGREDIENT_MANAGER_ROLE;
+import static org.adhuc.cena.menu.common.security.RolesDefinition.*;
 
 import lombok.NonNull;
 import org.springframework.context.annotation.Bean;
@@ -49,6 +48,7 @@ class ApplicationSecurityConfiguration {
         var users = User.builder().passwordEncoder(passwordEncoder::encode);
         var manager = new InMemoryUserDetailsManager();
         manager.createUser(buildIngredientManager(users, menuGenerationProperties.getSecurity().getIngredientManager()));
+        manager.createUser(buildSuperAdministrator(users, menuGenerationProperties.getSecurity().getSuperAdministrator()));
         manager.createUser(users.username(menuGenerationProperties.getManagement().getSecurity().getUsername())
                 .password(menuGenerationProperties.getManagement().getSecurity().getPassword())
                 .roles(ACTUATOR_ROLE).build());
@@ -62,6 +62,10 @@ class ApplicationSecurityConfiguration {
 
     private UserDetails buildIngredientManager(UserBuilder users, Credentials credentials) {
         return users.username(credentials.getUsername()).password(credentials.getPassword()).roles(INGREDIENT_MANAGER_ROLE).build();
+    }
+
+    private UserDetails buildSuperAdministrator(UserBuilder users, Credentials credentials) {
+        return users.username(credentials.getUsername()).password(credentials.getPassword()).roles(SUPER_ADMINISTRATOR_ROLE).build();
     }
 
 }

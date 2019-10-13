@@ -20,3 +20,10 @@ Feature: Delete an ingredient from the system
     When he deletes the ingredient
     Then an error notifies that user is not authenticated
     And the ingredient can be found in the list
+
+  Scenario: Delete an ingredient as super administrator
+    Given an authenticated super administrator
+    And an existing "Tomato" ingredient
+    When he deletes the ingredient
+    Then the ingredient is deleted
+    And the ingredient cannot be found in the list

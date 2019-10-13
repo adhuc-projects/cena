@@ -103,6 +103,13 @@ public class AuthenticationProvider {
         authentication = authentication(ACTUATOR_MANAGER);
     }
 
+    /**
+     * Authenticates with super administrator.
+     */
+    public void withSuperAdministrator() {
+        authentication = authentication(SUPER_ADMINISTRATOR);
+    }
+
     private Authentication authentication(AuthenticationType authenticationType) {
         return authenticationType.getAuthenticationSupplier().get();
     }

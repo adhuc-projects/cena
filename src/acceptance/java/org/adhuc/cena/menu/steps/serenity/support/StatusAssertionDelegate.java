@@ -80,6 +80,14 @@ public final class StatusAssertionDelegate {
         return assertStatus(response, UNAUTHORIZED);
     }
 
+    public ValidatableResponse assertForbidden() {
+        return assertForbidden(then());
+    }
+
+    public ValidatableResponse assertForbidden(ValidatableResponse response) {
+        return assertStatus(response, FORBIDDEN);
+    }
+
     public ValidatableResponse assertNotFound() {
         return assertNotFound(then());
     }

@@ -50,9 +50,19 @@ public class AuthenticationStepDefinitions {
         authenticationServiceClient.withActuatorManager();
     }
 
+    @Given("^an authenticated super administrator$")
+    public void authenticatedSuperAdministrator() {
+        authenticationServiceClient.withSuperAdministrator();
+    }
+
     @Then("^an error notifies that user is not authenticated$")
     public void errorUserNotAuthenticated() {
         authenticationServiceClient.assertUserNotAuthenticated();
+    }
+
+    @Then("^an error notifies that user is not authorized$")
+    public void errorUserNotAuthorized() {
+        authenticationServiceClient.assertUserNotAuthorized();
     }
 
 }

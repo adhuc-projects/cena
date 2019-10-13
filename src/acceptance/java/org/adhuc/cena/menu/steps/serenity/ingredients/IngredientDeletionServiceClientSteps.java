@@ -18,6 +18,7 @@ package org.adhuc.cena.menu.steps.serenity.ingredients;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType.INGREDIENT_MANAGER;
+import static org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType.SUPER_ADMINISTRATOR;
 
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
@@ -46,9 +47,14 @@ public class IngredientDeletionServiceClientSteps {
     @Delegate
     private final IngredientStorageDelegate ingredientStorage = new IngredientStorageDelegate();
 
-    @Step("Delete ingredients as ingredient manager")
-    public void deleteIngredientsAsIngredientManager() {
-        var response = rest(INGREDIENT_MANAGER).delete(ingredientsResourceUrl()).then();
+    @Step("Delete ingredients")
+    public void deleteIngredients() {
+        rest().delete(ingredientsResourceUrl()).then();
+    }
+
+    @Step("Delete ingredients as super administrator")
+    public void deleteIngredientsAsSuperAdministrator() {
+        var response = rest(SUPER_ADMINISTRATOR).delete(ingredientsResourceUrl()).then();
         assertNoContent(response);
     }
 

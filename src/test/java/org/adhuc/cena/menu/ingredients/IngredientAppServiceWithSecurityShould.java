@@ -34,6 +34,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.adhuc.cena.menu.common.EntityNotFoundException;
 import org.adhuc.cena.menu.support.WithCommunityUser;
 import org.adhuc.cena.menu.support.WithIngredientManager;
+import org.adhuc.cena.menu.support.WithSuperAdministrator;
 
 /**
  * The {@link IngredientAppServiceImpl} security tests.
@@ -75,6 +76,13 @@ class IngredientAppServiceWithSecurityShould {
     }
 
     @Test
+    @WithSuperAdministrator
+    @DisplayName("grant ingredient listing access to super administrator")
+    void grantIngredientListAsSuperAdministrator() {
+        assertThat(service.getIngredients()).isNotEmpty();
+    }
+
+    @Test
     @WithCommunityUser
     @DisplayName("grant ingredient detail access to community user")
     void grantIngredientDetailAsCommunityUser() {
@@ -85,6 +93,13 @@ class IngredientAppServiceWithSecurityShould {
     @WithIngredientManager
     @DisplayName("grant ingredient listing access to ingredient manager")
     void grantIngredientDetailAsIngredientManager() {
+        assertThat(service.getIngredient(CUCUMBER_ID)).isNotNull();
+    }
+
+    @Test
+    @WithSuperAdministrator
+    @DisplayName("grant ingredient listing access to super administrator")
+    void grantIngredientDetailAsSuperAdministrator() {
         assertThat(service.getIngredient(CUCUMBER_ID)).isNotNull();
     }
 
@@ -104,6 +119,14 @@ class IngredientAppServiceWithSecurityShould {
     }
 
     @Test
+    @WithSuperAdministrator
+    @DisplayName("grant ingredient creation access to super administrator")
+    void grantIngredientCreationAsSuperAdministrator() {
+        service.createIngredient(createCommand());
+        assertThat(service.getIngredient(ID)).isNotNull();
+    }
+
+    @Test
     @WithCommunityUser
     @DisplayName("deny ingredient deletion access to community user")
     void denyIngredientDeletionAsCommunityUser() {
@@ -117,22 +140,38 @@ class IngredientAppServiceWithSecurityShould {
     void grantIngredientDeletionAsIngredientManager() {
         assumeThat(service.getIngredient(CUCUMBER_ID)).isNotNull();
         service.deleteIngredient(deleteCommand(CUCUMBER_ID));
-        assertThrows(EntityNotFoundException.class, () -> service.getIngredient(ID));
+        assertThrows(EntityNotFoundException.class, () -> service.getIngredient(CUCUMBER_ID));
+    }
+
+    @Test
+    @WithSuperAdministrator
+    @DisplayName("grant ingredient deletion access to super administrator")
+    void grantIngredientDeletionAsSuperAdministator() {
+        assumeThat(service.getIngredient(CUCUMBER_ID)).isNotNull();
+        service.deleteIngredient(deleteCommand(CUCUMBER_ID));
+        assertThrows(EntityNotFoundException.class, () -> service.getIngredient(CUCUMBER_ID));
     }
 
     @Test
     @WithCommunityUser
-    @DisplayName("grant ingredients deletion access to community user")
-    void grantIngredientsDeletionAsCommunityUser() {
+    @DisplayName("deny ingredient deletion access to community user")
+    void denyIngredientsDeletionAsCommunityUser() {
         assumeThat(service.getIngredients()).isNotEmpty();
-        service.deleteIngredients();
-        assertThat(service.getIngredients()).isEmpty();
+        assertThrows(AccessDeniedException.class, () -> service.deleteIngredients());
     }
 
     @Test
     @WithIngredientManager
-    @DisplayName("grant ingredients deletion access to ingredient manager")
-    void grantIngredientsDeletionAsIngredientManager() {
+    @DisplayName("deny ingredient deletion access to ingredient manager")
+    void denyIngredientsDeletionAsIngredientManager() {
+        assumeThat(service.getIngredients()).isNotEmpty();
+        assertThrows(AccessDeniedException.class, () -> service.deleteIngredients());
+    }
+
+    @Test
+    @WithSuperAdministrator
+    @DisplayName("grant ingredients deletion access to super administrator")
+    void grantIngredientsDeletionAsSuperAdministrator() {
         assumeThat(service.getIngredients()).isNotEmpty();
         service.deleteIngredients();
         assertThat(service.getIngredients()).isEmpty();

@@ -47,6 +47,7 @@ import org.adhuc.cena.menu.ingredients.IngredientNameAlreadyUsedException;
 import org.adhuc.cena.menu.port.adapter.rest.ApiSecurity;
 import org.adhuc.cena.menu.support.WithCommunityUser;
 import org.adhuc.cena.menu.support.WithIngredientManager;
+import org.adhuc.cena.menu.support.WithSuperAdministrator;
 
 /**
  * The {@link IngredientsController} test class.
@@ -141,8 +142,8 @@ class IngredientsControllerShould {
 
     @Test
     @WithCommunityUser
-    @DisplayName("respond Unauthorized when creating ingredient as an anonymous user")
-    void respond401OnCreationAsAnonymous() throws Exception {
+    @DisplayName("respond Unauthorized when creating ingredient as a community user")
+    void respond401OnCreationAsCommunityUser() throws Exception {
         mvc.perform(post(INGREDIENTS_API_URL)
                 .contentType(APPLICATION_JSON)
                 .content("{\"name\":\"Tomato\"}")
@@ -237,13 +238,20 @@ class IngredientsControllerShould {
 
     @Test
     @WithCommunityUser
-    @DisplayName("respond Unauthorized when deleting ingredients as an anonymous user")
-    void respond401OnDeletionAsAnonymous() throws Exception {
+    @DisplayName("respond Unauthorized when deleting ingredients as a community user")
+    void respond401OnDeletionAsCommunityUser() throws Exception {
         mvc.perform(delete(INGREDIENTS_API_URL)).andExpect(status().isUnauthorized());
     }
 
     @Test
     @WithIngredientManager
+    @DisplayName("respond Unauthorized when deleting ingredients as an ingredient manager")
+    void respond403OnDeletionAsIngredientManager() throws Exception {
+        mvc.perform(delete(INGREDIENTS_API_URL)).andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithSuperAdministrator
     @DisplayName("respond No Content when deleting ingredients")
     void respond204OnDeletion() throws Exception {
         mvc.perform(delete(INGREDIENTS_API_URL))
@@ -251,7 +259,7 @@ class IngredientsControllerShould {
     }
 
     @Test
-    @WithIngredientManager
+    @WithSuperAdministrator
     @DisplayName("call application service when deleting ingredients")
     void callServiceOnDeletion() throws Exception {
         mvc.perform(delete(INGREDIENTS_API_URL))

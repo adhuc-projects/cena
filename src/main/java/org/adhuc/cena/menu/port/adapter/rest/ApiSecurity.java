@@ -15,14 +15,16 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest;
 
+import static org.springframework.http.HttpMethod.DELETE;
+import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 import static org.adhuc.cena.menu.common.security.RolesDefinition.INGREDIENT_MANAGER_ROLE;
+import static org.adhuc.cena.menu.common.security.RolesDefinition.SUPER_ADMINISTRATOR_ROLE;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
@@ -38,15 +40,19 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 @Order(99)
 public class ApiSecurity extends WebSecurityConfigurerAdapter {
 
-    private static final String BASE_API_PATH = "/api/**";
-    private static final String BASE_INGREDIENTS_PATH = "/api/ingredients/**";
+    private static final String WILDCARD = "/**";
+    private static final String BASE_API_PATH = "/api" + WILDCARD;
+    private static final String INGREDIENTS_PATH = "/api/ingredients";
+    private static final String BASE_INGREDIENTS_PATH = INGREDIENTS_PATH + WILDCARD;
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         var authorizationConfigurer = http.authorizeRequests();
-        authorizationConfigurer.mvcMatchers(HttpMethod.POST, BASE_INGREDIENTS_PATH).hasRole(INGREDIENT_MANAGER_ROLE);
-        authorizationConfigurer.mvcMatchers(HttpMethod.DELETE, BASE_INGREDIENTS_PATH).hasRole(INGREDIENT_MANAGER_ROLE);
-        authorizationConfigurer.mvcMatchers(BASE_API_PATH).permitAll();
+        authorizationConfigurer
+                .mvcMatchers(DELETE, INGREDIENTS_PATH).hasRole(SUPER_ADMINISTRATOR_ROLE)
+                .mvcMatchers(POST, BASE_INGREDIENTS_PATH).hasAnyRole(INGREDIENT_MANAGER_ROLE, SUPER_ADMINISTRATOR_ROLE)
+                .mvcMatchers(DELETE, BASE_INGREDIENTS_PATH).hasAnyRole(INGREDIENT_MANAGER_ROLE, SUPER_ADMINISTRATOR_ROLE)
+                .mvcMatchers(BASE_API_PATH).permitAll();
         http.csrf().disable();
         http.httpBasic().authenticationEntryPoint(new HttpStatusEntryPoint(UNAUTHORIZED));
         http.sessionManagement().sessionCreationPolicy(STATELESS);

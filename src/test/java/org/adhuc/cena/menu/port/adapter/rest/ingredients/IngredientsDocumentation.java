@@ -43,6 +43,7 @@ import org.adhuc.cena.menu.ingredients.IngredientAppService;
 import org.adhuc.cena.menu.port.adapter.rest.ResultHandlerConfiguration;
 import org.adhuc.cena.menu.port.adapter.rest.documentation.support.ConstrainedFields;
 import org.adhuc.cena.menu.support.WithIngredientManager;
+import org.adhuc.cena.menu.support.WithSuperAdministrator;
 
 /**
  * The ingredients related rest-services documentation.
@@ -97,7 +98,7 @@ class IngredientsDocumentation {
     }
 
     @Test
-    @WithIngredientManager
+    @WithSuperAdministrator
     @DisplayName("generates ingredients deletion example")
     void ingredientsDeleteExample() throws Exception {
         mvc.perform(delete(INGREDIENTS_API_URL))

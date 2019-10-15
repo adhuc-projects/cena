@@ -40,7 +40,8 @@ public class DocumentationServiceClientSteps {
 
     @Step("Get documentation")
     public void getDocumentation() {
-        rest().get(getDocumentationResourceUrl()).andReturn();
+        var documentationUrl = getDocumentationResourceUrl();
+        rest().get(documentationUrl);
     }
 
     @Step("Assert documentation is available")

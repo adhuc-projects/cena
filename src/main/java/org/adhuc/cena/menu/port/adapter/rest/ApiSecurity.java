@@ -29,6 +29,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
+import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
+
 /**
  * Security configuration for REST API.
  *
@@ -45,11 +47,19 @@ public class ApiSecurity extends WebSecurityConfigurerAdapter {
     private static final String INGREDIENTS_PATH = "/api/ingredients";
     private static final String BASE_INGREDIENTS_PATH = INGREDIENTS_PATH + WILDCARD;
 
+    private final MenuGenerationProperties.Features features;
+
+    ApiSecurity(MenuGenerationProperties menuGenerationProperties) {
+        features = menuGenerationProperties.getFeatures();
+    }
+
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         var authorizationConfigurer = http.authorizeRequests();
+        if (features.isIngredientsDeletion()) {
+            authorizationConfigurer.mvcMatchers(DELETE, INGREDIENTS_PATH).hasRole(SUPER_ADMINISTRATOR_ROLE);
+        }
         authorizationConfigurer
-                .mvcMatchers(DELETE, INGREDIENTS_PATH).hasRole(SUPER_ADMINISTRATOR_ROLE)
                 .mvcMatchers(POST, BASE_INGREDIENTS_PATH).hasAnyRole(INGREDIENT_MANAGER_ROLE, SUPER_ADMINISTRATOR_ROLE)
                 .mvcMatchers(DELETE, BASE_INGREDIENTS_PATH).hasAnyRole(INGREDIENT_MANAGER_ROLE, SUPER_ADMINISTRATOR_ROLE)
                 .mvcMatchers(BASE_API_PATH).permitAll();

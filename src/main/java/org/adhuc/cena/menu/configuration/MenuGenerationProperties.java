@@ -33,11 +33,12 @@ public class MenuGenerationProperties {
     private Documentation documentation = new Documentation();
     private Management management = new Management();
     private Security security = new Security();
+    private Features features = new Features();
 
     @Data
     public static class Documentation {
         /**
-         * Enable API documentation endpoint. Default is true.
+         * Enable API documentation endpoint. Default is {@code true}.
          */
         private boolean enabled = true;
         /**
@@ -87,6 +88,14 @@ public class MenuGenerationProperties {
              */
             private String password;
         }
+    }
+
+    @Data
+    public static class Features {
+        /**
+         * Enable ingredients deletion feature. Default is {@code true}.
+         */
+        private boolean ingredientsDeletion = true;
     }
 
 }

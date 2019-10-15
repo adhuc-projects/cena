@@ -16,7 +16,6 @@
 package org.adhuc.cena.menu.port.adapter.rest.ingredients;
 
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -81,16 +80,6 @@ public class IngredientsController {
         ingredientAppService.createIngredient(request.toCommand(identity));
 
         return ResponseEntity.created(new URI(links.linkToSingleResource(Ingredient.class, identity).getHref())).build();
-    }
-
-    /**
-     * Deletes all ingredients.
-     */
-    @DeleteMapping
-    @ResponseStatus(NO_CONTENT)
-    void deleteIngredients() {
-        // TODO set security constraint: only super administrator can delete all ingredients
-        ingredientAppService.deleteIngredients();
     }
 
     private void validateRequest(Errors errors) {

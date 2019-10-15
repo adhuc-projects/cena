@@ -1,3 +1,4 @@
+@Functional @Ingredients
 Feature: List ingredients
   As a community user, I want to list ingredients in the system so that I can use them in recipes
 
@@ -7,6 +8,7 @@ Feature: List ingredients
     When he lists the ingredients
     Then the ingredients list is empty
 
+  @Smoke
   Scenario: List with ingredients
     Given a community user
     And the following existing ingredients

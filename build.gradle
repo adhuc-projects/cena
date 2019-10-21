@@ -20,6 +20,7 @@ plugins {
 	id 'io.franzbecker.gradle-lombok' version '3.1.0'
 	id 'jacoco'
 	id 'info.solidsoft.pitest' version '1.4.5'
+	id 'com.github.hierynomus.license' version '0.15.0'
 }
 apply plugin: 'net.serenity-bdd.aggregator'
 
@@ -99,6 +100,11 @@ configurations {
 lombok {
 	version = "${lombokVersion}"
 	sha256 = ""
+}
+
+license {
+	header rootProject.file('.license')
+	excludes(['**/*.feature', '**/*.yml', '**/*.snippet'])
 }
 
 test {

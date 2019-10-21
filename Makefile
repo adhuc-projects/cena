@@ -9,7 +9,7 @@ ifeq ($(OS),Windows_NT)
 endif
 
 build: ## Build the application
-	$(gradle) test jacocoTestReport bootJar docker
+	$(gradle) check test jacocoTestReport bootJar docker
 
 run: ## Run the application
 	$(gradle) bootRun -DAPI_PORT=$(PORT)

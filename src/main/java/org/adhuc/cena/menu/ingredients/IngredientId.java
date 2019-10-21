@@ -41,7 +41,7 @@ public class IngredientId extends UuidIdentity {
         this(parseUUID(Ingredient.class, id));
     }
 
-    private IngredientId(@NonNull UUID id) {
+    IngredientId(@NonNull UUID id) {
         super(id);
     }
 

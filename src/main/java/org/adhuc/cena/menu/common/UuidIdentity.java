@@ -20,10 +20,7 @@ import static org.springframework.util.Assert.notNull;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NonNull;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 /**
@@ -33,11 +30,12 @@ import lombok.experimental.Accessors;
  * @version 0.1.0
  * @since 0.1.0
  */
-@Data
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode
 @Accessors(fluent = true)
 public abstract class UuidIdentity implements Identity {
 
+    @Getter
     @NonNull
     private final UUID id;
 

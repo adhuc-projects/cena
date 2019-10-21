@@ -23,6 +23,9 @@ up: ## Start the application and its dependencies
 down: ## Stop the application and its dependencies
 	$(DOCKER_COMPOSE_ENV) docker-compose -f docker-compose.yml -f docker-compose.port.yml down
 
+mutation: ## Run mutation testing
+	$(gradle) pitest
+
 acceptance: ## Run acceptance testing
 	$(gradle) acceptance aggregate checkOutcomes
 

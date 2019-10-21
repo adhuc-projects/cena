@@ -27,11 +27,19 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import org.adhuc.cena.menu.common.EntityNotFoundException;
+import org.adhuc.cena.menu.configuration.ApplicationSecurityConfiguration;
+import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
+import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryIngredientRepository;
 import org.adhuc.cena.menu.support.WithCommunityUser;
 import org.adhuc.cena.menu.support.WithIngredientManager;
 import org.adhuc.cena.menu.support.WithSuperAdministrator;
@@ -46,8 +54,7 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
 @Tag("integration")
 @Tag("appService")
 @ExtendWith(SpringExtension.class)
-// TODO avoid using SpringBootTest as it starts the complete Spring context, but we only need a service with security
-@SpringBootTest
+@ContextConfiguration
 @DisplayName("Ingredient service with security should")
 class IngredientAppServiceWithSecurityShould {
 
@@ -58,6 +65,7 @@ class IngredientAppServiceWithSecurityShould {
 
     @BeforeEach
     void setUp() {
+        repository.deleteAll();
         repository.save(ingredient(CUCUMBER_ID, CUCUMBER));
     }
 
@@ -175,6 +183,17 @@ class IngredientAppServiceWithSecurityShould {
         assumeThat(service.getIngredients()).isNotEmpty();
         service.deleteIngredients();
         assertThat(service.getIngredients()).isEmpty();
+    }
+
+    @Configuration
+    @Import(ApplicationSecurityConfiguration.class)
+    @EnableConfigurationProperties(MenuGenerationProperties.class)
+    @ComponentScan("org.adhuc.cena.menu.ingredients")
+    static class ServiceWithSecurityConfiguration {
+        @Bean
+        IngredientRepository ingredientRepository() {
+            return new InMemoryIngredientRepository();
+        }
     }
 
 }

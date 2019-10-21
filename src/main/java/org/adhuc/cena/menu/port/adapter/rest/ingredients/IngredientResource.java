@@ -16,9 +16,8 @@
 package org.adhuc.cena.menu.port.adapter.rest.ingredients;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+import lombok.ToString;
 
 import org.adhuc.cena.menu.ingredients.Ingredient;
 import org.adhuc.cena.menu.port.adapter.rest.support.HalResource;
@@ -30,8 +29,7 @@ import org.adhuc.cena.menu.port.adapter.rest.support.HalResource;
  * @version 0.1.0
  * @since 0.1.0
  */
-@Data
-@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 class IngredientResource extends HalResource {
 
     @NonNull

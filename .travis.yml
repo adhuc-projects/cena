@@ -25,6 +25,9 @@ jobs:
         - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
         - docker tag menu-generation:latest $DOCKER_USERNAME/menu-generation:$TRAVIS_BUILD_NUMBER
         - docker push $DOCKER_USERNAME/menu-generation:$TRAVIS_BUILD_NUMBER
+    - stage: mutation testing
+      script:
+        - make mutation
     - stage: acceptance testing
       script:
         - docker pull $DOCKER_USERNAME/menu-generation:$TRAVIS_BUILD_NUMBER

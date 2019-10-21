@@ -15,14 +15,20 @@
  */
 package org.adhuc.cena.menu.ingredients;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
 
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * The {@link Ingredient} test class.
@@ -37,21 +43,24 @@ import org.junit.jupiter.api.Test;
 class IngredientShould {
 
     @Test
-    @DisplayName("not be creatable without id")
-    void notBeCreatableWithoutId() {
-        assertThrows(IllegalArgumentException.class, () -> new Ingredient(null, NAME));
+    @DisplayName("not be creatable with null creation command")
+    void notBeCreatableWithNullCommand() {
+        assertThrows(NullPointerException.class, () -> new Ingredient(null));
     }
 
-    @Test
-    @DisplayName("not be creatable without name")
-    void notBeCreatableWithoutName() {
-        assertThrows(IllegalArgumentException.class, () -> new Ingredient(ID, null));
+    @ParameterizedTest
+    @MethodSource("invalidCreationParameters")
+    @DisplayName("not be creatable with invalid parameters")
+    void notBeCreatableWithInvalidParameters(IngredientId ingredientId, String name) {
+        assertThrows(IllegalArgumentException.class, () -> new Ingredient(ingredientId, name));
     }
 
-    @Test
-    @DisplayName("not be creatable with empty name")
-    void notBeCreatableWithEmptyName() {
-        assertThrows(IllegalArgumentException.class, () -> new Ingredient(ID, ""));
+    private static Stream<Arguments> invalidCreationParameters() {
+        return Stream.of(
+                Arguments.of(null, NAME),
+                Arguments.of(ID, null),
+                Arguments.of(ID, "")
+        );
     }
 
     @Test
@@ -62,6 +71,30 @@ class IngredientShould {
             softly.assertThat(ingredient.id()).isEqualTo(ID);
             softly.assertThat(ingredient.name()).isEqualTo(NAME);
         });
+    }
+
+    @ParameterizedTest
+    @MethodSource("equalitySource")
+    @DisplayName("be equal when ingredient id is equal")
+    void isEqual(Ingredient i1, Ingredient i2, boolean expected) {
+        assertThat(i1.equals(i2)).isEqualTo(expected);
+    }
+
+    @ParameterizedTest
+    @MethodSource("equalitySource")
+    @DisplayName("have same hash code when ingredient id is equal")
+    void sameHashCode(Ingredient i1, Ingredient i2, boolean expected) {
+        assertThat(i1.hashCode() == i2.hashCode()).isEqualTo(expected);
+    }
+
+    private static Stream<Arguments> equalitySource() {
+        var tomato = ingredient(TOMATO_ID, TOMATO);
+        return Stream.of(
+                Arguments.of(tomato, tomato, true),
+                Arguments.of(tomato, ingredient(TOMATO_ID, TOMATO), true),
+                Arguments.of(tomato, ingredient(TOMATO_ID, CUCUMBER), true),
+                Arguments.of(tomato, ingredient(CUCUMBER_ID, TOMATO), false)
+        );
     }
 
 }

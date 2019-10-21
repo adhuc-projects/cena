@@ -17,9 +17,10 @@ package org.adhuc.cena.menu.ingredients;
 
 import static org.springframework.util.Assert.hasText;
 
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import org.adhuc.cena.menu.common.BasicEntity;
@@ -31,11 +32,12 @@ import org.adhuc.cena.menu.common.BasicEntity;
  * @version 0.1.0
  * @since 0.1.0
  */
-@Data
 @Accessors(fluent = true)
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
+@ToString(callSuper = true)
 public class Ingredient extends BasicEntity<IngredientId> {
 
+    @Getter
     @NonNull
     private String name;
 
@@ -54,7 +56,7 @@ public class Ingredient extends BasicEntity<IngredientId> {
      * @param id   the ingredient identity.
      * @param name the ingredient name.
      */
-    public Ingredient(@NonNull IngredientId id, @NonNull String name) {
+    Ingredient(@NonNull IngredientId id, @NonNull String name) {
         super(id);
         hasText(name, "Cannot set ingredient name with invalid value");
         this.name = name;

@@ -31,26 +31,6 @@ public class CenaException extends RuntimeException implements CodifiedException
     private final ExceptionCode code;
 
     /**
-     * Constructs a new {@code CenaException} with the specified detail message. The cause is not initialized, and the
-     * code is set as default.
-     *
-     * @param message the detail message.
-     */
-    protected CenaException(final String message) {
-        this(message, (Throwable) null);
-    }
-
-    /**
-     * Constructs a new {@code CenaException} with the specified cause. The message is not initialized. The code is set
-     * as default, or as the cause code if the cause is a {@link CodifiedException}.
-     *
-     * @param cause the cause.
-     */
-    protected CenaException(final Throwable cause) {
-        this(cause, translateToCode(cause));
-    }
-
-    /**
      * Constructs a new {@code CenaException} with the specified code. The message is initialized with code description.
      * The cause is not initialized.
      *
@@ -61,17 +41,6 @@ public class CenaException extends RuntimeException implements CodifiedException
     }
 
     /**
-     * Constructs a new {@code CenaException} with the specified detail message and cause. The code is set as default,
-     * or as the cause code if the cause is a {@link CodifiedException}.
-     *
-     * @param message the detail message.
-     * @param cause   the cause.
-     */
-    protected CenaException(final String message, final Throwable cause) {
-        this(message, cause, cause != null ? translateToCode(cause) : null);
-    }
-
-    /**
      * Constructs a new {@code CenaException} with the specified detail message and code. The cause is not initialized.
      *
      * @param message the detail message.
@@ -79,16 +48,6 @@ public class CenaException extends RuntimeException implements CodifiedException
      */
     protected CenaException(final String message, final ExceptionCode code) {
         this(message, null, code);
-    }
-
-    /**
-     * Constructs a new {@code CenaException} with the specified cause and code. The message is not initialized.
-     *
-     * @param cause the cause.
-     * @param code  the exception code.
-     */
-    protected CenaException(final Throwable cause, final ExceptionCode code) {
-        this(cause.getMessage(), cause, code);
     }
 
     /**
@@ -115,23 +74,6 @@ public class CenaException extends RuntimeException implements CodifiedException
      */
     protected ExceptionCode defaultCode() {
         return ExceptionCode.INTERNAL_ERROR;
-    }
-
-    /**
-     * Gets the exception code depending on the cause, recursively trying to get code from a {@link CodifiedException}
-     * cause. Returns {@code null} by default.
-     *
-     * @param cause the cause exception.
-     * @return the exception code corresponding to the cause (default is {@code null}).
-     */
-    private static ExceptionCode translateToCode(final Throwable cause) {
-        if (CodifiedException.class.isAssignableFrom(cause.getClass())) {
-            return ((CodifiedException) cause).exceptionCode();
-        } else if (cause.getCause() != null) {
-            // Recursively try to get exception code from cause
-            return translateToCode(cause.getCause());
-        }
-        return null;
     }
 
 }

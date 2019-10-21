@@ -82,6 +82,12 @@ Once the build ends successfully (see [Build](#build) section), a docker environ
 
 The docker environment can be stopped using `make down` command.
 
+## Mutation tests
+
+From `cena` project folder, execute `make mutation` command.
+
+The mutation tests results are available through `cena/build/reports/pitest/index.html` page.
+
 ## Acceptance tests
 
 From `cena` project folder, execute `make acceptance` command.

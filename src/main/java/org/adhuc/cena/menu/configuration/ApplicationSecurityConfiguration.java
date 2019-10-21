@@ -40,7 +40,7 @@ import org.adhuc.cena.menu.configuration.MenuGenerationProperties.Security.Crede
  */
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-class ApplicationSecurityConfiguration {
+public class ApplicationSecurityConfiguration {
 
     @Bean
     UserDetailsService userDetailsService(@NonNull PasswordEncoder passwordEncoder,

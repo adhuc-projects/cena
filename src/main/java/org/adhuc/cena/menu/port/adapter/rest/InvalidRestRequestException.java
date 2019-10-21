@@ -17,8 +17,6 @@ package org.adhuc.cena.menu.port.adapter.rest;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
-import lombok.EqualsAndHashCode;
-import lombok.Value;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import org.adhuc.cena.menu.common.CenaException;
@@ -31,8 +29,6 @@ import org.adhuc.cena.menu.common.ExceptionCode;
  * @version 0.1.0
  * @since 0.1.0
  */
-@Value
-@EqualsAndHashCode(callSuper = true)
 @ResponseStatus(BAD_REQUEST)
 public class InvalidRestRequestException extends CenaException {
 

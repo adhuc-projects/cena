@@ -1,6 +1,12 @@
 buildscript {
+	repositories {
+		mavenCentral()
+	}
+	configurations.maybeCreate("pitest")
 	dependencies {
 		classpath('net.serenity-bdd:serenity-gradle-plugin:2.0.52')
+		classpath('info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.5')
+		pitest('org.pitest:pitest-junit5-plugin:0.8')
 	}
 }
 
@@ -13,6 +19,7 @@ plugins {
 	id 'org.asciidoctor.convert' version '1.5.9.2'
 	id 'io.franzbecker.gradle-lombok' version '3.1.0'
 	id 'jacoco'
+	id 'info.solidsoft.pitest' version '1.4.5'
 }
 apply plugin: 'net.serenity-bdd.aggregator'
 
@@ -44,6 +51,7 @@ gradle.startParameter.continueOnFailure = true
 def springBootVersion = '2.1.5.RELEASE'
 def springRestDocsVersion = '2.0.3.RELEASE'
 def springBootAdminVersion = '2.1.5'
+def junitVersion = '5.5.2'
 def lombokVersion = '1.18.8'
 def hamcrestVersion = '2.1'
 def serenityVersion = '2.0.52'
@@ -62,7 +70,8 @@ dependencies {
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
 	testImplementation('org.springframework.security:spring-security-test')
 	testImplementation('org.springframework.restdocs:spring-restdocs-mockmvc')
-	testImplementation('org.junit.jupiter:junit-jupiter-api')
+	testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
+	testImplementation("org.junit.jupiter:junit-jupiter-params:${junitVersion}")
 	testImplementation('org.junit.vintage:junit-vintage-engine')
 	testImplementation("org.hamcrest:hamcrest:${hamcrestVersion}")
 	testImplementation("org.hamcrest:hamcrest-library:${hamcrestVersion}")
@@ -95,6 +104,15 @@ lombok {
 test {
 	useJUnitPlatform()
 	outputs.dir snippetsDir
+}
+
+pitest {
+	testPlugin = 'junit5'
+	targetClasses = ['org.adhuc.cena.menu.*']
+	outputFormats = ['XML', 'HTML']
+	excludedMethods = ['equals', 'hashCode', 'toString']
+	timestampedReports = false
+	mutationThreshold = 75
 }
 
 jacocoTestReport {

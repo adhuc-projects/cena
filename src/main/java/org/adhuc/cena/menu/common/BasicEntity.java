@@ -15,8 +15,10 @@
  */
 package org.adhuc.cena.menu.common;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
@@ -27,11 +29,17 @@ import lombok.experimental.Accessors;
  * @version 0.1.0
  * @since 0.1.0
  */
-@Data
+@RequiredArgsConstructor
+@EqualsAndHashCode(of = {"id"})
 @Accessors(fluent = true)
 public abstract class BasicEntity<I extends Identity> implements Entity<I> {
 
+    @Getter
     @NonNull
     private final I id;
 
+    @Override
+    public String toString() {
+        return String.format("id=%s", id);
+    }
 }

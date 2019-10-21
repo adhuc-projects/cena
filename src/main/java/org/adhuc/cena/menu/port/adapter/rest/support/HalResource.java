@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.NonNull;
+import lombok.ToString;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 
@@ -33,6 +34,7 @@ import org.springframework.hateoas.ResourceSupport;
  * @see http://stateless.co/hal_specification.html
  * @since 0.1.0
  */
+@ToString(callSuper = true)
 public class HalResource extends ResourceSupport {
 
     private final Map<String, Object> embedded = new HashMap<>();

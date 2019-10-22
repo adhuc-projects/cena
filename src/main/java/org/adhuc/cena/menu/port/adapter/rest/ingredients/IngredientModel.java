@@ -18,9 +18,10 @@ package org.adhuc.cena.menu.port.adapter.rest.ingredients;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.NonNull;
 import lombok.ToString;
+import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.core.Relation;
 
 import org.adhuc.cena.menu.ingredients.Ingredient;
-import org.adhuc.cena.menu.port.adapter.rest.support.HalResource;
 
 /**
  * A REST resource encapsulating ingredient information.
@@ -30,7 +31,8 @@ import org.adhuc.cena.menu.port.adapter.rest.support.HalResource;
  * @since 0.1.0
  */
 @ToString(callSuper = true)
-class IngredientResource extends HalResource {
+@Relation(itemRelation = "ingredient", collectionRelation = "data")
+class IngredientModel extends RepresentationModel<IngredientModel> {
 
     @NonNull
     @JsonProperty("id")
@@ -39,7 +41,7 @@ class IngredientResource extends HalResource {
     @JsonProperty("name")
     private final String ingredientName;
 
-    IngredientResource(@NonNull Ingredient ingredient) {
+    IngredientModel(@NonNull Ingredient ingredient) {
         ingredientId = ingredient.id().toString();
         ingredientName = ingredient.name();
     }

@@ -58,7 +58,7 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
  */
 @Tag("integration")
 @Tag("restController")
-@WebMvcTest({IngredientsController.class, IngredientsDeletionController.class, IngredientResourceAssembler.class})
+@WebMvcTest({IngredientsController.class, IngredientsDeletionController.class, IngredientModelAssembler.class})
 @EnableConfigurationProperties(MenuGenerationProperties.class)
 @DisplayName("Ingredients controller should")
 class IngredientsControllerShould {
@@ -135,8 +135,7 @@ class IngredientsControllerShould {
         @DisplayName("have empty embedded data when retrieving ingredients")
         void haveEmptyDataOnEmptyList() throws Exception {
             mvc.perform(get(INGREDIENTS_API_URL))
-                    .andExpect(jsonPath("$._embedded.data").isArray())
-                    .andExpect(jsonPath("$._embedded.data").isEmpty());
+                    .andExpect(jsonPath("$._embedded").doesNotExist());
         }
     }
 

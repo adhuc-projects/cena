@@ -47,7 +47,7 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
  */
 @Tag("integration")
 @Tag("restController")
-@WebMvcTest({IngredientsController.class, IngredientController.class, IngredientResourceAssembler.class})
+@WebMvcTest({IngredientsController.class, IngredientController.class, IngredientModelAssembler.class})
 @DisplayName("Ingredient controller should")
 class IngredientControllerShould {
 

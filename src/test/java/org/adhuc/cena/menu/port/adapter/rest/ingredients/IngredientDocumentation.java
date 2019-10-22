@@ -52,7 +52,7 @@ import org.adhuc.cena.menu.support.WithIngredientManager;
  */
 @Tag("integration")
 @Tag("documentation")
-@WebMvcTest({IngredientsController.class, IngredientController.class, IngredientResourceAssembler.class})
+@WebMvcTest({IngredientsController.class, IngredientController.class, IngredientModelAssembler.class})
 @ContextConfiguration(classes = ResultHandlerConfiguration.class)
 @AutoConfigureRestDocs("build/generated-snippets")
 @DisplayName("Ingredient resource documentation")

@@ -41,7 +41,7 @@ import org.adhuc.cena.menu.support.WithIngredientManager;
  */
 @Tag("integration")
 @Tag("restController")
-@WebMvcTest({IngredientsController.class, IngredientsDeletionController.class, IngredientResourceAssembler.class})
+@WebMvcTest({IngredientsController.class, IngredientsDeletionController.class, IngredientModelAssembler.class})
 @TestPropertySource(properties = "cena.menu-generation.features.ingredients-deletion=false")
 @EnableConfigurationProperties(MenuGenerationProperties.class)
 @DisplayName("Ingredients deletion controller should")

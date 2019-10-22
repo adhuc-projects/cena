@@ -39,10 +39,11 @@ class ActuatorSecurity extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.requestMatcher(toAnyEndpoint().excluding(HEALTH_ENDPOINT_ID)).authorizeRequests().anyRequest().hasRole(ACTUATOR_ROLE)
-                .and().requestMatcher(to(HEALTH_ENDPOINT_ID)).authorizeRequests().anyRequest().permitAll()
-                .and().authorizeRequests().mvcMatchers("/**").permitAll()
-                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        http.authorizeRequests(authorizeRequests -> authorizeRequests
+                .requestMatchers(toAnyEndpoint().excluding(HEALTH_ENDPOINT_ID)).hasRole(ACTUATOR_ROLE)
+                .requestMatchers(to(HEALTH_ENDPOINT_ID)).permitAll()
+                .mvcMatchers("/**").permitAll())
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().httpBasic();
     }
 

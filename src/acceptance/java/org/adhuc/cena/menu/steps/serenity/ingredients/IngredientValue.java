@@ -33,7 +33,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.hal.Jackson2HalModule;
+import org.springframework.hateoas.mediatype.hal.Jackson2HalModule;
 
 /**
  * An ingredient value on the client side.
@@ -67,7 +67,7 @@ public class IngredientValue {
     }
 
     Optional<String> link(String rel) {
-        return links.stream().filter(l -> l.getRel().equals(rel)).map(Link::getHref).findFirst();
+        return links.stream().filter(l -> l.getRel().value().equals(rel)).map(Link::getHref).findFirst();
     }
 
     void assertEqualTo(IngredientValue expected) {

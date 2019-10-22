@@ -13,7 +13,7 @@ buildscript {
 plugins {
 	id 'java'
 	id 'eclipse'
-	id 'org.springframework.boot' version '2.1.5.RELEASE'
+	id 'org.springframework.boot' version '2.2.0.RELEASE'
 	id 'com.palantir.docker' version '0.22.1'
 	id 'com.avast.gradle.docker-compose' version '0.9.5'
 	id 'org.asciidoctor.convert' version '1.5.9.2'
@@ -49,11 +49,9 @@ configurations {
 }
 gradle.startParameter.continueOnFailure = true
 
-def springBootVersion = '2.1.5.RELEASE'
-def springRestDocsVersion = '2.0.3.RELEASE'
-def junitVersion = '5.5.2'
-def lombokVersion = '1.18.8'
-def hamcrestVersion = '2.1'
+def springBootVersion = '2.2.0.RELEASE'
+def springRestDocsVersion = '2.0.4.RELEASE'
+def lombokVersion = '1.18.10'
 def serenityVersion = '2.0.52'
 def serenityCucumberVersion = '1.9.39'
 def snippetsDir = file('build/generated-snippets')
@@ -68,11 +66,11 @@ dependencies {
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
 	testImplementation('org.springframework.security:spring-security-test')
 	testImplementation('org.springframework.restdocs:spring-restdocs-mockmvc')
-	testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
-	testImplementation("org.junit.jupiter:junit-jupiter-params:${junitVersion}")
+	testImplementation('org.junit.jupiter:junit-jupiter-api')
+	testImplementation('org.junit.jupiter:junit-jupiter-params')
 	testImplementation('org.junit.vintage:junit-vintage-engine')
-	testImplementation("org.hamcrest:hamcrest:${hamcrestVersion}")
-	testImplementation("org.hamcrest:hamcrest-library:${hamcrestVersion}")
+	testImplementation('org.hamcrest:hamcrest')
+	testImplementation('org.hamcrest:hamcrest-library')
 	testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine')
 	acceptanceCompileOnly("org.projectlombok:lombok:${lombokVersion}")
 	acceptanceAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
@@ -142,7 +140,7 @@ bootJar {
 	from("${asciidoctor.outputDir}/html5") {
 		into 'static/docs'
 	}
-	archiveName = "${rootProject.name}.jar"
+	archiveFileName = "${rootProject.name}.jar"
 }
 
 bootRun {

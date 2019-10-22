@@ -63,7 +63,7 @@ public class ManagementServiceClientSteps {
 
     @Step("Assert disk usage detail is available")
     public void assertDiskUsageIsAvailable() {
-        healthCheckResponse.assertThat().body("details.diskSpace.status", equalTo(Status.UP.getCode()));
+        healthCheckResponse.assertThat().body("components.diskSpace.status", equalTo(Status.UP.getCode()));
     }
 
     private String getHealthUrl() {

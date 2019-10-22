@@ -18,7 +18,7 @@ package org.adhuc.cena.menu.port.adapter.rest.ingredients;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-import org.springframework.hateoas.EntityLinks;
+import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,11 +54,11 @@ public class IngredientController {
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public IngredientResource getIngredient(@PathVariable String ingredientId) {
+    public IngredientModel getIngredient(@PathVariable String ingredientId) {
         var ingredient = ingredientAppService.getIngredient(new IngredientId(ingredientId));
-        var resource = new IngredientResource(ingredient);
-        resource.withLink(links.linkToSingleResource(Ingredient.class, ingredientId).withSelfRel());
-        return resource;
+        var model = new IngredientModel(ingredient);
+        model.add(links.linkToItemResource(Ingredient.class, ingredientId).withSelfRel());
+        return model;
     }
 
     @DeleteMapping

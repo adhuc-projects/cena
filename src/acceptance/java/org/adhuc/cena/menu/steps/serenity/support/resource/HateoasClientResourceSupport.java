@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.hal.Jackson2HalModule.HalLinkListDeserializer;
+import org.springframework.hateoas.mediatype.hal.Jackson2HalModule.HalLinkListDeserializer;
 
 /**
  * An abstract REST resource providing HATEOAS support on the client side.
@@ -46,11 +46,11 @@ public abstract class HateoasClientResourceSupport {
 
     @JsonIgnore
     public String getId() {
-        return getMaybeLink(Link.REL_SELF).get();
+        return getMaybeLink("self").get();
     }
 
     Optional<String> getMaybeLink(String rel) {
-        return links.stream().filter(link -> link.getRel().equals(rel)).map(Link::getHref).findFirst();
+        return links.stream().filter(link -> link.getRel().value().equals(rel)).map(Link::getHref).findFirst();
     }
 
     public String getLink(String rel) {

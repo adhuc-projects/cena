@@ -16,11 +16,11 @@
 package org.adhuc.cena.menu.port.adapter.rest;
 
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.http.HttpStatus.OK;
 
 import lombok.NonNull;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -48,8 +48,8 @@ class ApiIndexController {
 
     @GetMapping
     @ResponseStatus(OK)
-    ResourceSupport index() {
-        final var index = new ResourceSupport();
+    RepresentationModel index() {
+        final var index = new RepresentationModel<>();
         if (documentation.isEnabled()) {
             index.add(linkTo(ApiIndexController.class).slash("docs").slash("api-guide.html").withRel("documentation"));
         }

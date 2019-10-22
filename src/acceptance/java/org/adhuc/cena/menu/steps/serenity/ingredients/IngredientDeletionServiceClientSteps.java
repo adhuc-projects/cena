@@ -60,12 +60,14 @@ public class IngredientDeletionServiceClientSteps {
 
     @Step("Delete ingredient {0}")
     public void deleteIngredient(IngredientValue ingredient) {
-        ingredient.link("self").ifPresent(self -> rest().delete(self));
+        assertThat(ingredient.link("self")).isPresent();
+        rest().delete(ingredient.selfLink());
     }
 
     @Step("Delete ingredient {0} as ingredient manager")
     public void deleteIngredientAsIngredientManager(IngredientValue ingredient) {
-        ingredient.link("self").ifPresent(self -> rest(INGREDIENT_MANAGER).delete(self));
+        assertThat(ingredient.link("self")).isPresent();
+        rest(INGREDIENT_MANAGER).delete(ingredient.selfLink());
     }
 
     @Step("Attempt deleting ingredient {0}")

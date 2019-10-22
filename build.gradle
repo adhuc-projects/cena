@@ -52,8 +52,8 @@ gradle.startParameter.continueOnFailure = true
 def springBootVersion = '2.2.0.RELEASE'
 def springRestDocsVersion = '2.0.4.RELEASE'
 def lombokVersion = '1.18.10'
-def serenityVersion = '2.0.52'
-def serenityCucumberVersion = '1.9.39'
+def serenityVersion = '2.0.81'
+def serenityCucumberVersion = '1.9.45'
 def snippetsDir = file('build/generated-snippets')
 
 dependencies {

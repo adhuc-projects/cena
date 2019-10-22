@@ -51,7 +51,6 @@ gradle.startParameter.continueOnFailure = true
 
 def springBootVersion = '2.1.5.RELEASE'
 def springRestDocsVersion = '2.0.3.RELEASE'
-def springBootAdminVersion = '2.1.5'
 def junitVersion = '5.5.2'
 def lombokVersion = '1.18.8'
 def hamcrestVersion = '2.1'
@@ -61,12 +60,10 @@ def snippetsDir = file('build/generated-snippets')
 
 dependencies {
 	implementation platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
-	implementation platform("de.codecentric:spring-boot-admin-dependencies:${springBootAdminVersion}")
 	implementation('org.springframework.boot:spring-boot-starter-actuator')
 	implementation('org.springframework.boot:spring-boot-starter-hateoas')
 	implementation('org.springframework.boot:spring-boot-starter-web')
 	implementation('org.springframework.boot:spring-boot-starter-security')
-	implementation('de.codecentric:spring-boot-admin-starter-client')
 	runtimeOnly('org.springframework.boot:spring-boot-devtools')
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
 	testImplementation('org.springframework.security:spring-security-test')

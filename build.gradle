@@ -49,6 +49,7 @@ configurations {
 }
 gradle.startParameter.continueOnFailure = true
 
+def moduleName = 'org.adhuc.cena.menu'
 def springBootVersion = '2.2.0.RELEASE'
 def springRestDocsVersion = '2.0.4.RELEASE'
 def lombokVersion = '1.18.10'
@@ -70,7 +71,6 @@ dependencies {
 	testImplementation('org.junit.jupiter:junit-jupiter-params')
 	testImplementation('org.junit.vintage:junit-vintage-engine')
 	testImplementation('org.hamcrest:hamcrest')
-	testImplementation('org.hamcrest:hamcrest-library')
 	testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine')
 	acceptanceCompileOnly("org.projectlombok:lombok:${lombokVersion}")
 	acceptanceAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
@@ -89,6 +89,7 @@ configurations {
 	testImplementation {
 		exclude group: 'com.vaadin.external.google', module: 'android-json'
 		exclude group: 'org.apache.tomcat.embed', module: 'tomcat-embed-core'
+		exclude group: 'org.hamcrest', module: 'hamcrest-core'
 	}
 }
 
@@ -100,6 +101,37 @@ lombok {
 license {
 	header rootProject.file('.license')
 	excludes(['**/*.feature', '**/*.yml', '**/*.snippet'])
+}
+
+compileJava {
+	inputs.property("moduleName", moduleName)
+	doFirst {
+		options.compilerArgs = [
+			'--module-path', classpath.asPath,
+		]
+		classpath = files()
+	}
+}
+
+compileTestJava {
+	inputs.property("moduleName", moduleName)
+	doFirst {
+		options.compilerArgs = [
+			'--module-path', classpath.asPath,
+			'--add-modules', 'org.assertj.core',
+			'--add-modules', 'org.hamcrest',
+			'--add-modules', 'org.junit.jupiter.api',
+			'--add-modules', 'org.junit.jupiter.params',
+			'--add-modules', 'org.mockito',
+			'--add-reads', "$moduleName=org.assertj.core",
+			'--add-reads', "$moduleName=org.hamcrest",
+			'--add-reads', "$moduleName=org.junit.jupiter.api",
+			'--add-reads', "$moduleName=org.junit.jupiter.params",
+			'--add-reads', "$moduleName=org.mockito",
+			'--patch-module', "$moduleName=" + files(sourceSets.test.java.srcDirs).asPath,
+		]
+		classpath = files()
+	}
 }
 
 test {

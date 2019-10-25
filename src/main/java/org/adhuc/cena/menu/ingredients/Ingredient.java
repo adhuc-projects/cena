@@ -15,7 +15,7 @@
  */
 package org.adhuc.cena.menu.ingredients;
 
-import static org.springframework.util.Assert.hasText;
+import static org.adhuc.cena.menu.util.Assert.hasText;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

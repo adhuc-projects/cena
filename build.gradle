@@ -53,6 +53,7 @@ def moduleName = 'org.adhuc.cena.menu'
 def springBootVersion = '2.2.0.RELEASE'
 def springRestDocsVersion = '2.0.4.RELEASE'
 def lombokVersion = '1.18.10'
+def archUnitVersion = '0.11.0'
 def serenityVersion = '2.0.81'
 def serenityCucumberVersion = '1.9.45'
 def snippetsDir = file('build/generated-snippets')
@@ -64,6 +65,7 @@ dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-web')
 	implementation('org.springframework.boot:spring-boot-starter-security')
 	runtimeOnly('org.springframework.boot:spring-boot-devtools')
+	testCompile("com.tngtech.archunit:archunit-junit5-api:${archUnitVersion}")
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
 	testImplementation('org.springframework.security:spring-security-test')
 	testImplementation('org.springframework.restdocs:spring-restdocs-mockmvc')
@@ -71,6 +73,7 @@ dependencies {
 	testImplementation('org.junit.jupiter:junit-jupiter-params')
 	testImplementation('org.junit.vintage:junit-vintage-engine')
 	testImplementation('org.hamcrest:hamcrest')
+	testRuntime("com.tngtech.archunit:archunit-junit5-engine:${archUnitVersion}")
 	testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine')
 	acceptanceCompileOnly("org.projectlombok:lombok:${lombokVersion}")
 	acceptanceAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")

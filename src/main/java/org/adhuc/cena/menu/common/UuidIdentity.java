@@ -15,11 +15,10 @@
  */
 package org.adhuc.cena.menu.common;
 
-import static org.springframework.util.Assert.notNull;
+import static org.adhuc.cena.menu.util.Assert.notNull;
 
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -40,7 +39,6 @@ public abstract class UuidIdentity implements Identity {
     private final UUID id;
 
     @Override
-    @JsonValue
     public String toString() {
         return id.toString();
     }

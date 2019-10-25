@@ -15,7 +15,7 @@
  */
 package org.adhuc.cena.menu.ingredients;
 
-import static org.springframework.util.Assert.hasText;
+import static org.adhuc.cena.menu.util.Assert.hasText;
 
 import lombok.NonNull;
 import lombok.Value;
@@ -38,7 +38,7 @@ public class CreateIngredient {
     /**
      * Creates an ingredient creation command.
      *
-     * @param ingredientId the ingredient identity.
+     * @param ingredientId   the ingredient identity.
      * @param ingredientName the ingredient name.
      */
     public CreateIngredient(@NonNull IngredientId ingredientId, @NonNull String ingredientName) {

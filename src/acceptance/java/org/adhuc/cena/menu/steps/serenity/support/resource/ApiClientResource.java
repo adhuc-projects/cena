@@ -32,6 +32,10 @@ public class ApiClientResource extends HateoasClientResourceSupport {
         return getLink("documentation");
     }
 
+    public String getOpenApi() {
+        return getLink("openapi");
+    }
+
     public String getIngredients() {
         return getLink("ingredients");
     }

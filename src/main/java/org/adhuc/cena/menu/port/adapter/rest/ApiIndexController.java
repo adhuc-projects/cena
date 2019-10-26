@@ -51,6 +51,7 @@ class ApiIndexController {
     RepresentationModel index() {
         final var index = new RepresentationModel<>();
         if (documentation.isEnabled()) {
+            index.add(linkTo(ApiIndexController.class).slash("docs").slash("openapi.yml").withRel("openapi"));
             index.add(linkTo(ApiIndexController.class).slash("docs").slash("api-guide.html").withRel("documentation"));
         }
         index.add(linkTo(ApiIndexController.class).slash("management").withRel("management"));

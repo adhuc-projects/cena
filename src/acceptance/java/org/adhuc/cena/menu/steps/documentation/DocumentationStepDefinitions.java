@@ -26,7 +26,7 @@ import org.adhuc.cena.menu.steps.serenity.DocumentationServiceClientSteps;
  * The documentation steps definitions for rest-services acceptance tests.
  *
  * @author Alexandre Carbenay
- * @version 0.0.1
+ * @version 0.1.0
  * @since 0.0.1
  */
 @StepDefAnnotation
@@ -40,9 +40,19 @@ public class DocumentationStepDefinitions {
         documentationServiceClient.getDocumentation();
     }
 
+    @When("^I access to the OpenAPI specification$")
+    public void accessToOpenApiSpecification() {
+        documentationServiceClient.getOpenApiSpecification();
+    }
+
     @Then("^the documentation is available$")
     public void documentationIsAvailable() {
         documentationServiceClient.assertDocumentationIsAvailable();
+    }
+
+    @Then("^the OpenAPI specification is available$")
+    public void openApiSpecificationIsAvailable() {
+        documentationServiceClient.assertOpenApiSpecificationIsAvailable();
     }
 
 }

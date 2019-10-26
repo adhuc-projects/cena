@@ -7,3 +7,9 @@ Feature: Access to API documentation
     Given a running service
     When I access to the documentation
     Then the documentation is available
+
+  @Smoke
+  Scenario: OpenAPI specification is available
+    Given a running service
+    When I access to the OpenAPI specification
+    Then the OpenAPI specification is available

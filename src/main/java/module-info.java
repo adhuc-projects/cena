@@ -25,6 +25,7 @@ open module org.adhuc.cena.menu {
     requires spring.hateoas;
     requires spring.security.config;
     requires spring.security.core;
+    requires spring.security.web;
     requires spring.web;
     requires spring.webmvc;
 

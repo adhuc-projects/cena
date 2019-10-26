@@ -1,0 +1,335 @@
+openapi: 3.0.2
+info:
+  title: Cena - Menu generation
+  version: '1'
+  description: Cena provides a REST API for menu generation
+  contact:
+    name: Alexandre Carbenay
+  license:
+    name: GNU GENERAL PUBLIC LICENSE
+    url: 'http://www.gnu.org/licenses/'
+servers:
+  - description: Production server
+    url: 'https://cena.adhuc.org/api'
+paths:
+  /:
+    get:
+      summary: Retrieve the API index. This is the main entry point to navigate to the main API resources
+      operationId: index
+      tags:
+        - Index
+      responses:
+        200:
+          $ref: '#/components/responses/Index'
+  /ingredients:
+    get:
+      summary: Get the ingredients collection. Ingredients collection is accessible for every user, either authenticated or not
+      operationId: listIngredients
+      tags:
+        - Ingredients
+      responses:
+        200:
+          $ref: '#/components/responses/Ingredients'
+    post:
+      summary: Create an ingredient in ingredients collection. Only an ingredient manager can create ingredients
+      operationId: createIngredient
+      tags:
+        - Ingredients
+      security:
+        - basicAuth:[]
+      requestBody:
+        $ref: '#/components/requestBodies/CreateIngredient'
+      responses:
+        201:
+          $ref: '#/components/responses/IngredientCreated'
+        400:
+          $ref: '#/components/responses/400-BadRequest'
+        401:
+          $ref: '#/components/responses/401-Unauthorized'
+        403:
+          $ref: '#/components/responses/403-Forbidden'
+    delete:
+      summary: Delete all ingredients from the system. Only a super administrator can delete all ingredients directly. Ingredient managers can delete specific ingredients through the corresponding ingredient resource
+      operationId: deleteIngredients
+      tags:
+        - Ingredients
+      security:
+        - basicAuth:[]
+      responses:
+        204:
+          description: All ingredients have been deleted from the system
+        401:
+          $ref: '#/components/responses/401-Unauthorized'
+        403:
+          $ref: '#/components/responses/403-Forbidden'
+  /ingredients/{ingredientId}:
+    get:
+      summary: Get an ingredient detail. Ingredient detail is accessible for every user, either authenticated or not
+      operationId: retrieveIngredient
+      tags:
+        - Ingredients
+      parameters:
+        - $ref: '#/components/parameters/ingredientId'
+      responses:
+        200:
+          $ref: '#/components/responses/Ingredient'
+        404:
+          $ref: '#/components/responses/404-NotFound'
+    delete:
+      summary: Delete an ingredient from the system. Only an ingredient manager can delete an ingredient
+      operationId: deleteIngredient
+      tags:
+        - Ingredients
+      security:
+        - basicAuth:[]
+      parameters:
+        - $ref: '#/components/parameters/ingredientId'
+      responses:
+        204:
+          description: The ingredient has been deleted from the system
+        401:
+          $ref: '#/components/responses/401-Unauthorized'
+        403:
+          $ref: '#/components/responses/403-Forbidden'
+        404:
+          $ref: '#/components/responses/404-NotFound'
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+  parameters:
+    ingredientId:
+      name: ingredientId
+      in: path
+      description: Ingredient identity
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+  requestBodies:
+    CreateIngredient:
+      required: true
+      description: Ingredient creation request
+      content:
+        application/hal+json:
+          schema:
+            $ref: '#/components/schemas/Ingredient'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Ingredient'
+  responses:
+    Index:
+      description: Retrieve links to main API resources
+      content:
+        application/hal+json:
+          schema:
+            $ref: '#/components/schemas/Index'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Index'
+    Ingredients:
+      description: Collection containing all the ingredients found in the system. For now, this collection is not sortable or pageable, but those behaviors may be implemented in the future.
+      content:
+        application/hal+json:
+          schema:
+            $ref: '#/components/schemas/Ingredients'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Ingredients'
+    IngredientCreated:
+      description: Successful ingredient creation response
+      headers:
+        Location:
+          description: Link to the created ingredient. Can be used ot retrieve, update or delete the created ingredient
+          schema:
+            type: string
+            example: 'https://cena.adhuc.org/api/ingredients/3fa85f64-5717-4562-b3fc-2c963f66afa6'
+    Ingredient:
+      description: Ingredient detail
+      content:
+        application/hal+json:
+          schema:
+            $ref: '#/components/schemas/Ingredient'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Ingredient'
+    400-BadRequest:
+      description: Bad syntax or incorrect request
+      content:
+        application/hal+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    401-Unauthorized:
+      description: An authentication is required
+      content:
+        application/hal+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    403-Forbidden:
+      description: Authenticated user does not have access to resource
+      content:
+        application/hal+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    404-NotFound:
+      description: Resource does not exist
+      content:
+        application/hal+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Index:
+      description: Index resource, containing links to main resources
+      type: object
+      required:
+        - '_links'
+      properties:
+        '_links':
+          type: object
+          readOnly: true
+          required:
+            - openapi
+            - ingredients
+          properties:
+            documentation:
+              description: Link to access to the API documentation
+              type: object
+              required:
+                - href
+              properties:
+                href:
+                  type: string
+                  example: 'https://cena.adhuc.org/api/docs/api-guide.html'
+            openapi:
+              description: This OpenAPI specification
+              type: object
+              required:
+                - href
+              properties:
+                href:
+                  type: string
+                  example: 'https://cena.adhuc.org/api/docs/openapi.yml'
+            management:
+              description: Link to access to the management API associated to this API
+              type: object
+              required:
+                - href
+              properties:
+                href:
+                  type: string
+                  example: 'https://cena.adhuc.org/api/management'
+            ingredients:
+              description: Link to access to the ingredients collection resource
+              type: object
+              required:
+                - href
+              properties:
+                href:
+                  type: string
+                  example: 'https://cena.adhuc.org/api/ingredients'
+    Ingredients:
+      description: A collection of ingredients, containing ingredients detail for each ingredient
+      type: object
+      required:
+        - '_links'
+      properties:
+        '_embedded':
+          type: object
+          readOnly: true
+          required:
+            - data
+          properties:
+            data:
+              description: The ingredients collection data, containing ingredients detail
+              type: array
+              items:
+                $ref: '#/components/schemas/Ingredient'
+        '_links':
+          type: object
+          readOnly: true
+          required:
+            - self
+          properties:
+            self:
+              description: Link to this ingredients collection. Can be used to create new ingredients in the collection
+              type: object
+              properties:
+                href:
+                  type: string
+                  example: 'https://cena.adhuc.org/api/ingredients'
+    Ingredient:
+      description: An ingredient detail, containing its identity and name
+      type: object
+      required:
+        - id
+        - name
+        - '_links'
+      properties:
+        id:
+          description: Ingredient identity
+          type: string
+          format: uuid
+          readOnly: true
+          example: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+        name:
+          description: Ingredient name, unique in the system
+          type: string
+          minLength: 1
+          example: 'Tomato'
+        '_links':
+          type: object
+          readOnly: true
+          required:
+            - self
+          properties:
+            self:
+              description: Link to this ingredient detail. Can be used to update or delete the ingredient
+              type: object
+              required:
+                - href
+              properties:
+                href:
+                  type: string
+                  example: 'https://cena.adhuc.org/api/ingredients/3fa85f64-5717-4562-b3fc-2c963f66afa6'
+    Error:
+      description: General error structure
+      type: object
+      properties:
+        timestamp:
+          description: The date this error occurred on the server
+          type: string
+          format: date-time
+        status:
+          description: The HTTP status code applicable to this error
+          type: number
+          example: 400
+        error:
+          description: A human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the error
+          type: string
+          example: Bad request
+        message:
+          description: A human-readable explanation specific to this occurrence of the error
+          type: string
+          example: Ingredient name 'Tomato' is already used
+        path:
+          description: The path used to access to the resource returning the error
+          type: string
+          example: '/api/ingredients'
+        code:
+          description: An application-specific error code
+          type: number
+          example: 900100

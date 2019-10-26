@@ -44,8 +44,19 @@ public class DocumentationServiceClientSteps {
         rest().get(documentationUrl);
     }
 
+    @Step("Get OpenAPI specification")
+    public void getOpenApiSpecification() {
+        var openApiUrl = getOpenApiResourceUrl();
+        rest().get(openApiUrl);
+    }
+
     @Step("Assert documentation is available")
     public void assertDocumentationIsAvailable() {
+        assertOk();
+    }
+
+    @Step("Assert OpenAPI specification is available")
+    public void assertOpenApiSpecificationIsAvailable() {
         assertOk();
     }
 
@@ -53,4 +64,7 @@ public class DocumentationServiceClientSteps {
         return apiClientResource().getDocumentation();
     }
 
+    private String getOpenApiResourceUrl() {
+        return apiClientResource().getOpenApi();
+    }
 }

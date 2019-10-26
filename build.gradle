@@ -175,6 +175,9 @@ bootJar {
 	from("${asciidoctor.outputDir}/html5") {
 		into 'static/docs'
 	}
+	from("src/main/resources/api") {
+		into 'static/docs'
+	}
 	archiveFileName = "${rootProject.name}.jar"
 }
 

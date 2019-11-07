@@ -15,12 +15,15 @@
  */
 package org.adhuc.cena.menu.steps.serenity.support.resource;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
@@ -38,23 +41,23 @@ import org.springframework.hateoas.mediatype.hal.Jackson2HalModule.HalLinkListDe
 @Getter
 @Accessors(fluent = true)
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonIgnoreProperties(value = {"_links"}, ignoreUnknown = true, allowSetters = true)
 public abstract class HateoasClientResourceSupport {
 
     @JsonProperty("_links")
     @JsonDeserialize(using = HalLinkListDeserializer.class)
-    private List<Link> links;
+    private List<Link> links = new ArrayList<>();
 
-    @JsonIgnore
-    public String getId() {
-        return getMaybeLink("self").get();
+    public String selfLink() {
+        return link("self");
     }
 
-    Optional<String> getMaybeLink(String rel) {
+    public Optional<String> maybeLink(String rel) {
         return links.stream().filter(link -> link.getRel().value().equals(rel)).map(Link::getHref).findFirst();
     }
 
-    public String getLink(String rel) {
-        return getMaybeLink(rel).orElseThrow(() -> new IllegalStateException("Could not find link with rel " + rel + " in resource links"));
+    public String link(String rel) {
+        return maybeLink(rel).orElseGet(() -> fail("Unable to get " + rel + " link from links " + links));
     }
 
 }

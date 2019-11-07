@@ -76,7 +76,7 @@ public class ManagementServiceClientSteps {
 
     private static class ManagementResource extends HateoasClientResourceSupport {
         String getHealthUrl() {
-            return getLink("health");
+            return link("health");
         }
     }
 

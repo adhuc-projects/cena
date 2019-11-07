@@ -20,6 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType.INGREDIENT_MANAGER;
 import static org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType.SUPER_ADMINISTRATOR;
 
+import java.util.UUID;
+
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 
@@ -60,13 +62,11 @@ public class IngredientDeletionServiceClientSteps {
 
     @Step("Delete ingredient {0}")
     public void deleteIngredient(IngredientValue ingredient) {
-        assertThat(ingredient.link("self")).isPresent();
         rest().delete(ingredient.selfLink());
     }
 
     @Step("Delete ingredient {0} as ingredient manager")
     public void deleteIngredientAsIngredientManager(IngredientValue ingredient) {
-        assertThat(ingredient.link("self")).isPresent();
         rest(INGREDIENT_MANAGER).delete(ingredient.selfLink());
     }
 
@@ -83,7 +83,7 @@ public class IngredientDeletionServiceClientSteps {
     }
 
     private String generateNotFoundIngredientUrl() {
-        return ingredientsResourceUrl() + "/unknown";
+        return ingredientsResourceUrl() + "/" + UUID.randomUUID().toString();
     }
 
 }

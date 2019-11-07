@@ -17,23 +17,16 @@ package org.adhuc.cena.menu.steps.serenity.ingredients;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
 
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.mediatype.hal.Jackson2HalModule;
+
+import org.adhuc.cena.menu.steps.serenity.support.resource.HateoasClientResourceSupport;
 
 /**
  * An ingredient value on the client side.
@@ -43,32 +36,19 @@ import org.springframework.hateoas.mediatype.hal.Jackson2HalModule;
  * @since 0.1.0
  */
 @Data
-@ToString(exclude = {"id", "links"}, includeFieldNames = false)
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = false, exclude = {"id"}, includeFieldNames = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @RequiredArgsConstructor
 @Accessors(fluent = true)
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonInclude(NON_EMPTY)
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class IngredientValue {
+public class IngredientValue extends HateoasClientResourceSupport {
 
     public static final Comparator<IngredientValue> COMPARATOR = new IngredientNameComparator();
 
     private String id;
     private final String name;
-    @JsonProperty("_links")
-    @JsonDeserialize(using = Jackson2HalModule.HalLinkListDeserializer.class)
-    @JsonIgnoreProperties(allowSetters = true)
-    private List<Link> links = new ArrayList<>();
-
-    String selfLink() {
-        Optional<String> self = link("self");
-        return self.orElseGet(() -> fail("Unable to get self link from links " + links));
-    }
-
-    Optional<String> link(String rel) {
-        return links.stream().filter(l -> l.getRel().value().equals(rel)).map(Link::getHref).findFirst();
-    }
 
     void assertEqualTo(IngredientValue expected) {
         assertThat(this).usingComparator(COMPARATOR).isEqualTo(expected);

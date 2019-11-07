@@ -305,6 +305,7 @@ components:
                 href:
                   type: string
                   example: 'https://cena.adhuc.org/api/ingredients/3fa85f64-5717-4562-b3fc-2c963f66afa6'
+      additionalProperties: true
     Error:
       description: General error structure
       type: object

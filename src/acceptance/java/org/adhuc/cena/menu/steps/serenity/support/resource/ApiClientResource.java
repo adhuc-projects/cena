@@ -25,19 +25,19 @@ package org.adhuc.cena.menu.steps.serenity.support.resource;
 public class ApiClientResource extends HateoasClientResourceSupport {
 
     public String getManagement() {
-        return getLink("management");
+        return link("management");
     }
 
     public String getDocumentation() {
-        return getLink("documentation");
+        return link("documentation");
     }
 
     public String getOpenApi() {
-        return getLink("openapi");
+        return link("openapi");
     }
 
     public String getIngredients() {
-        return getLink("ingredients");
+        return link("ingredients");
     }
 
 }

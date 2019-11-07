@@ -21,6 +21,7 @@ management:
 logging:
   level:
     org.adhuc.cena.menu: TRACE
+    com.atlassian.oai.validator: ERROR
     org.springframework:
       web: ERROR
       security: ERROR

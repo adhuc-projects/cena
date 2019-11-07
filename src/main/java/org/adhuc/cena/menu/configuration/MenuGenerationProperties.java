@@ -65,7 +65,7 @@ public class MenuGenerationProperties {
     }
 
     @Data
-    static class Security {
+    public static class Security {
         /**
          * Defines ingredient manager credentials. Default is 'ingredient-manager' username and 'ingredient-manager' password.
          */
@@ -78,7 +78,7 @@ public class MenuGenerationProperties {
 
         @Data
         @Builder
-        static class Credentials {
+        public static class Credentials {
             /**
              * The username.
              */

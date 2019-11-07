@@ -19,6 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 
+import java.util.UUID;
+
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 
@@ -76,6 +78,6 @@ public class IngredientDetailServiceClientSteps {
     }
 
     private String generateNotFoundIngredientUrl() {
-        return ingredientsResourceUrl() + "/unknown";
+        return ingredientsResourceUrl() + "/" + UUID.randomUUID().toString();
     }
 }

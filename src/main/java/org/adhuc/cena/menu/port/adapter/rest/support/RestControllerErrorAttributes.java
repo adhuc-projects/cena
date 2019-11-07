@@ -15,9 +15,12 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.support;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.Map;
 import javax.servlet.ServletException;
 
+import com.atlassian.oai.validator.springmvc.InvalidRequestException;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.WebRequest;
@@ -40,6 +43,7 @@ class RestControllerErrorAttributes extends DefaultErrorAttributes {
     public Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
         var errorAttributes = super.getErrorAttributes(webRequest, includeStackTrace);
         addExceptionCode(errorAttributes, webRequest);
+        enhanceOpenAPIValidationError(errorAttributes, webRequest);
         return errorAttributes;
     }
 
@@ -58,8 +62,20 @@ class RestControllerErrorAttributes extends DefaultErrorAttributes {
         if (CenaException.class.isAssignableFrom(error.getClass())) {
             var cenaException = (CenaException) error;
             exceptionCode = cenaException.exceptionCode();
+        } else if (InvalidRequestException.class.isAssignableFrom(error.getClass())) {
+            exceptionCode = ExceptionCode.INVALID_REQUEST;
         }
         errorAttributes.put("code", exceptionCode.code());
+    }
+
+    private void enhanceOpenAPIValidationError(Map<String, Object> errorAttributes, WebRequest webRequest) {
+        var error = getError(webRequest);
+        if (error != null && InvalidRequestException.class.isAssignableFrom(error.getClass())) {
+            var openApiError = (InvalidRequestException) error;
+            errorAttributes.put("message", "OpenAPI validation error");
+            errorAttributes.put("details", openApiError.getValidationReport().getMessages().stream()
+                    .map(detail -> detail.getMessage()).collect(toList()));
+        }
     }
 
 }

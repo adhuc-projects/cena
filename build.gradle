@@ -35,8 +35,8 @@ repositories {
 sourceSets {
 	acceptance {
 		java {
-			compileClasspath += main.compileClasspath + test.compileClasspath + main.output + test.output
-			runtimeClasspath += main.runtimeClasspath + test.runtimeClasspath + main.output + test.output
+			compileClasspath += test.compileClasspath + test.output
+			runtimeClasspath += test.runtimeClasspath + test.output
 			srcDir file('src/acceptance/java')
 		}
 		resources.srcDir file('src/acceptance/resources')
@@ -53,7 +53,10 @@ def moduleName = 'org.adhuc.cena.menu'
 def springBootVersion = '2.2.0.RELEASE'
 def springRestDocsVersion = '2.0.4.RELEASE'
 def lombokVersion = '1.18.10'
+def swaggerVersion = '1.5.24'
+def swaggerValidatorVersion = '2.8.0'
 def archUnitVersion = '0.11.0'
+def restAssuredVersion = '4.1.2'
 def serenityVersion = '2.0.81'
 def serenityCucumberVersion = '1.9.45'
 def snippetsDir = file('build/generated-snippets')
@@ -64,6 +67,9 @@ dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-hateoas')
 	implementation('org.springframework.boot:spring-boot-starter-web')
 	implementation('org.springframework.boot:spring-boot-starter-security')
+	implementation("commons-io:commons-io:2.6")
+	implementation("io.swagger:swagger-core:${swaggerVersion}")
+	implementation("com.atlassian.oai:swagger-request-validator-springmvc:${swaggerValidatorVersion}")
 	runtimeOnly('org.springframework.boot:spring-boot-devtools')
 	testCompile("com.tngtech.archunit:archunit-junit5-api:${archUnitVersion}")
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
@@ -73,6 +79,8 @@ dependencies {
 	testImplementation('org.junit.jupiter:junit-jupiter-params')
 	testImplementation('org.junit.vintage:junit-vintage-engine')
 	testImplementation('org.hamcrest:hamcrest')
+	testImplementation("io.rest-assured:rest-assured:${restAssuredVersion}")
+	testImplementation("io.rest-assured:rest-assured-all:${restAssuredVersion}")
 	testRuntime("com.tngtech.archunit:archunit-junit5-engine:${archUnitVersion}")
 	testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine')
 	acceptanceCompileOnly("org.projectlombok:lombok:${lombokVersion}")
@@ -88,11 +96,22 @@ configurations {
 	implementation {
 		exclude group: 'com.google.code.findbugs', module: 'jsr305'
 		exclude group: 'org.apache.tomcat', module: 'tomcat-annotations-api'
+		exclude group: 'jakarta.validation', module: 'jakarta.validation-api'
+		exclude group: 'org.slf4j', module: 'slf4j-ext'
+		exclude group: 'javax.activation', module: 'activation'
+		exclude group: 'javax.servlet', module: 'javax.servlet-api'
+		exclude group: 'io.swagger.parser.v3', module: 'swagger-parser-v2-converter'
 	}
 	testImplementation {
 		exclude group: 'com.vaadin.external.google', module: 'android-json'
-		exclude group: 'org.apache.tomcat.embed', module: 'tomcat-embed-core'
 		exclude group: 'org.hamcrest', module: 'hamcrest-core'
+		exclude group: 'javax.activation', module: 'javax.activation-api'
+		exclude group: 'jakarta.xml.bind', module: 'jakarta.xml.bind-api'
+		exclude group: 'org.xmlunit', module: 'xmlunit-core'
+		exclude group: 'io.rest-assured', module: 'rest-assured-common'
+		exclude group: 'io.rest-assured', module: 'json-path'
+		exclude group: 'io.rest-assured', module: 'xml-path'
+		exclude group: 'org.codehaus.groovy', module: 'groovy-xml'
 	}
 }
 
@@ -126,11 +145,15 @@ compileTestJava {
 			'--add-modules', 'org.junit.jupiter.api',
 			'--add-modules', 'org.junit.jupiter.params',
 			'--add-modules', 'org.mockito',
+			'--add-modules', 'rest.assured',
+			'--add-modules', 'rest.assured.all',
 			'--add-reads', "$moduleName=org.assertj.core",
 			'--add-reads', "$moduleName=org.hamcrest",
 			'--add-reads', "$moduleName=org.junit.jupiter.api",
 			'--add-reads', "$moduleName=org.junit.jupiter.params",
 			'--add-reads', "$moduleName=org.mockito",
+			'--add-reads', "$moduleName=rest.assured",
+			'--add-reads', "$moduleName=rest.assured.all",
 			'--patch-module', "$moduleName=" + files(sourceSets.test.java.srcDirs).asPath,
 		]
 		classpath = files()

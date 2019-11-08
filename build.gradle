@@ -47,7 +47,6 @@ configurations {
 	acceptanceTestCompile.extendsFrom testCompile
 	acceptanceTestRuntime.extendsFrom testRuntime
 }
-gradle.startParameter.continueOnFailure = true
 
 def moduleName = 'org.adhuc.cena.menu'
 def springBootVersion = '2.2.0.RELEASE'
@@ -190,8 +189,10 @@ task acceptance(type: Test) {
 	testClassesDirs = sourceSets.acceptance.output.classesDirs
 	classpath = sourceSets.acceptance.runtimeClasspath
 	doFirst { dockerCompose.exposeAsSystemProperties(acceptance) }
+	gradle.startParameter.continueOnFailure = true
 }
 dockerCompose.isRequiredBy(acceptance)
+check.dependsOn.remove("checkOutcomes")
 
 bootJar {
 	dependsOn asciidoctor

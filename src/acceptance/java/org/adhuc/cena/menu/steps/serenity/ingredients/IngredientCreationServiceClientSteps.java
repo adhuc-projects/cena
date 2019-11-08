@@ -83,7 +83,7 @@ public class IngredientCreationServiceClientSteps {
 
     @Step("Assert ingredient name {0} already exists")
     public void assertIngredientNameAlreadyExists(String name) {
-        var jsonPath = assertBadRequest().extract().jsonPath();
+        var jsonPath = assertConflict().extract().jsonPath();
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(jsonPath.getString("message")).contains("Ingredient name '" + name + "' already used by an existing ingredient");
             softly.assertThat(jsonPath.getInt("code")).isEqualTo(900100);

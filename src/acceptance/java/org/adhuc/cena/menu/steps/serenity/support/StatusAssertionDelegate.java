@@ -96,6 +96,14 @@ public final class StatusAssertionDelegate {
         return assertStatus(response, NOT_FOUND);
     }
 
+    public ValidatableResponse assertConflict() {
+        return assertConflict(then());
+    }
+
+    public ValidatableResponse assertConflict(ValidatableResponse response) {
+        return assertStatus(response, CONFLICT);
+    }
+
     private ValidatableResponse assertStatus(ValidatableResponse response, HttpStatus status) {
         return response.statusCode(status.value());
     }

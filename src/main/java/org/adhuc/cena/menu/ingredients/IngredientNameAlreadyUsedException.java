@@ -15,7 +15,7 @@
  */
 package org.adhuc.cena.menu.ingredients;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CONFLICT;
 
 import lombok.NonNull;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -30,7 +30,7 @@ import org.adhuc.cena.menu.common.ExceptionCode;
  * @version 0.1.0
  * @since 0.1.0
  */
-@ResponseStatus(BAD_REQUEST)
+@ResponseStatus(CONFLICT)
 public class IngredientNameAlreadyUsedException extends CenaException {
 
     private static final ExceptionCode EXCEPTION_CODE = ExceptionCode.INGREDIENT_NAME_ALREADY_USED;

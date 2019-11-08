@@ -181,13 +181,13 @@ class IngredientsControllerShould {
 
     @Test
     @WithIngredientManager
-    @DisplayName("respond Bad Request when ingredient service throws IngredientNameAlreadyUsedException")
-    void respond400OnCreationIngredientNameAlreadyUsed() throws Exception {
+    @DisplayName("respond Conflict when ingredient service throws IngredientNameAlreadyUsedException")
+    void respond409OnCreationIngredientNameAlreadyUsed() throws Exception {
         doThrow(new IngredientNameAlreadyUsedException("Tomato")).when(ingredientAppServiceMock).createIngredient(any());
         mvc.perform(post(INGREDIENTS_API_URL)
                 .contentType(APPLICATION_JSON)
                 .content("{\"name\":\"Tomato\"}")
-        ).andExpect(status().isBadRequest());
+        ).andExpect(status().isConflict());
     }
 
     @Test

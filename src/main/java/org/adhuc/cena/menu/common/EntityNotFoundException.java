@@ -55,7 +55,7 @@ public class EntityNotFoundException extends CenaException {
      * @param identity   the identity value.
      */
     public EntityNotFoundException(Class<? extends Entity<?>> entityType, String identity) {
-        super(format("Cannot find entity of type %s with identity %s", entityType, identity), EXCEPTION_CODE);
+        super(format("Cannot find entity of type %s with identity %s", entityType.getSimpleName(), identity), EXCEPTION_CODE);
         this.entityType = entityType;
         this.identity = identity;
     }

@@ -95,18 +95,18 @@ class ApiDocumentation {
                 .requestAttr(RequestDispatcher.ERROR_MESSAGE, "Ingredient name 'Tomato' is already used")
                 .requestAttr(DefaultErrorAttributes.class.getName() + ".ERROR",
                         new IngredientNameAlreadyUsedException("Tomato")))
-                .andExpect(status().isBadRequest()).andExpect(jsonPath("error", is("Bad Request")))
+                .andExpect(status().isBadRequest()).andExpect(jsonPath("error", is("Ingredient name already used")))
                 .andExpect(jsonPath("timestamp", is(notNullValue()))).andExpect(jsonPath("status", is(400)))
                 .andExpect(jsonPath("path", is(notNullValue())))
                 .andExpect(jsonPath("code", is(ExceptionCode.INGREDIENT_NAME_ALREADY_USED.code())))
                 .andDo(documentationHandler.document(responseFields(
-                        fieldWithPath("error").description("The HTTP error that occurred, e.g. `Bad Request`"),
-                        fieldWithPath("message").description("A description of the cause of the error"),
+                        fieldWithPath("error").description("A general information about the error"),
+                        fieldWithPath("message").description("A more precise description of the cause of the error"),
                         fieldWithPath("path").description("The path to which the request was made"),
                         fieldWithPath("status").description("The HTTP status code, e.g. `400`"),
                         fieldWithPath("timestamp")
                                 .description("The time, in milliseconds, at which the error occurred"),
-                        fieldWithPath("code").description("The more specific error code"))));
+                        fieldWithPath("code").description("The more specific error code, understandable by an HTTP client"))));
     }
 
     @Test

@@ -66,6 +66,7 @@ class RestControllerErrorAttributes extends DefaultErrorAttributes {
             exceptionCode = ExceptionCode.INVALID_REQUEST;
         }
         errorAttributes.put("code", exceptionCode.code());
+        errorAttributes.put("error", exceptionCode.description());
     }
 
     private void enhanceOpenAPIValidationError(Map<String, Object> errorAttributes, WebRequest webRequest) {

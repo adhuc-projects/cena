@@ -79,7 +79,7 @@ class RestAdapterErrorHandlingShould {
                 .requestAttr(ERROR_REQUEST_URI, "/api/ingredients")
                 .requestAttr(ERROR_MESSAGE, "Ingredient name 'Tomato' is already used")
                 .requestAttr(DefaultErrorAttributes.class.getName() + ".ERROR", new RuntimeException("test")))
-                .andExpect(status().isBadRequest()).andExpect(jsonPath("error", is("Bad Request")))
+                .andExpect(status().isBadRequest()).andExpect(jsonPath("error", is("Internal error")))
                 .andExpect(jsonPath("timestamp", is(notNullValue()))).andExpect(jsonPath("status", is(400)))
                 .andExpect(jsonPath("path", is(notNullValue())))
                 .andExpect(jsonPath("code", is(ExceptionCode.INTERNAL_ERROR.code())));
@@ -92,7 +92,7 @@ class RestAdapterErrorHandlingShould {
                 .requestAttr(ERROR_REQUEST_URI, "/api/ingredients")
                 .requestAttr(ERROR_MESSAGE, "Ingredient name 'Tomato' is already used")
                 .requestAttr(DefaultErrorAttributes.class.getName() + ".ERROR", new IllegalArgumentException("test")))
-                .andExpect(status().isBadRequest()).andExpect(jsonPath("error", is("Bad Request")))
+                .andExpect(status().isBadRequest()).andExpect(jsonPath("error", is("Internal error")))
                 .andExpect(jsonPath("timestamp", is(notNullValue()))).andExpect(jsonPath("status", is(400)))
                 .andExpect(jsonPath("path", is(notNullValue())))
                 .andExpect(jsonPath("code", is(ExceptionCode.INTERNAL_ERROR.code())));
@@ -106,7 +106,7 @@ class RestAdapterErrorHandlingShould {
                 .requestAttr(ERROR_MESSAGE, "Ingredient name 'Tomato' is already used")
                 .requestAttr(DefaultErrorAttributes.class.getName() + ".ERROR",
                         new IngredientNameAlreadyUsedException("Tomato")))
-                .andExpect(status().isBadRequest()).andExpect(jsonPath("error", is("Bad Request")))
+                .andExpect(status().isBadRequest()).andExpect(jsonPath("error", is("Ingredient name already used")))
                 .andExpect(jsonPath("timestamp", is(notNullValue()))).andExpect(jsonPath("status", is(400)))
                 .andExpect(jsonPath("path", is(notNullValue())))
                 .andExpect(jsonPath("code", is(ExceptionCode.INGREDIENT_NAME_ALREADY_USED.code())));

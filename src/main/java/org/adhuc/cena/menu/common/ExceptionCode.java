@@ -37,7 +37,7 @@ import lombok.experimental.Accessors;
 public enum ExceptionCode {
 
     // General errors
-    INTERNAL_ERROR(100000, "Internal error occurred"),
+    INTERNAL_ERROR(100000, "Internal error"),
     INVALID_REQUEST(101000, "Invalid request"),
 
     ENTITY_NOT_FOUND(900000, "Entity not found"),

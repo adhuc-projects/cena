@@ -50,7 +50,7 @@ import org.adhuc.cena.menu.port.adapter.rest.documentation.support.ErrorsSnippet
  * The general API documentation.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.0.1
  */
 @Tag("integration")
@@ -84,7 +84,8 @@ class ApiDocumentation {
                 linkWithRel("documentation").description("This documentation"),
                 linkWithRel("openapi").description("OpenAPI specification for this API"),
                 linkWithRel("management").description("The https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-endpoints[Spring Boot Actuator] endpoints"),
-                linkWithRel("ingredients").description("The ingredients list")),
+                linkWithRel("ingredients").description("The ingredients list"),
+                linkWithRel("recipes").description("The recipes list")),
                 responseFields(subsectionWithPath("_links").description("<<resources-index-links,Links>> to other resources"))));
     }
 

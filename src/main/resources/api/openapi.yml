@@ -93,6 +93,15 @@ paths:
           $ref: '#/components/responses/403-Forbidden'
         404:
           $ref: '#/components/responses/404-NotFound'
+  /recipes:
+    get:
+      summary: Get the recipes collection. Recipes collection is accessible for every user, either authenticated or not
+      operationId: listRecipes
+      tags:
+        - Recipes
+      responses:
+        200:
+          $ref: '#/components/responses/Recipes'
 components:
   securitySchemes:
     basicAuth:
@@ -155,6 +164,15 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Ingredient'
+    Recipes:
+      description: Collection containing all the recipes found in the system. For now, this collection is not sortable or pageable, but those behaviors may be implemented in the future.
+      content:
+        application/hal+json:
+          schema:
+            $ref: '#/components/schemas/Recipes'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Recipes'
     400-BadRequest:
       description: Bad syntax or incorrect request
       content:
@@ -305,6 +323,40 @@ components:
                 href:
                   type: string
                   example: 'https://cena.adhuc.org/api/ingredients/3fa85f64-5717-4562-b3fc-2c963f66afa6'
+      additionalProperties: true
+    Recipes:
+      description: A collection of recipes, containing recipes detail for each recipe
+      type: object
+      required:
+        - '_links'
+      properties:
+        '_embedded':
+          type: object
+          readOnly: true
+          required:
+            - data
+          properties:
+            data:
+              description: The recipes collection data, containing recipes detail
+              type: array
+              items:
+                $ref: '#/components/schemas/Recipe'
+        '_links':
+          type: object
+          readOnly: true
+          required:
+            - self
+          properties:
+            self:
+              description: Link to this recipes collection. Can be used to create new recipes in the collection
+              type: object
+              properties:
+                href:
+                  type: string
+                  example: 'https://cena.adhuc.org/api/recipes'
+    Recipe:
+      description: A recipe detail
+      type: object
       additionalProperties: true
     Error:
       description: General error structure

@@ -32,7 +32,7 @@ import org.springframework.test.web.servlet.MockMvc;
  * The {@link ApiIndexController} test class.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.0.1
  */
 @Tag("integration")
@@ -54,7 +54,8 @@ class ApiIndexControllerShould {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("_links.documentation").exists())
                 .andExpect(jsonPath("_links.management").exists())
-                .andExpect(jsonPath("_links.ingredients").exists());
+                .andExpect(jsonPath("_links.ingredients").exists())
+                .andExpect(jsonPath("_links.recipes").exists());
     }
 
 }

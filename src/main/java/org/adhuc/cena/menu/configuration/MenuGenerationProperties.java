@@ -23,7 +23,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties to configure the menu generation application.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.0.1
  */
 @Data
@@ -66,13 +66,19 @@ public class MenuGenerationProperties {
 
     @Data
     public static class Security {
+
+        /**
+         * Defines user credentials. Default is 'user' username and 'password' password.
+         */
+        private Credentials user = Credentials.builder().username("user").password("password").build();
+
         /**
          * Defines ingredient manager credentials. Default is 'ingredient-manager' username and 'ingredient-manager' password.
          */
         private Credentials ingredientManager = Credentials.builder().username("ingredient-manager").password("ingredient-manager").build();
 
         /**
-         * Defines ingredient manager credentials. Default is 'ingredient-manager' username and 'ingredient-manager' password.
+         * Defines super administrator credentials. Default is 'super-admin' username and 'super-admin' password.
          */
         private Credentials superAdministrator = Credentials.builder().username("super-admin").password("super-admin").build();
 

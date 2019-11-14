@@ -26,7 +26,7 @@ import lombok.Getter;
  * The authentication types.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @Getter
@@ -35,6 +35,7 @@ public enum AuthenticationType {
 
     COMMUNITY_USER(() -> new AnonymousAuthentication()),
     ACTUATOR_MANAGER(() -> new BasicAuthentication("actuator", "actuator")),
+    AUTHENTICATED_USER(() -> new BasicAuthentication("user", "password")),
     INGREDIENT_MANAGER(() -> new BasicAuthentication("ingredient-manager", "ingredient-manager")),
     SUPER_ADMINISTRATOR(() -> new BasicAuthentication("super-admin", "super-admin"));
 

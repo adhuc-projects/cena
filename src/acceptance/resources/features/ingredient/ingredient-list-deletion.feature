@@ -36,6 +36,19 @@ Feature: Delete ingredients
     And no existing ingredient has been deleted
 
   @Security
+  Scenario: Delete ingredients as community user
+    Given an authenticated user
+    And the following existing ingredients
+      | name       |
+      | Tomato     |
+      | Cucumber   |
+      | Mozzarella |
+      | Olive      |
+    When he deletes the ingredients
+    Then an error notifies that user is not authorized
+    And no existing ingredient has been deleted
+
+  @Security
   Scenario: Delete ingredients as ingredient manager
     Given an authenticated ingredient manager
     And the following existing ingredients

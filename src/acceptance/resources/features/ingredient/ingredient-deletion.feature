@@ -25,6 +25,14 @@ Feature: Delete an ingredient from the system
     And the ingredient can be found in the list
 
   @Security
+  Scenario: Delete an ingredient as authenticated user
+    Given an authenticated user
+    And an existing "Tomato" ingredient
+    When he deletes the ingredient
+    Then an error notifies that user is not authorized
+    And the ingredient can be found in the list
+
+  @Security
   Scenario: Delete an ingredient as super administrator
     Given an authenticated super administrator
     And an existing "Tomato" ingredient

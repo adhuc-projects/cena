@@ -35,7 +35,7 @@ import org.adhuc.cena.menu.configuration.MenuGenerationProperties.Security.Crede
  * Configures application security, by providing a {@link UserDetailsService}.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @Configuration
@@ -47,6 +47,7 @@ public class ApplicationSecurityConfiguration {
                                           @NonNull MenuGenerationProperties menuGenerationProperties) {
         var users = User.builder().passwordEncoder(passwordEncoder::encode);
         var manager = new InMemoryUserDetailsManager();
+        manager.createUser(buildUser(users, menuGenerationProperties.getSecurity().getUser()));
         manager.createUser(buildIngredientManager(users, menuGenerationProperties.getSecurity().getIngredientManager()));
         manager.createUser(buildSuperAdministrator(users, menuGenerationProperties.getSecurity().getSuperAdministrator()));
         manager.createUser(users.username(menuGenerationProperties.getManagement().getSecurity().getUsername())
@@ -60,12 +61,20 @@ public class ApplicationSecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 
+    private UserDetails buildUser(UserBuilder users, Credentials credentials) {
+        return buildUser(users, credentials, USER_ROLE);
+    }
+
     private UserDetails buildIngredientManager(UserBuilder users, Credentials credentials) {
-        return users.username(credentials.getUsername()).password(credentials.getPassword()).roles(INGREDIENT_MANAGER_ROLE).build();
+        return buildUser(users, credentials, INGREDIENT_MANAGER_ROLE);
     }
 
     private UserDetails buildSuperAdministrator(UserBuilder users, Credentials credentials) {
-        return users.username(credentials.getUsername()).password(credentials.getPassword()).roles(SUPER_ADMINISTRATOR_ROLE).build();
+        return buildUser(users, credentials, SUPER_ADMINISTRATOR_ROLE);
+    }
+
+    private UserDetails buildUser(UserBuilder users, Credentials credentials, String role) {
+        return users.username(credentials.getUsername()).password(credentials.getPassword()).roles(role).build();
     }
 
 }

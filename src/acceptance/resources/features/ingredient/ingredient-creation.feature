@@ -32,6 +32,14 @@ Feature: Create an ingredient in the system
     And the ingredient cannot be found in the list
 
   @Security
+  Scenario: Create an ingredient as authenticated user
+    Given an authenticated user
+    And a non-existent "Tomato" ingredient
+    When he creates the ingredient
+    Then an error notifies that user is not authorized
+    And the ingredient cannot be found in the list
+
+  @Security
   Scenario: Create an ingredient as super administrator
     Given an authenticated super administrator
     And a non-existent "Tomato" ingredient

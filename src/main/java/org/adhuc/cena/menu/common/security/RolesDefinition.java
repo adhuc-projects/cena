@@ -22,13 +22,14 @@ import lombok.NoArgsConstructor;
  * The roles definition.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RolesDefinition {
 
     public static final String ACTUATOR_ROLE = "ACTUATOR";
+    public static final String USER_ROLE = "USER";
     public static final String INGREDIENT_MANAGER_ROLE = "INGREDIENT_MANAGER";
     public static final String SUPER_ADMINISTRATOR_ROLE = "SUPER_ADMIN";
 

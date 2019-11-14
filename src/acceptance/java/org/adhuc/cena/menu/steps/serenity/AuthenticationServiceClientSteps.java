@@ -25,7 +25,7 @@ import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationP
  * The authentication rest-service client steps definition.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.0.1
  */
 public class AuthenticationServiceClientSteps {
@@ -38,6 +38,11 @@ public class AuthenticationServiceClientSteps {
     @Step("Defines a community user")
     public void withCommunityUser() {
         authenticationProvider.withCommunityUser();
+    }
+
+    @Step("Authenticate as authenticated user")
+    public void withAuthenticatedUser() {
+        authenticationProvider.withAuthenticatedUser();
     }
 
     @Step("Authenticate as ingredient manager")

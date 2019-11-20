@@ -15,48 +15,48 @@
  */
 package org.adhuc.cena.menu.recipes;
 
-import static org.adhuc.cena.menu.util.Assert.hasText;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.Accessors;
 
-import org.adhuc.cena.menu.common.BasicEntity;
+import org.adhuc.cena.menu.common.Identity;
 
 /**
- * A recipe definition.
+ * A recipe identity.
  *
  * @author Alexandre Carbenay
  * @version 0.2.0
  * @since 0.2.0
  */
+@RequiredArgsConstructor
+@EqualsAndHashCode
 @Accessors(fluent = true)
-@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
-@ToString(callSuper = true)
-public class Recipe extends BasicEntity<RecipeId> {
+public class RecipeId implements Identity {
+
+    private static AtomicInteger SEQUENCE = new AtomicInteger(0);
 
     @Getter
-    @NonNull
-    private String name;
-    @Getter
-    @NonNull
-    private String content;
+    private final int id;
+
+    @Override
+    public String toString() {
+        return Integer.toString(id);
+    }
 
     /**
-     * Creates a recipe.
+     * Generates a new recipe identity.
      *
-     * @param id      the recipe identity.
-     * @param name    the recipe name.
-     * @param content the recipe content.
+     * @return a new recipe identity.
      */
-    public Recipe(@NonNull RecipeId id, @NonNull String name, @NonNull String content) {
-        super(id);
-        hasText(name, "Cannot set recipe name with invalid value");
-        hasText(content, "Cannot set recipe content with invalid value");
-        this.name = name;
-        this.content = content;
+    public static RecipeId generate() {
+        return new RecipeId(SEQUENCE.incrementAndGet());
+    }
+
+    // For testing purpose only
+    // TODO remove RecipeId.reset()
+    public static void reset() {
+        SEQUENCE = new AtomicInteger(0);
     }
 
 }

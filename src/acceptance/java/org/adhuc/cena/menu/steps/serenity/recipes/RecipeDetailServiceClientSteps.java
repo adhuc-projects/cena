@@ -15,51 +15,36 @@
  */
 package org.adhuc.cena.menu.steps.serenity.recipes;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
-import static org.springframework.http.HttpHeaders.LOCATION;
 
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
-import net.thucydides.core.annotations.Steps;
 
-import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.RestClientDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
 
 /**
- * The recipe creation rest-service client steps definition.
+ * The recipe detail rest-service client steps definition.
  *
  * @author Alexandre Carbenay
  * @version 0.2.0
  * @since 0.2.0
  */
-public class RecipeCreationServiceClientSteps {
+public class RecipeDetailServiceClientSteps {
 
     @Delegate
     private final RestClientDelegate restClientDelegate = new RestClientDelegate();
     @Delegate
-    private final ResourceUrlResolverDelegate resourceUrlResolverDelegate = new ResourceUrlResolverDelegate();
-    @Delegate
     private final StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
-    @Delegate
-    private final RecipeStorageDelegate recipeStorage = new RecipeStorageDelegate();
 
-    @Steps
-    private RecipeDetailServiceClientSteps recipeDetailServiceClient;
-
-    @Step("Create the recipe {0}")
-    public void createRecipe(RecipeValue recipe) {
-        var recipesResourceUrl = recipesResourceUrl();
-        rest().contentType(HAL_JSON_VALUE).body(recipe).post(recipesResourceUrl).andReturn();
+    @Step("Get ingredient from {0}")
+    public RecipeValue getRecipeFromUrl(String recipeDetailUrl) {
+        fetchRecipe(recipeDetailUrl);
+        return assertOk().extract().as(RecipeValue.class);
     }
 
-    @Step("Assert recipe {0} has been successfully created")
-    public void assertRecipeSuccessfullyCreated(RecipeValue recipe) {
-        var recipeLocation = assertCreated().extract().header(LOCATION);
-        assertThat(recipeLocation).isNotBlank();
-        var retrievedRecipe = recipeDetailServiceClient.getRecipeFromUrl(recipeLocation);
-        retrievedRecipe.assertEqualTo(recipe);
+    private void fetchRecipe(String recipeDetailUrl) {
+        rest().accept(HAL_JSON_VALUE).get(recipeDetailUrl).andReturn();
     }
 
 }

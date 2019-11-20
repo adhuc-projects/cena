@@ -42,7 +42,7 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
  * The {@link IngredientController} test class.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @Tag("integration")
@@ -113,14 +113,14 @@ class IngredientControllerShould {
 
         @Test
         @DisplayName("respond with HAL content when retrieving ingredient with no specific requested content")
-        void respondHalOnList() throws Exception {
+        void respondHalOnDetail() throws Exception {
             mvc.perform(get(INGREDIENT_API_URL, ID))
                     .andExpect(content().contentTypeCompatibleWith(HAL_JSON));
         }
 
         @Test
         @DisplayName("respond with JSON content when requested while retrieving ingredient")
-        void respondJSONOnList() throws Exception {
+        void respondJSONOnDetail() throws Exception {
             mvc.perform(get(INGREDIENT_API_URL, ID).accept(APPLICATION_JSON))
                     .andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON));
         }
@@ -135,7 +135,7 @@ class IngredientControllerShould {
 
         @Test
         @DisplayName("contain self link to detail")
-        void getIngredientsHasSelfLink() throws Exception {
+        void getIngredientHasSelfLink() throws Exception {
             var result = mvc.perform(get(INGREDIENT_API_URL, ID));
             result.andExpect(jsonPath("$._links.self.href").exists())
                     .andExpect(jsonPath("$._links.self.href", equalTo(result.andReturn().getRequest().getRequestURL().toString())));

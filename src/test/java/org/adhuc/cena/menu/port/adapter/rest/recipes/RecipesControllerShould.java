@@ -16,8 +16,10 @@
 package org.adhuc.cena.menu.port.adapter.rest.recipes;
 
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
+import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.hamcrest.Matchers;
@@ -80,6 +82,18 @@ class RecipesControllerShould {
     void haveEmptyDataOnEmptyList() throws Exception {
         mvc.perform(get(RECIPES_API_URL))
                 .andExpect(jsonPath("$._embedded").doesNotExist());
+    }
+
+    @Test
+    @DisplayName("respond Created when creating recipe")
+    void respond201OnCreation() throws Exception {
+        mvc.perform(post(RECIPES_API_URL)).andExpect(status().isCreated());
+    }
+
+    @Test
+    @DisplayName("respond with a Location header when creating recipe successfully")
+    void respondWithLocationAfterCreationSuccess() throws Exception {
+        mvc.perform(post(RECIPES_API_URL)).andExpect(header().exists(LOCATION));
     }
 
 }

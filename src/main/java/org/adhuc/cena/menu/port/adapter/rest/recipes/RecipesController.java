@@ -19,16 +19,16 @@ import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.hateoas.server.ExposesResourceFor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import org.adhuc.cena.menu.recipes.Recipe;
 
@@ -59,6 +59,14 @@ public class RecipesController {
     CollectionModel<Object> getRecipes() {
         return new CollectionModel<>(Collections.emptyList())
                 .add(links.linkToCollectionResource(Recipe.class).withSelfRel());
+    }
+
+    /**
+     * Creates a recipe.
+     */
+    @PostMapping
+    ResponseEntity<Void> createRecipe() throws URISyntaxException {
+        return ResponseEntity.created(new URI(links.linkToItemResource(Recipe.class, "1").getHref())).build();
     }
 
 }

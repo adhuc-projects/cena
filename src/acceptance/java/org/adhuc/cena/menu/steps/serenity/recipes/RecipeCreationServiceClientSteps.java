@@ -16,53 +16,45 @@
 package org.adhuc.cena.menu.steps.serenity.recipes;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assumptions.assumeThat;
-
-import static org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue.COMPARATOR;
-
-import java.util.Collection;
+import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
+import static org.springframework.http.HttpHeaders.LOCATION;
 
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 
 import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
+import org.adhuc.cena.menu.steps.serenity.support.RestClientDelegate;
+import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
 
 /**
- * The recipes list rest-service client steps definition.
+ * The recipe creation rest-service client steps definition.
  *
  * @author Alexandre Carbenay
  * @version 0.2.0
  * @since 0.2.0
  */
-public class RecipeListServiceClientSteps {
+public class RecipeCreationServiceClientSteps {
 
+    @Delegate
+    private final RestClientDelegate restClientDelegate = new RestClientDelegate();
     @Delegate
     private final ResourceUrlResolverDelegate resourceUrlResolverDelegate = new ResourceUrlResolverDelegate();
     @Delegate
-    private final RecipeListClientDelegate listClient = new RecipeListClientDelegate(recipesResourceUrl());
+    private final StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
     @Delegate
     private final RecipeStorageDelegate recipeStorage = new RecipeStorageDelegate();
 
-    @Step("Assume empty recipes list")
-    public void assumeEmptyRecipesList() {
-        // TODO delete existing recipes
-        assumeThat(fetchRecipes()).isEmpty();
+    @Step("Create the recipe {0}")
+    public void createRecipe(RecipeValue recipe) {
+        var recipesResourceUrl = recipesResourceUrl();
+        rest().contentType(HAL_JSON_VALUE).body(recipe).post(recipesResourceUrl).andReturn();
     }
 
-    @Step("Assert empty recipes list {0}")
-    public void assertEmptyRecipesList(Collection<RecipeValue> recipes) {
-        assertThat(recipes).isEmpty();
-    }
-
-    @Step("Assume recipe {0} is not in recipes list")
-    public RecipeValue assumeNotInRecipesList(RecipeValue recipe) {
-        assumeThat(fetchRecipes()).usingElementComparator(COMPARATOR).doesNotContain(recipe);
-        return recipe;
-    }
-
-    @Step("Get recipes list")
-    public Collection<RecipeValue> getRecipes() {
-        return fetchRecipes();
+    @Step("Assert recipe {0} has been successfully created")
+    public void assertRecipeSuccessfullyCreated(RecipeValue recipe) {
+        var recipeLocation = assertCreated().extract().header(LOCATION);
+        assertThat(recipeLocation).isNotBlank();
+        // TODO assert recipe can be retrieved from location
     }
 
 }

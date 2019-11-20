@@ -22,6 +22,7 @@ import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.recipes.RecipeListServiceClientSteps;
+import org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue;
 
 /**
  * The recipes list steps definitions for rest-services acceptance tests.
@@ -39,6 +40,11 @@ public class RecipeListStepDefinitions {
     @Given("^no existing recipe$")
     public void noExistingRecipe() {
         recipeListServiceClient.assumeEmptyRecipesList();
+    }
+
+    @Given("^a non-existent \"(.*)\" recipe$")
+    public void nonExistentRecipe(String recipeName) {
+        recipeListServiceClient.storeRecipe(recipeListServiceClient.assumeNotInRecipesList(new RecipeValue(recipeName)));
     }
 
     @When("^he lists the recipes$")

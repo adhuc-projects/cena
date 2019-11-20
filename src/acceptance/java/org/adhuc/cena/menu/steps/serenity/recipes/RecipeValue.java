@@ -15,6 +15,17 @@
  */
 package org.adhuc.cena.menu.steps.serenity.recipes;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
+
+import java.util.Comparator;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.*;
+import lombok.experimental.Accessors;
+
+import org.adhuc.cena.menu.steps.serenity.support.resource.HateoasClientResourceSupport;
+
 /**
  * A recipe value on the client side.
  *
@@ -22,6 +33,34 @@ package org.adhuc.cena.menu.steps.serenity.recipes;
  * @version 0.2.0
  * @since 0.2.0
  */
-class RecipeValue {
+@Data
+@EqualsAndHashCode(callSuper = true)
+@ToString(exclude = {"id", "content"}, includeFieldNames = false)
+@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
+@Accessors(fluent = true)
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+@JsonInclude(NON_EMPTY)
+public class RecipeValue extends HateoasClientResourceSupport {
+
+    public static final Comparator<RecipeValue> COMPARATOR = new RecipeNameComparator();
+
+    private static final String DEFAULT_CONTENT = "Recipe default content";
+
+    private final String id;
+    private final String name;
+    private final String content;
+
+    public RecipeValue(String name) {
+        this.id = null;
+        this.name = name;
+        this.content = DEFAULT_CONTENT;
+    }
+
+    static class RecipeNameComparator implements Comparator<RecipeValue> {
+        @Override
+        public int compare(RecipeValue recipe1, RecipeValue recipe2) {
+            return Comparator.comparing(RecipeValue::name, String::compareTo).compare(recipe1, recipe2);
+        }
+    }
 
 }

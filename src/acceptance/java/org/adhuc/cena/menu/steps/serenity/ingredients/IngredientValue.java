@@ -32,7 +32,7 @@ import org.adhuc.cena.menu.steps.serenity.support.resource.HateoasClientResource
  * An ingredient value on the client side.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @Data
@@ -54,7 +54,7 @@ public class IngredientValue extends HateoasClientResourceSupport {
         assertThat(this).usingComparator(COMPARATOR).isEqualTo(expected);
     }
 
-    public static class IngredientNameComparator implements Comparator<IngredientValue> {
+    static class IngredientNameComparator implements Comparator<IngredientValue> {
         @Override
         public int compare(IngredientValue ingredient1, IngredientValue ingredient2) {
             return Comparator.comparing(IngredientValue::name, String::compareTo).compare(ingredient1, ingredient2);

@@ -18,9 +18,8 @@ jobs:
         # Build execution (unit & integration tests, application packaging, ...)
         - make build
         # Code quality update
-        - curl -Ls -o codacy-coverage-reporter "$(curl -Ls https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r '.assets | map({name, browser_download_url} | select(.name | contains("codacy-coverage-reporter-linux"))) | .[0].browser_download_url')"
-        - chmod +x codacy-coverage-reporter
-        - ./codacy-coverage-reporter report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
+        - curl -LSs $(curl -LSs https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r '.assets | map({content_type, browser_download_url} | select(.content_type | contains("application/java-archive"))) | .[0].browser_download_url') -o codacy-coverage-reporter-assembly.jar
+        - java -jar codacy-coverage-reporter-assembly.jar report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
         # Docker registry release
         - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
         - docker tag menu-generation:latest $DOCKER_USERNAME/menu-generation:$TRAVIS_BUILD_NUMBER

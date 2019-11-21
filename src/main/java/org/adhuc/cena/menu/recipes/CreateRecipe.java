@@ -15,42 +15,40 @@
  */
 package org.adhuc.cena.menu.recipes;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import static org.adhuc.cena.menu.util.Assert.hasText;
 
-import lombok.*;
+import lombok.NonNull;
+import lombok.Value;
 import lombok.experimental.Accessors;
 
-import org.adhuc.cena.menu.common.Identity;
-
 /**
- * A recipe identity.
+ * A recipe creation command.
  *
  * @author Alexandre Carbenay
  * @version 0.2.0
  * @since 0.2.0
  */
-@RequiredArgsConstructor
-@EqualsAndHashCode
+@Value
 @Accessors(fluent = true)
-public class RecipeId implements Identity {
+public class CreateRecipe {
 
-    private static AtomicInteger SEQUENCE = new AtomicInteger(0);
-
-    @Getter
-    private final int id;
-
-    @Override
-    public String toString() {
-        return Integer.toString(id);
-    }
+    private final RecipeId recipeId;
+    private final String recipeName;
+    private final String recipeContent;
 
     /**
-     * Generates a new recipe identity.
+     * Creates a recipe creation command.
      *
-     * @return a new recipe identity.
+     * @param recipeId      the recipe identity.
+     * @param recipeName    the recipe name.
+     * @param recipeContent the recipe content.
      */
-    public static RecipeId generate() {
-        return new RecipeId(SEQUENCE.incrementAndGet());
+    public CreateRecipe(@NonNull RecipeId recipeId, @NonNull String recipeName, @NonNull String recipeContent) {
+        hasText(recipeName, "Cannot create recipe creation command with invalid recipe name");
+        hasText(recipeContent, "Cannot create recipe creation command with invalid recipe content");
+        this.recipeId = recipeId;
+        this.recipeName = recipeName;
+        this.recipeContent = recipeContent;
     }
 
 }

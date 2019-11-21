@@ -30,7 +30,7 @@ import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryIngredientRep
  * The {@link IngredientAppServiceImpl} test class.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @Tag("unit")
@@ -84,6 +84,14 @@ class IngredientAppServiceImplShould {
         @Test
         @DisplayName("create ingredient successfully")
         void createIngredient() {
+            var ingredient = ingredient();
+            var created = service.createIngredient(createCommand(ingredient));
+            assertThat(created).isNotNull().isEqualToComparingFieldByField(ingredient);
+        }
+
+        @Test
+        @DisplayName("retrieve ingredient with identity after creation")
+        void retrieveIngredientWithIdAfterCreation() {
             var ingredient = ingredient();
             service.createIngredient(createCommand(ingredient));
             assertThat(service.getIngredient(ingredient.id())).isNotNull().isEqualToComparingFieldByField(ingredient);

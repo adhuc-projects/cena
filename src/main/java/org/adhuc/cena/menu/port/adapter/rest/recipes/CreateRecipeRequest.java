@@ -15,10 +15,12 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.recipes;
 
-import javax.validation.constraints.NotBlank;
-
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.ToString;
+
+import org.adhuc.cena.menu.recipes.CreateRecipe;
+import org.adhuc.cena.menu.recipes.RecipeId;
 
 /**
  * A request to create a recipe.
@@ -31,9 +33,17 @@ import lombok.ToString;
 @ToString
 class CreateRecipeRequest {
 
-    @NotBlank
     private String name;
-    @NotBlank
     private String content;
+
+    /**
+     * Converts this request to a {@code CreateRecipe} command.
+     *
+     * @param id the recipe identity.
+     * @return the recipe creation command.
+     */
+    CreateRecipe toCommand(@NonNull RecipeId id) {
+        return new CreateRecipe(id, name, content);
+    }
 
 }

@@ -15,42 +15,38 @@
  */
 package org.adhuc.cena.menu.recipes;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import lombok.*;
-import lombok.experimental.Accessors;
-
-import org.adhuc.cena.menu.common.Identity;
+import java.util.List;
 
 /**
- * A recipe identity.
+ * An application service for recipes.
  *
  * @author Alexandre Carbenay
  * @version 0.2.0
  * @since 0.2.0
  */
-@RequiredArgsConstructor
-@EqualsAndHashCode
-@Accessors(fluent = true)
-public class RecipeId implements Identity {
-
-    private static AtomicInteger SEQUENCE = new AtomicInteger(0);
-
-    @Getter
-    private final int id;
-
-    @Override
-    public String toString() {
-        return Integer.toString(id);
-    }
+public interface RecipeAppService {
 
     /**
-     * Generates a new recipe identity.
+     * Gets the recipes.
      *
-     * @return a new recipe identity.
+     * @return the recipes (not modifiable).
      */
-    public static RecipeId generate() {
-        return new RecipeId(SEQUENCE.incrementAndGet());
-    }
+    List<Recipe> getRecipes();
+
+    /**
+     * Gets the recipe corresponding to the specified identity.
+     *
+     * @param recipeId the recipe identity.
+     * @return the recipe.
+     * @throws org.adhuc.cena.menu.common.EntityNotFoundException if no recipe corresponds to identity.
+     */
+    Recipe getRecipe(RecipeId recipeId);
+
+    /**
+     * Creates a recipe.
+     *
+     * @param command the recipe creation command.
+     */
+    Recipe createRecipe(CreateRecipe command);
 
 }

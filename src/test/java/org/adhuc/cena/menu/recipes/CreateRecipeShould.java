@@ -31,7 +31,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * The {@link Recipe} test class.
+ * The {@link CreateRecipe} test class.
  *
  * @author Alexandre Carbenay
  * @version 0.2.0
@@ -39,14 +39,14 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 @Tag("unit")
 @Tag("domain")
-@DisplayName("Recipe should")
-class RecipeShould {
+@DisplayName("Recipe creation command should")
+class CreateRecipeShould {
 
     @ParameterizedTest
     @MethodSource("invalidCreationParameters")
     @DisplayName("not be creatable with invalid parameters")
     void notBeCreatableWithInvalidParameters(RecipeId recipeId, String name, String content) {
-        assertThrows(IllegalArgumentException.class, () -> new Recipe(recipeId, name, content));
+        assertThrows(IllegalArgumentException.class, () -> new CreateRecipe(recipeId, name, content));
     }
 
     private static Stream<Arguments> invalidCreationParameters() {
@@ -62,39 +62,41 @@ class RecipeShould {
     @Test
     @DisplayName("contain id, name and content used during creation")
     void containCreationValues() {
-        var recipe = recipe();
+        var command = createCommand();
         assertSoftly(softly -> {
-            softly.assertThat(recipe.id()).isEqualTo(ID);
-            softly.assertThat(recipe.name()).isEqualTo(NAME);
-            softly.assertThat(recipe.content()).isEqualTo(CONTENT);
+            softly.assertThat(command.recipeId()).isEqualTo(ID);
+            softly.assertThat(command.recipeName()).isEqualTo(NAME);
+            softly.assertThat(command.recipeContent()).isEqualTo(CONTENT);
         });
     }
 
     @ParameterizedTest
     @MethodSource("equalitySource")
-    @DisplayName("be equal when recipe id is equal")
-    void isEqual(Recipe r1, Recipe r2, boolean expected) {
-        assertThat(r1.equals(r2)).isEqualTo(expected);
+    @DisplayName("be equal when recipe id, name and content are equal")
+    void isEqual(CreateRecipe c1, CreateRecipe c2, boolean expected) {
+        assertThat(c1.equals(c2)).isEqualTo(expected);
     }
 
     @ParameterizedTest
     @MethodSource("equalitySource")
-    @DisplayName("have same hash code when recipe id is equal")
-    void sameHashCode(Recipe r1, Recipe r2, boolean expected) {
-        assertThat(r1.hashCode() == r2.hashCode()).isEqualTo(expected);
+    @DisplayName("have same hash code when ingredient id and name are equal")
+    void sameHashCode(CreateRecipe c1, CreateRecipe c2, boolean expected) {
+        assertThat(c1.hashCode() == c2.hashCode()).isEqualTo(expected);
     }
 
     private static Stream<Arguments> equalitySource() {
-        var tomatoCucumberMozzaSalad = recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID, TOMATO_CUCUMBER_MOZZA_SALAD_NAME,
-                TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT);
+        var createTomatoCucumberAndMozzaSalad = createCommand(recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID,
+                TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT));
         return Stream.of(
-                Arguments.of(tomatoCucumberMozzaSalad, tomatoCucumberMozzaSalad, true),
-                Arguments.of(tomatoCucumberMozzaSalad, recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID,
-                        TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT), true),
-                Arguments.of(tomatoCucumberMozzaSalad, recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID,
-                        TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT), true),
-                Arguments.of(tomatoCucumberMozzaSalad, recipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID,
-                        TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT), false)
+                Arguments.of(createTomatoCucumberAndMozzaSalad, createTomatoCucumberAndMozzaSalad, true),
+                Arguments.of(createTomatoCucumberAndMozzaSalad, createCommand(recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID,
+                        TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT)), true),
+                Arguments.of(createTomatoCucumberAndMozzaSalad, createCommand(recipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID,
+                        TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT)), false),
+                Arguments.of(createTomatoCucumberAndMozzaSalad, createCommand(recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID,
+                        TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT)), false),
+                Arguments.of(createTomatoCucumberAndMozzaSalad, createCommand(recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID,
+                        TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT)), false)
         );
     }
 

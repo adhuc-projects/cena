@@ -27,7 +27,7 @@ public class RecipeMother {
 
     public static final RecipeId TOMATO_CUCUMBER_MOZZA_SALAD_ID = new RecipeId(1);
     public static final String TOMATO_CUCUMBER_MOZZA_SALAD_NAME = "Tomato, cucumber and mozzarella salad";
-    public static final String TOMATO_CUCUMER_MOZZA_SALAD_CONTENT = "Cut everything into dices, mix it, dress it";
+    public static final String TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT = "Cut everything into dices, mix it, dress it";
 
     public static final RecipeId TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID = new RecipeId(2);
     public static final String TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME = "Tomato, cucumber, olive and feta salad";
@@ -35,7 +35,15 @@ public class RecipeMother {
 
     public static final RecipeId ID = TOMATO_CUCUMBER_MOZZA_SALAD_ID;
     public static final String NAME = TOMATO_CUCUMBER_MOZZA_SALAD_NAME;
-    public static final String CONTENT = TOMATO_CUCUMER_MOZZA_SALAD_CONTENT;
+    public static final String CONTENT = TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT;
+
+    public static CreateRecipe createCommand() {
+        return createCommand(recipe());
+    }
+
+    public static CreateRecipe createCommand(Recipe recipe) {
+        return new CreateRecipe(recipe.id(), recipe.name(), recipe.content());
+    }
 
     public static Recipe recipe() {
         return recipe(ID, NAME, CONTENT);

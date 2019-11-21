@@ -28,12 +28,12 @@ import org.adhuc.cena.menu.ingredients.IngredientAppService;
  * A REST controller exposing /api/ingredients resource.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @RestController
 @ConditionalOnProperty(name = "cena.menu-generation.features.ingredients-deletion", matchIfMissing = true)
-public class IngredientsDeletionController {
+class IngredientsDeletionController {
 
     private IngredientAppService ingredientAppService;
 

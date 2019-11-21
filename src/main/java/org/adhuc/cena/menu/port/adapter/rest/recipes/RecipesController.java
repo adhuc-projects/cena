@@ -21,8 +21,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.EntityLinks;
@@ -42,26 +42,23 @@ import org.adhuc.cena.menu.recipes.RecipeId;
  * @since 0.2.0
  */
 @Slf4j
+@RequiredArgsConstructor
 @RestController
 @ExposesResourceFor(Recipe.class)
 @RequestMapping(path = "/api/recipes", produces = {HAL_JSON_VALUE, APPLICATION_JSON_VALUE})
 public class RecipesController {
 
-    private EntityLinks links;
-    private RecipeAppService recipeAppService;
-
-    RecipesController(EntityLinks links, RecipeAppService recipeAppService) {
-        this.links = links;
-        this.recipeAppService = recipeAppService;
-    }
+    private final EntityLinks links;
+    private final RecipeAppService recipeAppService;
+    private final RecipeModelAssembler modelAssembler;
 
     /**
      * Gets the recipe information for all recipes.
      */
     @GetMapping
     @ResponseStatus(OK)
-    CollectionModel<Object> getRecipes() {
-        return new CollectionModel<>(Collections.emptyList())
+    CollectionModel<RecipeModel> getRecipes() {
+        return modelAssembler.toCollectionModel(recipeAppService.getRecipes())
                 .add(links.linkToCollectionResource(Recipe.class).withSelfRel());
     }
 

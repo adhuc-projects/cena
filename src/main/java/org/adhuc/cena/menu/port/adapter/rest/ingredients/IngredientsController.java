@@ -23,6 +23,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import javax.validation.Valid;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.EntityLinks;
@@ -40,24 +41,19 @@ import org.adhuc.cena.menu.port.adapter.rest.InvalidRestRequestException;
  * A REST controller exposing /api/ingredients resource.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @Slf4j
+@RequiredArgsConstructor
 @RestController
 @ExposesResourceFor(Ingredient.class)
 @RequestMapping(path = "/api/ingredients", produces = {HAL_JSON_VALUE, APPLICATION_JSON_VALUE})
 public class IngredientsController {
 
-    private EntityLinks links;
-    private IngredientAppService ingredientAppService;
-    private IngredientModelAssembler resourceAssembler;
-
-    IngredientsController(EntityLinks links, IngredientAppService ingredientAppService, IngredientModelAssembler resourceAssembler) {
-        this.links = links;
-        this.ingredientAppService = ingredientAppService;
-        this.resourceAssembler = resourceAssembler;
-    }
+    private final EntityLinks links;
+    private final IngredientAppService ingredientAppService;
+    private final IngredientModelAssembler modelAssembler;
 
     /**
      * Gets the ingredient information for all ingredients.
@@ -67,7 +63,7 @@ public class IngredientsController {
     CollectionModel<IngredientModel> getIngredients() {
         var ingredients = ingredientAppService.getIngredients();
 
-        return resourceAssembler.toCollectionModel(ingredients)
+        return modelAssembler.toCollectionModel(ingredients)
                 .add(links.linkToCollectionResource(Ingredient.class).withSelfRel());
     }
 

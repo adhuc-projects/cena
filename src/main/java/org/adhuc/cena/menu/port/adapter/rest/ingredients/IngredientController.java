@@ -31,12 +31,12 @@ import org.adhuc.cena.menu.ingredients.IngredientId;
  * A REST controller exposing /api/ingredients/{ingredientId} resource.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @RestController
 @RequestMapping(path = "/api/ingredients/{ingredientId}", produces = {HAL_JSON_VALUE, APPLICATION_JSON_VALUE})
-public class IngredientController {
+class IngredientController {
 
     private EntityLinks links;
     private IngredientAppService ingredientAppService;

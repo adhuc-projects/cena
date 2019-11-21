@@ -15,5 +15,38 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.recipes;
 
-public class RecipeModelAssembler {
+import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
+import org.springframework.stereotype.Component;
+
+import org.adhuc.cena.menu.recipes.Recipe;
+
+/**
+ * A {@link org.springframework.hateoas.server.RepresentationModelAssembler RepresentationModelAssembler} implementation
+ * allowing building {@link RecipeModel}s.
+ *
+ * @author Alexandre Carbenay
+ * @version 0.1.0
+ * @since 0.1.0
+ */
+@Component
+class RecipeModelAssembler extends RepresentationModelAssemblerSupport<Recipe, RecipeModel> {
+
+    /**
+     * Creates a model assembler for recipes.
+     */
+    RecipeModelAssembler() {
+        super(RecipesController.class, RecipeModel.class);
+    }
+
+    @Override
+    public RecipeModel toModel(Recipe recipe) {
+        return createModelWithId(recipe.id().toString(), recipe);
+    }
+
+    @Override
+    protected RecipeModel instantiateModel(Recipe recipe) {
+        return new RecipeModel(recipe);
+    }
+
 }
+

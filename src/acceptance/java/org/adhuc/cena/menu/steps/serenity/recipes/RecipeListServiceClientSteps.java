@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
 
 import static org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue.COMPARATOR;
+import static org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue.NAME_AND_CONTENT_COMPARATOR;
 
 import java.util.Collection;
 
@@ -58,6 +59,11 @@ public class RecipeListServiceClientSteps {
     public RecipeValue assumeNotInRecipesList(RecipeValue recipe) {
         assumeThat(fetchRecipes()).usingElementComparator(COMPARATOR).doesNotContain(recipe);
         return recipe;
+    }
+
+    @Step("Assert recipe {0} is in recipes list")
+    public void assertInRecipesList(RecipeValue recipe) {
+        assertThat(getFromRecipesList(recipe)).isPresent().get().usingComparator(NAME_AND_CONTENT_COMPARATOR).isEqualTo(recipe);
     }
 
     @Step("Get recipes list")

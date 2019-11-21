@@ -16,7 +16,10 @@
 package org.adhuc.cena.menu.port.adapter.rest.recipes;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -26,17 +29,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
+import java.util.List;
+
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import org.adhuc.cena.menu.recipes.CreateRecipe;
+import org.adhuc.cena.menu.recipes.Recipe;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
 
 /**
@@ -59,40 +64,75 @@ class RecipesControllerShould {
     @MockBean
     private RecipeAppService recipeAppServiceMock;
 
-    @Test
-    @DisplayName("respond OK when retrieving recipes")
-    void respond200OnList() throws Exception {
-        mvc.perform(get(RECIPES_API_URL))
-                .andExpect(status().isOk());
+    @Nested
+    @DisplayName("with 2 ingredients")
+    class with2Ingredients {
+
+        private List<Recipe> recipes;
+
+        @BeforeEach
+        void setUp() {
+            recipes = List.of(recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID, TOMATO_CUCUMBER_MOZZA_SALAD_NAME,
+                    TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT), recipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID,
+                    TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT));
+            when(recipeAppServiceMock.getRecipes()).thenReturn(recipes);
+        }
+
+        @Test
+        @DisplayName("respond OK when retrieving recipes")
+        void respond200OnList() throws Exception {
+            mvc.perform(get(RECIPES_API_URL))
+                    .andExpect(status().isOk());
+        }
+
+        @Test
+        @DisplayName("respond with HAL content when retrieving recipes with no specific requested content")
+        void respondHalOnList() throws Exception {
+            mvc.perform(get(RECIPES_API_URL))
+                    .andExpect(content().contentTypeCompatibleWith(HAL_JSON));
+        }
+
+        @Test
+        @DisplayName("respond with JSON content when requested while retrieving recipes")
+        void respondJSONOnList() throws Exception {
+            mvc.perform(get(RECIPES_API_URL)
+                    .accept(APPLICATION_JSON)
+            ).andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON));
+        }
+
+        @Test
+        @DisplayName("have self link with correct value when retrieving recipes")
+        void haveSelfOnList() throws Exception {
+            mvc.perform(get(RECIPES_API_URL))
+                    .andExpect(jsonPath("$._links.self.href", Matchers.endsWith(RECIPES_API_URL)));
+        }
+
+        @Test
+        @DisplayName("have embedded data with 2 recipes when retrieving recipes")
+        void haveDataWith2Recipes() throws Exception {
+            var result = mvc.perform(get(RECIPES_API_URL))
+                    .andExpect(jsonPath("$._embedded.data").isArray())
+                    .andExpect(jsonPath("$._embedded.data").isNotEmpty())
+                    .andExpect(jsonPath("$._embedded.data", hasSize(2)));
+            assertJsonContainsRecipe(result, "$._embedded.data[0]", recipes.get(0));
+            assertJsonContainsRecipe(result, "$._embedded.data[1]", recipes.get(1));
+        }
     }
 
-    @Test
-    @DisplayName("respond with HAL content when retrieving recipes with no specific requested content")
-    void respondHalOnList() throws Exception {
-        mvc.perform(get(RECIPES_API_URL))
-                .andExpect(content().contentTypeCompatibleWith(HAL_JSON));
-    }
+    @Nested
+    @DisplayName("with empty list")
+    class WithEmptyList {
+        @BeforeEach
+        void setUp() {
+            when(recipeAppServiceMock.getRecipes()).thenReturn(List.of());
+        }
 
-    @Test
-    @DisplayName("respond with JSON content when requested while retrieving recipes")
-    void respondJSONOnList() throws Exception {
-        mvc.perform(get(RECIPES_API_URL)
-                .accept(APPLICATION_JSON)
-        ).andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON));
-    }
-
-    @Test
-    @DisplayName("have self link with correct value when retrieving recipes")
-    void haveSelfOnList() throws Exception {
-        mvc.perform(get(RECIPES_API_URL))
-                .andExpect(jsonPath("$._links.self.href", Matchers.endsWith(RECIPES_API_URL)));
-    }
-
-    @Test
-    @DisplayName("have empty embedded data when retrieving recipes")
-    void haveEmptyDataOnEmptyList() throws Exception {
-        mvc.perform(get(RECIPES_API_URL))
-                .andExpect(jsonPath("$._embedded").doesNotExist());
+        @Test
+        @DisplayName("have empty embedded data when retrieving recipes")
+        void haveEmptyDataOnEmptyList() throws Exception {
+            mvc.perform(get(RECIPES_API_URL))
+                    .andExpect(jsonPath("$._embedded").doesNotExist());
+        }
     }
 
     @Test
@@ -134,6 +174,14 @@ class RecipesControllerShould {
 
         verify(recipeAppServiceMock).createRecipe(commandCaptor.capture());
         assertThat(commandCaptor.getValue()).isEqualToIgnoringGivenFields(createCommand(), "recipeId");
+    }
+
+    void assertJsonContainsRecipe(ResultActions resultActions, String jsonPath,
+                                  Recipe recipe) throws Exception {
+        resultActions.andExpect(jsonPath(jsonPath + ".name").exists())
+                .andExpect(jsonPath(jsonPath + ".name", equalTo(recipe.name())))
+                .andExpect(jsonPath(jsonPath + ".content").exists())
+                .andExpect(jsonPath(jsonPath + ".content", equalTo(recipe.content())));
     }
 
 }

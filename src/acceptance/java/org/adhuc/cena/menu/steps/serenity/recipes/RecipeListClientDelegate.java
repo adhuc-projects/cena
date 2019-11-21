@@ -18,7 +18,9 @@ package org.adhuc.cena.menu.steps.serenity.recipes;
 import static net.serenitybdd.rest.SerenityRest.rest;
 
 import java.util.List;
+import java.util.Optional;
 
+import io.restassured.path.json.JsonPath;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -45,8 +47,30 @@ final class RecipeListClientDelegate {
      * @return the fetched recipes.
      */
     public List<RecipeValue> fetchRecipes() {
+        return getRawRecipeList().getList("_embedded.data", RecipeValue.class);
+    }
+
+    /**
+     * Gets the recipe corresponding to the specified one from the recipes list if existing, based on its name.
+     * The recipes list is retrieved from the server. If recipe is retrieved from server, it should be populated
+     * with all attributes, especially its identity and links.
+     *
+     * @param recipe the recipe to retrieve in the list.
+     * @return the recipe retrieved from list.
+     */
+    public Optional<RecipeValue> getFromRecipesList(RecipeValue recipe) {
+        return Optional.ofNullable(getRawRecipeList().param("name", recipe.name())
+                .getObject("_embedded.data.find { recipe->recipe.name == name }", RecipeValue.class));
+    }
+
+    /**
+     * Retrieves recipes list from the server.
+     *
+     * @return the {@link JsonPath} corresponding to the recipes list.
+     */
+    private JsonPath getRawRecipeList() {
         var response = rest().get(recipesResourceUrl).then();
-        return statusAssertionDelegate.assertOk(response).extract().jsonPath().getList("_embedded.data", RecipeValue.class);
+        return statusAssertionDelegate.assertOk(response).extract().jsonPath();
     }
 
 }

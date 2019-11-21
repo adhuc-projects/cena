@@ -25,14 +25,14 @@ import org.adhuc.cena.menu.ingredients.Ingredient;
  * allowing building {@link IngredientModel}s.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @Component
-public class IngredientModelAssembler extends RepresentationModelAssemblerSupport<Ingredient, IngredientModel> {
+class IngredientModelAssembler extends RepresentationModelAssemblerSupport<Ingredient, IngredientModel> {
 
     /**
-     * Creates a resource assembler for ingredients.
+     * Creates a model assembler for ingredients.
      */
     IngredientModelAssembler() {
         super(IngredientsController.class, IngredientModel.class);

@@ -58,4 +58,9 @@ public class RecipeListStepDefinitions {
         recipeListServiceClient.assertEmptyRecipesList(recipeListServiceClient.storedRecipes());
     }
 
+    @Then("^the recipe can be found in the list$")
+    public void recipeFoundInList() {
+        recipeListServiceClient.assertInRecipesList(recipeListServiceClient.storedRecipe());
+    }
+
 }

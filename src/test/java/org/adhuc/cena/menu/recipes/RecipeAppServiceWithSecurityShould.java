@@ -19,14 +19,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import static org.adhuc.cena.menu.recipes.RecipeMother.createCommand;
+import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -36,6 +38,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import org.adhuc.cena.menu.configuration.ApplicationSecurityConfiguration;
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
+import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryRecipeRepository;
 import org.adhuc.cena.menu.support.WithCommunityUser;
 import org.adhuc.cena.menu.support.WithIngredientManager;
 import org.adhuc.cena.menu.support.WithSuperAdministrator;
@@ -56,6 +59,15 @@ class RecipeAppServiceWithSecurityShould {
 
     @Autowired
     private RecipeAppService service;
+    @Autowired
+    private RecipeRepository repository;
+
+    @BeforeEach
+    void setUp() {
+        repository.deleteAll();
+        repository.save(recipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME,
+                TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT));
+    }
 
     @Test
     @WithCommunityUser
@@ -75,7 +87,6 @@ class RecipeAppServiceWithSecurityShould {
     @WithSuperAdministrator
     @DisplayName("grant recipes deletion access to super administrator")
     void grantRecipesDeletionAsSuperAdministrator() {
-        service.createRecipe(createCommand());
         assumeThat(service.getRecipes()).isNotEmpty();
         service.deleteRecipes();
         assertThat(service.getRecipes()).isEmpty();
@@ -86,6 +97,10 @@ class RecipeAppServiceWithSecurityShould {
     @EnableConfigurationProperties(MenuGenerationProperties.class)
     @ComponentScan("org.adhuc.cena.menu.recipes")
     static class ServiceWithSecurityConfiguration {
+        @Bean
+        RecipeRepository recipeRepository() {
+            return new InMemoryRecipeRepository();
+        }
     }
 
 }

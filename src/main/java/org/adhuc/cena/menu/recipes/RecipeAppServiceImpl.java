@@ -15,16 +15,13 @@
  */
 package org.adhuc.cena.menu.recipes;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import org.adhuc.cena.menu.common.EntityNotFoundException;
 import org.adhuc.cena.menu.common.security.AsSuperAdministrator;
 
 /**
@@ -39,32 +36,30 @@ import org.adhuc.cena.menu.common.security.AsSuperAdministrator;
 @RequiredArgsConstructor
 class RecipeAppServiceImpl implements RecipeAppService {
 
-    private Map<RecipeId, Recipe> recipes = new HashMap<>();
+    @NonNull
+    private RecipeRepository repository;
 
     @Override
     public List<Recipe> getRecipes() {
-        return List.copyOf(recipes.values());
+        return List.copyOf(repository.findAll());
     }
 
     @Override
     public Recipe getRecipe(@NonNull RecipeId recipeId) {
-        if (!recipes.containsKey(recipeId)) {
-            throw new EntityNotFoundException(Recipe.class, recipeId);
-        }
-        return recipes.get(recipeId);
+        return repository.findNotNullById(recipeId);
     }
 
     @Override
     public Recipe createRecipe(@NonNull CreateRecipe command) {
+        log.info("Create recipe from command {}", command);
         var recipe = new Recipe(command.recipeId(), command.recipeName(), command.recipeContent());
-        recipes.put(recipe.id(), recipe);
-        return recipe;
+        return repository.save(recipe);
     }
 
     @Override
     @AsSuperAdministrator
     public void deleteRecipes() {
-        recipes.clear();
+        repository.deleteAll();
     }
 
 }

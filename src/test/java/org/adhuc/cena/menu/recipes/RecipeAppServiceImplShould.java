@@ -23,6 +23,7 @@ import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 import org.junit.jupiter.api.*;
 
 import org.adhuc.cena.menu.common.EntityNotFoundException;
+import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryRecipeRepository;
 
 /**
  * The {@link RecipeAppServiceImpl} test class.
@@ -36,11 +37,13 @@ import org.adhuc.cena.menu.common.EntityNotFoundException;
 @DisplayName("Recipe service should")
 class RecipeAppServiceImplShould {
 
+    private RecipeRepository recipeRepository;
     private RecipeAppServiceImpl service;
 
     @BeforeEach
     void setUp() {
-        service = new RecipeAppServiceImpl();
+        recipeRepository = new InMemoryRecipeRepository();
+        service = new RecipeAppServiceImpl(recipeRepository);
     }
 
     @Test
@@ -99,7 +102,7 @@ class RecipeAppServiceImplShould {
         void setUp() {
             tomatoCucumberAndMozzaSalad = recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID, TOMATO_CUCUMBER_MOZZA_SALAD_NAME,
                     TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT);
-            service.createRecipe(createCommand(tomatoCucumberAndMozzaSalad));
+            recipeRepository.save(tomatoCucumberAndMozzaSalad);
         }
 
         @Test
@@ -131,7 +134,7 @@ class RecipeAppServiceImplShould {
             void setUp() {
                 tomatoCucumberOliveAndFetaSalad = recipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID,
                         TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT);
-                service.createRecipe(createCommand(tomatoCucumberOliveAndFetaSalad));
+                recipeRepository.save(tomatoCucumberOliveAndFetaSalad);
             }
 
             @Test

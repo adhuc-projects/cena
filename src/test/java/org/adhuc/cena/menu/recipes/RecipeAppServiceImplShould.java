@@ -141,6 +141,13 @@ class RecipeAppServiceImplShould {
                         .containsExactlyInAnyOrder(tomatoCucumberAndMozzaSalad, tomatoCucumberOliveAndFetaSalad);
             }
 
+            @Test
+            @DisplayName("return empty list after deleting all recipes")
+            void returnEmptyListAfterDeletion() {
+                service.deleteRecipes();
+                assertThat(service.getRecipes()).isEmpty();
+            }
+
         }
 
     }

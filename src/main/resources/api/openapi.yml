@@ -120,6 +120,14 @@ paths:
           $ref: '#/components/responses/401-Unauthorized'
         403:
           $ref: '#/components/responses/403-Forbidden'
+    delete:
+      summary: Delete all recipes from the system
+      operationId: deleteRecipes
+      tags:
+        - Recipes
+      responses:
+        204:
+          description: All recipes have been deleted from the system
   /recipes/{recipeId}:
     get:
       summary: Get a recipe detail. Recipe detail is accessible for every user, either authenticated or not

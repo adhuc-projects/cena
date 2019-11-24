@@ -60,4 +60,9 @@ class RecipeAppServiceImpl implements RecipeAppService {
         return recipe;
     }
 
+    @Override
+    public void deleteRecipes() {
+        recipes.clear();
+    }
+
 }

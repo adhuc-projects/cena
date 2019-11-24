@@ -25,6 +25,7 @@ import java.util.Collection;
 
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
+import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
 
@@ -44,9 +45,12 @@ public class RecipeListServiceClientSteps {
     @Delegate
     private final RecipeStorageDelegate recipeStorage = new RecipeStorageDelegate();
 
+    @Steps
+    private RecipeDeletionServiceClientSteps recipeDeletionServiceClient;
+
     @Step("Assume empty recipes list")
     public void assumeEmptyRecipesList() {
-        // TODO delete existing recipes
+        recipeDeletionServiceClient.deleteIngredients();
         assumeThat(fetchRecipes()).isEmpty();
     }
 

@@ -49,4 +49,9 @@ public interface RecipeAppService {
      */
     Recipe createRecipe(CreateRecipe command);
 
+    /**
+     * Deletes the recipes.
+     */
+    void deleteRecipes();
+
 }

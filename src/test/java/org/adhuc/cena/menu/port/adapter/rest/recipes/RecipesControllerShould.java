@@ -23,8 +23,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import static org.adhuc.cena.menu.recipes.RecipeMother.*;
@@ -174,6 +173,22 @@ class RecipesControllerShould {
 
         verify(recipeAppServiceMock).createRecipe(commandCaptor.capture());
         assertThat(commandCaptor.getValue()).isEqualToIgnoringGivenFields(createCommand(), "recipeId");
+    }
+
+    @Test
+    @DisplayName("respond No Content when deleting recipes")
+    void respond204OnDeletion() throws Exception {
+        mvc.perform(delete(RECIPES_API_URL))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("call application service when deleting recipes")
+    void callServiceOnDeletion() throws Exception {
+        mvc.perform(delete(RECIPES_API_URL))
+                .andExpect(status().isNoContent());
+
+        verify(recipeAppServiceMock).deleteRecipes();
     }
 
     void assertJsonContainsRecipe(ResultActions resultActions, String jsonPath,

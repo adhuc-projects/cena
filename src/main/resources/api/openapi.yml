@@ -125,9 +125,15 @@ paths:
       operationId: deleteRecipes
       tags:
         - Recipes
+      security:
+        - basicAuth:[]
       responses:
         204:
-          description: All recipes have been deleted from the system
+          description: All recipes have been deleted from the system. Only a super administrator can delete all recipes directly
+        401:
+          $ref: '#/components/responses/401-Unauthorized'
+        403:
+          $ref: '#/components/responses/403-Forbidden'
   /recipes/{recipeId}:
     get:
       summary: Get a recipe detail. Recipe detail is accessible for every user, either authenticated or not

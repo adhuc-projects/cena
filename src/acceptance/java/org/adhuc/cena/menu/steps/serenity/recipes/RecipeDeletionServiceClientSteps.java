@@ -15,6 +15,8 @@
  */
 package org.adhuc.cena.menu.steps.serenity.recipes;
 
+import static org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType.SUPER_ADMINISTRATOR;
+
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 
@@ -38,9 +40,9 @@ public class RecipeDeletionServiceClientSteps {
     @Delegate
     private final StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
 
-    @Step("Delete ingredients")
-    public void deleteIngredients() {
-        var response = rest().delete(recipesResourceUrl()).then();
+    @Step("Delete recipes as super administrator")
+    public void deleteRecipesAsSuperAdministrator() {
+        var response = rest(SUPER_ADMINISTRATOR).delete(recipesResourceUrl()).then();
         assertNoContent(response);
     }
 

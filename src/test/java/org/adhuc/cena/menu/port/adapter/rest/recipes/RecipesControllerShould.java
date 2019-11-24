@@ -42,6 +42,10 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.adhuc.cena.menu.recipes.CreateRecipe;
 import org.adhuc.cena.menu.recipes.Recipe;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
+import org.adhuc.cena.menu.support.WithAuthenticatedUser;
+import org.adhuc.cena.menu.support.WithCommunityUser;
+import org.adhuc.cena.menu.support.WithIngredientManager;
+import org.adhuc.cena.menu.support.WithSuperAdministrator;
 
 /**
  * The {@link RecipesController} test class.
@@ -64,8 +68,8 @@ class RecipesControllerShould {
     private RecipeAppService recipeAppServiceMock;
 
     @Nested
-    @DisplayName("with 2 ingredients")
-    class with2Ingredients {
+    @DisplayName("with 2 recipes")
+    class with2Recipes {
 
         private List<Recipe> recipes;
 
@@ -176,6 +180,28 @@ class RecipesControllerShould {
     }
 
     @Test
+    @WithCommunityUser
+    @DisplayName("respond Unauthorized when deleting recipes as a community user")
+    void respond401OnDeletionAsCommunityUser() throws Exception {
+        mvc.perform(delete(RECIPES_API_URL)).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("respond Forbidden when deleting recipes as an authenticated user")
+    void respond403OnDeletionAsAuthenticatedUser() throws Exception {
+        mvc.perform(delete(RECIPES_API_URL)).andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithIngredientManager
+    @DisplayName("respond Forbidden when deleting recipes as an ingredient manager")
+    void respond403OnDeletionAsIngredientManager() throws Exception {
+        mvc.perform(delete(RECIPES_API_URL)).andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithSuperAdministrator
     @DisplayName("respond No Content when deleting recipes")
     void respond204OnDeletion() throws Exception {
         mvc.perform(delete(RECIPES_API_URL))
@@ -183,6 +209,7 @@ class RecipesControllerShould {
     }
 
     @Test
+    @WithSuperAdministrator
     @DisplayName("call application service when deleting recipes")
     void callServiceOnDeletion() throws Exception {
         mvc.perform(delete(RECIPES_API_URL))

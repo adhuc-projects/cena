@@ -15,22 +15,23 @@
  */
 package org.adhuc.cena.menu.support;
 
-import static lombok.AccessLevel.PRIVATE;
+import static org.adhuc.cena.menu.support.UserProvider.AUTHENTICATED_USER;
 
-import lombok.NoArgsConstructor;
+import java.lang.annotation.*;
+
+import org.springframework.security.test.context.support.WithMockUser;
 
 /**
- * A user provider, for testing purposes.
+ * Indicates that a test must be run with authenticated user.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
- * @since 0.1.0
+ * @version 0.2.0
+ * @since 0.2.0
  */
-@NoArgsConstructor(access = PRIVATE)
-final class UserProvider {
-
-    static final String AUTHENTICATED_USER = "user";
-    static final String INGREDIENT_MANAGER = "ingredient-manager";
-    static final String SUPER_ADMINISTRATOR = "super-admin";
-
+@Target({ElementType.METHOD, ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+@Documented
+@WithMockUser(username = AUTHENTICATED_USER, roles = "USER")
+public @interface WithAuthenticatedUser {
 }

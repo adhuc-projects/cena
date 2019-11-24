@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import org.adhuc.cena.menu.common.EntityNotFoundException;
+import org.adhuc.cena.menu.common.security.AsSuperAdministrator;
 
 /**
  * A {@link RecipeAppService} implementation.
@@ -61,6 +62,7 @@ class RecipeAppServiceImpl implements RecipeAppService {
     }
 
     @Override
+    @AsSuperAdministrator
     public void deleteRecipes() {
         recipes.clear();
     }

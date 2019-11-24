@@ -50,7 +50,7 @@ public class RecipeListServiceClientSteps {
 
     @Step("Assume empty recipes list")
     public void assumeEmptyRecipesList() {
-        recipeDeletionServiceClient.deleteIngredients();
+        recipeDeletionServiceClient.deleteRecipesAsSuperAdministrator();
         assumeThat(fetchRecipes()).isEmpty();
     }
 

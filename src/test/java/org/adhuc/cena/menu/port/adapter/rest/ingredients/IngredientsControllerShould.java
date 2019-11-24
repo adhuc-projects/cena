@@ -244,7 +244,7 @@ class IngredientsControllerShould {
 
     @Test
     @WithIngredientManager
-    @DisplayName("respond Unauthorized when deleting ingredients as an ingredient manager")
+    @DisplayName("respond Forbidden when deleting ingredients as an ingredient manager")
     void respond403OnDeletionAsIngredientManager() throws Exception {
         mvc.perform(delete(INGREDIENTS_API_URL)).andExpect(status().isForbidden());
     }

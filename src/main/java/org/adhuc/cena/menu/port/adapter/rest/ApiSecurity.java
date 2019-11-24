@@ -35,7 +35,7 @@ import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
  * Security configuration for REST API.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @Configuration
@@ -46,6 +46,7 @@ public class ApiSecurity extends WebSecurityConfigurerAdapter {
     private static final String BASE_API_PATH = "/api" + WILDCARD;
     private static final String INGREDIENTS_PATH = "/api/ingredients";
     private static final String BASE_INGREDIENTS_PATH = INGREDIENTS_PATH + WILDCARD;
+    private static final String RECIPES_PATH = "/api/recipes";
 
     private final MenuGenerationProperties.Features features;
 
@@ -62,6 +63,7 @@ public class ApiSecurity extends WebSecurityConfigurerAdapter {
         authorizationConfigurer
                 .mvcMatchers(POST, BASE_INGREDIENTS_PATH).hasAnyRole(INGREDIENT_MANAGER_ROLE, SUPER_ADMINISTRATOR_ROLE)
                 .mvcMatchers(DELETE, BASE_INGREDIENTS_PATH).hasAnyRole(INGREDIENT_MANAGER_ROLE, SUPER_ADMINISTRATOR_ROLE)
+                .mvcMatchers(DELETE, RECIPES_PATH).hasRole(SUPER_ADMINISTRATOR_ROLE)
                 .mvcMatchers(BASE_API_PATH).permitAll();
         http.csrf().disable();
         http.httpBasic().authenticationEntryPoint(new HttpStatusEntryPoint(UNAUTHORIZED));

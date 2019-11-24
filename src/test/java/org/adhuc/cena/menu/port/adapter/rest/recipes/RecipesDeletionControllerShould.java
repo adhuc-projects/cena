@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.port.adapter.rest.ingredients;
+package org.adhuc.cena.menu.port.adapter.rest.recipes;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -29,36 +29,37 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
-import org.adhuc.cena.menu.ingredients.IngredientAppService;
+import org.adhuc.cena.menu.recipes.RecipeAppService;
+import org.adhuc.cena.menu.support.WithIngredientManager;
 import org.adhuc.cena.menu.support.WithSuperAdministrator;
 
 /**
- * The {@link IngredientsDeletionController} test class.
+ * The {@link RecipesDeletionController} test class.
  *
  * @author Alexandre Carbenay
  * @version 0.2.0
- * @since 0.1.0
+ * @since 0.2.0
  */
 @Tag("integration")
 @Tag("restController")
-@WebMvcTest({IngredientsController.class, IngredientsDeletionController.class, IngredientModelAssembler.class})
-@TestPropertySource(properties = "cena.menu-generation.features.ingredients-deletion=false")
+@WebMvcTest({RecipesController.class, RecipesDeletionController.class, RecipeModelAssembler.class})
+@TestPropertySource(properties = "cena.menu-generation.features.recipes-deletion=false")
 @EnableConfigurationProperties(MenuGenerationProperties.class)
-@DisplayName("Ingredients deletion controller should")
-class IngredientsDeletionControllerShould {
+@DisplayName("Recipes deletion controller should")
+class RecipesDeletionControllerShould {
 
-    private static final String INGREDIENTS_API_URL = "/api/ingredients";
+    private static final String RECIPES_API_URL = "/api/recipes";
 
     @Autowired
     private MockMvc mvc;
     @MockBean
-    private IngredientAppService ingredientAppServiceMock;
+    private RecipeAppService recipeAppServiceMock;
 
     @Test
     @WithSuperAdministrator
-    @DisplayName("respond Method Not Allowed when deleting ingredients while feature is disabled")
-    void respond405OnIngredientsDeletionDisabled() throws Exception {
-        mvc.perform(delete(INGREDIENTS_API_URL)).andExpect(status().isMethodNotAllowed());
+    @DisplayName("respond Method Not Allowed when deleting recipes while feature is disabled")
+    void respond405OnRecipesDeletionDisabled() throws Exception {
+        mvc.perform(delete(RECIPES_API_URL)).andExpect(status().isMethodNotAllowed());
     }
 
 }

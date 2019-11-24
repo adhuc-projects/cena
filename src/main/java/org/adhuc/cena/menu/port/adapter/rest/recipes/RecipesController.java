@@ -16,7 +16,6 @@
 package org.adhuc.cena.menu.port.adapter.rest.recipes;
 
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -72,15 +71,6 @@ public class RecipesController {
         recipeAppService.createRecipe(request.toCommand(identity));
 
         return ResponseEntity.created(new URI(links.linkToItemResource(Recipe.class, identity).getHref())).build();
-    }
-
-    /**
-     * Deletes all recipes.
-     */
-    @DeleteMapping
-    @ResponseStatus(NO_CONTENT)
-    void deleteIngredients() {
-        recipeAppService.deleteRecipes();
     }
 
 }

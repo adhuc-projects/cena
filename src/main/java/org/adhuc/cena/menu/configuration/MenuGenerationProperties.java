@@ -102,6 +102,10 @@ public class MenuGenerationProperties {
          * Enable ingredients deletion feature. Default is {@code true}.
          */
         private boolean ingredientsDeletion = true;
+        /**
+         * Enable recipes deletion feature. Default is {@code true}.
+         */
+        private boolean recipesDeletion = true;
     }
 
 }

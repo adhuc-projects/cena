@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.port.adapter.rest.ingredients;
+package org.adhuc.cena.menu.port.adapter.rest.recipes;
 
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
@@ -22,32 +22,32 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.adhuc.cena.menu.ingredients.IngredientAppService;
+import org.adhuc.cena.menu.recipes.RecipeAppService;
 
 /**
- * A REST controller exposing /api/ingredients resource for deletion.
+ * A REST controller exposing /api/recipes resource for deletion.
  *
  * @author Alexandre Carbenay
  * @version 0.2.0
- * @since 0.1.0
+ * @since 0.2.0
  */
 @RestController
-@ConditionalOnProperty(name = "cena.menu-generation.features.ingredients-deletion", matchIfMissing = true)
-class IngredientsDeletionController {
+@ConditionalOnProperty(name = "cena.menu-generation.features.recipes-deletion", matchIfMissing = true)
+class RecipesDeletionController {
 
-    private IngredientAppService ingredientAppService;
+    private RecipeAppService recipeAppService;
 
-    IngredientsDeletionController(IngredientAppService ingredientAppService) {
-        this.ingredientAppService = ingredientAppService;
+    RecipesDeletionController(RecipeAppService recipeAppService) {
+        this.recipeAppService = recipeAppService;
     }
 
     /**
-     * Deletes all ingredients.
+     * Deletes all recipes.
      */
-    @DeleteMapping(path = "/api/ingredients")
+    @DeleteMapping(path = "/api/recipes")
     @ResponseStatus(NO_CONTENT)
-    void deleteIngredients() {
-        ingredientAppService.deleteIngredients();
+    void deleteRecipes() {
+        recipeAppService.deleteRecipes();
     }
 
 }

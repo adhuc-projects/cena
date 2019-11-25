@@ -19,14 +19,14 @@ package org.adhuc.cena.menu.ingredients;
  * An object mother to create testing domain elements related to {@link Ingredient}s.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @see https://www.martinfowler.com/bliki/ObjectMother.html
  * @since 0.1.0
  */
 public class IngredientMother {
 
-    public static final IngredientId TOMATO_ID = IngredientId.generate();
-    public static final IngredientId CUCUMBER_ID = IngredientId.generate();
+    public static final IngredientId TOMATO_ID = new IngredientId("3fa85f64-5717-4562-b3fc-2c963f66afa6");
+    public static final IngredientId CUCUMBER_ID = new IngredientId("168c9f6d-dda3-4fde-a0b0-28934fe9eb9b");
 
     public static final String TOMATO = "Tomato";
     public static final String CUCUMBER = "Cucumber";

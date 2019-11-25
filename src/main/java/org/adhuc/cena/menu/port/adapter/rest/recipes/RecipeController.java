@@ -54,7 +54,7 @@ public class RecipeController {
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public RecipeModel getRecipe(@PathVariable int recipeId) {
+    public RecipeModel getRecipe(@PathVariable String recipeId) {
         var recipe = recipeAppService.getRecipe(new RecipeId(recipeId));
         var model = new RecipeModel(recipe);
         model.add(links.linkToItemResource(Recipe.class, recipeId).withSelfRel());
@@ -63,7 +63,7 @@ public class RecipeController {
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteRecipe(@PathVariable int recipeId) {
+    public void deleteRecipe(@PathVariable String recipeId) {
         recipeAppService.deleteRecipe(new DeleteRecipe(new RecipeId(recipeId)));
     }
 

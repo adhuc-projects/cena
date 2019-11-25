@@ -25,11 +25,11 @@ package org.adhuc.cena.menu.recipes;
  */
 public class RecipeMother {
 
-    public static final RecipeId TOMATO_CUCUMBER_MOZZA_SALAD_ID = new RecipeId(1);
+    public static final RecipeId TOMATO_CUCUMBER_MOZZA_SALAD_ID = new RecipeId("d71e2fc7-09e3-4241-97a5-dc3383d35e98");
     public static final String TOMATO_CUCUMBER_MOZZA_SALAD_NAME = "Tomato, cucumber and mozzarella salad";
     public static final String TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT = "Cut everything into dices, mix it, dress it";
 
-    public static final RecipeId TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID = new RecipeId(2);
+    public static final RecipeId TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID = new RecipeId("6ef45220-0e64-4303-9f71-ced6cefa6834");
     public static final String TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME = "Tomato, cucumber, olive and feta salad";
     public static final String TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT = "Stone olives, cut everything into dices, mix it, dress it";
 

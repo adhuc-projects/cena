@@ -15,12 +15,12 @@
  */
 package org.adhuc.cena.menu.recipes;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.UUID;
 
-import lombok.*;
-import lombok.experimental.Accessors;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 
-import org.adhuc.cena.menu.common.Identity;
+import org.adhuc.cena.menu.common.UuidIdentity;
 
 /**
  * A recipe identity.
@@ -29,19 +29,20 @@ import org.adhuc.cena.menu.common.Identity;
  * @version 0.2.0
  * @since 0.2.0
  */
-@RequiredArgsConstructor
-@EqualsAndHashCode
-@Accessors(fluent = true)
-public class RecipeId implements Identity {
+@EqualsAndHashCode(callSuper = true)
+public class RecipeId extends UuidIdentity {
 
-    private static AtomicInteger SEQUENCE = new AtomicInteger(0);
+    /**
+     * Creates a recipe identity with the specified value.
+     *
+     * @param id the identity value.
+     */
+    public RecipeId(@NonNull String id) {
+        this(parseUUID(Recipe.class, id));
+    }
 
-    @Getter
-    private final int id;
-
-    @Override
-    public String toString() {
-        return Integer.toString(id);
+    RecipeId(@NonNull UUID id) {
+        super(id);
     }
 
     /**
@@ -50,7 +51,7 @@ public class RecipeId implements Identity {
      * @return a new recipe identity.
      */
     public static RecipeId generate() {
-        return new RecipeId(SEQUENCE.incrementAndGet());
+        return new RecipeId(UUID.randomUUID());
     }
 
 }

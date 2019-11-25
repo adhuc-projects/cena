@@ -61,6 +61,7 @@ public class RecipeListServiceClientSteps {
 
     @Step("Assume recipe {0} is not in recipes list")
     public RecipeValue assumeNotInRecipesList(RecipeValue recipe) {
+        getFromRecipesList(recipe).ifPresent(r -> recipeDeletionServiceClient.deleteRecipeAsSuperAdministrator(r));
         assumeThat(fetchRecipes()).usingElementComparator(COMPARATOR).doesNotContain(recipe);
         return recipe;
     }

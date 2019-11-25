@@ -29,8 +29,8 @@ import org.adhuc.cena.menu.recipes.Recipe;
  * The {@link InMemoryRecipeRepository} test class.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
- * @since 0.1.0
+ * @version 0.2.0
+ * @since 0.2.0
  */
 @Tag("unit")
 @Tag("inMemoryRepository")
@@ -94,6 +94,12 @@ class InMemoryRecipeRepositoryShould {
         }
 
         @Test
+        @DisplayName("throw IllegalArgumentException when deleting null recipe")
+        void throwIAEDeletingNullRecipe() {
+            assertThrows(IllegalArgumentException.class, () -> repository.delete(null));
+        }
+
+        @Test
         @DisplayName("return empty recipe when getting recipe with unknown id")
         void returnEmptyUnknownId() {
             assertThat(repository.findById(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)).isEmpty();
@@ -107,14 +113,37 @@ class InMemoryRecipeRepositoryShould {
 
         @Test
         @DisplayName("return tomato, cucumber and mozzarella salad when getting recipe with recipe id")
-        void returnTomato() {
+        void returnRecipe() {
             assertThat(repository.findById(TOMATO_CUCUMBER_MOZZA_SALAD_ID)).isPresent().contains(tomatoCucumberAndMozzaSalad);
         }
 
         @Test
         @DisplayName("return tomato, cucumber and mozzarella salad when getting not null recipe with recipe id")
-        void returnTomatoNotNull() {
+        void returnRecipeNotNull() {
             assertThat(repository.findNotNullById(TOMATO_CUCUMBER_MOZZA_SALAD_ID)).isEqualToComparingFieldByField(tomatoCucumberAndMozzaSalad);
+        }
+
+        @Test
+        @DisplayName("delete tomato, cucumber and mozzarella salad successfully")
+        void deleteRecipe() {
+            repository.delete(tomatoCucumberAndMozzaSalad);
+            assertThat(repository.findAll()).doesNotContain(tomatoCucumberAndMozzaSalad);
+        }
+
+        @Test
+        @DisplayName("delete recipe with tomato, cucumber and mozzarella salad identity and other name and content")
+        void deleteWithIdAndDifferentNameAndContent() {
+            repository.delete(recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME,
+                    TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT));
+            assertThat(repository.findAll()).doesNotContain(tomatoCucumberAndMozzaSalad);
+        }
+
+        @Test
+        @DisplayName("do nothing when deleting unknown recipe")
+        void deleteUnknownRecipe() {
+            repository.delete(recipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID, TOMATO_CUCUMBER_MOZZA_SALAD_NAME,
+                    TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT));
+            assertThat(repository.findAll()).containsOnly(tomatoCucumberAndMozzaSalad);
         }
 
         @Nested

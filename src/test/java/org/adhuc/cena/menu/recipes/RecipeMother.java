@@ -45,6 +45,14 @@ public class RecipeMother {
         return new CreateRecipe(recipe.id(), recipe.name(), recipe.content());
     }
 
+    public static DeleteRecipe deleteCommand() {
+        return deleteCommand(TOMATO_CUCUMBER_MOZZA_SALAD_ID);
+    }
+
+    public static DeleteRecipe deleteCommand(RecipeId recipeId) {
+        return new DeleteRecipe(recipeId);
+    }
+
     public static Recipe recipe() {
         return recipe(ID, NAME, CONTENT);
     }

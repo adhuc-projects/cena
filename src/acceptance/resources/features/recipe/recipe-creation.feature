@@ -1,5 +1,5 @@
 @Functional @Recipes
-Feature: Create a recicpe in the system
+Feature: Create a recipe in the system
   As an authenticated user, I want to create a recipe in the system so that I can retrieve it later to follow it
 
   Scenario: Create a recipe without name

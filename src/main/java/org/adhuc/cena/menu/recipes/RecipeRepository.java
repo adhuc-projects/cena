@@ -74,4 +74,11 @@ public interface RecipeRepository {
      */
     void deleteAll();
 
+    /**
+     * Deletes the specified recipe.
+     *
+     * @param recipe the recipe to delete.
+     */
+    void delete(Recipe recipe);
+
 }

@@ -62,4 +62,10 @@ class RecipeAppServiceImpl implements RecipeAppService {
         repository.deleteAll();
     }
 
+    @Override
+    @AsSuperAdministrator
+    public void deleteRecipe(@NonNull DeleteRecipe command) {
+        repository.delete(repository.findNotNullById(command.recipeId()));
+    }
+
 }

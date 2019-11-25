@@ -16,9 +16,11 @@
 package org.adhuc.cena.menu.recipes;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.adhuc.cena.menu.recipes.RecipeMother.*;
+import static org.adhuc.cena.menu.recipes.RecipeMother.ID;
 
 import org.junit.jupiter.api.*;
 
@@ -62,6 +64,12 @@ class RecipeAppServiceImplShould {
     @DisplayName("throw IllegalArgumentException when creating recipe from null command")
     void throwIAECreateRecipeNullCommand() {
         assertThrows(IllegalArgumentException.class, () -> service.createRecipe(null));
+    }
+
+    @Test
+    @DisplayName("throw IllegalArgumentException when deleting recipe from null command")
+    void throwIAEDeleteRecipeNullCommand() {
+        assertThrows(IllegalArgumentException.class, () -> service.deleteRecipe(null));
     }
 
     @Test
@@ -122,6 +130,22 @@ class RecipeAppServiceImplShould {
         @DisplayName("return recipe when getting recipe from tomato, cucumber and mozzarella salad id")
         void returnTomatoCucumberAndMozzaSalad() {
             assertThat(service.getRecipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID)).isEqualToComparingFieldByField(tomatoCucumberAndMozzaSalad);
+        }
+
+        @Test
+        @DisplayName("delete tomato, cucumber and mozzarella salad successfully")
+        void deleteTomatoCucumberAndMozzaSalad() {
+            assumeThat(service.getRecipe(ID)).isNotNull();
+            service.deleteRecipe(deleteCommand());
+            assertThrows(EntityNotFoundException.class, () -> service.getRecipe(ID));
+        }
+
+        @Test
+        @DisplayName("throw EntityNotFoundException when deleting unknown recipe")
+        void throwEntityNotFoundDeleteUnknownRecipe() {
+            var exception = assertThrows(EntityNotFoundException.class,
+                    () -> service.deleteRecipe(deleteCommand(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)));
+            assertThat(exception.getIdentity()).isEqualTo(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID.toString());
         }
 
         @Nested

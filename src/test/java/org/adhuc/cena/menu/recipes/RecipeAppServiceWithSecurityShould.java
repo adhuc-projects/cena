@@ -36,9 +36,11 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import org.adhuc.cena.menu.common.EntityNotFoundException;
 import org.adhuc.cena.menu.configuration.ApplicationSecurityConfiguration;
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
 import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryRecipeRepository;
+import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 import org.adhuc.cena.menu.support.WithCommunityUser;
 import org.adhuc.cena.menu.support.WithIngredientManager;
 import org.adhuc.cena.menu.support.WithSuperAdministrator;
@@ -90,6 +92,39 @@ class RecipeAppServiceWithSecurityShould {
         assumeThat(service.getRecipes()).isNotEmpty();
         service.deleteRecipes();
         assertThat(service.getRecipes()).isEmpty();
+    }
+
+    @Test
+    @WithCommunityUser
+    @DisplayName("deny recipe deletion access to community user")
+    void denyRecipeDeletionAsCommunityUser() {
+        assumeThat(service.getRecipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)).isNotNull();
+        assertThrows(AccessDeniedException.class, () -> service.deleteRecipe(deleteCommand(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)));
+    }
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("deny recipe deletion access to authenticated user")
+    void denyRecipeDeletionAsAuthenticatedUser() {
+        assumeThat(service.getRecipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)).isNotNull();
+        assertThrows(AccessDeniedException.class, () -> service.deleteRecipe(deleteCommand(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)));
+    }
+
+    @Test
+    @WithIngredientManager
+    @DisplayName("deny recipe deletion access to ingredient manager")
+    void denyRecipeDeletionAsIngredientManager() {
+        assumeThat(service.getRecipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)).isNotNull();
+        assertThrows(AccessDeniedException.class, () -> service.deleteRecipe(deleteCommand(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)));
+    }
+
+    @Test
+    @WithSuperAdministrator
+    @DisplayName("grant recipe deletion access to super administrator")
+    void grantRecipeDeletionAsSuperAdministrator() {
+        assumeThat(service.getRecipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)).isNotNull();
+        service.deleteRecipe(deleteCommand(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID));
+        assertThrows(EntityNotFoundException.class, () -> service.getRecipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID));
     }
 
     @Configuration

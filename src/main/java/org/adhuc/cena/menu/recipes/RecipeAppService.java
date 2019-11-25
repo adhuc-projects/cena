@@ -54,4 +54,11 @@ public interface RecipeAppService {
      */
     void deleteRecipes();
 
+    /**
+     * Deletes a recipe.
+     *
+     * @param command the recipe deletion command.
+     */
+    void deleteRecipe(DeleteRecipe command);
+
 }

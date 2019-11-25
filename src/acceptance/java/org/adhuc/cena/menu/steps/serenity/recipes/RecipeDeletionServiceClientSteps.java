@@ -46,4 +46,9 @@ public class RecipeDeletionServiceClientSteps {
         assertNoContent(response);
     }
 
+    @Step("Delete recipe {0} as super administrator")
+    public void deleteRecipeAsSuperAdministrator(RecipeValue recipe) {
+        rest(SUPER_ADMINISTRATOR).delete(recipe.selfLink());
+    }
+
 }

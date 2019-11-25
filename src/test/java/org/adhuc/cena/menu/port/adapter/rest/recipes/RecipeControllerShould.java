@@ -16,14 +16,14 @@
 package org.adhuc.cena.menu.port.adapter.rest.recipes;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import static org.adhuc.cena.menu.recipes.RecipeMother.ID;
-import static org.adhuc.cena.menu.recipes.RecipeMother.recipe;
+import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +35,10 @@ import org.adhuc.cena.menu.common.EntityNotFoundException;
 import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.recipes.Recipe;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
+import org.adhuc.cena.menu.support.WithAuthenticatedUser;
+import org.adhuc.cena.menu.support.WithCommunityUser;
+import org.adhuc.cena.menu.support.WithIngredientManager;
+import org.adhuc.cena.menu.support.WithSuperAdministrator;
 
 /**
  * The {@link RecipeController} test class.
@@ -61,6 +65,43 @@ class RecipeControllerShould {
     void respond404GetUnknownRecipe() throws Exception {
         when(recipeAppServiceMock.getRecipe(ID)).thenThrow(new EntityNotFoundException(Recipe.class, ID));
         mvc.perform(get(RECIPE_API_URL, ID)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithCommunityUser
+    @DisplayName("respond Unauthorized when deleting recipe as an anonymous user")
+    void respond401OnDeletionAsAnonymous() throws Exception {
+        mvc.perform(delete(RECIPE_API_URL, ID)).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("respond Unauthorized when deleting recipe as an authenticated user")
+    void respond401OnDeletionAsAuthenticatedUser() throws Exception {
+        mvc.perform(delete(RECIPE_API_URL, ID)).andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithIngredientManager
+    @DisplayName("respond Unauthorized when deleting recipe as an ingredient manager")
+    void respond401OnDeletionAsIngredientManager() throws Exception {
+        mvc.perform(delete(RECIPE_API_URL, ID)).andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithSuperAdministrator
+    @DisplayName("respond Not Found when deleting unknown recipe")
+    void respond404DeleteUnknownRecipe() throws Exception {
+        doThrow(new EntityNotFoundException(Recipe.class, ID)).when(recipeAppServiceMock).deleteRecipe(deleteCommand());
+        mvc.perform(delete(RECIPE_API_URL, ID)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithSuperAdministrator
+    @DisplayName("respond No Content when deleting recipe successfully")
+    void respond204DeleteRecipe() throws Exception {
+        mvc.perform(delete(RECIPE_API_URL, ID)).andExpect(status().isNoContent());
+        verify(recipeAppServiceMock).deleteRecipe(deleteCommand());
     }
 
     @Nested

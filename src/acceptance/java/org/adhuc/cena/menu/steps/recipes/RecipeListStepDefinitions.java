@@ -63,4 +63,9 @@ public class RecipeListStepDefinitions {
         recipeListServiceClient.assertInRecipesList(recipeListServiceClient.storedRecipe());
     }
 
+    @Then("^the recipe cannot be found in the list$")
+    public void recipeNotFoundInList() {
+        recipeListServiceClient.assertNotInRecipesList(recipeListServiceClient.storedRecipe());
+    }
+
 }

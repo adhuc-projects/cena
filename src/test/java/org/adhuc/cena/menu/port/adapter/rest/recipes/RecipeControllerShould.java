@@ -32,6 +32,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import org.adhuc.cena.menu.common.EntityNotFoundException;
+import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.recipes.Recipe;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
 
@@ -44,7 +45,7 @@ import org.adhuc.cena.menu.recipes.RecipeAppService;
  */
 @Tag("integration")
 @Tag("restController")
-@WebMvcTest({RecipesController.class, RecipeController.class, RecipeModelAssembler.class})
+@WebMvcTest({RecipesController.class, RecipeController.class, RequestValidatorDelegate.class, RecipeModelAssembler.class})
 @DisplayName("Recipe controller should")
 class RecipeControllerShould {
 

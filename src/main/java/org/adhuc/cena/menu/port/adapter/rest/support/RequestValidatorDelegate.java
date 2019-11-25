@@ -13,41 +13,30 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.port.adapter.rest.recipes;
+package org.adhuc.cena.menu.port.adapter.rest.support;
 
-import javax.validation.constraints.NotBlank;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.Errors;
 
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.ToString;
-
-import org.adhuc.cena.menu.recipes.CreateRecipe;
-import org.adhuc.cena.menu.recipes.RecipeId;
+import org.adhuc.cena.menu.port.adapter.rest.InvalidRestRequestException;
 
 /**
- * A request to create a recipe.
+ * A request validator delegate, dedicated to throwing {@link InvalidRestRequestException} in case of validation errors.
  *
  * @author Alexandre Carbenay
  * @version 0.2.0
  * @since 0.2.0
  */
-@Getter
-@ToString
-class CreateRecipeRequest {
+@Slf4j
+@Component
+public class RequestValidatorDelegate {
 
-    @NotBlank
-    private String name;
-    @NotBlank
-    private String content;
-
-    /**
-     * Converts this request to a {@code CreateRecipe} command.
-     *
-     * @param id the recipe identity.
-     * @return the recipe creation command.
-     */
-    CreateRecipe toCommand(@NonNull RecipeId id) {
-        return new CreateRecipe(id, name, content);
+    public void validateRequest(Errors errors) {
+        if (errors.hasErrors()) {
+            log.debug("Request validation raises errors : {}", errors);
+            throw new InvalidRestRequestException();
+        }
     }
 
 }

@@ -34,6 +34,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.adhuc.cena.menu.common.EntityNotFoundException;
 import org.adhuc.cena.menu.ingredients.Ingredient;
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
+import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.support.WithCommunityUser;
 import org.adhuc.cena.menu.support.WithIngredientManager;
 import org.adhuc.cena.menu.support.WithSuperAdministrator;
@@ -47,7 +48,7 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
  */
 @Tag("integration")
 @Tag("restController")
-@WebMvcTest({IngredientsController.class, IngredientController.class, IngredientModelAssembler.class})
+@WebMvcTest({IngredientsController.class, IngredientController.class, RequestValidatorDelegate.class, IngredientModelAssembler.class})
 @DisplayName("Ingredient controller should")
 class IngredientControllerShould {
 

@@ -70,6 +70,11 @@ public class RecipeListServiceClientSteps {
         assertThat(getFromRecipesList(recipe)).isPresent().get().usingComparator(NAME_AND_CONTENT_COMPARATOR).isEqualTo(recipe);
     }
 
+    @Step("Assert recipe {0} is not in recipes list")
+    public void assertNotInRecipesList(RecipeValue recipe) {
+        assertThat(getFromRecipesList(recipe)).isNotPresent();
+    }
+
     @Step("Get recipes list")
     public Collection<RecipeValue> getRecipes() {
         return fetchRecipes();

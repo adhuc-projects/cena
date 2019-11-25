@@ -45,6 +45,7 @@ import org.adhuc.cena.menu.ingredients.CreateIngredient;
 import org.adhuc.cena.menu.ingredients.Ingredient;
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
 import org.adhuc.cena.menu.ingredients.IngredientNameAlreadyUsedException;
+import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.support.WithCommunityUser;
 import org.adhuc.cena.menu.support.WithIngredientManager;
 import org.adhuc.cena.menu.support.WithSuperAdministrator;
@@ -53,12 +54,12 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
  * The {@link IngredientsController} test class.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @Tag("integration")
 @Tag("restController")
-@WebMvcTest({IngredientsController.class, IngredientsDeletionController.class, IngredientModelAssembler.class})
+@WebMvcTest({IngredientsController.class, IngredientsDeletionController.class, RequestValidatorDelegate.class, IngredientModelAssembler.class})
 @EnableConfigurationProperties(MenuGenerationProperties.class)
 @DisplayName("Ingredients controller should")
 class IngredientsControllerShould {

@@ -22,14 +22,19 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import javax.validation.Valid;
+
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.recipes.Recipe;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
 import org.adhuc.cena.menu.recipes.RecipeId;
@@ -51,6 +56,8 @@ public class RecipesController {
     private final EntityLinks links;
     private final RecipeAppService recipeAppService;
     private final RecipeModelAssembler modelAssembler;
+    @Delegate
+    private final RequestValidatorDelegate requestValidatorDelegate;
 
     /**
      * Gets the recipe information for all recipes.
@@ -66,8 +73,9 @@ public class RecipesController {
      * Creates a recipe.
      */
     @PostMapping
-    ResponseEntity<Void> createRecipe(@RequestBody CreateRecipeRequest request) throws URISyntaxException {
+    ResponseEntity<Void> createRecipe(@RequestBody @Valid CreateRecipeRequest request, Errors errors) throws URISyntaxException {
         var identity = RecipeId.generate();
+        validateRequest(errors);
         recipeAppService.createRecipe(request.toCommand(identity));
 
         return ResponseEntity.created(new URI(links.linkToItemResource(Recipe.class, identity).getHref())).build();

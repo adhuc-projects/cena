@@ -29,8 +29,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
+import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
-import org.adhuc.cena.menu.support.WithIngredientManager;
 import org.adhuc.cena.menu.support.WithSuperAdministrator;
 
 /**
@@ -42,7 +42,7 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
  */
 @Tag("integration")
 @Tag("restController")
-@WebMvcTest({RecipesController.class, RecipesDeletionController.class, RecipeModelAssembler.class})
+@WebMvcTest({RecipesController.class, RecipesDeletionController.class, RequestValidatorDelegate.class, RecipeModelAssembler.class})
 @TestPropertySource(properties = "cena.menu-generation.features.recipes-deletion=false")
 @EnableConfigurationProperties(MenuGenerationProperties.class)
 @DisplayName("Recipes deletion controller should")

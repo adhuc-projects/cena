@@ -53,6 +53,7 @@ public class IngredientCreationStepDefinitions {
     @Then("^an error notifies that ingredient must have a name$")
     public void errorOnIngredientCreationWithoutName() {
         ingredientCreationServiceClient.assertInvalidRequest();
+        // TODO assert response indicates field in error
     }
 
     @Then("^an error notifies that ingredient name already exists$")

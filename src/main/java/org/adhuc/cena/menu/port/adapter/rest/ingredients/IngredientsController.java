@@ -24,6 +24,7 @@ import java.net.URISyntaxException;
 import javax.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.EntityLinks;
@@ -35,7 +36,7 @@ import org.springframework.web.bind.annotation.*;
 import org.adhuc.cena.menu.ingredients.Ingredient;
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
 import org.adhuc.cena.menu.ingredients.IngredientId;
-import org.adhuc.cena.menu.port.adapter.rest.InvalidRestRequestException;
+import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 
 /**
  * A REST controller exposing /api/ingredients resource.
@@ -54,6 +55,8 @@ public class IngredientsController {
     private final EntityLinks links;
     private final IngredientAppService ingredientAppService;
     private final IngredientModelAssembler modelAssembler;
+    @Delegate
+    private final RequestValidatorDelegate requestValidatorDelegate;
 
     /**
      * Gets the ingredient information for all ingredients.
@@ -77,13 +80,6 @@ public class IngredientsController {
         ingredientAppService.createIngredient(request.toCommand(identity));
 
         return ResponseEntity.created(new URI(links.linkToItemResource(Ingredient.class, identity).getHref())).build();
-    }
-
-    private void validateRequest(Errors errors) {
-        if (errors.hasErrors()) {
-            log.debug("Request validation raises errors : {}", errors);
-            throw new InvalidRestRequestException();
-        }
     }
 
 }

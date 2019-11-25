@@ -40,9 +40,31 @@ public class RecipeCreationStepDefinitions {
         recipeCreationServiceClient.createRecipe(recipeCreationServiceClient.storedRecipe());
     }
 
+    @When("^he creates a recipe without name$")
+    public void createRecipeWithoutName() {
+        recipeCreationServiceClient.createRecipeWithoutName();
+    }
+
+    @When("^he creates a recipe without content$")
+    public void createRecipeWithoutContent() {
+        recipeCreationServiceClient.createRecipeWithoutContent();
+    }
+
     @Then("^the recipe is created$")
     public void ingredientCreated() {
         recipeCreationServiceClient.assertRecipeSuccessfullyCreated(recipeCreationServiceClient.storedRecipe());
+    }
+
+    @Then("^an error notifies that recipe must have a name$")
+    public void errorOnRecipeCreationWithoutName() {
+        recipeCreationServiceClient.assertInvalidRequest();
+        // TODO assert response indicates field in error
+    }
+
+    @Then("^an error notifies that recipe must have a content$")
+    public void errorOnRecipeCreationWithoutContent() {
+        recipeCreationServiceClient.assertInvalidRequest();
+        // TODO assert response indicates field in error
     }
 
 }

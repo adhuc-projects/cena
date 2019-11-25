@@ -19,6 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpHeaders.LOCATION;
 
+import static org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue.DEFAULT_NAME;
+
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
@@ -52,6 +54,18 @@ public class RecipeCreationServiceClientSteps {
     public void createRecipe(RecipeValue recipe) {
         var recipesResourceUrl = recipesResourceUrl();
         rest().contentType(HAL_JSON_VALUE).body(recipe).post(recipesResourceUrl).andReturn();
+    }
+
+    @Step("Create a recipe without name")
+    public void createRecipeWithoutName() {
+        var recipe = storeRecipe(new RecipeValue(null));
+        createRecipe(recipe);
+    }
+
+    @Step("Create a recipe without content")
+    public void createRecipeWithoutContent() {
+        var recipe = storeRecipe(new RecipeValue(DEFAULT_NAME, null));
+        createRecipe(recipe);
     }
 
     @Step("Assert recipe {0} has been successfully created")

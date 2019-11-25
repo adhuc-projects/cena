@@ -46,16 +46,21 @@ public class RecipeValue extends HateoasClientResourceSupport {
     public static final Comparator<RecipeValue> COMPARATOR = new RecipeNameComparator();
     public static final Comparator<RecipeValue> NAME_AND_CONTENT_COMPARATOR = new RecipeNameAndContentComparator();
 
-    private static final String DEFAULT_CONTENT = "Recipe default content";
+    public static final String DEFAULT_NAME = "Recipe default name";
+    public static final String DEFAULT_CONTENT = "Recipe default content";
 
     private final String id;
     private final String name;
     private final String content;
 
     public RecipeValue(String name) {
+        this(name, DEFAULT_CONTENT);
+    }
+
+    public RecipeValue(String name, String content) {
         this.id = null;
         this.name = name;
-        this.content = DEFAULT_CONTENT;
+        this.content = content;
     }
 
     void assertEqualTo(RecipeValue expected) {

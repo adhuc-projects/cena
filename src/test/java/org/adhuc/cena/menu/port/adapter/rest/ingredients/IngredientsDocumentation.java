@@ -42,6 +42,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
 import org.adhuc.cena.menu.port.adapter.rest.ResultHandlerConfiguration;
 import org.adhuc.cena.menu.port.adapter.rest.documentation.support.ConstrainedFields;
+import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.support.WithIngredientManager;
 import org.adhuc.cena.menu.support.WithSuperAdministrator;
 
@@ -49,12 +50,12 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
  * The ingredients related rest-services documentation.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @Tag("integration")
 @Tag("documentation")
-@WebMvcTest({IngredientsController.class, IngredientsDeletionController.class, IngredientModelAssembler.class})
+@WebMvcTest({IngredientsController.class, IngredientsDeletionController.class, RequestValidatorDelegate.class, IngredientModelAssembler.class})
 @ContextConfiguration(classes = ResultHandlerConfiguration.class)
 @AutoConfigureRestDocs("build/generated-snippets")
 @DisplayName("Ingredients resource documentation")

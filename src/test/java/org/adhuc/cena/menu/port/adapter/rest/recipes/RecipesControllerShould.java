@@ -39,6 +39,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.recipes.CreateRecipe;
 import org.adhuc.cena.menu.recipes.Recipe;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
@@ -56,7 +57,7 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
  */
 @Tag("integration")
 @Tag("restController")
-@WebMvcTest({RecipesController.class, RecipesDeletionController.class, RecipeModelAssembler.class})
+@WebMvcTest({RecipesController.class, RecipesDeletionController.class, RequestValidatorDelegate.class, RecipeModelAssembler.class})
 @DisplayName("Recipes controller should")
 class RecipesControllerShould {
 
@@ -136,6 +137,42 @@ class RecipesControllerShould {
             mvc.perform(get(RECIPES_API_URL))
                     .andExpect(jsonPath("$._embedded").doesNotExist());
         }
+    }
+
+    @Test
+    @DisplayName("respond Bad Request when creating recipe without name")
+    void respond400OnCreationWithoutName() throws Exception {
+        mvc.perform(post(RECIPES_API_URL)
+                .contentType(APPLICATION_JSON)
+                .content("{\"content\":\"Cut everything into dices, mix it, dress it\"}")
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("respond Bad Request when creating recipe with blank name")
+    void respond400OnCreationWithBlankName() throws Exception {
+        mvc.perform(post(RECIPES_API_URL)
+                .contentType(APPLICATION_JSON)
+                .content("{\"name\":\" \t\",\"content\":\"Cut everything into dices, mix it, dress it\"}")
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("respond Bad Request when creating recipe without content")
+    void respond400OnCreationWithoutContent() throws Exception {
+        mvc.perform(post(RECIPES_API_URL)
+                .contentType(APPLICATION_JSON)
+                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\"}")
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("respond Bad Request when creating recipe with blank content")
+    void respond400OnCreationWithBlankContent() throws Exception {
+        mvc.perform(post(RECIPES_API_URL)
+                .contentType(APPLICATION_JSON)
+                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\" \t\"}")
+        ).andExpect(status().isBadRequest());
     }
 
     @Test

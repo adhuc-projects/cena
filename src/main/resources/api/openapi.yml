@@ -31,7 +31,7 @@ paths:
         200:
           $ref: '#/components/responses/Ingredients'
     post:
-      summary: Create an ingredient in ingredients collection. Only an ingredient manager can create ingredients
+      summary: Create an ingredient in ingredients collection. The specified ingredient name must not already be used by an existing ingredient. Only an ingredient manager can create ingredients
       operationId: createIngredient
       tags:
         - Ingredients
@@ -49,7 +49,7 @@ paths:
         403:
           $ref: '#/components/responses/403-Forbidden'
     delete:
-      summary: Delete all ingredients from the system. Only a super administrator can delete all ingredients directly. Ingredient managers can delete specific ingredients through the corresponding ingredient resource
+      summary: Delete all ingredients from the system. Only a super administrator can delete all ingredients directly. An ingredient manager can delete specific ingredients through the corresponding ingredient resource.
       operationId: deleteIngredients
       tags:
         - Ingredients
@@ -76,7 +76,7 @@ paths:
         404:
           $ref: '#/components/responses/404-NotFound'
     delete:
-      summary: Delete an ingredient from the system. Only an ingredient manager can delete an ingredient
+      summary: Delete an ingredient from the system. Only an ingredient manager or super administrator can delete an ingredient
       operationId: deleteIngredient
       tags:
         - Ingredients
@@ -103,7 +103,7 @@ paths:
         200:
           $ref: '#/components/responses/Recipes'
     post:
-      summary: Create a recipe in recipes collection. Only authenticated users can create recipes
+      summary: Create a recipe in recipes collection. Only an authenticated user can create recipes
       operationId: createRecipe
       tags:
         - Recipes

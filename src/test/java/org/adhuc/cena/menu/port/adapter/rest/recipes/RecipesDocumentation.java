@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.port.adapter.rest.ingredients;
+package org.adhuc.cena.menu.port.adapter.rest.recipes;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -24,7 +24,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
+import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
 import java.util.List;
 
@@ -39,29 +39,29 @@ import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
-import org.adhuc.cena.menu.ingredients.IngredientAppService;
 import org.adhuc.cena.menu.port.adapter.rest.ResultHandlerConfiguration;
 import org.adhuc.cena.menu.port.adapter.rest.documentation.support.ConstrainedFields;
 import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
-import org.adhuc.cena.menu.support.WithIngredientManager;
+import org.adhuc.cena.menu.recipes.RecipeAppService;
+import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 import org.adhuc.cena.menu.support.WithSuperAdministrator;
 
 /**
- * The ingredients related rest-services documentation.
+ * The recipes related rest-services documentation.
  *
  * @author Alexandre Carbenay
  * @version 0.2.0
- * @since 0.1.0
+ * @since 0.2.0
  */
 @Tag("integration")
 @Tag("documentation")
-@WebMvcTest({IngredientsController.class, IngredientsDeletionController.class, RequestValidatorDelegate.class, IngredientModelAssembler.class})
+@WebMvcTest({RecipesController.class, RecipesDeletionController.class, RequestValidatorDelegate.class, RecipeModelAssembler.class})
 @ContextConfiguration(classes = ResultHandlerConfiguration.class)
 @AutoConfigureRestDocs("build/generated-snippets")
 @DisplayName("Ingredients resource documentation")
-class IngredientsDocumentation {
+class RecipesDocumentation {
 
-    private static final String INGREDIENTS_API_URL = "/api/ingredients";
+    private static final String RECIPES_API_URL = "/api/recipes";
 
     @Autowired
     private MockMvc mvc;
@@ -69,40 +69,47 @@ class IngredientsDocumentation {
     private RestDocumentationResultHandler documentationHandler;
 
     @MockBean
-    private IngredientAppService ingredientAppServiceMock;
+    private RecipeAppService recipeAppServiceMock;
 
     @Test
-    @DisplayName("generates ingredients list example")
-    void ingredientsListExample() throws Exception {
-        when(ingredientAppServiceMock.getIngredients()).thenReturn(List.of(ingredient(TOMATO_ID, TOMATO), ingredient(CUCUMBER_ID, CUCUMBER)));
+    @DisplayName("generates recipes list example")
+    void recipesListExample() throws Exception {
+        when(recipeAppServiceMock.getRecipes()).thenReturn(List.of(
+                recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID, TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT),
+                recipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT)
+        ));
 
-        mvc.perform(get(INGREDIENTS_API_URL)).andExpect(status().isOk())
+        mvc.perform(get(RECIPES_API_URL)).andExpect(status().isOk())
                 .andDo(documentationHandler.document(
-                        links(linkWithRel("self").description("This <<resources-ingredients,ingredients list>>")),
+                        links(linkWithRel("self").description("This <<resources-recipes,recipes list>>")),
                         responseFields(
                                 subsectionWithPath("_embedded.data")
-                                        .description("An array of <<resources-ingredient, Ingredient resources>>"),
+                                        .description("An array of <<resources-recipe, Recipe resources>>"),
                                 subsectionWithPath("_links")
-                                        .description("<<resources-ingredients-links,Links>> to other resources"))));
+                                        .description("<<resources-recipes-links,Links>> to other resources"))));
     }
 
     @Test
-    @WithIngredientManager
-    @DisplayName("generates ingredient creation example")
-    void ingredientsCreateExample() throws Exception {
-        when(ingredientAppServiceMock.createIngredient(any())).thenReturn(ingredient());
+    @WithAuthenticatedUser
+    @DisplayName("generates recipe creation example")
+    void recipesCreateExample() throws Exception {
+        when(recipeAppServiceMock.createRecipe(any())).thenReturn(recipe());
 
-        var fields = new ConstrainedFields(CreateIngredientRequest.class);
-        mvc.perform(post(INGREDIENTS_API_URL).contentType(APPLICATION_JSON).content("{\"name\":\"Tomato\"}"))
+        var fields = new ConstrainedFields(CreateRecipeRequest.class);
+        mvc.perform(post(RECIPES_API_URL).contentType(APPLICATION_JSON)
+                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\"}"))
                 .andExpect(status().isCreated()).andDo(documentationHandler
-                .document(requestFields(fields.withPath("name").description("The name of the ingredient"))));
+                .document(requestFields(
+                        fields.withPath("name").description("The name of the recipe"),
+                        fields.withPath("content").description("The content of the recipe")
+                )));
     }
 
     @Test
     @WithSuperAdministrator
-    @DisplayName("generates ingredients deletion example")
-    void ingredientsDeleteExample() throws Exception {
-        mvc.perform(delete(INGREDIENTS_API_URL))
+    @DisplayName("generates recipes deletion example")
+    void recipesDeleteExample() throws Exception {
+        mvc.perform(delete(RECIPES_API_URL))
                 .andExpect(status().isNoContent()).andDo(documentationHandler.document());
     }
 

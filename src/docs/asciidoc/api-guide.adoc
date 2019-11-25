@@ -94,12 +94,12 @@ Links can be found beneath the `_links` key. Users of the API should not create 
 [[resources-index]]
 == Index
 
-The index provides the entry point into the service.
+The index provides the entry point to navigate to the main API resources.
 
 [[resources-index-access]]
 === Accessing the index
 
-A `GET` request is used to access the index
+A `GET` request is used to access the index.
 
 ==== Response structure
 
@@ -122,7 +122,7 @@ The Ingredients resources is used to create and list ingredients.
 [[resources-ingredients-list]]
 === Listing ingredients
 
-A `GET` request will list all of the ingredients.
+A `GET` request will list all of the ingredients. Ingredients collection is accessible for every user, either authenticated or not.
 
 ==== Response structure
 
@@ -144,7 +144,7 @@ include::{snippets}/ingredients-list-example/links.adoc[]
 [[resources-ingredients-create]]
 === Creating an ingredient
 
-A `POST` request will create an ingredient. The specified ingredient name must not already be used by an existing ingredient.
+A `POST` request will create an ingredient. The specified ingredient name must not already be used by an existing ingredient. Only an ingredient manager can create ingredients.
 
 ==== Request structure
 
@@ -161,7 +161,7 @@ include::{snippets}/ingredients-create-example/http-response.adoc[]
 [[resources-ingredients-delete]]
 === Deleting ingredients
 
-A `DELETE` request will delete all of the ingredients.
+A `DELETE` request will delete all of the ingredients. Only a super administrator can delete all ingredients directly. An ingredient manager can delete specific ingredients through the corresponding ingredient resource.
 
 ==== Example request
 
@@ -184,7 +184,7 @@ include::{snippets}/ingredient-detail-example/links.adoc[]
 [[resources-ingredient-retrieve]]
 === Retrieve an ingredient
 
-A `GET` request will retrieve the details of an ingredient.
+A `GET` request will retrieve the details of an ingredient.  Ingredient details are accessible for every user, either authenticated or not.
 
 ==== Path Parameters
 
@@ -205,7 +205,7 @@ include::{snippets}/ingredient-detail-example/http-response.adoc[]
 [[resources-ingredient-delete]]
 === Delete an ingredient
 
-A `DELETE` request will delete the ingredient.
+A `DELETE` request will delete the ingredient. Only an ingredient manager or super administrator can delete an ingredient.
 
 ==== Path Parameters
 
@@ -218,3 +218,108 @@ include::{snippets}/ingredient-delete-example/curl-request.adoc[]
 ==== Example response
 
 include::{snippets}/ingredient-delete-example/http-response.adoc[]
+
+[[resources-recipes]]
+== Recipes
+
+The Recipes resources is used to create and list recipes.
+
+[[resources-recipes-list]]
+=== Listing recipes
+
+A `GET` request will list all of the recipes. Recipes collection is accessible for every user, either authenticated or not.
+
+==== Response structure
+
+include::{snippets}/recipes-list-example/response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/recipes-list-example/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/recipes-list-example/http-response.adoc[]
+
+[[resources-recipes-links]]
+==== Links
+
+include::{snippets}/recipes-list-example/links.adoc[]
+
+[[resources-recipes-create]]
+=== Creating a recipe
+
+A `POST` request will create a recipe. Only an authenticated user can create recipes.
+
+==== Request structure
+
+include::{snippets}/recipes-create-example/request-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/recipes-create-example/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/recipes-create-example/http-response.adoc[]
+
+[[resources-recipes-delete]]
+=== Deleting recipes
+
+A `DELETE` request will delete all of the recipes. Only a super administrator can delete all recipes directly.
+
+==== Example request
+
+include::{snippets}/recipes-delete-example/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/recipes-delete-example/http-response.adoc[]
+
+[[resources-recipe]]
+== Recipe
+
+The Recipe resource is used to retrieve, update, and delete individual recipes.
+
+[[resources-recipe-links]]
+=== Links
+
+include::{snippets}/recipe-detail-example/links.adoc[]
+
+[[resources-recipe-retrieve]]
+=== Retrieve a recipe
+
+A `GET` request will retrieve the details of a recipe. Recipe details are accessible for every user, either authenticated or not.
+
+==== Path Parameters
+
+include::{snippets}/recipe-detail-example/path-parameters.adoc[]
+
+==== Response structure
+
+include::{snippets}/recipe-detail-example/response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/recipe-detail-example/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/recipe-detail-example/http-response.adoc[]
+
+[[resources-recipe-delete]]
+=== Delete a recipe
+
+A `DELETE` request will delete the recipe. Only a super administrator can delete a recipe.
+
+==== Path Parameters
+
+include::{snippets}/recipe-delete-example/path-parameters.adoc[]
+
+==== Example request
+
+include::{snippets}/recipe-delete-example/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/recipe-delete-example/http-response.adoc[]

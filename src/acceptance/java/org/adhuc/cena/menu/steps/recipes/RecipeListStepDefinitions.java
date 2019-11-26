@@ -15,6 +15,9 @@
  */
 package org.adhuc.cena.menu.steps.recipes;
 
+import static java.util.stream.Collectors.toList;
+
+import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -34,12 +37,22 @@ import org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue;
 @StepDefAnnotation
 public class RecipeListStepDefinitions {
 
+    private static final String NAME_ATTRIBUTE = "name";
+    private static final String CONTENT_ATTRIBUTE = "content";
+
     @Steps
     private RecipeListServiceClientSteps recipeListServiceClient;
 
     @Given("^no existing recipe$")
     public void noExistingRecipe() {
         recipeListServiceClient.assumeEmptyRecipesList();
+    }
+
+    @Given("^the following existing recipes$")
+    public void existingRecipes(DataTable dataTable) {
+        var recipes = dataTable.asMaps(String.class, String.class).stream()
+                .map(attributes -> new RecipeValue(attributes.get(NAME_ATTRIBUTE), attributes.get(CONTENT_ATTRIBUTE))).collect(toList());
+        recipeListServiceClient.storeAssumedRecipes(recipeListServiceClient.assumeInRecipesList(recipes));
     }
 
     @Given("^a non-existent \"(.*)\" recipe$")
@@ -56,6 +69,13 @@ public class RecipeListStepDefinitions {
     @Then("^the recipes list is empty$")
     public void emptyRecipeList() {
         recipeListServiceClient.assertEmptyRecipesList(recipeListServiceClient.storedRecipes());
+    }
+
+    @Then("^the recipes list contains the existing recipes$")
+    public void existingRecipesFoundInList() {
+        recipeListServiceClient.assertInRecipesList(
+                recipeListServiceClient.storedAssumedRecipes(),
+                recipeListServiceClient.storedRecipes());
     }
 
     @Then("^the recipe can be found in the list$")

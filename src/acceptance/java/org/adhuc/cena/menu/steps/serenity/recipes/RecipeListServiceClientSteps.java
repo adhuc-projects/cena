@@ -15,6 +15,8 @@
  */
 package org.adhuc.cena.menu.steps.serenity.recipes;
 
+import static java.util.stream.Collectors.toList;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
 
@@ -46,6 +48,8 @@ public class RecipeListServiceClientSteps {
     private final RecipeStorageDelegate recipeStorage = new RecipeStorageDelegate();
 
     @Steps
+    private RecipeCreationServiceClientSteps recipeCreationServiceClient;
+    @Steps
     private RecipeDeletionServiceClientSteps recipeDeletionServiceClient;
 
     @Step("Assume empty recipes list")
@@ -59,6 +63,18 @@ public class RecipeListServiceClientSteps {
         assertThat(recipes).isEmpty();
     }
 
+    @Step("Assume recipes {0} are in recipes list")
+    public Collection<RecipeValue> assumeInRecipesList(Collection<RecipeValue> recipes) {
+        var existingRecipes = fetchRecipes();
+        recipes.stream()
+                .filter(recipe -> existingRecipes.stream()
+                        .noneMatch(existing -> NAME_AND_CONTENT_COMPARATOR.compare(existing, recipe) == 0))
+                .forEach(recipe -> recipeCreationServiceClient.createRecipeAsAuthenticatedUser(recipe));
+        var allRecipes = fetchRecipes();
+        assumeThat(allRecipes).usingElementComparator(NAME_AND_CONTENT_COMPARATOR).containsAll(recipes);
+        return allRecipes.stream().filter(r -> recipes.stream().anyMatch(r2 -> NAME_AND_CONTENT_COMPARATOR.compare(r, r2) == 0)).collect(toList());
+    }
+
     @Step("Assume recipe {0} is not in recipes list")
     public RecipeValue assumeNotInRecipesList(RecipeValue recipe) {
         getFromRecipesList(recipe).ifPresent(r -> recipeDeletionServiceClient.deleteRecipeAsSuperAdministrator(r));
@@ -69,6 +85,11 @@ public class RecipeListServiceClientSteps {
     @Step("Assert recipe {0} is in recipes list")
     public void assertInRecipesList(RecipeValue recipe) {
         assertThat(getFromRecipesList(recipe)).isPresent().get().usingComparator(NAME_AND_CONTENT_COMPARATOR).isEqualTo(recipe);
+    }
+
+    @Step("Assert recipes {0} are in recipes list {1}")
+    public void assertInRecipesList(Collection<RecipeValue> expected, Collection<RecipeValue> actual) {
+        assertThat(actual).usingElementComparator(NAME_AND_CONTENT_COMPARATOR).containsAll(expected);
     }
 
     @Step("Assert recipe {0} is not in recipes list")

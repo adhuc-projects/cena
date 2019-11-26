@@ -21,6 +21,8 @@ import static org.springframework.http.HttpHeaders.LOCATION;
 
 import static org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType.INGREDIENT_MANAGER;
 
+import java.util.function.Supplier;
+
 import io.restassured.specification.RequestSpecification;
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
@@ -35,7 +37,7 @@ import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
  * The ingredient creation rest-service client steps definition.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 public class IngredientCreationServiceClientSteps {
@@ -54,17 +56,17 @@ public class IngredientCreationServiceClientSteps {
 
     @Step("Create the ingredient {0}")
     public void createIngredient(IngredientValue ingredient) {
-        createIngredient(ingredient, rest());
+        createIngredient(ingredient, this::rest);
     }
 
     @Step("Create the ingredient {0} as ingredient manager")
     void createIngredientAsIngredientManager(IngredientValue ingredient) {
-        createIngredient(ingredient, rest(INGREDIENT_MANAGER));
+        createIngredient(ingredient, () -> rest(INGREDIENT_MANAGER));
     }
 
-    private void createIngredient(IngredientValue ingredient, RequestSpecification specification) {
+    private void createIngredient(IngredientValue ingredient, Supplier<RequestSpecification> specificationSupplier) {
         var ingredientsResourceUrl = ingredientsResourceUrl();
-        specification.contentType(HAL_JSON_VALUE).body(ingredient).post(ingredientsResourceUrl).andReturn();
+        specificationSupplier.get().contentType(HAL_JSON_VALUE).body(ingredient).post(ingredientsResourceUrl).andReturn();
     }
 
     @Step("Create an ingredient without name")

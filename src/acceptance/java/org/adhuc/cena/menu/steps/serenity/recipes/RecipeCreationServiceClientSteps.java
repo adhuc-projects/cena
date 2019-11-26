@@ -20,7 +20,11 @@ import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpHeaders.LOCATION;
 
 import static org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue.DEFAULT_NAME;
+import static org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType.AUTHENTICATED_USER;
 
+import java.util.function.Supplier;
+
+import io.restassured.specification.RequestSpecification;
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
@@ -52,8 +56,17 @@ public class RecipeCreationServiceClientSteps {
 
     @Step("Create the recipe {0}")
     public void createRecipe(RecipeValue recipe) {
+        createRecipe(recipe, this::rest);
+    }
+
+    @Step("Create the recipe {0} as authenticated user")
+    public void createRecipeAsAuthenticatedUser(RecipeValue recipe) {
+        createRecipe(recipe, () -> rest(AUTHENTICATED_USER));
+    }
+
+    private void createRecipe(RecipeValue recipe, Supplier<RequestSpecification> specificationSupplier) {
         var recipesResourceUrl = recipesResourceUrl();
-        rest().contentType(HAL_JSON_VALUE).body(recipe).post(recipesResourceUrl).andReturn();
+        specificationSupplier.get().contentType(HAL_JSON_VALUE).body(recipe).post(recipesResourceUrl).andReturn();
     }
 
     @Step("Create a recipe without name")

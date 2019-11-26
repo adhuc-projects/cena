@@ -46,6 +46,7 @@ import org.adhuc.cena.menu.ingredients.Ingredient;
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
 import org.adhuc.cena.menu.ingredients.IngredientNameAlreadyUsedException;
 import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
+import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 import org.adhuc.cena.menu.support.WithCommunityUser;
 import org.adhuc.cena.menu.support.WithIngredientManager;
 import org.adhuc.cena.menu.support.WithSuperAdministrator;
@@ -151,6 +152,16 @@ class IngredientsControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
+    @DisplayName("respond Forbidden when creating ingredient as an authenticated user")
+    void respond403OnCreationAsAuthenticatedUser() throws Exception {
+        mvc.perform(post(INGREDIENTS_API_URL)
+                .contentType(APPLICATION_JSON)
+                .content("{\"name\":\"Tomato\"}")
+        ).andExpect(status().isForbidden());
+    }
+
+    @Test
     @WithIngredientManager
     @DisplayName("respond Unsupported Media Type when creating ingredient with XML content")
     void respond415OnCreationXML() throws Exception {
@@ -234,6 +245,16 @@ class IngredientsControllerShould {
 
         verify(ingredientAppServiceMock).createIngredient(commandCaptor.capture());
         assertThat(commandCaptor.getValue()).isEqualToIgnoringGivenFields(createCommand(), "ingredientId");
+    }
+
+    @Test
+    @WithSuperAdministrator
+    @DisplayName("respond Created when creating ingredient as super administrator")
+    void respond201OnCreationAsSuperAdministrator() throws Exception {
+        mvc.perform(post(INGREDIENTS_API_URL)
+                .contentType(HAL_JSON)
+                .content("{\"name\":\"Tomato\"}")
+        ).andExpect(status().isCreated());
     }
 
     @Test

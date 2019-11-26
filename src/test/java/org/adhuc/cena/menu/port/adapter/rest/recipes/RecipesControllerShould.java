@@ -140,6 +140,17 @@ class RecipesControllerShould {
     }
 
     @Test
+    @WithCommunityUser
+    @DisplayName("respond Unauthorized when creating recipe as a community user")
+    void respond401OnCreationAsCommunityUser() throws Exception {
+        mvc.perform(post(RECIPES_API_URL)
+                .contentType(APPLICATION_JSON)
+                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\"}")
+        ).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Bad Request when creating recipe without name")
     void respond400OnCreationWithoutName() throws Exception {
         mvc.perform(post(RECIPES_API_URL)
@@ -149,6 +160,7 @@ class RecipesControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Bad Request when creating recipe with blank name")
     void respond400OnCreationWithBlankName() throws Exception {
         mvc.perform(post(RECIPES_API_URL)
@@ -158,6 +170,7 @@ class RecipesControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Bad Request when creating recipe without content")
     void respond400OnCreationWithoutContent() throws Exception {
         mvc.perform(post(RECIPES_API_URL)
@@ -167,6 +180,7 @@ class RecipesControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Bad Request when creating recipe with blank content")
     void respond400OnCreationWithBlankContent() throws Exception {
         mvc.perform(post(RECIPES_API_URL)
@@ -176,6 +190,7 @@ class RecipesControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Created when creating recipe with JSON content")
     void respond201OnCreationJson() throws Exception {
         mvc.perform(post(RECIPES_API_URL)
@@ -185,6 +200,7 @@ class RecipesControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Created when creating recipe with HAL content")
     void respond201OnCreationHal() throws Exception {
         mvc.perform(post(RECIPES_API_URL)
@@ -194,6 +210,7 @@ class RecipesControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("respond with a Location header when creating recipe successfully")
     void respondWithLocationAfterCreationSuccess() throws Exception {
         mvc.perform(post(RECIPES_API_URL)
@@ -203,6 +220,7 @@ class RecipesControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("call application service when creating recipe")
     void callServiceOnCreation() throws Exception {
         var commandCaptor = ArgumentCaptor.forClass(CreateRecipe.class);
@@ -214,6 +232,26 @@ class RecipesControllerShould {
 
         verify(recipeAppServiceMock).createRecipe(commandCaptor.capture());
         assertThat(commandCaptor.getValue()).isEqualToIgnoringGivenFields(createCommand(), "recipeId");
+    }
+
+    @Test
+    @WithIngredientManager
+    @DisplayName("respond Created when creating recipe as ingredient manager")
+    void respond201OnCreationAsIngredientManager() throws Exception {
+        mvc.perform(post(RECIPES_API_URL)
+                .contentType(HAL_JSON)
+                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\"}")
+        ).andExpect(status().isCreated());
+    }
+
+    @Test
+    @WithSuperAdministrator
+    @DisplayName("respond Created when creating recipe as super administrator")
+    void respond201OnCreationAsSuperAdministrator() throws Exception {
+        mvc.perform(post(RECIPES_API_URL)
+                .contentType(HAL_JSON)
+                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\"}")
+        ).andExpect(status().isCreated());
     }
 
     @Test

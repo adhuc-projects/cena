@@ -52,10 +52,11 @@ public class ApiSecurity extends WebSecurityConfigurerAdapter {
         var authorizationConfigurer = http.authorizeRequests();
         authorizationConfigurer
                 // Ingredients resources
+                .mvcMatchers(POST, INGREDIENTS_PATH).hasAnyRole(INGREDIENT_MANAGER_ROLE, SUPER_ADMINISTRATOR_ROLE)
                 .mvcMatchers(DELETE, INGREDIENTS_PATH).hasRole(SUPER_ADMINISTRATOR_ROLE)
-                .mvcMatchers(POST, BASE_INGREDIENTS_PATH).hasAnyRole(INGREDIENT_MANAGER_ROLE, SUPER_ADMINISTRATOR_ROLE)
                 .mvcMatchers(DELETE, BASE_INGREDIENTS_PATH).hasAnyRole(INGREDIENT_MANAGER_ROLE, SUPER_ADMINISTRATOR_ROLE)
                 // Recipes resources
+                .mvcMatchers(POST, RECIPES_PATH).authenticated()
                 .mvcMatchers(DELETE, RECIPES_PATH).hasRole(SUPER_ADMINISTRATOR_ROLE)
                 .mvcMatchers(DELETE, BASE_RECIPES_PATH).hasRole(SUPER_ADMINISTRATOR_ROLE)
                 // Other resources

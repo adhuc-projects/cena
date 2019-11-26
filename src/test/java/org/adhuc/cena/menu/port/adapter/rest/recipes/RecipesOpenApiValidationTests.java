@@ -29,9 +29,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
+import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
 import org.adhuc.cena.menu.port.adapter.rest.assertion.support.Error;
 
 /**
@@ -51,6 +53,8 @@ class RecipesOpenApiValidationTests {
 
     @LocalServerPort
     private int port;
+    @Autowired
+    private MenuGenerationProperties properties;
 
     @BeforeEach
     void setUp() {
@@ -62,6 +66,8 @@ class RecipesOpenApiValidationTests {
     void respond400OnCreationWithoutName() throws Exception {
         var error = given()
                 .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                        properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
                 .body("{\"content\":\"Cut everything into dices, mix it, dress it\"}")
                 .when()
@@ -81,6 +87,8 @@ class RecipesOpenApiValidationTests {
     void respond400OnCreationWithoutContent() throws Exception {
         var error = given()
                 .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                        properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
                 .body("{\"name\":\"Tomato, cucumber and mozzarella salad\"}")
                 .when()
@@ -100,6 +108,8 @@ class RecipesOpenApiValidationTests {
     void respond201OnCreationWithAdditionalProperty() throws Exception {
         given()
                 .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
                 .body("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\",\"other\":\"some value\"}")
                 .when()

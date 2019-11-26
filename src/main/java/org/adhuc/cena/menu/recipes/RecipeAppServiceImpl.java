@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import org.adhuc.cena.menu.common.security.AsAuthenticatedUser;
 import org.adhuc.cena.menu.common.security.AsSuperAdministrator;
 
 /**
@@ -50,6 +51,7 @@ class RecipeAppServiceImpl implements RecipeAppService {
     }
 
     @Override
+    @AsAuthenticatedUser
     public Recipe createRecipe(@NonNull CreateRecipe command) {
         log.info("Create recipe from command {}", command);
         var recipe = new Recipe(command.recipeId(), command.recipeName(), command.recipeContent());

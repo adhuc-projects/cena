@@ -40,6 +40,7 @@ import org.adhuc.cena.menu.common.EntityNotFoundException;
 import org.adhuc.cena.menu.configuration.ApplicationSecurityConfiguration;
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
 import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryIngredientRepository;
+import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 import org.adhuc.cena.menu.support.WithCommunityUser;
 import org.adhuc.cena.menu.support.WithIngredientManager;
 import org.adhuc.cena.menu.support.WithSuperAdministrator;
@@ -48,7 +49,7 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
  * The {@link IngredientAppServiceImpl} security tests.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @Tag("integration")
@@ -119,6 +120,13 @@ class IngredientAppServiceWithSecurityShould {
     }
 
     @Test
+    @WithAuthenticatedUser
+    @DisplayName("deny ingredient creation access to authenticated user")
+    void denyIngredientCreationAsAuthenticatedUser() {
+        assertThrows(AccessDeniedException.class, () -> service.createIngredient(createCommand()));
+    }
+
+    @Test
     @WithIngredientManager
     @DisplayName("grant ingredient creation access to ingredient manager")
     void grantIngredientCreationAsIngredientManager() {
@@ -138,6 +146,14 @@ class IngredientAppServiceWithSecurityShould {
     @WithCommunityUser
     @DisplayName("deny ingredient deletion access to community user")
     void denyIngredientDeletionAsCommunityUser() {
+        assumeThat(service.getIngredient(CUCUMBER_ID)).isNotNull();
+        assertThrows(AccessDeniedException.class, () -> service.deleteIngredient(deleteCommand(CUCUMBER_ID)));
+    }
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("deny ingredient deletion access to authenticated user")
+    void denyIngredientDeletionAsAuthenticatedUser() {
         assumeThat(service.getIngredient(CUCUMBER_ID)).isNotNull();
         assertThrows(AccessDeniedException.class, () -> service.deleteIngredient(deleteCommand(CUCUMBER_ID)));
     }

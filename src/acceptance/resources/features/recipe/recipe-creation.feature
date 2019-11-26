@@ -21,3 +21,27 @@ Feature: Create a recipe in the system
     When he creates the recipe
     Then the recipe is created
     And the recipe can be found in the list
+
+  @Security
+  Scenario: Create a recipe as community user
+    Given a community user
+    And a non-existent "Tomato, cucumber and mozzarella salad" recipe
+    When he creates the recipe
+    Then an error notifies that user is not authenticated
+    And the recipe cannot be found in the list
+
+  @Security
+  Scenario: Create a recipe as ingredient manager
+    Given an authenticated ingredient manager
+    And a non-existent "Tomato, cucumber and mozzarella salad" recipe
+    When he creates the recipe
+    Then the recipe is created
+    And the recipe can be found in the list
+
+  @Security
+  Scenario: Create a recipe as super administrator
+    Given an authenticated super administrator
+    And a non-existent "Tomato, cucumber and mozzarella salad" recipe
+    When he creates the recipe
+    Then the recipe is created
+    And the recipe can be found in the list

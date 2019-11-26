@@ -73,6 +73,37 @@ class RecipeAppServiceWithSecurityShould {
 
     @Test
     @WithCommunityUser
+    @DisplayName("deny recipe creation access to community user")
+    void denyRecipeCreationAsCommunityUser() {
+        assertThrows(AccessDeniedException.class, () -> service.createRecipe(createCommand()));
+    }
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("grant recipe creation access to authenticated user")
+    void grantRecipeCreationAsAuthenticatedUser() {
+        service.createRecipe(createCommand());
+        assertThat(service.getRecipe(ID)).isNotNull();
+    }
+
+    @Test
+    @WithIngredientManager
+    @DisplayName("grant recipe creation access to ingredient manager")
+    void grantRecipeCreationAsIngredientManager() {
+        service.createRecipe(createCommand());
+        assertThat(service.getRecipe(ID)).isNotNull();
+    }
+
+    @Test
+    @WithSuperAdministrator
+    @DisplayName("grant recipe creation access to super administrator")
+    void grantRecipeCreationAsSuperAdministrator() {
+        service.createRecipe(createCommand());
+        assertThat(service.getRecipe(ID)).isNotNull();
+    }
+
+    @Test
+    @WithCommunityUser
     @DisplayName("deny recipes deletion access to community user")
     void denyRecipesDeletionAsCommunityUser() {
         assertThrows(AccessDeniedException.class, () -> service.deleteRecipes());

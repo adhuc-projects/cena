@@ -15,11 +15,16 @@
  */
 package org.adhuc.cena.menu.steps.serenity.recipes;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
+
+import java.util.UUID;
 
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 
+import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.RestClientDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
 
@@ -35,16 +40,45 @@ public class RecipeDetailServiceClientSteps {
     @Delegate
     private final RestClientDelegate restClientDelegate = new RestClientDelegate();
     @Delegate
+    private final ResourceUrlResolverDelegate resourceUrlResolverDelegate = new ResourceUrlResolverDelegate();
+    @Delegate
     private final StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
+    @Delegate
+    private final RecipeListClientDelegate listClient = new RecipeListClientDelegate(recipesResourceUrl());
+    @Delegate
+    private final RecipeStorageDelegate recipeStorage = new RecipeStorageDelegate();
 
-    @Step("Get ingredient from {0}")
+    @Step("Get recipe from {0}")
     public RecipeValue getRecipeFromUrl(String recipeDetailUrl) {
         fetchRecipe(recipeDetailUrl);
         return assertOk().extract().as(RecipeValue.class);
     }
 
+    @Step("Retrieve recipe with name {0}")
+    public RecipeValue retrieveRecipe(String recipeName) {
+        var recipe = getFromRecipesList(new RecipeValue(recipeName));
+        return recipe.orElseGet(() -> fail("Unable to retrieve recipe with name " + recipeName));
+    }
+
+    @Step("Attempt retrieving recipe with name {0}")
+    public void attemptRetrievingRecipe(String recipeName) {
+        var recipe = getFromRecipesList(new RecipeValue(recipeName));
+        assertThat(recipe).isNotPresent();
+        fetchRecipe(generateNotFoundRecipeUrl());
+    }
+
+    @Step("Assert recipe {0} is accessible")
+    public void assertRecipeInfoIsAccessible(RecipeValue expected) {
+        var actual = getRecipeFromUrl(expected.selfLink());
+        actual.assertEqualTo(expected);
+    }
+
     private void fetchRecipe(String recipeDetailUrl) {
         rest().accept(HAL_JSON_VALUE).get(recipeDetailUrl).andReturn();
+    }
+
+    private String generateNotFoundRecipeUrl() {
+        return recipesResourceUrl() + "/" + UUID.randomUUID().toString();
     }
 
 }

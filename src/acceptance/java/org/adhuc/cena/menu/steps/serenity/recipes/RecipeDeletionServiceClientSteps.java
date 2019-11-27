@@ -48,6 +48,11 @@ public class RecipeDeletionServiceClientSteps {
     @Delegate
     private final RecipeStorageDelegate recipeStorage = new RecipeStorageDelegate();
 
+    @Step("Delete recipes")
+    public void deleteRecipes() {
+        rest().delete(recipesResourceUrl()).then();
+    }
+
     @Step("Delete recipes as super administrator")
     public void deleteRecipesAsSuperAdministrator() {
         var response = rest(SUPER_ADMINISTRATOR).delete(recipesResourceUrl()).then();

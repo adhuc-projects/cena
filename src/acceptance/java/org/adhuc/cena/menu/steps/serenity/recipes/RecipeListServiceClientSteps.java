@@ -63,6 +63,16 @@ public class RecipeListServiceClientSteps {
         assertThat(recipes).isEmpty();
     }
 
+    @Step("Assume recipe {0} is in recipes list")
+    public RecipeValue assumeInRecipesList(RecipeValue recipe) {
+        if (getFromRecipesList(recipe).isEmpty()) {
+            recipeCreationServiceClient.createRecipeAsAuthenticatedUser(recipe);
+        }
+        var recipes = fetchRecipes();
+        assumeThat(recipes).usingElementComparator(RecipeValue.COMPARATOR).contains(recipe);
+        return recipes.stream().filter(i -> RecipeValue.COMPARATOR.compare(i, recipe) == 0).findFirst().get();
+    }
+
     @Step("Assume recipes {0} are in recipes list")
     public Collection<RecipeValue> assumeInRecipesList(Collection<RecipeValue> recipes) {
         var existingRecipes = fetchRecipes();

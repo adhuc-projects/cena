@@ -15,7 +15,11 @@
  */
 package org.adhuc.cena.menu.steps.serenity.recipes;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType.SUPER_ADMINISTRATOR;
+
+import java.util.UUID;
 
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
@@ -39,6 +43,10 @@ public class RecipeDeletionServiceClientSteps {
     private final ResourceUrlResolverDelegate resourceUrlResolverDelegate = new ResourceUrlResolverDelegate();
     @Delegate
     private final StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
+    @Delegate
+    private final RecipeListClientDelegate listClient = new RecipeListClientDelegate(recipesResourceUrl());
+    @Delegate
+    private final RecipeStorageDelegate recipeStorage = new RecipeStorageDelegate();
 
     @Step("Delete recipes as super administrator")
     public void deleteRecipesAsSuperAdministrator() {
@@ -46,9 +54,30 @@ public class RecipeDeletionServiceClientSteps {
         assertNoContent(response);
     }
 
+    @Step("Delete recipe {0}")
+    public void deleteRecipe(RecipeValue recipe) {
+        rest().delete(recipe.selfLink());
+    }
+
     @Step("Delete recipe {0} as super administrator")
     public void deleteRecipeAsSuperAdministrator(RecipeValue recipe) {
         rest(SUPER_ADMINISTRATOR).delete(recipe.selfLink());
+    }
+
+    @Step("Attempt deleting recipe {0}")
+    public void attemptDeletingRecipe(RecipeValue recipe) {
+        var existingRecipe = getFromRecipesList(new RecipeValue(recipe.name()));
+        assertThat(existingRecipe).isNotPresent();
+        rest().delete(generateNotFoundRecipeUrl());
+    }
+
+    @Step("Assert recipe {0} has been successfully deleted")
+    public void assertRecipeSuccessfullyDeleted(RecipeValue recipe) {
+        assertNoContent();
+    }
+
+    private String generateNotFoundRecipeUrl() {
+        return recipesResourceUrl() + "/" + UUID.randomUUID().toString();
     }
 
 }

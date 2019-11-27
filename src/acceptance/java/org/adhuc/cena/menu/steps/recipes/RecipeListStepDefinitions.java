@@ -55,6 +55,11 @@ public class RecipeListStepDefinitions {
         recipeListServiceClient.storeAssumedRecipes(recipeListServiceClient.assumeInRecipesList(recipes));
     }
 
+    @Given("^an existing \"(.*)\" recipe$")
+    public void existingRecipe(String recipeName) {
+        recipeListServiceClient.storeRecipe(recipeListServiceClient.assumeInRecipesList(new RecipeValue(recipeName)));
+    }
+
     @Given("^a non-existent \"(.*)\" recipe$")
     public void nonExistentRecipe(String recipeName) {
         recipeListServiceClient.storeRecipe(recipeListServiceClient.assumeNotInRecipesList(new RecipeValue(recipeName)));

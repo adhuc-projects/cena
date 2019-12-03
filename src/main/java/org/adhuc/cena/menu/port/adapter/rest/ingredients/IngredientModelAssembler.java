@@ -15,6 +15,8 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.ingredients;
 
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
@@ -31,16 +33,26 @@ import org.adhuc.cena.menu.ingredients.Ingredient;
 @Component
 class IngredientModelAssembler extends RepresentationModelAssemblerSupport<Ingredient, IngredientModel> {
 
+    private EntityLinks links;
+
     /**
      * Creates a model assembler for ingredients.
      */
-    IngredientModelAssembler() {
+    IngredientModelAssembler(EntityLinks links) {
         super(IngredientsController.class, IngredientModel.class);
+        this.links = links;
     }
 
     @Override
     public IngredientModel toModel(Ingredient ingredient) {
-        return createModelWithId(ingredient.id().toString(), ingredient);
+        return instantiateModel(ingredient)
+            .add(links.linkToItemResource(Ingredient.class, ingredient.id()).withSelfRel());
+    }
+
+    @Override
+    public CollectionModel<IngredientModel> toCollectionModel(Iterable<? extends Ingredient> entities) {
+        return super.toCollectionModel(entities)
+                .add(links.linkToCollectionResource(Ingredient.class).withSelfRel());
     }
 
     @Override

@@ -18,12 +18,11 @@ package org.adhuc.cena.menu.port.adapter.rest.ingredients;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-import org.springframework.hateoas.server.EntityLinks;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import org.adhuc.cena.menu.ingredients.DeleteIngredient;
-import org.adhuc.cena.menu.ingredients.Ingredient;
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
 import org.adhuc.cena.menu.ingredients.IngredientId;
 
@@ -35,16 +34,12 @@ import org.adhuc.cena.menu.ingredients.IngredientId;
  * @since 0.1.0
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(path = "/api/ingredients/{ingredientId}", produces = {HAL_JSON_VALUE, APPLICATION_JSON_VALUE})
 class IngredientController {
 
-    private EntityLinks links;
-    private IngredientAppService ingredientAppService;
-
-    IngredientController(EntityLinks links, IngredientAppService ingredientAppService) {
-        this.links = links;
-        this.ingredientAppService = ingredientAppService;
-    }
+    private final IngredientModelAssembler modelAssembler;
+    private final IngredientAppService ingredientAppService;
 
     /**
      * Gets the ingredient information for the ingredient corresponding to the specified identity.
@@ -56,9 +51,7 @@ class IngredientController {
     @ResponseStatus(HttpStatus.OK)
     public IngredientModel getIngredient(@PathVariable String ingredientId) {
         var ingredient = ingredientAppService.getIngredient(new IngredientId(ingredientId));
-        var model = new IngredientModel(ingredient);
-        model.add(links.linkToItemResource(Ingredient.class, ingredientId).withSelfRel());
-        return model;
+        return modelAssembler.toModel(ingredient);
     }
 
     @DeleteMapping

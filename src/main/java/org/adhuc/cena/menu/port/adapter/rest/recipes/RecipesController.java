@@ -65,8 +65,8 @@ public class RecipesController {
     @GetMapping
     @ResponseStatus(OK)
     CollectionModel<RecipeModel> getRecipes() {
-        return modelAssembler.toCollectionModel(recipeAppService.getRecipes())
-                .add(links.linkToCollectionResource(Recipe.class).withSelfRel());
+        var recipes = recipeAppService.getRecipes();
+        return modelAssembler.toCollectionModel(recipes);
     }
 
     /**
@@ -77,7 +77,6 @@ public class RecipesController {
         var identity = RecipeId.generate();
         validateRequest(errors);
         recipeAppService.createRecipe(request.toCommand(identity));
-
         return ResponseEntity.created(new URI(links.linkToItemResource(Recipe.class, identity).getHref())).build();
     }
 

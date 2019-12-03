@@ -15,6 +15,8 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.recipes;
 
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
@@ -25,22 +27,32 @@ import org.adhuc.cena.menu.recipes.Recipe;
  * allowing building {@link RecipeModel}s.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
- * @since 0.1.0
+ * @version 0.2.0
+ * @since 0.2.0
  */
 @Component
 class RecipeModelAssembler extends RepresentationModelAssemblerSupport<Recipe, RecipeModel> {
 
+    private EntityLinks links;
+
     /**
      * Creates a model assembler for recipes.
      */
-    RecipeModelAssembler() {
+    RecipeModelAssembler(EntityLinks links) {
         super(RecipesController.class, RecipeModel.class);
+        this.links = links;
     }
 
     @Override
     public RecipeModel toModel(Recipe recipe) {
-        return createModelWithId(recipe.id().toString(), recipe);
+        return instantiateModel(recipe)
+                .add(links.linkToItemResource(Recipe.class, recipe.id()).withSelfRel());
+    }
+
+    @Override
+    public CollectionModel<RecipeModel> toCollectionModel(Iterable<? extends Recipe> recipes) {
+        return super.toCollectionModel(recipes)
+                .add(links.linkToCollectionResource(Recipe.class).withSelfRel());
     }
 
     @Override

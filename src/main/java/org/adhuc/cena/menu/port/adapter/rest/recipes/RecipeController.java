@@ -18,12 +18,11 @@ package org.adhuc.cena.menu.port.adapter.rest.recipes;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-import org.springframework.hateoas.server.EntityLinks;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import org.adhuc.cena.menu.recipes.DeleteRecipe;
-import org.adhuc.cena.menu.recipes.Recipe;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
 import org.adhuc.cena.menu.recipes.RecipeId;
 
@@ -35,16 +34,12 @@ import org.adhuc.cena.menu.recipes.RecipeId;
  * @since 0.2.0
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(path = "/api/recipes/{recipeId}", produces = {HAL_JSON_VALUE, APPLICATION_JSON_VALUE})
 public class RecipeController {
 
-    private EntityLinks links;
-    private RecipeAppService recipeAppService;
-
-    RecipeController(EntityLinks links, RecipeAppService recipeAppService) {
-        this.links = links;
-        this.recipeAppService = recipeAppService;
-    }
+    private final RecipeModelAssembler modelAssembler;
+    private final RecipeAppService recipeAppService;
 
     /**
      * Gets the recipe information for the recipe corresponding to the specified identity.
@@ -56,9 +51,7 @@ public class RecipeController {
     @ResponseStatus(HttpStatus.OK)
     public RecipeModel getRecipe(@PathVariable String recipeId) {
         var recipe = recipeAppService.getRecipe(new RecipeId(recipeId));
-        var model = new RecipeModel(recipe);
-        model.add(links.linkToItemResource(Recipe.class, recipeId).withSelfRel());
-        return model;
+        return modelAssembler.toModel(recipe);
     }
 
     @DeleteMapping

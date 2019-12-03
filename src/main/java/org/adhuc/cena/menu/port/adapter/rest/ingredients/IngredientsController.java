@@ -65,9 +65,7 @@ public class IngredientsController {
     @ResponseStatus(OK)
     CollectionModel<IngredientModel> getIngredients() {
         var ingredients = ingredientAppService.getIngredients();
-
-        return modelAssembler.toCollectionModel(ingredients)
-                .add(links.linkToCollectionResource(Ingredient.class).withSelfRel());
+        return modelAssembler.toCollectionModel(ingredients);
     }
 
     /**
@@ -78,7 +76,6 @@ public class IngredientsController {
         var identity = IngredientId.generate();
         validateRequest(errors);
         ingredientAppService.createIngredient(request.toCommand(identity));
-
         return ResponseEntity.created(new URI(links.linkToItemResource(Ingredient.class, identity).getHref())).build();
     }
 

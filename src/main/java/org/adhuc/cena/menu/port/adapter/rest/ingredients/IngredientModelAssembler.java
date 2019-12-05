@@ -46,13 +46,13 @@ class IngredientModelAssembler extends RepresentationModelAssemblerSupport<Ingre
     @Override
     public IngredientModel toModel(Ingredient ingredient) {
         return instantiateModel(ingredient)
-            .add(links.linkToItemResource(Ingredient.class, ingredient.id()).withSelfRel());
+            .add(links.linkToItemResource(IngredientModel.class, ingredient.id()).withSelfRel());
     }
 
     @Override
     public CollectionModel<IngredientModel> toCollectionModel(Iterable<? extends Ingredient> entities) {
         return super.toCollectionModel(entities)
-                .add(links.linkToCollectionResource(Ingredient.class).withSelfRel());
+                .add(links.linkToCollectionResource(IngredientModel.class).withSelfRel());
     }
 
     @Override

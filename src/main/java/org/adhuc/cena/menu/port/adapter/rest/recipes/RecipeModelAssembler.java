@@ -46,13 +46,13 @@ class RecipeModelAssembler extends RepresentationModelAssemblerSupport<Recipe, R
     @Override
     public RecipeModel toModel(Recipe recipe) {
         return instantiateModel(recipe)
-                .add(links.linkToItemResource(Recipe.class, recipe.id()).withSelfRel());
+                .add(links.linkToItemResource(RecipeModel.class, recipe.id()).withSelfRel());
     }
 
     @Override
     public CollectionModel<RecipeModel> toCollectionModel(Iterable<? extends Recipe> recipes) {
         return super.toCollectionModel(recipes)
-                .add(links.linkToCollectionResource(Recipe.class).withSelfRel());
+                .add(links.linkToCollectionResource(RecipeModel.class).withSelfRel());
     }
 
     @Override

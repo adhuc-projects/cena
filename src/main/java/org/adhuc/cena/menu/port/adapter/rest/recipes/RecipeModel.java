@@ -31,7 +31,7 @@ import org.adhuc.cena.menu.recipes.Recipe;
  * @since 0.2.0
  */
 @ToString(callSuper = true)
-@Relation(itemRelation = "ingredient", collectionRelation = "data")
+@Relation(collectionRelation = "data")
 class RecipeModel extends RepresentationModel<RecipeModel> {
 
     @NonNull

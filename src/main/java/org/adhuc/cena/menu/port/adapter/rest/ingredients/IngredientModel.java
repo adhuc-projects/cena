@@ -27,11 +27,11 @@ import org.adhuc.cena.menu.ingredients.Ingredient;
  * A REST resource encapsulating ingredient information.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @ToString(callSuper = true)
-@Relation(itemRelation = "ingredient", collectionRelation = "data")
+@Relation(collectionRelation = "data")
 class IngredientModel extends RepresentationModel<IngredientModel> {
 
     @NonNull

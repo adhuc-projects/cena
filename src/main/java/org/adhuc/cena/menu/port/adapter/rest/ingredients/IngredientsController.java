@@ -33,7 +33,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
-import org.adhuc.cena.menu.ingredients.Ingredient;
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
 import org.adhuc.cena.menu.ingredients.IngredientId;
 import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
@@ -48,7 +47,7 @@ import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@ExposesResourceFor(Ingredient.class)
+@ExposesResourceFor(IngredientModel.class)
 @RequestMapping(path = "/api/ingredients", produces = {HAL_JSON_VALUE, APPLICATION_JSON_VALUE})
 public class IngredientsController {
 
@@ -76,7 +75,7 @@ public class IngredientsController {
         var identity = IngredientId.generate();
         validateRequest(errors);
         ingredientAppService.createIngredient(request.toCommand(identity));
-        return ResponseEntity.created(new URI(links.linkToItemResource(Ingredient.class, identity).getHref())).build();
+        return ResponseEntity.created(new URI(links.linkToItemResource(IngredientModel.class, identity).getHref())).build();
     }
 
 }

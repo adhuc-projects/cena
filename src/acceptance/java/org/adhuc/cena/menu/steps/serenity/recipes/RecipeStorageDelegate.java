@@ -28,7 +28,7 @@ import net.serenitybdd.core.Serenity;
  * @version 0.2.0
  * @since 0.2.0
  */
-final class RecipeStorageDelegate {
+public final class RecipeStorageDelegate {
 
     private static final String ASSUMED_RECIPES_SESSION_KEY = "assumedRecipes";
     private static final String RECIPES_SESSION_KEY = "recipes";

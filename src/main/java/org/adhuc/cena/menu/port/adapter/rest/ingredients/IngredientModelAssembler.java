@@ -31,7 +31,7 @@ import org.adhuc.cena.menu.ingredients.Ingredient;
  * @since 0.1.0
  */
 @Component
-class IngredientModelAssembler extends RepresentationModelAssemblerSupport<Ingredient, IngredientModel> {
+public class IngredientModelAssembler extends RepresentationModelAssemblerSupport<Ingredient, IngredientModel> {
 
     private EntityLinks links;
 

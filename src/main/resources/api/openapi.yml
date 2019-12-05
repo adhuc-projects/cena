@@ -165,6 +165,19 @@ paths:
           $ref: '#/components/responses/403-Forbidden'
         404:
           $ref: '#/components/responses/404-NotFound'
+  /recipes/{recipeId}/ingredients:
+    get:
+      summary: Get the recipe\'s related ingredients collection. Recipe\'s ingredients collection is accessible for every user, either authenticated or not
+      operationId: listRecipeIngredients
+      tags:
+        - Recipe Ingredients
+      parameters:
+        - $ref: '#/components/parameters/recipeId'
+      responses:
+        200:
+          $ref: '#/components/responses/RecipeIngredients'
+        404:
+          $ref: '#/components/responses/404-NotFound'
 components:
   securitySchemes:
     basicAuth:
@@ -221,7 +234,7 @@ components:
           schema:
             $ref: '#/components/schemas/Index'
     Ingredients:
-      description: Collection containing all the ingredients found in the system. For now, this collection is not sortable or pageable, but those behaviors may be implemented in the future.
+      description: Collection containing all the ingredients found in the system. For now, this collection is not sortable nor pageable, but those behaviors may be implemented in the future.
       content:
         application/hal+json:
           schema:
@@ -247,7 +260,7 @@ components:
           schema:
             $ref: '#/components/schemas/Ingredient'
     Recipes:
-      description: Collection containing all the recipes found in the system. For now, this collection is not sortable or pageable, but those behaviors may be implemented in the future.
+      description: Collection containing all the recipes found in the system. For now, this collection is not sortable nor pageable, but those behaviors may be implemented in the future.
       content:
         application/hal+json:
           schema:
@@ -272,6 +285,15 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Recipe'
+    RecipeIngredients:
+      description: Collection containing all the ingredients related to a recipe. For now, this collection is not sortable nor pageable, but those behaviors may be implemented in the future.
+      content:
+        application/hal+json:
+          schema:
+            $ref: '#/components/schemas/RecipeIngredients'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RecipeIngredients'
     400-BadRequest:
       description: Bad syntax or incorrect request
       content:
@@ -384,6 +406,8 @@ components:
             self:
               description: Link to this ingredients collection. Can be used to create new ingredients in the collection
               type: object
+              required:
+                - href
               properties:
                 href:
                   type: string
@@ -449,6 +473,8 @@ components:
             self:
               description: Link to this recipes collection. Can be used to create new recipes in the collection
               type: object
+              required:
+                - href
               properties:
                 href:
                   type: string
@@ -483,6 +509,7 @@ components:
           readOnly: true
           required:
             - self
+            - ingredients
           properties:
             self:
               description: Link to this recipe detail. Can be used to update or delete the recipe
@@ -493,6 +520,110 @@ components:
                 href:
                   type: string
                   example: 'https://cena.adhuc.org/api/recipes/d71e2fc7-09e3-4241-97a5-dc3383d35e98'
+            ingredients:
+              description: Link to this recipe\'s related ingredients collection
+              type: object
+              properties:
+                href:
+                  type: string
+                  example: 'https://cena.adhuc.org/api/recipes/d71e2fc7-09e3-4241-97a5-dc3383d35e98/ingredients'
+      additionalProperties: true
+    RecipeIngredients:
+      description: A collection of ingredients linked to a recipe, containing ingredients detail for each ingredient
+      type: object
+      required:
+        - '_links'
+      properties:
+        '_embedded':
+          type: object
+          readOnly: true
+          required:
+            - data
+            - ingredients
+          properties:
+            data:
+              description: The recipe's ingredients collection data, containing recipe ingredients detail
+              type: array
+              items:
+                $ref: '#/components/schemas/RecipeIngredient'
+            ingredients:
+              description: The related ingredients collection, containing ingredients detail
+              type: array
+              items:
+                $ref: '#/components/schemas/Ingredient'
+        '_links':
+          type: object
+          readOnly: true
+          required:
+            - self
+            - recipe
+          properties:
+            self:
+              description: Link to this recipe's ingredients collection
+              type: object
+              required:
+                - href
+              properties:
+                href:
+                  type: string
+                  example: 'https://cena.adhuc.org/api/recipes/d71e2fc7-09e3-4241-97a5-dc3383d35e98/ingredients'
+            recipe:
+              description: Link to the recipe
+              type: object
+              required:
+                - href
+              properties:
+                href:
+                  type: string
+                  example: 'https://cena.adhuc.org/api/recipes/d71e2fc7-09e3-4241-97a5-dc3383d35e98'
+    RecipeIngredient:
+      description: A recipe ingredient detail, containing its identity
+      type: object
+      required:
+        - id
+        - '_links'
+      properties:
+        id:
+          description: Recipe ingredient identity. Corresponds to the identity of the related ingredient
+          type: string
+          format: uuid
+          readOnly: true
+          example: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+        '_links':
+          type: object
+          readOnly: true
+          required:
+            - self
+            - recipe
+            - ingredient
+          properties:
+            self:
+              description: Link to this recicpe ingredient detail. Can be used to update or delete the recipe ingredient
+              type: object
+              required:
+                - href
+              properties:
+                href:
+                  type: string
+                  example: 'https://cena.adhuc.org/api/recipes/d71e2fc7-09e3-4241-97a5-dc3383d35e98/ingredients/3fa85f64-5717-4562-b3fc-2c963f66afa6'
+            recipe:
+              description: Link to the recipe
+              type: object
+              required:
+                - href
+              properties:
+                href:
+                  type: string
+                  example: 'https://cena.adhuc.org/api/recipes/d71e2fc7-09e3-4241-97a5-dc3383d35e98'
+            ingredient:
+              description: Link to the ingredient
+              type: object
+              required:
+                - href
+              properties:
+                href:
+                  type: string
+                  example: 'https://cena.adhuc.org/api/ingredients/3fa85f64-5717-4562-b3fc-2c963f66afa6'
       additionalProperties: true
     Error:
       description: General error structure

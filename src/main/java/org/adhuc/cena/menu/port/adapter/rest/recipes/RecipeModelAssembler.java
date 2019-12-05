@@ -20,6 +20,7 @@ import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
+import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientModel;
 import org.adhuc.cena.menu.recipes.Recipe;
 
 /**
@@ -31,7 +32,9 @@ import org.adhuc.cena.menu.recipes.Recipe;
  * @since 0.2.0
  */
 @Component
-class RecipeModelAssembler extends RepresentationModelAssemblerSupport<Recipe, RecipeModel> {
+public class RecipeModelAssembler extends RepresentationModelAssemblerSupport<Recipe, RecipeModel> {
+
+    private static final String RECIPE_INGREDIENTS_RELATION = "ingredients";
 
     private EntityLinks links;
 
@@ -46,7 +49,8 @@ class RecipeModelAssembler extends RepresentationModelAssemblerSupport<Recipe, R
     @Override
     public RecipeModel toModel(Recipe recipe) {
         return instantiateModel(recipe)
-                .add(links.linkToItemResource(RecipeModel.class, recipe.id()).withSelfRel());
+                .add(links.linkToItemResource(RecipeModel.class, recipe.id()).withSelfRel())
+                .add(links.linkFor(RecipeIngredientModel.class, recipe.id()).withRel(RECIPE_INGREDIENTS_RELATION));
     }
 
     @Override

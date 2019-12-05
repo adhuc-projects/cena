@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Comparator;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -43,6 +44,8 @@ import org.adhuc.cena.menu.steps.serenity.support.resource.HateoasClientResource
 @JsonInclude(NON_EMPTY)
 public class RecipeValue extends HateoasClientResourceSupport {
 
+    private static final String RECIPE_INGREDIENTS_LINK = "ingredients";
+
     public static final Comparator<RecipeValue> COMPARATOR = new RecipeNameComparator();
     public static final Comparator<RecipeValue> NAME_AND_CONTENT_COMPARATOR = new RecipeNameAndContentComparator();
 
@@ -61,6 +64,11 @@ public class RecipeValue extends HateoasClientResourceSupport {
         this.id = null;
         this.name = name;
         this.content = content;
+    }
+
+    @JsonIgnore
+    public String getIngredients() {
+        return link(RECIPE_INGREDIENTS_LINK);
     }
 
     void assertEqualTo(RecipeValue expected) {

@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.port.adapter.rest.ingredients;
+package org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.NonNull;
@@ -21,29 +21,25 @@ import lombok.ToString;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
-import org.adhuc.cena.menu.ingredients.Ingredient;
+import org.adhuc.cena.menu.recipes.RecipeIngredient;
 
 /**
- * A REST resource encapsulating ingredient information.
+ * A REST resource encapsulating recipe ingredient information.
  *
  * @author Alexandre Carbenay
  * @version 0.2.0
- * @since 0.1.0
+ * @since 0.2.0
  */
 @ToString(callSuper = true)
 @Relation(collectionRelation = "data")
-public class IngredientModel extends RepresentationModel<IngredientModel> {
+public class RecipeIngredientModel extends RepresentationModel<RecipeIngredientModel> {
 
     @NonNull
     @JsonProperty("id")
     private final String ingredientId;
-    @NonNull
-    @JsonProperty("name")
-    private final String ingredientName;
 
-    IngredientModel(@NonNull Ingredient ingredient) {
-        ingredientId = ingredient.id().toString();
-        ingredientName = ingredient.name();
+    RecipeIngredientModel(@NonNull RecipeIngredient recipeIngredient) {
+        this.ingredientId = recipeIngredient.ingredientId().toString();
     }
 
 }

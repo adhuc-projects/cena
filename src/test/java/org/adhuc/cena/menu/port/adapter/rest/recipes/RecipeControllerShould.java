@@ -15,6 +15,7 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.recipes;
 
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.*;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
@@ -25,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -32,6 +34,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import org.adhuc.cena.menu.common.EntityNotFoundException;
+import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientModelAssembler;
+import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientsController;
 import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.recipes.Recipe;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
@@ -49,7 +53,8 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
  */
 @Tag("integration")
 @Tag("restController")
-@WebMvcTest({RecipesController.class, RecipeController.class, RequestValidatorDelegate.class, RecipeModelAssembler.class})
+@WebMvcTest({RecipesController.class, RecipeController.class, RecipeIngredientsController.class,
+        RequestValidatorDelegate.class, RecipeModelAssembler.class, RecipeIngredientModelAssembler.class})
 @DisplayName("Recipe controller should")
 class RecipeControllerShould {
 
@@ -147,7 +152,21 @@ class RecipeControllerShould {
         void getRecipeHasSelfLink() throws Exception {
             var result = mvc.perform(get(RECIPE_API_URL, ID));
             result.andExpect(jsonPath("$._links.self.href").exists())
-                    .andExpect(jsonPath("$._links.self.href", equalTo(result.andReturn().getRequest().getRequestURL().toString())));
+                    .andExpect(jsonPath("$._links.self.href",
+                            equalTo(result.andReturn().getRequest().getRequestURL().toString())));
+        }
+
+        @Test
+        @DisplayName("contain ingredient link")
+        void getRecipeHasIngredientLink() throws Exception {
+            var result = mvc.perform(get(RECIPE_API_URL, ID));
+            result.andExpect(jsonPath("$._links.ingredients.href").exists())
+                    .andExpect(jsonPath("$._links.ingredients.href").value(
+                            allOf(
+                                    Matchers.startsWith(result.andReturn().getRequest().getRequestURL().toString()),
+                                    Matchers.endsWith("/ingredients")
+                            )
+                    ));
         }
 
     }

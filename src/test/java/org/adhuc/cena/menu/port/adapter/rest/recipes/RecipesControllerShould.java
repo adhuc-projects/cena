@@ -30,7 +30,6 @@ import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
 import java.util.List;
 
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +38,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientModelAssembler;
+import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientsController;
 import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.recipes.CreateRecipe;
 import org.adhuc.cena.menu.recipes.Recipe;
@@ -57,7 +58,8 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
  */
 @Tag("integration")
 @Tag("restController")
-@WebMvcTest({RecipesController.class, RecipesDeletionController.class, RequestValidatorDelegate.class, RecipeModelAssembler.class})
+@WebMvcTest({RecipesController.class, RecipesDeletionController.class, RecipeIngredientsController.class,
+        RequestValidatorDelegate.class, RecipeModelAssembler.class, RecipeIngredientModelAssembler.class})
 @DisplayName("Recipes controller should")
 class RecipesControllerShould {
 
@@ -107,8 +109,9 @@ class RecipesControllerShould {
         @Test
         @DisplayName("have self link with correct value when retrieving recipes")
         void haveSelfOnList() throws Exception {
-            mvc.perform(get(RECIPES_API_URL))
-                    .andExpect(jsonPath("$._links.self.href", Matchers.endsWith(RECIPES_API_URL)));
+            var result = mvc.perform(get(RECIPES_API_URL));
+            result.andExpect(jsonPath("$._links.self.href",
+                    equalTo(result.andReturn().getRequest().getRequestURL().toString())));
         }
 
         @Test

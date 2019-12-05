@@ -41,6 +41,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 import org.adhuc.cena.menu.port.adapter.rest.ResultHandlerConfiguration;
+import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientModelAssembler;
+import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientsController;
 import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
 import org.adhuc.cena.menu.support.WithSuperAdministrator;
@@ -54,7 +56,8 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
  */
 @Tag("integration")
 @Tag("documentation")
-@WebMvcTest({RecipesController.class, RecipeController.class, RequestValidatorDelegate.class, RecipeModelAssembler.class})
+@WebMvcTest({RecipesController.class, RecipeController.class, RecipeIngredientsController.class,
+        RequestValidatorDelegate.class, RecipeModelAssembler.class, RecipeIngredientModelAssembler.class})
 @ContextConfiguration(classes = ResultHandlerConfiguration.class)
 @AutoConfigureRestDocs("build/generated-snippets")
 @DisplayName("Recipe resource documentation")
@@ -78,7 +81,10 @@ class RecipeDocumentation {
         mvc.perform(get(RECIPE_API_URL, ID.toString())).andExpect(status().isOk())
                 .andDo(documentationHandler.document(
                         pathParameters(parameterWithName("id").description("The recipe identity")),
-                        links(linkWithRel("self").description("This <<resources-recipe,recipe>>")),
+                        links(
+                                linkWithRel("self").description("This <<resources-recipe,recipe>>"),
+                                linkWithRel("ingredients").description("This <<resources-recipe-ingredients,recipe ingredients list>>")
+                        ),
                         recipeResponseFields("<<resources-recipe-links,Links>> to other resources")));
     }
 

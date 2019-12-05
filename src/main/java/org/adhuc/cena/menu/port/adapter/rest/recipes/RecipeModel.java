@@ -32,7 +32,7 @@ import org.adhuc.cena.menu.recipes.Recipe;
  */
 @ToString(callSuper = true)
 @Relation(collectionRelation = "data")
-class RecipeModel extends RepresentationModel<RecipeModel> {
+public class RecipeModel extends RepresentationModel<RecipeModel> {
 
     @NonNull
     @JsonProperty("id")

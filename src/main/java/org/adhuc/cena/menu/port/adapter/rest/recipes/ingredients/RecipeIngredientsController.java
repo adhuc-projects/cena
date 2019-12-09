@@ -19,11 +19,15 @@ import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.hateoas.server.ExposesResourceFor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -39,6 +43,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(path = "/api/recipes/{recipeId}/ingredients", produces = {HAL_JSON_VALUE, APPLICATION_JSON_VALUE})
 public class RecipeIngredientsController {
 
+    private final EntityLinks links;
     private final RecipeIngredientModelAssembler modelAssembler;
 
     /**
@@ -48,6 +53,16 @@ public class RecipeIngredientsController {
     @ResponseStatus(OK)
     CollectionModel<RecipeIngredientModel> getRecipeIngredients(@PathVariable String recipeId) {
         return modelAssembler.toCollectionModel(recipeId, List.of());
+    }
+
+    /**
+     * Creates a recipe ingredient.
+     */
+    @PostMapping
+    ResponseEntity<Void> createRecipeIngredient(@PathVariable String recipeId,
+                                                @RequestBody CreateRecipeIngredientRequest request) throws URISyntaxException {
+        return ResponseEntity.created(new URI(links.linkFor(RecipeIngredientModel.class, recipeId)
+                .slash(request.getIngredientId()).withSelfRel().getHref())).build();
     }
 
 }

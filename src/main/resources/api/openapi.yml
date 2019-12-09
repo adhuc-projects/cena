@@ -167,7 +167,7 @@ paths:
           $ref: '#/components/responses/404-NotFound'
   /recipes/{recipeId}/ingredients:
     get:
-      summary: Get the recipe\'s related ingredients collection. Recipe\'s ingredients collection is accessible for every user, either authenticated or not
+      summary: Get the recipe's related ingredients collection. Recipe's ingredients collection is accessible for every user, either authenticated or not
       operationId: listRecipeIngredients
       tags:
         - Recipe Ingredients
@@ -178,6 +178,26 @@ paths:
           $ref: '#/components/responses/RecipeIngredients'
         404:
           $ref: '#/components/responses/404-NotFound'
+    post:
+      summary: Add an ingredient to a recipe's related ingredients collection. Only an authenticated user can add an ingredient to a recipe
+      operationId: addIngredientToRecipe
+      tags:
+        - Recipe Ingredients
+      security:
+        - basicAuth:[]
+      parameters:
+        - $ref: '#/components/parameters/recipeId'
+      requestBody:
+        $ref: '#/components/requestBodies/AddIngredientToRecipe'
+      responses:
+        201:
+          $ref: '#/components/responses/IngredientAddedToRecipe'
+        400:
+          $ref: '#/components/responses/400-BadRequest'
+        401:
+          $ref: '#/components/responses/401-Unauthorized'
+        403:
+          $ref: '#/components/responses/403-Forbidden'
 components:
   securitySchemes:
     basicAuth:
@@ -223,6 +243,26 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Recipe'
+    AddIngredientToRecipe:
+      required: true
+      description: Ingredient addition to recipe's ingredients collection
+      content:
+        application/hal+json:
+          schema:
+            type: object
+            required:
+              - id
+            properties:
+              id:
+                $ref: '#/components/schemas/IngredientId'
+        application/json:
+          schema:
+            type: object
+            required:
+              - id
+            properties:
+              id:
+                $ref: '#/components/schemas/IngredientId'
   responses:
     Index:
       description: Retrieve links to main API resources
@@ -246,7 +286,7 @@ components:
       description: Successful ingredient creation response
       headers:
         Location:
-          description: Link to the created ingredient. Can be used ot retrieve, update or delete the created ingredient
+          description: Link to the created ingredient. Can be used to retrieve, update or delete the created ingredient
           schema:
             type: string
             example: 'https://cena.adhuc.org/api/ingredients/3fa85f64-5717-4562-b3fc-2c963f66afa6'
@@ -272,7 +312,7 @@ components:
       description: Successful recipe creation response
       headers:
         Location:
-          description: Link to the created recipe. Can be used ot retrieve, update or delete the created recipe
+          description: Link to the created recipe. Can be used to retrieve, update or delete the created recipe
           schema:
             type: string
             example: 'https://cena.adhuc.org/api/recipes/d71e2fc7-09e3-4241-97a5-dc3383d35e98'
@@ -294,6 +334,14 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/RecipeIngredients'
+    IngredientAddedToRecipe:
+      description: Successful ingredient addition to recipe's ingredients collection response
+      headers:
+        Location:
+          description: Link to the created recipe ingredient. Can be used to retrieve, update or delete the recipe ingredient
+          schema:
+            type: string
+            example: 'https://cena.adhuc.org/api/recipes/d71e2fc7-09e3-4241-97a5-dc3383d35e98/ingredients/3fa85f64-5717-4562-b3fc-2c963f66afa6'
     400-BadRequest:
       description: Bad syntax or incorrect request
       content:
@@ -447,6 +495,11 @@ components:
                   type: string
                   example: 'https://cena.adhuc.org/api/ingredients/3fa85f64-5717-4562-b3fc-2c963f66afa6'
       additionalProperties: true
+    IngredientId:
+      description: Ingredient identity
+      type: string
+      format: uuid
+      example: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
     Recipes:
       description: A collection of recipes, containing recipes detail for each recipe
       type: object
@@ -521,7 +574,7 @@ components:
                   type: string
                   example: 'https://cena.adhuc.org/api/recipes/d71e2fc7-09e3-4241-97a5-dc3383d35e98'
             ingredients:
-              description: Link to this recipe\'s related ingredients collection
+              description: Link to this recipe's related ingredients collection
               type: object
               properties:
                 href:

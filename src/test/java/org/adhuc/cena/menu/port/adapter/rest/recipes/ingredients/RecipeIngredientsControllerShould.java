@@ -18,8 +18,10 @@ package org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
+import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.junit.jupiter.api.DisplayName;
@@ -106,6 +108,34 @@ class RecipeIngredientsControllerShould {
     void haveEmptyDataOnEmptyList() throws Exception {
         mvc.perform(get(RECIPE_INGREDIENTS_API_URL, RecipeMother.ID))
                 .andExpect(jsonPath("$._embedded").doesNotExist());
+    }
+
+    @Test
+    @DisplayName("respond Created when creating recipe ingredient with JSON content")
+    void respond201OnCreationJson() throws Exception {
+        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, RecipeMother.ID)
+                .contentType(APPLICATION_JSON)
+                .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\"}")
+        ).andExpect(status().isCreated());
+    }
+
+    @Test
+    @DisplayName("respond Created when creating recipe ingredient with HAL content")
+    void respond201OnCreationHal() throws Exception {
+        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, RecipeMother.ID)
+                .contentType(HAL_JSON)
+                .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\"}")
+        ).andExpect(status().isCreated());
+    }
+
+    @Test
+    @DisplayName("respond with a Location header when creating recipe ingredient successfully")
+    void respondWithLocationAfterCreationSuccess() throws Exception {
+        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, RecipeMother.ID)
+                .contentType(HAL_JSON)
+                .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\"}")
+        ).andExpect(header().exists(LOCATION))
+                .andExpect(header().string(LOCATION, endsWith("3fa85f64-5717-4562-b3fc-2c963f66afa6")));
     }
 
 }

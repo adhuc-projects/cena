@@ -15,7 +15,10 @@
  */
 package org.adhuc.cena.menu.steps.serenity.recipes.ingredients;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
+
+import static org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientValue.COMPARATOR;
 
 import java.util.Optional;
 
@@ -49,11 +52,32 @@ public class RecipeIngredientListServiceClientSteps {
 
     @Step("Assume ingredient {0} is not in recipe {1} ingredients list")
     public void assumeIngredientNotRelatedToRecipe(IngredientValue ingredient, RecipeValue recipe) {
-        var response = rest().get(recipe.getIngredients()).then();
-        var recipeIngredient = Optional.ofNullable(statusAssertionDelegate.assertOk(response)
-                .extract().jsonPath().param("id", ingredient.id())
-                .getObject("_embedded.data.find { ingredient->ingredient.id == id }", RecipeIngredientValue.class));
+        var recipeIngredient = getFromRecipeIngredientsList(ingredient, recipe);
         assumeThat(recipeIngredient).isEmpty();
     }
+
+    @Step("Assert ingredient {0} is in recipe {1} ingredients list")
+    public void assertIngredientRelatedToRecipe(IngredientValue ingredient, RecipeValue recipe) {
+        assertThat(getFromRecipeIngredientsList(ingredient, recipe)).isPresent().get()
+                .usingComparator(COMPARATOR).isEqualTo(new RecipeIngredientValue(ingredient));
+    }
+
+    /**
+     * Gets the recipe ingredient corresponding to the specified one from the recipe's ingredients list if existing,
+     * based on its identity.
+     * The recipe's ingredients list is retrieved from the server. If recipe ingredient is retrieved from server, it
+     * should be populated with all attributes, especially its identity and links.
+     *
+     * @param recipe the recipe.
+     * @param ingredient the ingredient related to recipe.
+     * @return the recipe ingredient retrieved from list.
+     */
+    public Optional<RecipeIngredientValue> getFromRecipeIngredientsList(IngredientValue ingredient, RecipeValue recipe) {
+        var response = rest().get(recipe.getIngredients()).then();
+        return Optional.ofNullable(statusAssertionDelegate.assertOk(response)
+                .extract().jsonPath().param("id", ingredient.id())
+                .getObject("_embedded.data.find { ingredient->ingredient.id == id }", RecipeIngredientValue.class));
+    }
+
 
 }

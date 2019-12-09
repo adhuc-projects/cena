@@ -17,6 +17,8 @@ package org.adhuc.cena.menu.steps.serenity.recipes.ingredients;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
+import java.util.Comparator;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
@@ -41,10 +43,19 @@ import org.adhuc.cena.menu.steps.serenity.support.resource.HateoasClientResource
 @JsonInclude(NON_EMPTY)
 public class RecipeIngredientValue extends HateoasClientResourceSupport {
 
+    public static final Comparator<RecipeIngredientValue> COMPARATOR = new RecipeIngredientIdComparator();
+
     private final String id;
 
     public RecipeIngredientValue(IngredientValue ingredient) {
         this.id = ingredient.id();
+    }
+
+    static class RecipeIngredientIdComparator implements Comparator<RecipeIngredientValue> {
+        @Override
+        public int compare(RecipeIngredientValue ingredient1, RecipeIngredientValue ingredient2) {
+            return Comparator.comparing(RecipeIngredientValue::id, String::compareTo).compare(ingredient1, ingredient2);
+        }
     }
 
 }

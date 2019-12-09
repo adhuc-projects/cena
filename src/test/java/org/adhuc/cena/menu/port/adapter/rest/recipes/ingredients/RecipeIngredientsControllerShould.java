@@ -15,8 +15,9 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients;
 
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.equalTo;
+import static java.lang.String.format;
+
+import static org.hamcrest.Matchers.*;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -24,13 +25,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import static org.adhuc.cena.menu.ingredients.IngredientMother.CUCUMBER_ID;
+import static org.adhuc.cena.menu.ingredients.IngredientMother.TOMATO_ID;
+import static org.adhuc.cena.menu.recipes.RecipeIngredientMother.RECIPE_ID;
+import static org.adhuc.cena.menu.recipes.RecipeIngredientMother.recipeIngredient;
+
+import java.util.List;
+
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
 import org.adhuc.cena.menu.port.adapter.rest.ingredients.IngredientModelAssembler;
@@ -39,7 +46,7 @@ import org.adhuc.cena.menu.port.adapter.rest.recipes.RecipeModelAssembler;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.RecipesController;
 import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
-import org.adhuc.cena.menu.recipes.RecipeMother;
+import org.adhuc.cena.menu.recipes.RecipeIngredient;
 
 /**
  * The {@link RecipeIngredientsController} test class.
@@ -60,60 +67,103 @@ class RecipeIngredientsControllerShould {
 
     @Autowired
     private MockMvc mvc;
+    @Autowired
+    private RecipeIngredientsController controller;
     @MockBean
     private RecipeAppService recipeAppServiceMock;
     @MockBean
     private IngredientAppService ingredientAppServiceMock;
 
-    @Test
-    @DisplayName("respond OK when retrieving recipe ingredients")
-    void respond200OnList() throws Exception {
-        mvc.perform(get(RECIPE_INGREDIENTS_API_URL, RecipeMother.ID))
-                .andExpect(status().isOk());
+    @Nested
+    @DisplayName("with 2 ingredients")
+    class with2Ingredients {
+
+        private List<RecipeIngredient> ingredients;
+
+        @BeforeEach
+        void setUp() throws Exception {
+            controller.clearRecipeIngredients();
+            ingredients = List.of(recipeIngredient(TOMATO_ID), recipeIngredient(CUCUMBER_ID));
+            mvc.perform(post(RECIPE_INGREDIENTS_API_URL, RECIPE_ID)
+                    .contentType(HAL_JSON)
+                    .content(format("{\"id\":\"%s\"}", TOMATO_ID))
+            ).andExpect(status().isCreated());
+            mvc.perform(post(RECIPE_INGREDIENTS_API_URL, RECIPE_ID)
+                    .contentType(HAL_JSON)
+                    .content(format("{\"id\":\"%s\"}", CUCUMBER_ID))
+            ).andExpect(status().isCreated());
+        }
+
+        @Test
+        @DisplayName("respond OK when retrieving recipe ingredients")
+        void respond200OnList() throws Exception {
+            mvc.perform(get(RECIPE_INGREDIENTS_API_URL, RECIPE_ID))
+                    .andExpect(status().isOk());
+        }
+
+        @Test
+        @DisplayName("respond with HAL content when retrieving recipe ingredients with no specific requested content")
+        void respondHalOnList() throws Exception {
+            mvc.perform(get(RECIPE_INGREDIENTS_API_URL, RECIPE_ID))
+                    .andExpect(content().contentTypeCompatibleWith(HAL_JSON));
+        }
+
+        @Test
+        @DisplayName("respond with JSON content when requested while retrieving recipe ingredients")
+        void respondJSONOnList() throws Exception {
+            mvc.perform(get(RECIPE_INGREDIENTS_API_URL, RECIPE_ID)
+                    .accept(APPLICATION_JSON)
+            ).andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON));
+        }
+
+        @Test
+        @DisplayName("have self link with correct value when retrieving recipe ingredients")
+        void haveSelfOnList() throws Exception {
+            var result = mvc.perform(get(RECIPE_INGREDIENTS_API_URL, RECIPE_ID));
+            result.andExpect(jsonPath("$._links.self.href",
+                    equalTo(result.andReturn().getRequest().getRequestURL().toString())));
+        }
+
+        @Test
+        @DisplayName("have recipe link with correct value when retrieving recipe ingredients")
+        void haveRecipeLinkOnList() throws Exception {
+            var result = mvc.perform(get(RECIPE_INGREDIENTS_API_URL, RECIPE_ID));
+            result.andExpect(jsonPath("$._links.recipe.href",
+                    endsWith(format("/api/recipes/%s", RECIPE_ID))));
+        }
+
+        @Test
+        @DisplayName("have embedded data with 2 recipe ingredients when retrieving recipe ingredients")
+        void haveDataWith2RecipeIngredients() throws Exception {
+            var result = mvc.perform(get(RECIPE_INGREDIENTS_API_URL, RECIPE_ID))
+                    .andExpect(jsonPath("$._embedded.data").isArray())
+                    .andExpect(jsonPath("$._embedded.data").isNotEmpty())
+                    .andExpect(jsonPath("$._embedded.data", hasSize(2)));
+            assertJsonContainsRecipeIngredient(result, "$._embedded.data[0]", ingredients.get(0));
+            assertJsonContainsRecipeIngredient(result, "$._embedded.data[1]", ingredients.get(1));
+        }
     }
 
-    @Test
-    @DisplayName("respond with HAL content when retrieving recipe ingredients with no specific requested content")
-    void respondHalOnList() throws Exception {
-        mvc.perform(get(RECIPE_INGREDIENTS_API_URL, RecipeMother.ID))
-                .andExpect(content().contentTypeCompatibleWith(HAL_JSON));
-    }
+    @Nested
+    @DisplayName("with empty list")
+    class WithEmptyList {
+        @BeforeEach
+        void setUp() {
+            controller.clearRecipeIngredients();
+        }
 
-    @Test
-    @DisplayName("respond with JSON content when requested while retrieving recipe ingredients")
-    void respondJSONOnList() throws Exception {
-        mvc.perform(get(RECIPE_INGREDIENTS_API_URL, RecipeMother.ID)
-                .accept(APPLICATION_JSON)
-        ).andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON));
-    }
-
-    @Test
-    @DisplayName("have self link with correct value when retrieving recipe ingredients")
-    void haveSelfOnList() throws Exception {
-        var result = mvc.perform(get(RECIPE_INGREDIENTS_API_URL, RecipeMother.ID));
-        result.andExpect(jsonPath("$._links.self.href",
-                equalTo(result.andReturn().getRequest().getRequestURL().toString())));
-    }
-
-    @Test
-    @DisplayName("have recipe link with correct value when retrieving recipe ingredients")
-    void haveRecipeLinkOnList() throws Exception {
-        var result = mvc.perform(get(RECIPE_INGREDIENTS_API_URL, RecipeMother.ID));
-        result.andExpect(jsonPath("$._links.recipe.href",
-                endsWith(String.format("/api/recipes/%s", RecipeMother.ID))));
-    }
-
-    @Test
-    @DisplayName("have empty embedded data when retrieving recipe ingredients")
-    void haveEmptyDataOnEmptyList() throws Exception {
-        mvc.perform(get(RECIPE_INGREDIENTS_API_URL, RecipeMother.ID))
-                .andExpect(jsonPath("$._embedded").doesNotExist());
+        @Test
+        @DisplayName("have empty embedded data when retrieving recipe ingredients")
+        void haveEmptyDataOnEmptyList() throws Exception {
+            mvc.perform(get(RECIPE_INGREDIENTS_API_URL, RECIPE_ID))
+                    .andExpect(jsonPath("$._embedded").doesNotExist());
+        }
     }
 
     @Test
     @DisplayName("respond Created when creating recipe ingredient with JSON content")
     void respond201OnCreationJson() throws Exception {
-        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, RecipeMother.ID)
+        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, RECIPE_ID)
                 .contentType(APPLICATION_JSON)
                 .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\"}")
         ).andExpect(status().isCreated());
@@ -122,7 +172,7 @@ class RecipeIngredientsControllerShould {
     @Test
     @DisplayName("respond Created when creating recipe ingredient with HAL content")
     void respond201OnCreationHal() throws Exception {
-        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, RecipeMother.ID)
+        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, RECIPE_ID)
                 .contentType(HAL_JSON)
                 .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\"}")
         ).andExpect(status().isCreated());
@@ -131,11 +181,17 @@ class RecipeIngredientsControllerShould {
     @Test
     @DisplayName("respond with a Location header when creating recipe ingredient successfully")
     void respondWithLocationAfterCreationSuccess() throws Exception {
-        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, RecipeMother.ID)
+        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, RECIPE_ID)
                 .contentType(HAL_JSON)
                 .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\"}")
         ).andExpect(header().exists(LOCATION))
                 .andExpect(header().string(LOCATION, endsWith("3fa85f64-5717-4562-b3fc-2c963f66afa6")));
+    }
+
+    void assertJsonContainsRecipeIngredient(ResultActions resultActions, String jsonPath,
+                                  RecipeIngredient recipeIngredient) throws Exception {
+        resultActions.andExpect(jsonPath(jsonPath + ".id").exists())
+                .andExpect(jsonPath(jsonPath + ".id", equalTo(recipeIngredient.ingredientId().toString())));
     }
 
 }

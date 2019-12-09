@@ -16,6 +16,7 @@
 package org.adhuc.cena.menu.steps.recipes.ingredients;
 
 import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
 import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
@@ -37,6 +38,13 @@ public class RecipeIngredientListStepDefinitions {
     @Given("^no relation between ingredient and recipe$")
     public void noRelationToIngredient() {
         recipeIngredientListServiceClient.assumeIngredientNotRelatedToRecipe(
+                recipeIngredientListServiceClient.storedIngredient(),
+                recipeIngredientListServiceClient.storedRecipe());
+    }
+
+    @Then("^the ingredient can be found in the recipe's ingredients list$")
+    public void ingredientInRecipeIngredientsList() {
+        recipeIngredientListServiceClient.assertIngredientRelatedToRecipe(
                 recipeIngredientListServiceClient.storedIngredient(),
                 recipeIngredientListServiceClient.storedRecipe());
     }

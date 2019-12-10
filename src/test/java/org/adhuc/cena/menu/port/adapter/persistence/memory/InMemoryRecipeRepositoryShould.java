@@ -18,6 +18,8 @@ package org.adhuc.cena.menu.port.adapter.persistence.memory;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import static org.adhuc.cena.menu.ingredients.IngredientMother.CUCUMBER_ID;
+import static org.adhuc.cena.menu.ingredients.IngredientMother.TOMATO_ID;
 import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
 import org.junit.jupiter.api.*;
@@ -134,7 +136,7 @@ class InMemoryRecipeRepositoryShould {
         @DisplayName("delete recipe with tomato, cucumber and mozzarella salad identity and other name and content")
         void deleteWithIdAndDifferentNameAndContent() {
             repository.delete(recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME,
-                    TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT));
+                    TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT, TOMATO_ID, CUCUMBER_ID));
             assertThat(repository.findAll()).doesNotContain(tomatoCucumberAndMozzaSalad);
         }
 

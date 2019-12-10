@@ -17,6 +17,10 @@ package org.adhuc.cena.menu.recipes;
 
 import static org.adhuc.cena.menu.util.Assert.hasText;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
@@ -43,6 +47,7 @@ public class Recipe extends BasicEntity<RecipeId> {
     @Getter
     @NonNull
     private String content;
+    private Set<RecipeIngredient> ingredients = new HashSet<RecipeIngredient>();
 
     /**
      * Creates a recipe.
@@ -57,6 +62,19 @@ public class Recipe extends BasicEntity<RecipeId> {
         hasText(content, "Cannot set recipe content with invalid value");
         this.name = name;
         this.content = content;
+    }
+
+    /**
+     * Adds an ingredient to the recipe.
+     *
+     * @param addIngredientCommand the command.
+     */
+    public void addIngredient(@NonNull AddIngredientToRecipe addIngredientCommand) {
+        ingredients.add(new RecipeIngredient(id(), addIngredientCommand.ingredientId()));
+    }
+
+    public Set<RecipeIngredient> ingredients() {
+        return Collections.unmodifiableSet(ingredients);
     }
 
 }

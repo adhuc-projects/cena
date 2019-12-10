@@ -16,9 +16,12 @@
 package org.adhuc.cena.menu.recipes;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import static org.adhuc.cena.menu.ingredients.IngredientMother.CUCUMBER_ID;
+import static org.adhuc.cena.menu.ingredients.IngredientMother.TOMATO_ID;
 import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
 import java.util.stream.Stream;
@@ -29,6 +32,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import org.adhuc.cena.menu.ingredients.IngredientId;
 
 /**
  * The {@link Recipe} test class.
@@ -62,12 +67,60 @@ class RecipeShould {
     @Test
     @DisplayName("contain id, name and content used during creation")
     void containCreationValues() {
-        var recipe = recipe();
+        var recipe = fromDefault().build();
         assertSoftly(softly -> {
             softly.assertThat(recipe.id()).isEqualTo(ID);
             softly.assertThat(recipe.name()).isEqualTo(NAME);
             softly.assertThat(recipe.content()).isEqualTo(CONTENT);
+            softly.assertThat(recipe.ingredients()).isEmpty();
         });
+    }
+
+    @Test
+    @DisplayName("throw IllegalArgumentException when adding ingredient from null command")
+    void addIngredientNullCommand() {
+        assertThrows(IllegalArgumentException.class, () -> recipe().addIngredient(null));
+    }
+
+    @Test
+    @DisplayName("return non modifiable ingredients set")
+    void ingredientsNotModifiable() {
+        var recipe = fromDefault().withIngredients(CUCUMBER_ID).build();
+        assertThrows(UnsupportedOperationException.class, () -> recipe.ingredients().add(recipeIngredient()));
+    }
+
+    @Test
+    @DisplayName("be related to ingredient after adding ingredient to recipe")
+    void addIngredientToRecipe() {
+        var recipeIngredient = recipeIngredient(TOMATO_ID);
+        var recipe = fromDefault().build();
+        assumeThat(recipe.ingredients()).isEmpty();
+
+        recipe.addIngredient(addIngredientCommand(recipeIngredient));
+        assertThat(recipe.ingredients()).isNotEmpty().containsExactly(recipeIngredient);
+    }
+
+    @Test
+    @DisplayName("be related to ingredient after adding ingredient to recipe twice")
+    void addIngredientToRecipeTwice() {
+        var recipeIngredient = recipeIngredient(TOMATO_ID);
+        var recipe = fromDefault().withIngredients(TOMATO_ID).build();
+        assumeThat(recipe.ingredients()).contains(recipeIngredient);
+
+        recipe.addIngredient(addIngredientCommand(recipeIngredient));
+        assertThat(recipe.ingredients()).isNotEmpty().containsExactly(recipeIngredient);
+    }
+
+    @Test
+    @DisplayName("be related to multiple ingredients after adding ingredient to recipe already related to ingredients")
+    void addIngredientToRecipeMultiple() {
+        var recipeIngredient = recipeIngredient(IngredientId.generate());
+        var recipe = fromDefault().withIngredients(TOMATO_ID, CUCUMBER_ID).build();
+        assumeThat(recipe.ingredients()).isNotEmpty().doesNotContain(recipeIngredient);
+        var existingIngredients = recipe.ingredients();
+
+        recipe.addIngredient(addIngredientCommand(recipeIngredient));
+        assertThat(recipe.ingredients()).isNotEmpty().containsAll(existingIngredients).contains(recipeIngredient);
     }
 
     @ParameterizedTest
@@ -86,13 +139,17 @@ class RecipeShould {
 
     private static Stream<Arguments> equalitySource() {
         var tomatoCucumberMozzaSalad = recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID, TOMATO_CUCUMBER_MOZZA_SALAD_NAME,
-                TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT);
+                TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT, TOMATO_ID, CUCUMBER_ID);
         return Stream.of(
                 Arguments.of(tomatoCucumberMozzaSalad, tomatoCucumberMozzaSalad, true),
                 Arguments.of(tomatoCucumberMozzaSalad, recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID,
-                        TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT), true),
+                        TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT, TOMATO_ID, CUCUMBER_ID), true),
                 Arguments.of(tomatoCucumberMozzaSalad, recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID,
                         TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT), true),
+                Arguments.of(tomatoCucumberMozzaSalad, recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID,
+                        TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT), true),
+                Arguments.of(tomatoCucumberMozzaSalad, recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID,
+                        TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT, TOMATO_ID), true),
                 Arguments.of(tomatoCucumberMozzaSalad, recipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID,
                         TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT), false)
         );

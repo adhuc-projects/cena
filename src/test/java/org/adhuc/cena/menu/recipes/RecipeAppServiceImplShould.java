@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import static org.adhuc.cena.menu.ingredients.IngredientMother.TOMATO_ID;
 import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 import static org.adhuc.cena.menu.recipes.RecipeMother.ID;
 
@@ -75,7 +76,7 @@ class RecipeAppServiceImplShould {
     @Test
     @DisplayName("create recipe successfully")
     void createRecipe() {
-        var recipe = recipe();
+        var recipe = fromDefault().build();
         var created = service.createRecipe(createCommand(recipe));
         assertThat(created).isNotNull().isEqualToComparingFieldByField(recipe);
     }
@@ -83,7 +84,7 @@ class RecipeAppServiceImplShould {
     @Test
     @DisplayName("retrieve recipe with identity after creation")
     void retrieveIngredientWithIdAfterCreation() {
-        var recipe = recipe();
+        var recipe = fromDefault().build();
         service.createRecipe(createCommand(recipe));
         assertThat(service.getRecipe(recipe.id())).isNotNull().isEqualToComparingFieldByField(recipe);
     }
@@ -157,7 +158,7 @@ class RecipeAppServiceImplShould {
             @BeforeEach
             void setUp() {
                 tomatoCucumberOliveAndFetaSalad = recipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID,
-                        TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT);
+                        TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT, TOMATO_ID);
                 recipeRepository.save(tomatoCucumberOliveAndFetaSalad);
             }
 

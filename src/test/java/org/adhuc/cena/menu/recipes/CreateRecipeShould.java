@@ -79,7 +79,7 @@ class CreateRecipeShould {
 
     @ParameterizedTest
     @MethodSource("equalitySource")
-    @DisplayName("have same hash code when ingredient id and name are equal")
+    @DisplayName("have same hash code when recipe id, name and content are equal")
     void sameHashCode(CreateRecipe c1, CreateRecipe c2, boolean expected) {
         assertThat(c1.hashCode() == c2.hashCode()).isEqualTo(expected);
     }

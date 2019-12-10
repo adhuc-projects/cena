@@ -26,7 +26,7 @@ import com.tngtech.archunit.lang.ArchRule;
  * The menu generation architecture tests.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @AnalyzeClasses(packages = "org.adhuc.cena.menu", importOptions = ImportOption.DoNotIncludeTests.class)
@@ -35,6 +35,7 @@ class MenuGenerationArchitectureTests {
     // Menu generation packages
     private static final String COMMON_DOMAIN_PACKAGE = "org.adhuc.cena.menu.common..";
     private static final String INGREDIENT_DOMAIN_PACKAGES = "org.adhuc.cena.menu.ingredients..";
+    private static final String RECIPE_DOMAIN_PACKAGES = "org.adhuc.cena.menu.recipes..";
 
     private static final String UTIL_PACKAGES = "org.adhuc.cena.menu.util..";
     private static final String CONFIGURATION_PACKAGES = "org.adhuc.cena.menu.configuration..";
@@ -54,7 +55,8 @@ class MenuGenerationArchitectureTests {
             noClasses().that()
                     .resideInAnyPackage(
                             COMMON_DOMAIN_PACKAGE,
-                            INGREDIENT_DOMAIN_PACKAGES)
+                            INGREDIENT_DOMAIN_PACKAGES,
+                            RECIPE_DOMAIN_PACKAGES)
                     .should()
                     .accessClassesThat()
                     .resideInAnyPackage(
@@ -90,12 +92,14 @@ class MenuGenerationArchitectureTests {
             noClasses().that()
                     .resideInAnyPackage(
                             COMMON_DOMAIN_PACKAGE,
-                            INGREDIENT_DOMAIN_PACKAGES)
+                            INGREDIENT_DOMAIN_PACKAGES,
+                            RECIPE_DOMAIN_PACKAGES)
                     .should()
                     .accessClassesThat()
                     .resideOutsideOfPackages(
                             COMMON_DOMAIN_PACKAGE,
                             INGREDIENT_DOMAIN_PACKAGES,
+                            RECIPE_DOMAIN_PACKAGES,
                             UTIL_PACKAGES,
                             JAVA_PACKAGES,
                             LOGGING_PACKAGES);

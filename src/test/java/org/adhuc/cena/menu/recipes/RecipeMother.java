@@ -15,6 +15,16 @@
  */
 package org.adhuc.cena.menu.recipes;
 
+import static org.adhuc.cena.menu.ingredients.IngredientMother.CUCUMBER_ID;
+import static org.adhuc.cena.menu.ingredients.IngredientMother.TOMATO_ID;
+
+import java.util.Arrays;
+
+import lombok.NonNull;
+
+import org.adhuc.cena.menu.ingredients.IngredientId;
+import org.adhuc.cena.menu.ingredients.IngredientMother;
+
 /**
  * An object mother to create testing domain elements related to {@link Recipe}s.
  *
@@ -41,7 +51,7 @@ public class RecipeMother {
         return createCommand(recipe());
     }
 
-    public static CreateRecipe createCommand(Recipe recipe) {
+    public static CreateRecipe createCommand(@NonNull Recipe recipe) {
         return new CreateRecipe(recipe.id(), recipe.name(), recipe.content());
     }
 
@@ -49,16 +59,65 @@ public class RecipeMother {
         return deleteCommand(TOMATO_CUCUMBER_MOZZA_SALAD_ID);
     }
 
-    public static DeleteRecipe deleteCommand(RecipeId recipeId) {
+    public static DeleteRecipe deleteCommand(@NonNull RecipeId recipeId) {
         return new DeleteRecipe(recipeId);
     }
 
-    public static Recipe recipe() {
-        return recipe(ID, NAME, CONTENT);
+    public static AddIngredientToRecipe addIngredientCommand() {
+        return addIngredientCommand(recipeIngredient());
     }
 
-    public static Recipe recipe(RecipeId id, String name, String content) {
-        return new Recipe(id, name, content);
+    public static AddIngredientToRecipe addIngredientCommand(@NonNull RecipeIngredient recipeIngredient) {
+        return addIngredientCommand(recipeIngredient.ingredientId());
+    }
+
+    public static AddIngredientToRecipe addIngredientCommand(@NonNull IngredientId ingredientId) {
+        return new AddIngredientToRecipe(ingredientId);
+    }
+
+    public static Recipe recipe() {
+        return fromDefault().withIngredients(TOMATO_ID, CUCUMBER_ID).build();
+    }
+
+    public static Recipe recipe(@NonNull RecipeId id, @NonNull String name, @NonNull String content, IngredientId... ingredientIds) {
+        var builder = from(id, name, content);
+        if (ingredientIds != null) {
+            builder.withIngredients(ingredientIds);
+        }
+        return builder.build();
+    }
+
+    public static RecipeIngredient recipeIngredient() {
+        return recipeIngredient(IngredientMother.ID);
+    }
+
+    public static RecipeIngredient recipeIngredient(@NonNull IngredientId ingredientId) {
+        return new RecipeIngredient(ID, ingredientId);
+    }
+
+    public static Builder fromDefault() {
+        return new Builder(ID, NAME, CONTENT);
+    }
+
+    public static Builder from(@NonNull RecipeId id, @NonNull String name, @NonNull String content) {
+        return new Builder(id, name, content);
+    }
+
+    public static class Builder {
+        private Recipe recipe;
+
+        private Builder(RecipeId id, String name, String content) {
+            recipe = new Recipe(id, name, content);
+        }
+
+        public Builder withIngredients(@NonNull IngredientId... ids) {
+            Arrays.stream(ids).forEach(id -> recipe.addIngredient(new AddIngredientToRecipe(id)));
+            return this;
+        }
+
+        public Recipe build() {
+            return recipe;
+        }
     }
 
 }

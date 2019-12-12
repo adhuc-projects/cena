@@ -255,6 +255,7 @@ components:
             properties:
               id:
                 $ref: '#/components/schemas/IngredientId'
+            additionalProperties: true
         application/json:
           schema:
             type: object
@@ -263,6 +264,7 @@ components:
             properties:
               id:
                 $ref: '#/components/schemas/IngredientId'
+            additionalProperties: true
   responses:
     Index:
       description: Retrieve links to main API resources

@@ -323,3 +323,50 @@ include::{snippets}/recipe-delete-example/curl-request.adoc[]
 ==== Example response
 
 include::{snippets}/recipe-delete-example/http-response.adoc[]
+
+[[resources-recipe-ingredients]]
+== Recipe ingredients
+
+The Recipe Ingredients resource is used to create and list recipe ingredients. Recipe ingredients allow to link a recipe
+to the ingredients that compose it.
+
+[[resources-recipe-ingredients-list]]
+=== Listing recipe ingredients
+
+A `GET` request will list the recipe's related ingredients. Recipe's ingredients collection is accessible for every
+user, either authenticated or not.
+
+==== Response structure
+
+include::{snippets}/recipe-ingredients-list-example/response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/recipe-ingredients-list-example/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/recipe-ingredients-list-example/http-response.adoc[]
+
+[[resources-recipe-ingredients-links]]
+==== Links
+
+include::{snippets}/recipe-ingredients-list-example/links.adoc[]
+
+[[resources-recipe-ingredients-create]]
+=== Creating a recipe ingredient
+
+A `POST` request will add an ingredient to a recipe's related ingredients collection. Only an authenticated user can add
+ingredients to recipes.
+
+==== Request structure
+
+include::{snippets}/recipe-ingredients-create-example/request-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/recipe-ingredients-create-example/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/recipe-ingredients-create-example/http-response.adoc[]

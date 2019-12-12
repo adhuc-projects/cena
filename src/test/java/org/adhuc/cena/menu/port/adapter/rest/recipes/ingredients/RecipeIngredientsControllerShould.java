@@ -26,9 +26,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
+import static org.adhuc.cena.menu.ingredients.IngredientMother.CUCUMBER_ID;
+import static org.adhuc.cena.menu.ingredients.IngredientMother.TOMATO_ID;
 import static org.adhuc.cena.menu.recipes.RecipeMother.*;
-import static org.adhuc.cena.menu.recipes.RecipeMother.recipe;
 
 import java.util.List;
 
@@ -152,6 +152,15 @@ class RecipeIngredientsControllerShould {
             mvc.perform(get(RECIPE_INGREDIENTS_API_URL, RECIPE_ID))
                     .andExpect(jsonPath("$._embedded").doesNotExist());
         }
+    }
+
+    @Test
+    @DisplayName("respond Bad Request when creating recipe ingredient without id")
+    void respond400OnCreationWithoutId() throws Exception {
+        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, RECIPE_ID)
+                .contentType(APPLICATION_JSON)
+                .content("{}")
+        ).andExpect(status().isBadRequest());
     }
 
     @Test

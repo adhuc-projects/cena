@@ -22,13 +22,18 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import javax.validation.Valid;
+
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.Delegate;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
 import org.adhuc.cena.menu.recipes.RecipeId;
 import org.adhuc.cena.menu.recipes.RecipeIngredientAppService;
@@ -50,6 +55,8 @@ public class RecipeIngredientsController {
     private final RecipeIngredientModelAssembler modelAssembler;
     private final RecipeAppService recipeAppService;
     private final RecipeIngredientAppService recipeIngredientAppService;
+    @Delegate
+    private final RequestValidatorDelegate requestValidatorDelegate;
 
     /**
      * Gets the recipe ingredient information for all ingredients linked to the recipe.
@@ -65,7 +72,9 @@ public class RecipeIngredientsController {
      */
     @PostMapping
     ResponseEntity<Void> createRecipeIngredient(@PathVariable String recipeId,
-                                                @RequestBody CreateRecipeIngredientRequest request) throws URISyntaxException {
+                                                @RequestBody @Valid CreateRecipeIngredientRequest request,
+                                                Errors errors) throws URISyntaxException {
+        validateRequest(errors);
         recipeIngredientAppService.addIngredientToRecipe(request.toCommand(new RecipeId(recipeId)));
         return ResponseEntity.created(new URI(links.linkFor(RecipeIngredientModel.class, recipeId)
                 .slash(request.getIngredientId()).withSelfRel().getHref())).build();

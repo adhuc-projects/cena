@@ -15,6 +15,8 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients;
 
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NonNull;
@@ -35,6 +37,7 @@ import org.adhuc.cena.menu.recipes.RecipeId;
 @ToString
 class CreateRecipeIngredientRequest {
 
+    @NotNull
     @JsonProperty("id")
     private String ingredientId;
 

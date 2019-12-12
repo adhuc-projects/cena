@@ -17,8 +17,18 @@ package org.adhuc.cena.menu.util;
 
 import static lombok.AccessLevel.PRIVATE;
 
+import java.util.function.Supplier;
+
 import lombok.NoArgsConstructor;
 
+/**
+ * An assertion utility class, used to avoid direct dependency between domain classes and the Spring
+ * {@link org.springframework.util.Assert} utility class.
+ *
+ * @author Alexandre Carbenay
+ * @version 0.2.0
+ * @since 0.1.0
+ */
 @NoArgsConstructor(access = PRIVATE)
 public final class Assert {
 
@@ -45,6 +55,22 @@ public final class Assert {
      */
     public static void hasText(String text, String message) {
         org.springframework.util.Assert.hasText(text, message);
+    }
+
+    /**
+     * Assert a boolean expression, throwing an {@code IllegalArgumentException}
+     * if the expression evaluates to {@code false}.
+     * <pre class="code">
+     * Assert.isTrue(i &gt; 0, () -&gt; "The value '" + i + "' must be greater than zero");
+     * </pre>
+     * @param expression a boolean expression
+     * @param messageSupplier a supplier for the exception message to use if the
+     * assertion fails
+     * @throws IllegalArgumentException if {@code expression} is {@code false}
+     * @see org.springframework.util.Assert#isTrue(boolean, Supplier)
+     */
+    public static void isTrue(boolean expression, Supplier<String> messageSupplier) {
+        org.springframework.util.Assert.isTrue(expression, messageSupplier);
     }
 
 }

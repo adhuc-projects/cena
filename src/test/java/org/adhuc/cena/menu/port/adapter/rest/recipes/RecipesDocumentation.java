@@ -47,6 +47,7 @@ import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredien
 import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientsController;
 import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
+import org.adhuc.cena.menu.recipes.RecipeIngredientAppService;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 import org.adhuc.cena.menu.support.WithSuperAdministrator;
 
@@ -63,7 +64,7 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
         RequestValidatorDelegate.class, RecipeModelAssembler.class, RecipeIngredientModelAssembler.class})
 @ContextConfiguration(classes = ResultHandlerConfiguration.class)
 @AutoConfigureRestDocs("build/generated-snippets")
-@DisplayName("Ingredients resource documentation")
+@DisplayName("Recipes resource documentation")
 class RecipesDocumentation {
 
     private static final String RECIPES_API_URL = "/api/recipes";
@@ -75,6 +76,8 @@ class RecipesDocumentation {
 
     @MockBean
     private RecipeAppService recipeAppServiceMock;
+    @MockBean
+    private RecipeIngredientAppService recipeIngredientAppServiceMock;
 
     @Test
     @DisplayName("generates recipes list example")

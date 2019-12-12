@@ -45,6 +45,7 @@ import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredien
 import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientsController;
 import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
+import org.adhuc.cena.menu.recipes.RecipeIngredientAppService;
 import org.adhuc.cena.menu.support.WithSuperAdministrator;
 
 /**
@@ -72,6 +73,8 @@ class RecipeDocumentation {
 
     @MockBean
     private RecipeAppService recipeAppServiceMock;
+    @MockBean
+    private RecipeIngredientAppService recipeIngredientAppServiceMock;
 
     @Test
     @DisplayName("generates recipe detail example")

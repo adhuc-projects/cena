@@ -46,6 +46,7 @@ import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.recipes.CreateRecipe;
 import org.adhuc.cena.menu.recipes.Recipe;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
+import org.adhuc.cena.menu.recipes.RecipeIngredientAppService;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 import org.adhuc.cena.menu.support.WithCommunityUser;
 import org.adhuc.cena.menu.support.WithIngredientManager;
@@ -71,6 +72,8 @@ class RecipesControllerShould {
     private MockMvc mvc;
     @MockBean
     private RecipeAppService recipeAppServiceMock;
+    @MockBean
+    private RecipeIngredientAppService recipeIngredientAppService;
 
     @Nested
     @DisplayName("with 2 recipes")

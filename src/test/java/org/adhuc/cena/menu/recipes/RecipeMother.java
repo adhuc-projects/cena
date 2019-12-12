@@ -72,7 +72,11 @@ public class RecipeMother {
     }
 
     public static AddIngredientToRecipe addIngredientCommand(@NonNull IngredientId ingredientId) {
-        return new AddIngredientToRecipe(ingredientId);
+        return addIngredientCommand(ingredientId, ID);
+    }
+
+    public static AddIngredientToRecipe addIngredientCommand(@NonNull IngredientId ingredientId, @NonNull RecipeId recipeId) {
+        return new AddIngredientToRecipe(ingredientId, recipeId);
     }
 
     public static Recipe recipe() {
@@ -92,7 +96,11 @@ public class RecipeMother {
     }
 
     public static RecipeIngredient recipeIngredient(@NonNull IngredientId ingredientId) {
-        return new RecipeIngredient(ID, ingredientId);
+        return recipeIngredient(ID, ingredientId);
+    }
+
+    public static RecipeIngredient recipeIngredient(@NonNull RecipeId recipeId, @NonNull IngredientId ingredientId) {
+        return new RecipeIngredient(recipeId, ingredientId);
     }
 
     public static Builder fromDefault() {
@@ -111,7 +119,7 @@ public class RecipeMother {
         }
 
         public Builder withIngredients(@NonNull IngredientId... ids) {
-            Arrays.stream(ids).forEach(id -> recipe.addIngredient(new AddIngredientToRecipe(id)));
+            Arrays.stream(ids).forEach(id -> recipe.addIngredient(addIngredientCommand(id, recipe.id())));
             return this;
         }
 

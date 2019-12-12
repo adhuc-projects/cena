@@ -39,6 +39,14 @@ public interface RecipeRepository {
     Collection<Recipe> findAll();
 
     /**
+     * Indicates whether a recipe exists with the specified identity.
+     *
+     * @param recipeId the recipe identity.
+     * @return {@code true} if recipe exists with identity, {@code false} otherwise.
+     */
+    boolean exists(RecipeId recipeId);
+
+    /**
      * Finds the recipe corresponding to the specified identity.
      *
      * @param recipeId the recipe identity.

@@ -18,6 +18,7 @@ package org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients;
 import static java.lang.String.format;
 
 import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.when;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -25,10 +26,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import static org.adhuc.cena.menu.ingredients.IngredientMother.CUCUMBER_ID;
-import static org.adhuc.cena.menu.ingredients.IngredientMother.TOMATO_ID;
-import static org.adhuc.cena.menu.recipes.RecipeIngredientMother.RECIPE_ID;
-import static org.adhuc.cena.menu.recipes.RecipeIngredientMother.recipeIngredient;
+import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
+import static org.adhuc.cena.menu.recipes.RecipeMother.*;
+import static org.adhuc.cena.menu.recipes.RecipeMother.recipe;
 
 import java.util.List;
 
@@ -45,8 +45,7 @@ import org.adhuc.cena.menu.port.adapter.rest.ingredients.IngredientsController;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.RecipeModelAssembler;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.RecipesController;
 import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
-import org.adhuc.cena.menu.recipes.RecipeAppService;
-import org.adhuc.cena.menu.recipes.RecipeIngredient;
+import org.adhuc.cena.menu.recipes.*;
 
 /**
  * The {@link RecipeIngredientsController} test class.
@@ -64,11 +63,14 @@ import org.adhuc.cena.menu.recipes.RecipeIngredient;
 class RecipeIngredientsControllerShould {
 
     private static final String RECIPE_INGREDIENTS_API_URL = "/api/recipes/{recipeId}/ingredients";
+    private static final RecipeId RECIPE_ID = RecipeMother.ID;
 
     @Autowired
     private MockMvc mvc;
     @Autowired
     private RecipeIngredientsController controller;
+    @MockBean
+    private RecipeIngredientAppService recipeIngredientAppServiceMock;
     @MockBean
     private RecipeAppService recipeAppServiceMock;
     @MockBean
@@ -81,17 +83,9 @@ class RecipeIngredientsControllerShould {
         private List<RecipeIngredient> ingredients;
 
         @BeforeEach
-        void setUp() throws Exception {
-            controller.clearRecipeIngredients();
-            ingredients = List.of(recipeIngredient(TOMATO_ID), recipeIngredient(CUCUMBER_ID));
-            mvc.perform(post(RECIPE_INGREDIENTS_API_URL, RECIPE_ID)
-                    .contentType(HAL_JSON)
-                    .content(format("{\"id\":\"%s\"}", TOMATO_ID))
-            ).andExpect(status().isCreated());
-            mvc.perform(post(RECIPE_INGREDIENTS_API_URL, RECIPE_ID)
-                    .contentType(HAL_JSON)
-                    .content(format("{\"id\":\"%s\"}", CUCUMBER_ID))
-            ).andExpect(status().isCreated());
+        void setUp() {
+            when(recipeAppServiceMock.getRecipe(RECIPE_ID)).thenReturn(recipe());
+            ingredients = List.of(recipeIngredient(CUCUMBER_ID), recipeIngredient(TOMATO_ID));
         }
 
         @Test
@@ -148,8 +142,8 @@ class RecipeIngredientsControllerShould {
     @DisplayName("with empty list")
     class WithEmptyList {
         @BeforeEach
-        void setUp() {
-            controller.clearRecipeIngredients();
+        void setUp() throws Exception {
+            when(recipeAppServiceMock.getRecipe(RECIPE_ID)).thenReturn(fromDefault().build());
         }
 
         @Test

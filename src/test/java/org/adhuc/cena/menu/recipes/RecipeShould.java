@@ -34,6 +34,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import org.adhuc.cena.menu.ingredients.IngredientId;
+import org.adhuc.cena.menu.ingredients.IngredientMother;
 
 /**
  * The {@link Recipe} test class.
@@ -80,6 +81,13 @@ class RecipeShould {
     @DisplayName("throw IllegalArgumentException when adding ingredient from null command")
     void addIngredientNullCommand() {
         assertThrows(IllegalArgumentException.class, () -> recipe().addIngredient(null));
+    }
+
+    @Test
+    @DisplayName("throw IllegalArgumentException when adding ingredient to recipe with wrong id")
+    void addIngredientWrongRecipeId() {
+        assertThrows(IllegalArgumentException.class, () -> recipe().addIngredient(
+                addIngredientCommand(IngredientMother.ID, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)));
     }
 
     @Test

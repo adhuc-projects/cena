@@ -16,6 +16,7 @@
 package org.adhuc.cena.menu.recipes;
 
 import static org.adhuc.cena.menu.util.Assert.hasText;
+import static org.adhuc.cena.menu.util.Assert.isTrue;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -47,7 +48,7 @@ public class Recipe extends BasicEntity<RecipeId> {
     @Getter
     @NonNull
     private String content;
-    private Set<RecipeIngredient> ingredients = new HashSet<RecipeIngredient>();
+    private Set<RecipeIngredient> ingredients = new HashSet<>();
 
     /**
      * Creates a recipe.
@@ -67,10 +68,13 @@ public class Recipe extends BasicEntity<RecipeId> {
     /**
      * Adds an ingredient to the recipe.
      *
-     * @param addIngredientCommand the command.
+     * @param command the command.
      */
-    public void addIngredient(@NonNull AddIngredientToRecipe addIngredientCommand) {
-        ingredients.add(new RecipeIngredient(id(), addIngredientCommand.ingredientId()));
+    public void addIngredient(@NonNull AddIngredientToRecipe command) {
+        isTrue(id().equals(command.recipeId()),
+                () -> String.format("Wrong command recipe identity %s to add ingredient to recipe with identity %s",
+                        command.recipeId(), id()));
+        ingredients.add(new RecipeIngredient(id(), command.ingredientId()));
     }
 
     public Set<RecipeIngredient> ingredients() {

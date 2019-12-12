@@ -30,6 +30,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import org.adhuc.cena.menu.ingredients.IngredientId;
 import org.adhuc.cena.menu.ingredients.IngredientMother;
 
 /**
@@ -44,9 +45,18 @@ import org.adhuc.cena.menu.ingredients.IngredientMother;
 @DisplayName("Ingredient to recipe addition command should")
 class AddIngredientToRecipeShould {
 
+    @ParameterizedTest
+    @MethodSource("invalidCreationParameters")
     @DisplayName("not be creatable with invalid parameters")
-    void notBeCreatableWithInvalidParameters() {
-        assertThrows(IllegalArgumentException.class, () -> new AddIngredientToRecipe(null));
+    void notBeCreatableWithInvalidParameters(IngredientId ingredientId, RecipeId recipeId) {
+        assertThrows(IllegalArgumentException.class, () -> new AddIngredientToRecipe(ingredientId, recipeId));
+    }
+
+    private static Stream<Arguments> invalidCreationParameters() {
+        return Stream.of(
+                Arguments.of(null, ID),
+                Arguments.of(IngredientMother.ID, null)
+        );
     }
 
     @Test
@@ -55,6 +65,7 @@ class AddIngredientToRecipeShould {
         var command = addIngredientCommand();
         assertSoftly(softly -> {
             softly.assertThat(command.ingredientId()).isEqualTo(IngredientMother.ID);
+            softly.assertThat(command.recipeId()).isEqualTo(ID);
         });
     }
 

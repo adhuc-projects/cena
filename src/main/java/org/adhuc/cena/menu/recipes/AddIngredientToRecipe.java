@@ -34,5 +34,7 @@ public class AddIngredientToRecipe {
 
     @NonNull
     private final IngredientId ingredientId;
+    @NonNull
+    private final RecipeId recipeId;
 
 }

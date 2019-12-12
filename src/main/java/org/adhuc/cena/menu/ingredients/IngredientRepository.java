@@ -26,7 +26,7 @@ import org.adhuc.cena.menu.common.EntityNotFoundException;
  * An {@link Ingredient} repository.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 public interface IngredientRepository {
@@ -37,6 +37,14 @@ public interface IngredientRepository {
      * @return all the ingredients.
      */
     Collection<Ingredient> findAll();
+
+    /**
+     * Indicates whether an ingredient exists with the specified identity.
+     *
+     * @param ingredientId the ingredient identity.
+     * @return {@code true} if ingredient exists with identity, {@code false} otherwise.
+     */
+    boolean exists(IngredientId ingredientId);
 
     /**
      * Finds the ingredient corresponding to the specified identity.

@@ -44,6 +44,11 @@ public class InMemoryRecipeRepository implements RecipeRepository {
     }
 
     @Override
+    public boolean exists(RecipeId id) {
+        return recipes.containsKey(id);
+    }
+
+    @Override
     public Optional<Recipe> findById(@NonNull RecipeId recipeId) {
         return Optional.ofNullable(recipes.get(recipeId));
     }

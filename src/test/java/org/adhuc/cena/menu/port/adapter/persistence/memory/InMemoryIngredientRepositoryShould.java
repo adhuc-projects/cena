@@ -29,7 +29,7 @@ import org.adhuc.cena.menu.ingredients.Ingredient;
  * The {@link InMemoryIngredientRepository} test class.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @Tag("unit")
@@ -84,6 +84,18 @@ class InMemoryIngredientRepositoryShould {
         @DisplayName("return a collection containing tomato")
         void returnCollectionContainingIngredient() {
             assertThat(repository.findAll()).containsExactly(tomato);
+        }
+
+        @Test
+        @DisplayName("indicate that tomato exists")
+        void exists() {
+            assertThat(repository.exists(TOMATO_ID)).isTrue();
+        }
+
+        @Test
+        @DisplayName("indicate that cucumber does not exist")
+        void doesntExist() {
+            assertThat(repository.exists(CUCUMBER_ID)).isFalse();
         }
 
         @Test

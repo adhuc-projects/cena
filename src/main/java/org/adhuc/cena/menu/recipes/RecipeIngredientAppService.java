@@ -13,39 +13,22 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.ToString;
-
-import org.adhuc.cena.menu.ingredients.IngredientId;
-import org.adhuc.cena.menu.recipes.AddIngredientToRecipe;
-import org.adhuc.cena.menu.recipes.RecipeId;
+package org.adhuc.cena.menu.recipes;
 
 /**
- * A request to create a recipe ingredient.
+ * An application service for recipe ingredients.
  *
  * @author Alexandre Carbenay
  * @version 0.2.0
  * @since 0.2.0
  */
-@Getter
-@ToString
-class CreateRecipeIngredientRequest {
-
-    @JsonProperty("id")
-    private String ingredientId;
+public interface RecipeIngredientAppService {
 
     /**
-     * Converts this request to a {@code AddIngredientToRecipe} command.
+     * Adds an ingredient to a recipe.
      *
-     * @param id the recipe identity.
-     * @return the ingredient to recipe addition command..
+     * @param command the ingredient to recipe addition command.
      */
-    AddIngredientToRecipe toCommand(@NonNull RecipeId id) {
-        return new AddIngredientToRecipe(new IngredientId(ingredientId), id);
-    }
+    void addIngredientToRecipe(AddIngredientToRecipe command);
 
 }

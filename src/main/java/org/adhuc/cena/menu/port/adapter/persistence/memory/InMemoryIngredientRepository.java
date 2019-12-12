@@ -29,7 +29,7 @@ import org.adhuc.cena.menu.ingredients.IngredientRepository;
  * An in-memory {@link IngredientRepository} implementation.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @Repository
@@ -41,6 +41,11 @@ public class InMemoryIngredientRepository implements IngredientRepository {
     @Override
     public Collection<Ingredient> findAll() {
         return Collections.unmodifiableCollection(ingredients.values());
+    }
+
+    @Override
+    public boolean exists(IngredientId ingredientId) {
+        return ingredients.containsKey(ingredientId);
     }
 
     @Override

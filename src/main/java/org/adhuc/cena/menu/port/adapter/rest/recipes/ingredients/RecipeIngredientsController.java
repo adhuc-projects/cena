@@ -15,18 +15,12 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients;
 
-import static java.util.Optional.ofNullable;
-
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
@@ -35,9 +29,9 @@ import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import org.adhuc.cena.menu.ingredients.IngredientId;
+import org.adhuc.cena.menu.recipes.RecipeAppService;
 import org.adhuc.cena.menu.recipes.RecipeId;
-import org.adhuc.cena.menu.recipes.RecipeIngredient;
+import org.adhuc.cena.menu.recipes.RecipeIngredientAppService;
 
 /**
  * A REST controller exposing /api/recipes resource.
@@ -54,8 +48,8 @@ public class RecipeIngredientsController {
 
     private final EntityLinks links;
     private final RecipeIngredientModelAssembler modelAssembler;
-
-    private final Map<String, List<RecipeIngredient>> recipeIngredients = new HashMap<>();
+    private final RecipeAppService recipeAppService;
+    private final RecipeIngredientAppService recipeIngredientAppService;
 
     /**
      * Gets the recipe ingredient information for all ingredients linked to the recipe.
@@ -63,7 +57,7 @@ public class RecipeIngredientsController {
     @GetMapping
     @ResponseStatus(OK)
     CollectionModel<RecipeIngredientModel> getRecipeIngredients(@PathVariable String recipeId) {
-        return modelAssembler.toCollectionModel(recipeId, ofNullable(recipeIngredients.get(recipeId)).orElse(List.of()));
+        return modelAssembler.toCollectionModel(recipeId, recipeAppService.getRecipe(new RecipeId(recipeId)).ingredients());
     }
 
     /**
@@ -72,21 +66,9 @@ public class RecipeIngredientsController {
     @PostMapping
     ResponseEntity<Void> createRecipeIngredient(@PathVariable String recipeId,
                                                 @RequestBody CreateRecipeIngredientRequest request) throws URISyntaxException {
-        addIngredientToRecipeIngredient(recipeId, request.getIngredientId());
+        recipeIngredientAppService.addIngredientToRecipe(request.toCommand(new RecipeId(recipeId)));
         return ResponseEntity.created(new URI(links.linkFor(RecipeIngredientModel.class, recipeId)
                 .slash(request.getIngredientId()).withSelfRel().getHref())).build();
-    }
-
-    private void addIngredientToRecipeIngredient(String recipeId, String ingredientId) {
-        recipeIngredients.putIfAbsent(recipeId, new ArrayList<>());
-        recipeIngredients.get(recipeId).add(new RecipeIngredient(new RecipeId(recipeId), new IngredientId(ingredientId)));
-    }
-
-    /**
-     * For testing purposes only.
-     */
-    void clearRecipeIngredients() {
-        recipeIngredients.clear();
     }
 
 }

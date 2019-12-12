@@ -84,6 +84,18 @@ class InMemoryRecipeRepositoryShould {
         }
 
         @Test
+        @DisplayName("indicate that tomato, cucumber and mozzarella salad exists")
+        void exists() {
+            assertThat(repository.exists(TOMATO_CUCUMBER_MOZZA_SALAD_ID)).isTrue();
+        }
+
+        @Test
+        @DisplayName("indicate that tomato, cucumber, olives and feta salad does not exist")
+        void doesntExist() {
+            assertThat(repository.exists(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)).isFalse();
+        }
+
+        @Test
         @DisplayName("throw IllegalArgumentException when getting recipe from null identity")
         void throwIAEFindByIdNullId() {
             assertThrows(IllegalArgumentException.class, () -> repository.findById(null));

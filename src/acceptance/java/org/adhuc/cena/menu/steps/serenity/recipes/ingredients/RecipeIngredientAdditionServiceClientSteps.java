@@ -52,6 +52,11 @@ public class RecipeIngredientAdditionServiceClientSteps {
         rest().contentType(HAL_JSON_VALUE).body(new RecipeIngredientValue(ingredient)).post(recipe.getIngredients()).andReturn();
     }
 
+    @Step("Add ingredient without id to recipe {0}")
+    public void addIngredientWithoutIdToRecipe(RecipeValue recipe) {
+        rest().contentType(HAL_JSON_VALUE).body(new RecipeIngredientValue(null)).post(recipe.getIngredients());
+    }
+
     @Step("Assert ingredient {0} has been successfully added to recipe {1}")
     public void assertIngredientSuccessfullyAddedToRecipe(IngredientValue ingredient, RecipeValue recipe) {
         var recipeIngredientLocation = assertCreated().extract().header(LOCATION);

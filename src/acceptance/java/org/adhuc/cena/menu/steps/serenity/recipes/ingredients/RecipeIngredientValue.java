@@ -48,7 +48,7 @@ public class RecipeIngredientValue extends HateoasClientResourceSupport {
     private final String id;
 
     public RecipeIngredientValue(IngredientValue ingredient) {
-        this.id = ingredient.id();
+        this.id = ingredient != null ? ingredient.id() : null;
     }
 
     static class RecipeIngredientIdComparator implements Comparator<RecipeIngredientValue> {

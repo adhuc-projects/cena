@@ -42,11 +42,23 @@ public class RecipeIngredientAdditionStepDefinitions {
                 recipeIngredientAdditionServiceClient.storedRecipe());
     }
 
+    @When("^he add an ingredient without identity to the recipe$")
+    public void addIngredientWithoutIdToRecipe() {
+        recipeIngredientAdditionServiceClient.addIngredientWithoutIdToRecipe(
+                recipeIngredientAdditionServiceClient.storedRecipe());
+    }
+
     @Then("^the ingredient is added to the recipe$")
-    public void ingredientCreated() {
+    public void recipeIngredientCreated() {
         recipeIngredientAdditionServiceClient.assertIngredientSuccessfullyAddedToRecipe(
                 recipeIngredientAdditionServiceClient.storedIngredient(),
                 recipeIngredientAdditionServiceClient.storedRecipe());
+    }
+
+    @Then("^an error notifies that recipe ingredient must have an identity$")
+    public void errorOnRecipeIngredientCreationWithoutId() {
+        recipeIngredientAdditionServiceClient.assertInvalidRequest();
+        // TODO assert response indicates field in error
     }
 
 }

@@ -18,6 +18,7 @@ package org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients;
 import static java.lang.String.format;
 
 import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 import static org.springframework.http.HttpHeaders.LOCATION;
@@ -33,12 +34,14 @@ import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 import java.util.List;
 
 import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import org.adhuc.cena.menu.common.EntityNotFoundException;
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
 import org.adhuc.cena.menu.port.adapter.rest.ingredients.IngredientModelAssembler;
 import org.adhuc.cena.menu.port.adapter.rest.ingredients.IngredientsController;
@@ -63,7 +66,6 @@ import org.adhuc.cena.menu.recipes.*;
 class RecipeIngredientsControllerShould {
 
     private static final String RECIPE_INGREDIENTS_API_URL = "/api/recipes/{recipeId}/ingredients";
-    private static final RecipeId RECIPE_ID = RecipeMother.ID;
 
     @Autowired
     private MockMvc mvc;
@@ -76,6 +78,13 @@ class RecipeIngredientsControllerShould {
     @MockBean
     private IngredientAppService ingredientAppServiceMock;
 
+    @Test
+    @DisplayName("respond Not Found when retrieving unknown recipe ingredients")
+    void respond404GetUnknownRecipeIngredients() throws Exception {
+        when(recipeAppServiceMock.getRecipe(ID)).thenThrow(new EntityNotFoundException(Recipe.class, RecipeMother.ID));
+        mvc.perform(get(RECIPE_INGREDIENTS_API_URL, ID)).andExpect(status().isNotFound());
+    }
+
     @Nested
     @DisplayName("with 2 ingredients")
     class with2Ingredients {
@@ -84,28 +93,28 @@ class RecipeIngredientsControllerShould {
 
         @BeforeEach
         void setUp() {
-            when(recipeAppServiceMock.getRecipe(RECIPE_ID)).thenReturn(recipe());
+            when(recipeAppServiceMock.getRecipe(ID)).thenReturn(recipe());
             ingredients = List.of(recipeIngredient(CUCUMBER_ID), recipeIngredient(TOMATO_ID));
         }
 
         @Test
         @DisplayName("respond OK when retrieving recipe ingredients")
         void respond200OnList() throws Exception {
-            mvc.perform(get(RECIPE_INGREDIENTS_API_URL, RECIPE_ID))
+            mvc.perform(get(RECIPE_INGREDIENTS_API_URL, ID))
                     .andExpect(status().isOk());
         }
 
         @Test
         @DisplayName("respond with HAL content when retrieving recipe ingredients with no specific requested content")
         void respondHalOnList() throws Exception {
-            mvc.perform(get(RECIPE_INGREDIENTS_API_URL, RECIPE_ID))
+            mvc.perform(get(RECIPE_INGREDIENTS_API_URL, ID))
                     .andExpect(content().contentTypeCompatibleWith(HAL_JSON));
         }
 
         @Test
         @DisplayName("respond with JSON content when requested while retrieving recipe ingredients")
         void respondJSONOnList() throws Exception {
-            mvc.perform(get(RECIPE_INGREDIENTS_API_URL, RECIPE_ID)
+            mvc.perform(get(RECIPE_INGREDIENTS_API_URL, ID)
                     .accept(APPLICATION_JSON)
             ).andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON));
         }
@@ -113,7 +122,7 @@ class RecipeIngredientsControllerShould {
         @Test
         @DisplayName("have self link with correct value when retrieving recipe ingredients")
         void haveSelfOnList() throws Exception {
-            var result = mvc.perform(get(RECIPE_INGREDIENTS_API_URL, RECIPE_ID));
+            var result = mvc.perform(get(RECIPE_INGREDIENTS_API_URL, ID));
             result.andExpect(jsonPath("$._links.self.href",
                     equalTo(result.andReturn().getRequest().getRequestURL().toString())));
         }
@@ -121,15 +130,15 @@ class RecipeIngredientsControllerShould {
         @Test
         @DisplayName("have recipe link with correct value when retrieving recipe ingredients")
         void haveRecipeLinkOnList() throws Exception {
-            var result = mvc.perform(get(RECIPE_INGREDIENTS_API_URL, RECIPE_ID));
+            var result = mvc.perform(get(RECIPE_INGREDIENTS_API_URL, ID));
             result.andExpect(jsonPath("$._links.recipe.href",
-                    endsWith(format("/api/recipes/%s", RECIPE_ID))));
+                    endsWith(format("/api/recipes/%s", ID))));
         }
 
         @Test
         @DisplayName("have embedded data with 2 recipe ingredients when retrieving recipe ingredients")
         void haveDataWith2RecipeIngredients() throws Exception {
-            var result = mvc.perform(get(RECIPE_INGREDIENTS_API_URL, RECIPE_ID))
+            var result = mvc.perform(get(RECIPE_INGREDIENTS_API_URL, ID))
                     .andExpect(jsonPath("$._embedded.data").isArray())
                     .andExpect(jsonPath("$._embedded.data").isNotEmpty())
                     .andExpect(jsonPath("$._embedded.data", hasSize(2)));
@@ -143,21 +152,32 @@ class RecipeIngredientsControllerShould {
     class WithEmptyList {
         @BeforeEach
         void setUp() throws Exception {
-            when(recipeAppServiceMock.getRecipe(RECIPE_ID)).thenReturn(fromDefault().build());
+            when(recipeAppServiceMock.getRecipe(ID)).thenReturn(fromDefault().build());
         }
 
         @Test
         @DisplayName("have empty embedded data when retrieving recipe ingredients")
         void haveEmptyDataOnEmptyList() throws Exception {
-            mvc.perform(get(RECIPE_INGREDIENTS_API_URL, RECIPE_ID))
+            mvc.perform(get(RECIPE_INGREDIENTS_API_URL, ID))
                     .andExpect(jsonPath("$._embedded").doesNotExist());
         }
     }
 
     @Test
+    @DisplayName("respond Not Found when creating recipe ingredient for unknown recipe")
+    void respond404CreateUnknownRecipe() throws Exception {
+        doThrow(new EntityNotFoundException(Recipe.class, RecipeMother.ID))
+                .when(recipeIngredientAppServiceMock).addIngredientToRecipe(Mockito.any());
+        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID)
+                .contentType(APPLICATION_JSON)
+                .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\"}")
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
     @DisplayName("respond Bad Request when creating recipe ingredient without id")
     void respond400OnCreationWithoutId() throws Exception {
-        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, RECIPE_ID)
+        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID)
                 .contentType(APPLICATION_JSON)
                 .content("{}")
         ).andExpect(status().isBadRequest());
@@ -166,7 +186,7 @@ class RecipeIngredientsControllerShould {
     @Test
     @DisplayName("respond Created when creating recipe ingredient with JSON content")
     void respond201OnCreationJson() throws Exception {
-        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, RECIPE_ID)
+        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID)
                 .contentType(APPLICATION_JSON)
                 .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\"}")
         ).andExpect(status().isCreated());
@@ -175,7 +195,7 @@ class RecipeIngredientsControllerShould {
     @Test
     @DisplayName("respond Created when creating recipe ingredient with HAL content")
     void respond201OnCreationHal() throws Exception {
-        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, RECIPE_ID)
+        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID)
                 .contentType(HAL_JSON)
                 .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\"}")
         ).andExpect(status().isCreated());
@@ -184,7 +204,7 @@ class RecipeIngredientsControllerShould {
     @Test
     @DisplayName("respond with a Location header when creating recipe ingredient successfully")
     void respondWithLocationAfterCreationSuccess() throws Exception {
-        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, RECIPE_ID)
+        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID)
                 .contentType(HAL_JSON)
                 .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\"}")
         ).andExpect(header().exists(LOCATION))

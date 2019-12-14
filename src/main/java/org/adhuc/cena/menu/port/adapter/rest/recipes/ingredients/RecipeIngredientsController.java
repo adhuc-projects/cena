@@ -39,7 +39,7 @@ import org.adhuc.cena.menu.recipes.RecipeId;
 import org.adhuc.cena.menu.recipes.RecipeIngredientAppService;
 
 /**
- * A REST controller exposing /api/recipes resource.
+ * A REST controller exposing /api/recipes/{recipeId}/ingredients resource.
  *
  * @author Alexandre Carbenay
  * @version 0.2.0

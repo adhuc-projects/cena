@@ -16,11 +16,13 @@
 package org.adhuc.cena.menu.steps.serenity.recipes.ingredients;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpHeaders.LOCATION;
 
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
+import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientStorageDelegate;
 import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue;
@@ -47,6 +49,9 @@ public class RecipeIngredientAdditionServiceClientSteps {
     @Delegate
     private final RecipeStorageDelegate recipeStorage = new RecipeStorageDelegate();
 
+    @Steps
+    private RecipeIngredientDetailServiceClientSteps recipeIngredientDetailServiceClient;
+
     @Step("Add ingredient {0} to recipe {1}")
     public void addIngredientToRecipe(IngredientValue ingredient, RecipeValue recipe) {
         rest().contentType(HAL_JSON_VALUE).body(new RecipeIngredientValue(ingredient)).post(recipe.getIngredients()).andReturn();
@@ -61,7 +66,12 @@ public class RecipeIngredientAdditionServiceClientSteps {
     public void assertIngredientSuccessfullyAddedToRecipe(IngredientValue ingredient, RecipeValue recipe) {
         var recipeIngredientLocation = assertCreated().extract().header(LOCATION);
         assertThat(recipeIngredientLocation).isNotBlank().contains(recipe.id()).endsWith(ingredient.id());
-        // TODO assert recipe ingredient corresponds to specified ingredient and recipe
+        var retrievedRecipeIngredient = recipeIngredientDetailServiceClient.getRecipeIngredientFromUrl(recipeIngredientLocation);
+        assertSoftly(softAssertions -> {
+            softAssertions.assertThat(retrievedRecipeIngredient).usingComparator(RecipeIngredientValue.COMPARATOR)
+                    .isEqualTo(new RecipeIngredientValue(ingredient));
+            softAssertions.assertThat(retrievedRecipeIngredient.getRecipe()).isEqualTo(recipe.selfLink());
+        });
     }
 
 }

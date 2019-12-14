@@ -29,6 +29,9 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import org.adhuc.cena.menu.common.BasicEntity;
+import org.adhuc.cena.menu.common.EntityNotFoundException;
+import org.adhuc.cena.menu.ingredients.Ingredient;
+import org.adhuc.cena.menu.ingredients.IngredientId;
 
 /**
  * A recipe definition.
@@ -66,6 +69,27 @@ public class Recipe extends BasicEntity<RecipeId> {
     }
 
     /**
+     * Gets the set of ingredients composing this recipe. This set is immutable.
+     *
+     * @return the ingredients composing the recipe.
+     */
+    public Set<RecipeIngredient> ingredients() {
+        return Collections.unmodifiableSet(ingredients);
+    }
+
+    /**
+     * Gets the ingredient corresponding to the specified identity from the set of ingredients.
+     *
+     * @param ingredientId the ingredient identity.
+     * @return the ingredient.
+     * @throws EntityNotFoundException if the ingredient could not be found from the set of ingredients.
+     */
+    public RecipeIngredient ingredient(IngredientId ingredientId) {
+        return ingredients.stream().filter(i -> i.ingredientId().equals(ingredientId)).findFirst()
+                .orElseThrow(() -> new EntityNotFoundException(Ingredient.class, ingredientId));
+    }
+
+    /**
      * Adds an ingredient to the recipe.
      *
      * @param command the command.
@@ -75,10 +99,6 @@ public class Recipe extends BasicEntity<RecipeId> {
                 () -> String.format("Wrong command recipe identity %s to add ingredient to recipe with identity %s",
                         command.recipeId(), id()));
         ingredients.add(new RecipeIngredient(id(), command.ingredientId()));
-    }
-
-    public Set<RecipeIngredient> ingredients() {
-        return Collections.unmodifiableSet(ingredients);
     }
 
 }

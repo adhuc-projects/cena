@@ -20,6 +20,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import java.util.Comparator;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -43,12 +44,19 @@ import org.adhuc.cena.menu.steps.serenity.support.resource.HateoasClientResource
 @JsonInclude(NON_EMPTY)
 public class RecipeIngredientValue extends HateoasClientResourceSupport {
 
+    private static final String RECIPE_LINK = "recipe";
+
     public static final Comparator<RecipeIngredientValue> COMPARATOR = new RecipeIngredientIdComparator();
 
     private final String id;
 
     public RecipeIngredientValue(IngredientValue ingredient) {
         this.id = ingredient != null ? ingredient.id() : null;
+    }
+
+    @JsonIgnore
+    public String getRecipe() {
+        return link(RECIPE_LINK);
     }
 
     static class RecipeIngredientIdComparator implements Comparator<RecipeIngredientValue> {

@@ -33,6 +33,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import org.adhuc.cena.menu.common.EntityNotFoundException;
 import org.adhuc.cena.menu.ingredients.IngredientId;
 import org.adhuc.cena.menu.ingredients.IngredientMother;
 
@@ -129,6 +130,22 @@ class RecipeShould {
 
         recipe.addIngredient(addIngredientCommand(recipeIngredient));
         assertThat(recipe.ingredients()).isNotEmpty().containsAll(existingIngredients).contains(recipeIngredient);
+    }
+
+    @Test
+    @DisplayName("throw EntityNotFoundException when retrieving unknown ingredient")
+    void unknownIngredient() {
+        var recipe = recipe();
+        var unknownIngredientId = IngredientId.generate();
+        assertThrows(EntityNotFoundException.class, () -> recipe.ingredient(unknownIngredientId));
+    }
+
+    @Test
+    @DisplayName("return the ingredient when retrieving related ingredient")
+    void knownIngredient() {
+        var recipe = recipe();
+        var ingredient = recipe.ingredient(TOMATO_ID);
+        assertThat(ingredient).isNotNull().isEqualTo(recipeIngredient(TOMATO_ID));
     }
 
     @ParameterizedTest

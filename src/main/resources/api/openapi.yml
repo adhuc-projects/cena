@@ -198,6 +198,20 @@ paths:
           $ref: '#/components/responses/401-Unauthorized'
         403:
           $ref: '#/components/responses/403-Forbidden'
+  /recipes/{recipeId}/ingredients/{ingredientId}:
+    get:
+      summary: Get the details of an ingredient related to the recipe. Ingredient detail is accessible for every user, either authenticated or not
+      operationId: retrieveRecipeIngredient
+      tags:
+        - Recipes
+      parameters:
+        - $ref: '#/components/parameters/recipeId'
+        - $ref: '#/components/parameters/ingredientId'
+      responses:
+        200:
+          $ref: '#/components/responses/RecipeIngredient'
+        404:
+          $ref: '#/components/responses/404-NotFound'
 components:
   securitySchemes:
     basicAuth:
@@ -344,6 +358,15 @@ components:
           schema:
             type: string
             example: 'https://cena.adhuc.org/api/recipes/d71e2fc7-09e3-4241-97a5-dc3383d35e98/ingredients/3fa85f64-5717-4562-b3fc-2c963f66afa6'
+    RecipeIngredient:
+      description: Recipe ingredient detail
+      content:
+        application/hal+json:
+          schema:
+            $ref: '#/components/schemas/RecipeIngredient'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RecipeIngredient'
     400-BadRequest:
       description: Bad syntax or incorrect request
       content:

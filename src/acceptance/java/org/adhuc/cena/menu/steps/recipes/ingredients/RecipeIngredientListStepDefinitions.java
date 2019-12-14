@@ -35,8 +35,15 @@ public class RecipeIngredientListStepDefinitions {
     @Steps
     private RecipeIngredientListServiceClientSteps recipeIngredientListServiceClient;
 
-    @Given("^no relation between ingredient and recipe$")
-    public void noRelationToIngredient() {
+    @Given("^recipe contains ingredient$")
+    public void recipeContainsIngredient() {
+        recipeIngredientListServiceClient.assumeIngredientRelatedToRecipe(
+                recipeIngredientListServiceClient.storedIngredient(),
+                recipeIngredientListServiceClient.storedRecipe());
+    }
+
+    @Given("^recipe does not contain ingredient$")
+    public void recipeDoesNotContainIngredient() {
         recipeIngredientListServiceClient.assumeIngredientNotRelatedToRecipe(
                 recipeIngredientListServiceClient.storedIngredient(),
                 recipeIngredientListServiceClient.storedRecipe());

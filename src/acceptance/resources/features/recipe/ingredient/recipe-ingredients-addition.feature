@@ -28,7 +28,16 @@ Feature: Add ingredients to recipe
     Given an authenticated user
     And an existing "Tomato" ingredient
     And an existing "Tomato, cucumber and mozzarella salad" recipe
-    And no relation between ingredient and recipe
+    And recipe does not contain ingredient
+    When he adds the ingredient to the recipe
+    Then the ingredient is added to the recipe
+    And the ingredient can be found in the recipe's ingredients list
+
+  Scenario: Add an already contained ingredient to a recipe
+    Given an authenticated user
+    And an existing "Tomato" ingredient
+    And an existing "Tomato, cucumber and mozzarella salad" recipe
+    And recipe contains ingredient
     When he adds the ingredient to the recipe
     Then the ingredient is added to the recipe
     And the ingredient can be found in the recipe's ingredients list

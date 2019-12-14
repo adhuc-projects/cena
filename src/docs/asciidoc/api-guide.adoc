@@ -370,3 +370,35 @@ include::{snippets}/recipe-ingredients-create-example/curl-request.adoc[]
 ==== Example response
 
 include::{snippets}/recipe-ingredients-create-example/http-response.adoc[]
+
+[[resources-recipe-ingredient]]
+== Recipe Ingredient
+
+The Recipe Ingredient resource is used to retrieve, update, and delete individual recipe's ingredients.
+
+[[resources-recipe-ingredient-links]]
+=== Links
+
+include::{snippets}/recipe-ingredient-detail-example/links.adoc[]
+
+[[resources-recipe-ingredient-retrieve]]
+=== Retrieve a recipe's ingredient
+
+A `GET` request will retrieve the details of a recipe's ingredient. Recipe's ingredient details are accessible for every
+user, either authenticated or not.
+
+==== Path Parameters
+
+include::{snippets}/recipe-ingredient-detail-example/path-parameters.adoc[]
+
+==== Response structure
+
+include::{snippets}/recipe-ingredient-detail-example/response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/recipe-ingredient-detail-example/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/recipe-ingredient-detail-example/http-response.adoc[]

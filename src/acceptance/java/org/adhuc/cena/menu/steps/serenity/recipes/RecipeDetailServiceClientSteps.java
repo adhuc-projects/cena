@@ -19,8 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 
-import java.util.UUID;
-
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 
@@ -62,9 +60,10 @@ public class RecipeDetailServiceClientSteps {
 
     @Step("Attempt retrieving recipe with name {0}")
     public void attemptRetrievingRecipe(String recipeName) {
-        var recipe = getFromRecipesList(new RecipeValue(recipeName));
+        var original = RecipeValue.buildUnknownRecipeValue(recipeName, recipesResourceUrl());
+        var recipe = getFromRecipesList(original);
         assertThat(recipe).isNotPresent();
-        fetchRecipe(generateNotFoundRecipeUrl());
+        fetchRecipe(original.selfLink());
     }
 
     @Step("Assert recipe {0} is accessible")
@@ -75,10 +74,6 @@ public class RecipeDetailServiceClientSteps {
 
     private void fetchRecipe(String recipeDetailUrl) {
         rest().accept(HAL_JSON_VALUE).get(recipeDetailUrl).andReturn();
-    }
-
-    private String generateNotFoundRecipeUrl() {
-        return recipesResourceUrl() + "/" + UUID.randomUUID().toString();
     }
 
 }

@@ -62,7 +62,8 @@ public class RecipeListStepDefinitions {
 
     @Given("^a non-existent \"(.*)\" recipe$")
     public void nonExistentRecipe(String recipeName) {
-        recipeListServiceClient.storeRecipe(recipeListServiceClient.assumeNotInRecipesList(new RecipeValue(recipeName)));
+        recipeListServiceClient.storeRecipe(recipeListServiceClient.assumeNotInRecipesList(
+                RecipeValue.buildUnknownRecipeValue(recipeName, recipeListServiceClient.recipesResourceUrl())));
     }
 
     @When("^he lists the recipes$")

@@ -31,7 +31,7 @@ import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue;
  * The ingredients list steps definitions for rest-services acceptance tests.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @StepDefAnnotation
@@ -61,7 +61,8 @@ public class IngredientListStepDefinitions {
 
     @Given("^a non-existent \"(.*)\" ingredient$")
     public void nonExistentIngredient(String ingredientName) {
-        ingredientListServiceClient.storeIngredient(ingredientListServiceClient.assumeNotInIngredientsList(new IngredientValue(ingredientName)));
+        ingredientListServiceClient.storeIngredient(ingredientListServiceClient.assumeNotInIngredientsList(
+                IngredientValue.buildUnknownIngredientValue(ingredientName, ingredientListServiceClient.ingredientsResourceUrl())));
     }
 
     @When("^he lists the ingredients$")

@@ -35,7 +35,7 @@ import org.springframework.hateoas.mediatype.hal.Jackson2HalModule.HalLinkListDe
  * An abstract REST resource providing HATEOAS support on the client side.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.0.1
  */
 @Getter
@@ -44,12 +44,14 @@ import org.springframework.hateoas.mediatype.hal.Jackson2HalModule.HalLinkListDe
 @JsonIgnoreProperties(value = {"_links"}, ignoreUnknown = true, allowSetters = true)
 public abstract class HateoasClientResourceSupport {
 
+    protected static final String SELF_LINK = "self";
+
     @JsonProperty("_links")
     @JsonDeserialize(using = HalLinkListDeserializer.class)
     private List<Link> links = new ArrayList<>();
 
     public String selfLink() {
-        return link("self");
+        return link(SELF_LINK);
     }
 
     public Optional<String> maybeLink(String rel) {
@@ -58,6 +60,10 @@ public abstract class HateoasClientResourceSupport {
 
     public String link(String rel) {
         return maybeLink(rel).orElseGet(() -> fail("Unable to get " + rel + " link from links " + links));
+    }
+
+    protected void addLink(String rel, String link) {
+        this.links.add(new Link(link, rel));
     }
 
 }

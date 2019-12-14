@@ -19,6 +19,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Comparator;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -39,6 +40,7 @@ import org.adhuc.cena.menu.steps.serenity.support.resource.HateoasClientResource
 @EqualsAndHashCode(callSuper = true)
 @ToString(exclude = {"id", "content"}, includeFieldNames = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Accessors(fluent = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(NON_EMPTY)
@@ -56,14 +58,19 @@ public class RecipeValue extends HateoasClientResourceSupport {
     private final String name;
     private final String content;
 
+    public static RecipeValue buildUnknownRecipeValue(String name, String recipesResourceUrl) {
+        var recipe = new RecipeValue(UUID.randomUUID().toString(), name, DEFAULT_CONTENT);
+        recipe.addLink(SELF_LINK, String.format("%s/%s", recipesResourceUrl, recipe.id));
+        recipe.addLink(RECIPE_INGREDIENTS_LINK, String.format("%s/%s/ingredients", recipesResourceUrl, recipe.id));
+        return recipe;
+    }
+
     public RecipeValue(String name) {
         this(name, DEFAULT_CONTENT);
     }
 
     public RecipeValue(String name, String content) {
-        this.id = null;
-        this.name = name;
-        this.content = content;
+        this(null, name, content);
     }
 
     @JsonIgnore

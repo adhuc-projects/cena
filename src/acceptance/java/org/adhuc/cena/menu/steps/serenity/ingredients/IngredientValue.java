@@ -19,6 +19,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Comparator;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
@@ -40,6 +41,7 @@ import org.adhuc.cena.menu.steps.serenity.support.resource.HateoasClientResource
 @ToString(callSuper = false, exclude = {"id"}, includeFieldNames = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @RequiredArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Accessors(fluent = true)
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @JsonInclude(NON_EMPTY)
@@ -49,6 +51,12 @@ public class IngredientValue extends HateoasClientResourceSupport {
 
     private String id;
     private final String name;
+
+    public static IngredientValue buildUnknownIngredientValue(String name, String ingredientsResourceUrl) {
+        var ingredient = new IngredientValue(UUID.randomUUID().toString(), name);
+        ingredient.addLink(SELF_LINK, String.format("%s/%s", ingredientsResourceUrl, ingredient.id));
+        return ingredient;
+    }
 
     void assertEqualTo(IngredientValue expected) {
         assertThat(this).usingComparator(COMPARATOR).isEqualTo(expected);

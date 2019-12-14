@@ -19,8 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 
-import java.util.UUID;
-
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 
@@ -32,7 +30,7 @@ import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
  * The ingredient detail rest-service client steps definition.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 public class IngredientDetailServiceClientSteps {
@@ -62,9 +60,10 @@ public class IngredientDetailServiceClientSteps {
 
     @Step("Attempt retrieving ingredient with name {0}")
     public void attemptRetrievingIngredient(String ingredientName) {
-        var ingredient = getFromIngredientsList(new IngredientValue(ingredientName));
+        var original = IngredientValue.buildUnknownIngredientValue(ingredientName, ingredientsResourceUrl());
+        var ingredient = getFromIngredientsList(original);
         assertThat(ingredient).isNotPresent();
-        fetchIngredient(generateNotFoundIngredientUrl());
+        fetchIngredient(original.selfLink());
     }
 
     @Step("Assert ingredient {0} is accessible")
@@ -77,7 +76,4 @@ public class IngredientDetailServiceClientSteps {
         rest().accept(HAL_JSON_VALUE).get(ingredientDetailUrl).andReturn();
     }
 
-    private String generateNotFoundIngredientUrl() {
-        return ingredientsResourceUrl() + "/" + UUID.randomUUID().toString();
-    }
 }

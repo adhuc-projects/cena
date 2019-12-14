@@ -104,4 +104,12 @@ class MenuGenerationArchitectureTests {
                             JAVA_PACKAGES,
                             LOGGING_PACKAGES);
 
+    @ArchTest
+    public static final ArchRule ingredientsShouldNotAccessToRecipes =
+            noClasses().that()
+                    .resideInAPackage(INGREDIENT_DOMAIN_PACKAGES)
+                    .should()
+                    .accessClassesThat()
+                    .resideInAPackage(RECIPE_DOMAIN_PACKAGES);
+
 }

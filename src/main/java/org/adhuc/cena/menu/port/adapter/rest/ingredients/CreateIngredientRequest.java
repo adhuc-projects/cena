@@ -17,7 +17,7 @@ package org.adhuc.cena.menu.port.adapter.rest.ingredients;
 
 import javax.validation.constraints.NotBlank;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.NonNull;
 import lombok.ToString;
 
@@ -28,14 +28,14 @@ import org.adhuc.cena.menu.ingredients.IngredientId;
  * A request to create an ingredient.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @ToString
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 class CreateIngredientRequest {
 
     @NotBlank
-    @JsonProperty
     private String name;
 
     /**

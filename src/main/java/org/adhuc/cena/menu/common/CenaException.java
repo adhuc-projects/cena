@@ -22,11 +22,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * Defines the root of the exceptions hierarchy in the Cena system.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 public class CenaException extends RuntimeException implements CodifiedException {
+
+    private static final ExceptionCode DEFAULT_CODE = ExceptionCode.INTERNAL_ERROR;
 
     private final ExceptionCode code;
 
@@ -36,8 +38,8 @@ public class CenaException extends RuntimeException implements CodifiedException
      *
      * @param code the exception code.
      */
-    protected CenaException(final ExceptionCode code) {
-        this(code != null ? code.description() : null, null, code);
+    protected CenaException(ExceptionCode code) {
+        this(null, null, code);
     }
 
     /**
@@ -46,7 +48,7 @@ public class CenaException extends RuntimeException implements CodifiedException
      * @param message the detail message.
      * @param code    the exception code.
      */
-    protected CenaException(final String message, final ExceptionCode code) {
+    protected CenaException(String message, ExceptionCode code) {
         this(message, null, code);
     }
 
@@ -57,8 +59,8 @@ public class CenaException extends RuntimeException implements CodifiedException
      * @param cause   the cause.
      * @param code    the exception code.
      */
-    protected CenaException(final String message, final Throwable cause, final ExceptionCode code) {
-        super(message, cause);
+    protected CenaException(String message, Throwable cause, ExceptionCode code) {
+        super(message != null ? message : code != null ? code.description() : DEFAULT_CODE.description(), cause);
         this.code = code != null ? code : defaultCode();
     }
 
@@ -73,7 +75,7 @@ public class CenaException extends RuntimeException implements CodifiedException
      * @return the default exception code.
      */
     protected ExceptionCode defaultCode() {
-        return ExceptionCode.INTERNAL_ERROR;
+        return DEFAULT_CODE;
     }
 
 }

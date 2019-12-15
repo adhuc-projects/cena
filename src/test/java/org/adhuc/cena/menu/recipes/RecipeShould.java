@@ -87,8 +87,10 @@ class RecipeShould {
     @Test
     @DisplayName("throw IllegalArgumentException when adding ingredient to recipe with wrong id")
     void addIngredientWrongRecipeId() {
-        assertThrows(IllegalArgumentException.class, () -> recipe().addIngredient(
+        var exception = assertThrows(IllegalArgumentException.class, () -> recipe().addIngredient(
                 addIngredientCommand(IngredientMother.ID, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)));
+        assertThat(exception.getMessage()).isEqualTo("Wrong command recipe identity " +
+                TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID + " to add ingredient to recipe with identity " + ID);
     }
 
     @Test

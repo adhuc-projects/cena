@@ -17,6 +17,7 @@ package org.adhuc.cena.menu.configuration;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -26,7 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @version 0.2.0
  * @since 0.0.1
  */
-@Data
+@Value
 @ConfigurationProperties(prefix = "cena.menu-generation")
 public class MenuGenerationProperties {
 
@@ -47,7 +48,7 @@ public class MenuGenerationProperties {
         private String path = "/api/docs";
     }
 
-    @Data
+    @Value
     static class Management {
         private Security security = new Security();
 

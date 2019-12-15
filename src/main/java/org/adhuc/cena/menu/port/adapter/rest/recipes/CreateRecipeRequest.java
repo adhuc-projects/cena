@@ -17,7 +17,7 @@ package org.adhuc.cena.menu.port.adapter.rest.recipes;
 
 import javax.validation.constraints.NotBlank;
 
-import lombok.Getter;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.NonNull;
 import lombok.ToString;
 
@@ -31,8 +31,8 @@ import org.adhuc.cena.menu.recipes.RecipeId;
  * @version 0.2.0
  * @since 0.2.0
  */
-@Getter
 @ToString
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 class CreateRecipeRequest {
 
     @NotBlank

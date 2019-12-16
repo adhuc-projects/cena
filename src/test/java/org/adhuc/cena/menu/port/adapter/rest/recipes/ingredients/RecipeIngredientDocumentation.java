@@ -18,6 +18,7 @@ package org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -101,6 +102,16 @@ class RecipeIngredientDocumentation {
                                 subsectionWithPath("_links").description("<<resources-recipe-ingredient-links,Links>> to other resources")
                         )
                 ));
+    }
+
+    @Test
+    @DisplayName("generates recipe ingredient deletion example")
+    void recipeIngredientDeleteExample() throws Exception {
+        mvc.perform(delete(RECIPE_INGREDIENT_API_URL, RecipeMother.ID, IngredientMother.ID)).andExpect(status().isNoContent())
+                .andDo(documentationHandler.document(pathParameters(
+                        parameterWithName("recipeId").description("The <<resources-recipe,recipe>> identity"),
+                        parameterWithName("ingredientId").description("The <<resources-ingredient,ingredient>> identity")
+                )));
     }
 
 }

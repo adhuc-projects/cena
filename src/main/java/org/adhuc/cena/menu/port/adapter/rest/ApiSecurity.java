@@ -46,6 +46,8 @@ public class ApiSecurity extends WebSecurityConfigurerAdapter {
     private static final String BASE_INGREDIENTS_PATH = INGREDIENTS_PATH + WILDCARD;
     private static final String RECIPES_PATH = "/api/recipes";
     private static final String BASE_RECIPES_PATH = RECIPES_PATH + WILDCARD;
+    private static final String RECIPE_INGREDIENTS_PATH = "/api/recipes/*/ingredients";
+    private static final String BASE_RECIPE_INGREDIENTS_PATH = RECIPE_INGREDIENTS_PATH + WILDCARD;
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
@@ -55,6 +57,8 @@ public class ApiSecurity extends WebSecurityConfigurerAdapter {
                 .mvcMatchers(POST, INGREDIENTS_PATH).hasAnyRole(INGREDIENT_MANAGER_ROLE, SUPER_ADMINISTRATOR_ROLE)
                 .mvcMatchers(DELETE, INGREDIENTS_PATH).hasRole(SUPER_ADMINISTRATOR_ROLE)
                 .mvcMatchers(DELETE, BASE_INGREDIENTS_PATH).hasAnyRole(INGREDIENT_MANAGER_ROLE, SUPER_ADMINISTRATOR_ROLE)
+                // Recipe ingredients resources
+                .mvcMatchers(DELETE, BASE_RECIPE_INGREDIENTS_PATH).permitAll()
                 // Recipes resources
                 .mvcMatchers(POST, RECIPES_PATH).authenticated()
                 .mvcMatchers(DELETE, RECIPES_PATH).hasRole(SUPER_ADMINISTRATOR_ROLE)

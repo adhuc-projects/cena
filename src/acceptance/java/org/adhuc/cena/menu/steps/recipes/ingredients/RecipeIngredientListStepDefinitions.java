@@ -98,4 +98,11 @@ public class RecipeIngredientListStepDefinitions {
                 recipeIngredientListServiceClient.storedRecipe());
     }
 
+    @Then("^the ingredient cannot be found in the recipe's ingredients list$")
+    public void ingredientNotInRecipeIngredientsList() {
+        recipeIngredientListServiceClient.assertIngredientNotRelatedToRecipe(
+                recipeIngredientListServiceClient.storedIngredient(),
+                recipeIngredientListServiceClient.storedRecipe());
+    }
+
 }

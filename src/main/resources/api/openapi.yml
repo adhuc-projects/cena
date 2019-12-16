@@ -212,6 +212,25 @@ paths:
           $ref: '#/components/responses/RecipeIngredient'
         404:
           $ref: '#/components/responses/404-NotFound'
+    delete:
+      summary: Remove an ingredient from a recipe's related ingredients collection. Only an authenticated user can remove an ingredient from a recipe
+      operationId: removeIngredientFromRecipe
+      tags:
+        - Recipes
+      security:
+        - basicAuth:[]
+      parameters:
+        - $ref: '#/components/parameters/recipeId'
+        - $ref: '#/components/parameters/ingredientId'
+      responses:
+        204:
+          description: The ingredient has been removed from recipe's ingredients
+        401:
+          $ref: '#/components/responses/401-Unauthorized'
+        403:
+          $ref: '#/components/responses/403-Forbidden'
+        404:
+          $ref: '#/components/responses/404-NotFound'
 components:
   securitySchemes:
     basicAuth:

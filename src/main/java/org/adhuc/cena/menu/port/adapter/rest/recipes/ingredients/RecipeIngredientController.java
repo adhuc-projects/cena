@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.*;
 import org.adhuc.cena.menu.ingredients.IngredientId;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
 import org.adhuc.cena.menu.recipes.RecipeId;
+import org.adhuc.cena.menu.recipes.RecipeIngredientAppService;
+import org.adhuc.cena.menu.recipes.RemoveIngredientFromRecipe;
 
 /**
  * A REST controller exposing /api/recipes/{recipeId}/ingredients/{ingredientId} resource.
@@ -39,6 +41,7 @@ import org.adhuc.cena.menu.recipes.RecipeId;
 public class RecipeIngredientController {
 
     private final RecipeIngredientModelAssembler modelAssembler;
+    private final RecipeIngredientAppService recipeIngredientAppService;
     private final RecipeAppService recipeAppService;
 
     /**
@@ -52,9 +55,23 @@ public class RecipeIngredientController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     RecipeIngredientModel getRecipeIngredient(@PathVariable String recipeId, @PathVariable String ingredientId) {
+
         var recipe = recipeAppService.getRecipe(new RecipeId(recipeId));
         var ingredient = recipe.ingredient(new IngredientId(ingredientId));
         return modelAssembler.toModel(ingredient);
+    }
+
+    /**
+     * Deletes the recipe ingredient corresponding to the specified recipe and ingredient identities.
+     *
+     * @param recipeId the recipe identity.
+     * @param ingredientId the ingredient identity.
+     */
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteRecipe(@PathVariable String recipeId, @PathVariable String ingredientId) {
+        recipeIngredientAppService.removeIngredientFromRecipe(new RemoveIngredientFromRecipe(
+                new IngredientId(ingredientId), new RecipeId(recipeId)));
     }
 
 }

@@ -402,3 +402,20 @@ include::{snippets}/recipe-ingredient-detail-example/curl-request.adoc[]
 ==== Example response
 
 include::{snippets}/recipe-ingredient-detail-example/http-response.adoc[]
+
+[[resources-recipe-ingredient-delete]]
+=== Delete a recipe ingredient
+
+A `DELETE` request will delete the recipe ingredient. Only an authenticated user can remove ingredients from recipes.
+
+==== Path Parameters
+
+include::{snippets}/recipe-ingredient-delete-example/path-parameters.adoc[]
+
+==== Example request
+
+include::{snippets}/recipe-ingredient-delete-example/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/recipe-ingredient-delete-example/http-response.adoc[]

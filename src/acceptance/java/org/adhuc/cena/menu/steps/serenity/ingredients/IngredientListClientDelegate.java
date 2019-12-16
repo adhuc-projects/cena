@@ -15,8 +15,6 @@
  */
 package org.adhuc.cena.menu.steps.serenity.ingredients;
 
-import static net.serenitybdd.rest.SerenityRest.rest;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -24,18 +22,20 @@ import io.restassured.path.json.JsonPath;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+import org.adhuc.cena.menu.steps.serenity.support.RestClientDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
 
 /**
  * A client used to retrieve ingredients from the server.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @RequiredArgsConstructor
 final class IngredientListClientDelegate {
 
+    private final RestClientDelegate restClientDelegate = new RestClientDelegate();
     private final StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
 
     @NonNull
@@ -69,7 +69,7 @@ final class IngredientListClientDelegate {
      * @return the {@link JsonPath} corresponding to the ingredients list.
      */
     private JsonPath getRawIngredientList() {
-        var response = rest().get(ingredientsResourceUrl).then();
+        var response = restClientDelegate.rest().get(ingredientsResourceUrl).then();
         return statusAssertionDelegate.assertOk(response).extract().jsonPath();
     }
 

@@ -16,14 +16,14 @@
 package org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import static org.adhuc.cena.menu.recipes.RecipeMother.fromDefault;
-import static org.adhuc.cena.menu.recipes.RecipeMother.recipe;
+import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
@@ -33,6 +33,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import org.adhuc.cena.menu.common.EntityNotFoundException;
+import org.adhuc.cena.menu.ingredients.Ingredient;
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
 import org.adhuc.cena.menu.ingredients.IngredientMother;
 import org.adhuc.cena.menu.port.adapter.rest.ingredients.IngredientModelAssembler;
@@ -43,7 +44,6 @@ import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.recipes.Recipe;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
 import org.adhuc.cena.menu.recipes.RecipeIngredientAppService;
-import org.adhuc.cena.menu.recipes.RecipeMother;
 
 /**
  * The {@link RecipeIngredientController} test class.
@@ -74,15 +74,44 @@ class RecipeIngredientControllerShould {
     @Test
     @DisplayName("respond Not Found when retrieving ingredient from unknown recipe")
     void respond404GetRecipeIngredientUnknownRecipe() throws Exception {
-        when(recipeAppServiceMock.getRecipe(RecipeMother.ID)).thenThrow(new EntityNotFoundException(Recipe.class, RecipeMother.ID));
-        mvc.perform(get(RECIPE_INGREDIENT_API_URL, RecipeMother.ID, IngredientMother.ID)).andExpect(status().isNotFound());
+        when(recipeAppServiceMock.getRecipe(ID)).thenThrow(new EntityNotFoundException(Recipe.class, ID));
+        mvc.perform(get(RECIPE_INGREDIENT_API_URL, ID, IngredientMother.ID)).andExpect(status().isNotFound());
     }
 
     @Test
     @DisplayName("respond Not Found when retrieving unknown ingredient from recipe")
     void respond404GetRecipeIngredientUnknownIngredient() throws Exception {
-        when(recipeAppServiceMock.getRecipe(RecipeMother.ID)).thenReturn(fromDefault().build());
-        mvc.perform(get(RECIPE_INGREDIENT_API_URL, RecipeMother.ID, IngredientMother.ID)).andExpect(status().isNotFound());
+        when(recipeAppServiceMock.getRecipe(ID)).thenReturn(fromDefault().build());
+        mvc.perform(get(RECIPE_INGREDIENT_API_URL, ID, IngredientMother.ID)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("respond Not Found when deleting ingredient from unknown recipe")
+    void respond404DeleteRecipeIngredientUnknownRecipe() throws Exception {
+        doThrow(new EntityNotFoundException(Recipe.class, ID)).when(recipeIngredientAppServiceMock)
+                .removeIngredientFromRecipe(removeIngredientCommand());
+        mvc.perform(delete(RECIPE_INGREDIENT_API_URL, ID, IngredientMother.ID)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("respond Not Found when deleting unknown ingredient from recipe")
+    void respond404DeleteRecipeIngredientUnknownIngredient() throws Exception {
+        doThrow(new EntityNotFoundException(Ingredient.class, IngredientMother.ID)).when(recipeIngredientAppServiceMock)
+                .removeIngredientFromRecipe(removeIngredientCommand());
+        mvc.perform(delete(RECIPE_INGREDIENT_API_URL, ID, IngredientMother.ID)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("return No Content status on recipe ingredient deletion")
+    void deleteRecipeIngredientStatusNoContent() throws Exception {
+        mvc.perform(delete(RECIPE_INGREDIENT_API_URL, ID, IngredientMother.ID)).andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("call application service on recipe ingredient deletion")
+    void deleteRecipeIngredientCallAppService() throws Exception {
+        mvc.perform(delete(RECIPE_INGREDIENT_API_URL, ID, IngredientMother.ID)).andReturn();
+        verify(recipeIngredientAppServiceMock).removeIngredientFromRecipe(removeIngredientCommand());
     }
 
     @Nested
@@ -91,40 +120,40 @@ class RecipeIngredientControllerShould {
 
         @BeforeEach
         void setUp() {
-            when(recipeAppServiceMock.getRecipe(RecipeMother.ID)).thenReturn(recipe());
+            when(recipeAppServiceMock.getRecipe(ID)).thenReturn(recipe());
         }
 
         @Test
         @DisplayName("return OK status")
-        void getRecipeFoundStatusOK() throws Exception {
-            mvc.perform(get(RECIPE_INGREDIENT_API_URL, RecipeMother.ID, IngredientMother.ID)).andExpect(status().isOk());
+        void getRecipeIngredientFoundStatusOK() throws Exception {
+            mvc.perform(get(RECIPE_INGREDIENT_API_URL, ID, IngredientMother.ID)).andExpect(status().isOk());
         }
 
         @Test
         @DisplayName("respond with HAL content when retrieving recipe ingredient with no specific requested content")
         void respondHalOnDetail() throws Exception {
-            mvc.perform(get(RECIPE_INGREDIENT_API_URL, RecipeMother.ID, IngredientMother.ID))
+            mvc.perform(get(RECIPE_INGREDIENT_API_URL, ID, IngredientMother.ID))
                     .andExpect(content().contentTypeCompatibleWith(HAL_JSON));
         }
 
         @Test
         @DisplayName("respond with JSON content when requested while retrieving recipe ingredient")
         void respondJSONOnDetail() throws Exception {
-            mvc.perform(get(RECIPE_INGREDIENT_API_URL, RecipeMother.ID, IngredientMother.ID).accept(APPLICATION_JSON))
+            mvc.perform(get(RECIPE_INGREDIENT_API_URL, ID, IngredientMother.ID).accept(APPLICATION_JSON))
                     .andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON)).andReturn();
         }
 
         @Test
         @DisplayName("contain recipe ingredient data")
         void getRecipeIngredientFoundContainsData() throws Exception {
-            mvc.perform(get(RECIPE_INGREDIENT_API_URL, RecipeMother.ID, IngredientMother.ID))
+            mvc.perform(get(RECIPE_INGREDIENT_API_URL, ID, IngredientMother.ID))
                     .andExpect(jsonPath("$.id").value(IngredientMother.ID.toString()));
         }
 
         @Test
         @DisplayName("contain self link to detail")
         void getRecipeIngredientHasSelfLink() throws Exception {
-            var result = mvc.perform(get(RECIPE_INGREDIENT_API_URL, RecipeMother.ID, IngredientMother.ID));
+            var result = mvc.perform(get(RECIPE_INGREDIENT_API_URL, ID, IngredientMother.ID));
             result.andExpect(jsonPath("$._links.self.href").exists())
                     .andExpect(jsonPath("$._links.self.href",
                             equalTo(result.andReturn().getRequest().getRequestURL().toString())));
@@ -133,16 +162,16 @@ class RecipeIngredientControllerShould {
         @Test
         @DisplayName("contain recipe link")
         void getRecipeIngredientHasRecipeLink() throws Exception {
-            var result = mvc.perform(get(RECIPE_INGREDIENT_API_URL, RecipeMother.ID, IngredientMother.ID));
+            var result = mvc.perform(get(RECIPE_INGREDIENT_API_URL, ID, IngredientMother.ID));
             result.andExpect(jsonPath("$._links.recipe.href").exists())
                     .andExpect(jsonPath("$._links.recipe.href").value(
-                            Matchers.endsWith(String.format("/recipes/%s", RecipeMother.ID.toString()))));
+                            Matchers.endsWith(String.format("/recipes/%s", ID.toString()))));
         }
 
         @Test
         @DisplayName("contain ingredient link")
         void getRecipeIngredientHasIngredientLink() throws Exception {
-            var result = mvc.perform(get(RECIPE_INGREDIENT_API_URL, RecipeMother.ID, IngredientMother.ID));
+            var result = mvc.perform(get(RECIPE_INGREDIENT_API_URL, ID, IngredientMother.ID));
             result.andExpect(jsonPath("$._links.ingredient.href").exists())
                     .andExpect(jsonPath("$._links.ingredient.href").value(
                             Matchers.endsWith(String.format("/ingredients/%s", IngredientMother.ID.toString()))));

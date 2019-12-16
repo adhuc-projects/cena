@@ -20,6 +20,7 @@ import static org.adhuc.cena.menu.util.Assert.isTrue;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import lombok.EqualsAndHashCode;
@@ -85,8 +86,11 @@ public class Recipe extends BasicEntity<RecipeId> {
      * @throws EntityNotFoundException if the ingredient could not be found from the set of ingredients.
      */
     public RecipeIngredient ingredient(IngredientId ingredientId) {
-        return ingredients.stream().filter(i -> i.ingredientId().equals(ingredientId)).findFirst()
-                .orElseThrow(() -> new EntityNotFoundException(Ingredient.class, ingredientId));
+        return maybeIngredient(ingredientId).orElseThrow(() -> new EntityNotFoundException(Ingredient.class, ingredientId));
+    }
+
+    private Optional<RecipeIngredient> maybeIngredient(IngredientId ingredientId) {
+        return ingredients.stream().filter(i -> i.ingredientId().equals(ingredientId)).findFirst();
     }
 
     /**
@@ -94,11 +98,24 @@ public class Recipe extends BasicEntity<RecipeId> {
      *
      * @param command the command.
      */
-    public void addIngredient(@NonNull AddIngredientToRecipe command) {
+    void addIngredient(@NonNull AddIngredientToRecipe command) {
         isTrue(id().equals(command.recipeId()),
                 () -> String.format("Wrong command recipe identity %s to add ingredient to recipe with identity %s",
                         command.recipeId(), id()));
         ingredients.add(new RecipeIngredient(id(), command.ingredientId()));
+    }
+
+    /**
+     * Removes an ingredient from the recipe.
+     *
+     * @param command the command.
+     */
+    void removeIngredient(@NonNull RemoveIngredientFromRecipe command) {
+        isTrue(id().equals(command.recipeId()),
+                () -> String.format("Wrong command recipe identity %s to remove ingredient from recipe with identity %s",
+                        command.recipeId(), id()));
+        var ingredient = maybeIngredient(command.ingredientId());
+        ingredient.ifPresent(i -> ingredients.remove(i));
     }
 
 }

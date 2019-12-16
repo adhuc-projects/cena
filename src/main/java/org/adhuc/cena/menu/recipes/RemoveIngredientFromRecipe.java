@@ -15,27 +15,26 @@
  */
 package org.adhuc.cena.menu.recipes;
 
+import lombok.NonNull;
+import lombok.Value;
+import lombok.experimental.Accessors;
+
+import org.adhuc.cena.menu.ingredients.IngredientId;
+
 /**
- * An application service for recipe ingredients.
+ * An ingredient to recipe removal command.
  *
  * @author Alexandre Carbenay
  * @version 0.2.0
  * @since 0.2.0
  */
-public interface RecipeIngredientAppService {
+@Value
+@Accessors(fluent = true)
+public class RemoveIngredientFromRecipe {
 
-    /**
-     * Adds an ingredient to a recipe.
-     *
-     * @param command the ingredient to recipe addition command.
-     */
-    void addIngredientToRecipe(AddIngredientToRecipe command);
-
-    /**
-     * Removes an ingredient from a recipe.
-     *
-     * @param command the ingredient from recipe removal command.
-     */
-    void removeIngredientFromRecipe(RemoveIngredientFromRecipe command);
+    @NonNull
+    private final IngredientId ingredientId;
+    @NonNull
+    private final RecipeId recipeId;
 
 }

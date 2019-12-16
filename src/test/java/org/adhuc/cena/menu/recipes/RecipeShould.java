@@ -135,6 +135,51 @@ class RecipeShould {
     }
 
     @Test
+    @DisplayName("throw IllegalArgumentException when removing ingredient from null command")
+    void removeIngredientNullCommand() {
+        assertThrows(IllegalArgumentException.class, () -> recipe().removeIngredient(null));
+    }
+
+    @Test
+    @DisplayName("throw IllegalArgumentException when removing ingredient from recipe with wrong id")
+    void removeIngredientWrongRecipeId() {
+        var exception = assertThrows(IllegalArgumentException.class, () -> recipe().removeIngredient(
+                removeIngredientCommand(IngredientMother.ID, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)));
+        assertThat(exception.getMessage()).isEqualTo("Wrong command recipe identity " +
+                TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID + " to remove ingredient from recipe with identity " + ID);
+    }
+
+    @Test
+    @DisplayName("do nothing when removing non related ingredient from recipe")
+    void removeUnknownIngredient() {
+        var recipe = fromDefault().withIngredients(CUCUMBER_ID).build();
+        recipe.removeIngredient(removeIngredientCommand(TOMATO_ID));
+        assertThat(recipe.ingredients()).contains(recipeIngredient(CUCUMBER_ID));
+    }
+
+    @Test
+    @DisplayName("not be related to ingredient after removing ingredient from recipe")
+    void removeIngredientFromRecipe() {
+        var recipeIngredient = recipeIngredient(TOMATO_ID);
+        var recipe = recipe();
+        assumeThat(recipe.ingredients()).contains(recipeIngredient);
+
+        recipe.removeIngredient(removeIngredientCommand(recipeIngredient));
+        assertThat(recipe.ingredients()).doesNotContain(recipeIngredient);
+    }
+
+    @Test
+    @DisplayName("be related to non removed ingredients after removing ingredient from recipe")
+    void removeIngredientFromRecipeOthersStillRelated() {
+        var recipeIngredient = recipeIngredient(TOMATO_ID);
+        var recipe = fromDefault().withIngredients(TOMATO_ID, CUCUMBER_ID).build();
+        assumeThat(recipe.ingredients()).contains(recipeIngredient);
+
+        recipe.removeIngredient(removeIngredientCommand(recipeIngredient));
+        assertThat(recipe.ingredients()).doesNotContain(recipeIngredient).contains(recipeIngredient(CUCUMBER_ID));
+    }
+
+    @Test
     @DisplayName("throw EntityNotFoundException when retrieving unknown ingredient")
     void unknownIngredient() {
         var recipe = recipe();

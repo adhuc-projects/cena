@@ -33,10 +33,16 @@ import org.springframework.stereotype.Service;
 class RecipeIngredientAppServiceImpl implements RecipeIngredientAppService {
 
     private final IngredientToRecipeAdditionService ingredientToRecipeAdditionService;
+    private final IngredientFromRecipeRemovalService ingredientFromRecipeRemovalService;
 
     @Override
     public void addIngredientToRecipe(@NonNull AddIngredientToRecipe command) {
         ingredientToRecipeAdditionService.addIngredientToRecipe(command);
+    }
+
+    @Override
+    public void removeIngredientFromRecipe(@NonNull RemoveIngredientFromRecipe command) {
+        ingredientFromRecipeRemovalService.removeIngredientFromRecipe(command);
     }
 
 }

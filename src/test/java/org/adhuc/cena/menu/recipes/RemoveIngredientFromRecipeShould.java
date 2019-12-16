@@ -36,7 +36,7 @@ import org.adhuc.cena.menu.ingredients.IngredientId;
 import org.adhuc.cena.menu.ingredients.IngredientMother;
 
 /**
- * The {@link AddIngredientToRecipe} test class.
+ * The {@link RemoveIngredientFromRecipe} test class.
  *
  * @author Alexandre Carbenay
  * @version 0.2.0
@@ -44,14 +44,14 @@ import org.adhuc.cena.menu.ingredients.IngredientMother;
  */
 @Tag("unit")
 @Tag("domain")
-@DisplayName("Ingredient to recipe addition command should")
-class AddIngredientToRecipeShould {
+@DisplayName("Ingredient from recipe removal command should")
+class RemoveIngredientFromRecipeShould {
 
     @ParameterizedTest
     @MethodSource("invalidCreationParameters")
     @DisplayName("not be creatable with invalid parameters")
     void notBeCreatableWithInvalidParameters(IngredientId ingredientId, RecipeId recipeId) {
-        assertThrows(IllegalArgumentException.class, () -> new AddIngredientToRecipe(ingredientId, recipeId));
+        assertThrows(IllegalArgumentException.class, () -> new RemoveIngredientFromRecipe(ingredientId, recipeId));
     }
 
     private static Stream<Arguments> invalidCreationParameters() {
@@ -64,7 +64,7 @@ class AddIngredientToRecipeShould {
     @Test
     @DisplayName("contain ingredient and recipe ids used during creation")
     void containCreationValues() {
-        var command = addIngredientCommand();
+        var command = removeIngredientCommand();
         assertSoftly(softly -> {
             softly.assertThat(command.ingredientId()).isEqualTo(IngredientMother.ID);
             softly.assertThat(command.recipeId()).isEqualTo(ID);
@@ -74,24 +74,24 @@ class AddIngredientToRecipeShould {
     @ParameterizedTest
     @MethodSource("equalitySource")
     @DisplayName("be equal when both ingredient and recipe ids are equal")
-    void isEqual(AddIngredientToRecipe c1, AddIngredientToRecipe c2, boolean expected) {
+    void isEqual(RemoveIngredientFromRecipe c1, RemoveIngredientFromRecipe c2, boolean expected) {
         assertThat(c1.equals(c2)).isEqualTo(expected);
     }
 
     @ParameterizedTest
     @MethodSource("equalitySource")
     @DisplayName("have same hash code when both ingredient and recipe ids are equal")
-    void sameHashCode(AddIngredientToRecipe c1, AddIngredientToRecipe c2, boolean expected) {
+    void sameHashCode(RemoveIngredientFromRecipe c1, RemoveIngredientFromRecipe c2, boolean expected) {
         assertThat(c1.hashCode() == c2.hashCode()).isEqualTo(expected);
     }
 
     private static Stream<Arguments> equalitySource() {
-        var addTomato = addIngredientCommand(TOMATO_ID, ID);
+        var addTomato = removeIngredientCommand(TOMATO_ID, ID);
         return Stream.of(
                 Arguments.of(addTomato, addTomato, true),
-                Arguments.of(addTomato, addIngredientCommand(TOMATO_ID, ID), true),
-                Arguments.of(addTomato, addIngredientCommand(CUCUMBER_ID, ID), false),
-                Arguments.of(addTomato, addIngredientCommand(TOMATO_ID, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID), false)
+                Arguments.of(addTomato, removeIngredientCommand(TOMATO_ID, ID), true),
+                Arguments.of(addTomato, removeIngredientCommand(CUCUMBER_ID, ID), false),
+                Arguments.of(addTomato, removeIngredientCommand(TOMATO_ID, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID), false)
         );
     }
 

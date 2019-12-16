@@ -68,7 +68,7 @@ public class RecipeMother {
     }
 
     public static AddIngredientToRecipe addIngredientCommand(@NonNull RecipeIngredient recipeIngredient) {
-        return addIngredientCommand(recipeIngredient.ingredientId());
+        return addIngredientCommand(recipeIngredient.ingredientId(), recipeIngredient.recipeId());
     }
 
     public static AddIngredientToRecipe addIngredientCommand(@NonNull IngredientId ingredientId) {
@@ -77,6 +77,22 @@ public class RecipeMother {
 
     public static AddIngredientToRecipe addIngredientCommand(@NonNull IngredientId ingredientId, @NonNull RecipeId recipeId) {
         return new AddIngredientToRecipe(ingredientId, recipeId);
+    }
+
+    public static RemoveIngredientFromRecipe removeIngredientCommand() {
+        return removeIngredientCommand(recipeIngredient());
+    }
+
+    public static RemoveIngredientFromRecipe removeIngredientCommand(@NonNull RecipeIngredient recipeIngredient) {
+        return removeIngredientCommand(recipeIngredient.ingredientId(), recipeIngredient.recipeId());
+    }
+
+    public static RemoveIngredientFromRecipe removeIngredientCommand(@NonNull IngredientId ingredientId) {
+        return removeIngredientCommand(ingredientId, ID);
+    }
+
+    public static RemoveIngredientFromRecipe removeIngredientCommand(@NonNull IngredientId ingredientId, @NonNull RecipeId recipeId) {
+        return new RemoveIngredientFromRecipe(ingredientId, recipeId);
     }
 
     public static Recipe recipe() {

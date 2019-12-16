@@ -19,13 +19,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import static org.adhuc.cena.menu.ingredients.IngredientMother.ingredient;
+import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
 import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import org.adhuc.cena.menu.common.EntityNotFoundException;
 import org.adhuc.cena.menu.ingredients.IngredientMother;
@@ -53,8 +50,9 @@ class RecipeIngredientAppServiceImplShould {
     void setUp() {
         recipeRepository = new InMemoryRecipeRepository();
         ingredientRepository = new InMemoryIngredientRepository();
-        var ingredientToRecipeAdditionService = new IngredientToRecipeAdditionService(recipeRepository, ingredientRepository);
-        service = new RecipeIngredientAppServiceImpl(ingredientToRecipeAdditionService);
+        var additionService = new IngredientToRecipeAdditionService(recipeRepository, ingredientRepository);
+        var removalService = new IngredientFromRecipeRemovalService(recipeRepository, ingredientRepository);
+        service = new RecipeIngredientAppServiceImpl(additionService, removalService);
     }
 
     @Test
@@ -64,37 +62,85 @@ class RecipeIngredientAppServiceImplShould {
     }
 
     @Test
-    @DisplayName("throw EntityNotFoundException when adding unknown ingredient to recipe")
-    void addUnknownIngredientToRecipe() {
-        recipeRepository.save(fromDefault().build());
-        assumeThat(recipeRepository.exists(ID)).isTrue();
-        assumeThat(ingredientRepository.exists(IngredientMother.ID)).isFalse();
-
-        assertThrows(EntityNotFoundException.class, () -> service.addIngredientToRecipe(addIngredientCommand()));
+    @DisplayName("throw IllegalArgumentException when removing ingredient from recipe from null command")
+    void throwIAERemoveIngredientFromRecipeNullCommand() {
+        assertThrows(IllegalArgumentException.class, () -> service.removeIngredientFromRecipe(null));
     }
 
-    @Test
-    @DisplayName("throw EntityNotFoundException when adding ingredient to unknown recipe")
-    void addIngredientToUnknownRecipe() {
-        assumeThat(recipeRepository.exists(ID)).isFalse();
-        ingredientRepository.save(ingredient());
-        assumeThat(ingredientRepository.exists(IngredientMother.ID)).isTrue();
+    @Nested
+    @DisplayName("with unknown ingredient")
+    class WithUnknownIngredient {
+        @BeforeEach
+        void setUp() {
+            recipeRepository.save(fromDefault().build());
+            assumeThat(recipeRepository.exists(RecipeMother.ID)).isTrue();
+            assumeThat(ingredientRepository.exists(IngredientMother.ID)).isFalse();
+        }
 
-        assertThrows(EntityNotFoundException.class, () -> service.addIngredientToRecipe(addIngredientCommand()));
+        @Test
+        @DisplayName("throw EntityNotFoundException when adding unknown ingredient to recipe")
+        void addUnknownIngredientToRecipe() {
+            assertThrows(EntityNotFoundException.class, () -> service.addIngredientToRecipe(addIngredientCommand()));
+        }
+
+        @Test
+        @DisplayName("throw EntityNotFoundException when removing unknown ingredient from recipe")
+        void removeUnknownIngredientFromRecipe() {
+            assertThrows(EntityNotFoundException.class, () -> service.removeIngredientFromRecipe(removeIngredientCommand()));
+        }
     }
 
-    @Test
-    @DisplayName("add ingredient to recipe successfully")
-    void addIngredientToRecipe() {
-        recipeRepository.save(fromDefault().build());
-        assumeThat(recipeRepository.exists(ID)).isTrue();
-        assumeThat(recipeRepository.findNotNullById(ID).ingredients()).isEmpty();
-        ingredientRepository.save(ingredient());
-        assumeThat(ingredientRepository.exists(IngredientMother.ID)).isTrue();
+    @Nested
+    @DisplayName("with unknown recipe")
+    class WithUnknownRecipe {
+        @BeforeEach
+        void setUp() {
+            ingredientRepository.save(ingredient());
+            assumeThat(recipeRepository.exists(RecipeMother.ID)).isFalse();
+            assumeThat(ingredientRepository.exists(IngredientMother.ID)).isTrue();
+        }
 
-        service.addIngredientToRecipe(addIngredientCommand(IngredientMother.ID));
+        @Test
+        @DisplayName("throw EntityNotFoundException when adding ingredient to unknown recipe")
+        void addIngredientToUnknownRecipe() {
+            assertThrows(EntityNotFoundException.class, () -> service.addIngredientToRecipe(addIngredientCommand()));
+        }
 
-        assertThat(recipeRepository.findNotNullById(ID).ingredients()).contains(recipeIngredient());
+        @Test
+        @DisplayName("throw EntityNotFoundException when removing ingredient from unknown recipe")
+        void removeIngredientFromUnknownRecipe() {
+            assertThrows(EntityNotFoundException.class, () -> service.removeIngredientFromRecipe(removeIngredientCommand()));
+        }
+    }
+
+    @Nested
+    @DisplayName("with both known ingredient and recipe")
+    class WithIngredientAndRecipe {
+        @BeforeEach
+        void setUp() {
+            recipeRepository.save(fromDefault().withIngredients(CUCUMBER_ID).build());
+            assumeThat(recipeRepository.exists(RecipeMother.ID)).isTrue();
+            assumeThat(recipeRepository.findNotNullById(RecipeMother.ID).ingredients())
+                    .containsExactly(recipeIngredient(CUCUMBER_ID));
+            ingredientRepository.save(ingredient());
+            ingredientRepository.save(ingredient(CUCUMBER_ID, CUCUMBER));
+            assumeThat(ingredientRepository.exists(IngredientMother.ID)).isTrue();
+            assumeThat(ingredientRepository.exists(CUCUMBER_ID)).isTrue();
+        }
+
+        @Test
+        @DisplayName("add ingredient to recipe successfully")
+        void addIngredientToRecipe() {
+            service.addIngredientToRecipe(addIngredientCommand(IngredientMother.ID));
+            assertThat(recipeRepository.findNotNullById(RecipeMother.ID).ingredients()).contains(recipeIngredient());
+        }
+
+        @Test
+        @DisplayName("remove ingredient from recipe successfully")
+        void removeIngredientToRecipe() {
+            service.removeIngredientFromRecipe(removeIngredientCommand(CUCUMBER_ID));
+            assertThat(recipeRepository.findNotNullById(RecipeMother.ID).ingredients()).doesNotContain(recipeIngredient(CUCUMBER_ID));
+        }
     }
 
 }

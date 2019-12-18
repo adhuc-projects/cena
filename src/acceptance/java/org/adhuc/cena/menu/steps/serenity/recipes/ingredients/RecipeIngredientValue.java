@@ -26,6 +26,7 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue;
+import org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue;
 import org.adhuc.cena.menu.steps.serenity.support.resource.HateoasClientResourceSupport;
 
 /**
@@ -49,6 +50,12 @@ public class RecipeIngredientValue extends HateoasClientResourceSupport {
     public static final Comparator<RecipeIngredientValue> COMPARATOR = new RecipeIngredientIdComparator();
 
     private final String id;
+
+    public static RecipeIngredientValue buildUnknownRecipeIngredientValue(IngredientValue ingredient, RecipeValue recipe) {
+        var recipeIngredient = new RecipeIngredientValue(ingredient);
+        recipeIngredient.addLink(SELF_LINK, String.format("%s/%s", recipe.getIngredients(), ingredient.id()));
+        return recipeIngredient;
+    }
 
     public RecipeIngredientValue(IngredientValue ingredient) {
         this.id = ingredient != null ? ingredient.id() : null;

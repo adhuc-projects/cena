@@ -42,9 +42,23 @@ public class RecipeIngredientRemovalStepDefinitions {
                 recipeIngredientRemovalServiceClient.storedRecipe());
     }
 
+    @When("^he attempts removing the ingredient from the recipe$")
+    public void attemptRemovingIngredientFromRecipe() {
+        recipeIngredientRemovalServiceClient.attemptRemoveIngredientFromRecipe(
+                recipeIngredientRemovalServiceClient.storedIngredient(),
+                recipeIngredientRemovalServiceClient.storedRecipe());
+    }
+
     @Then("^the ingredient is removed from the recipe$")
     public void recipeIngredientRemoved() {
         recipeIngredientRemovalServiceClient.assertIngredientSuccessfullyRemovedFromRecipe(
+                recipeIngredientRemovalServiceClient.storedIngredient(),
+                recipeIngredientRemovalServiceClient.storedRecipe());
+    }
+
+    @Then("^an error notifies that recipe does not contain ingredient$")
+    public void errorOnRecipeIngredientDeletionNotFound() {
+        recipeIngredientRemovalServiceClient.assertIngredientNotRemovableFromRecipe(
                 recipeIngredientRemovalServiceClient.storedIngredient(),
                 recipeIngredientRemovalServiceClient.storedRecipe());
     }

@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assumptions.assumeThat;
 
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
+import org.assertj.core.api.SoftAssertions;
 
 import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientStorageDelegate;
 import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue;
@@ -54,9 +55,25 @@ public class RecipeIngredientRemovalServiceClientSteps {
         rest().delete(recipeIngredient.get().selfLink()).andReturn();
     }
 
+    @Step("Attempt removing ingredient {0} from recipe {1}")
+    public void attemptRemoveIngredientFromRecipe(IngredientValue ingredient, RecipeValue recipe) {
+        var recipeIngredient = RecipeIngredientValue.buildUnknownRecipeIngredientValue(ingredient, recipe);
+        rest().delete(recipeIngredient.selfLink()).andReturn();
+    }
+
     @Step("Assert ingredient {0} has been successfully removed from recipe {1}")
     public void assertIngredientSuccessfullyRemovedFromRecipe(IngredientValue ingredient, RecipeValue recipe) {
         assertNoContent();
+    }
+
+    @Step("Assert ingredient {0} cannot be removed from recipe {1}")
+    public void assertIngredientNotRemovableFromRecipe(IngredientValue ingredient, RecipeValue recipe) {
+        var jsonPath = assertNotFound().extract().jsonPath();
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(jsonPath.getString("message")).contains("Ingredient '" + ingredient.id() +
+                    "' is not related to recipe '" + recipe.id() + "'");
+            softly.assertThat(jsonPath.getInt("code")).isEqualTo(900110);
+        });
     }
 
 }

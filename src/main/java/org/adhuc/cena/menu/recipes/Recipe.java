@@ -97,6 +97,7 @@ public class Recipe extends BasicEntity<RecipeId> {
      * Adds an ingredient to the recipe.
      *
      * @param command the command.
+     * @throws IllegalArgumentException if the command's recipe identity does not correspond to this recipe identity.
      */
     void addIngredient(@NonNull AddIngredientToRecipe command) {
         isTrue(id().equals(command.recipeId()),
@@ -109,13 +110,16 @@ public class Recipe extends BasicEntity<RecipeId> {
      * Removes an ingredient from the recipe.
      *
      * @param command the command.
+     * @throws IllegalArgumentException if the command's recipe identity does not correspond to this recipe identity.
+     * @throws IngredientNotRelatedToRecipeException if the ingredient is not related to the recipe.
      */
     void removeIngredient(@NonNull RemoveIngredientFromRecipe command) {
         isTrue(id().equals(command.recipeId()),
                 () -> String.format("Wrong command recipe identity %s to remove ingredient from recipe with identity %s",
                         command.recipeId(), id()));
-        var ingredient = maybeIngredient(command.ingredientId());
-        ingredient.ifPresent(i -> ingredients.remove(i));
+        var ingredient = maybeIngredient(command.ingredientId()).orElseThrow(() ->
+                new IngredientNotRelatedToRecipeException(command.ingredientId(), command.recipeId()));
+        ingredients.remove(ingredient);
     }
 
 }

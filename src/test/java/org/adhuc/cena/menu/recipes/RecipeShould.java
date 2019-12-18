@@ -150,11 +150,12 @@ class RecipeShould {
     }
 
     @Test
-    @DisplayName("do nothing when removing non related ingredient from recipe")
+    @DisplayName("throw IngredientNotRelatedToRecipeException when removing non related ingredient from recipe")
     void removeUnknownIngredient() {
         var recipe = fromDefault().withIngredients(CUCUMBER_ID).build();
-        recipe.removeIngredient(removeIngredientCommand(TOMATO_ID));
-        assertThat(recipe.ingredients()).contains(recipeIngredient(CUCUMBER_ID));
+        var exception = assertThrows(IngredientNotRelatedToRecipeException.class, () ->
+                recipe.removeIngredient(removeIngredientCommand(TOMATO_ID)));
+        assertThat(exception.getMessage()).isEqualTo("Ingredient '" + TOMATO_ID + "' is not related to recipe '" + ID + "'");
     }
 
     @Test

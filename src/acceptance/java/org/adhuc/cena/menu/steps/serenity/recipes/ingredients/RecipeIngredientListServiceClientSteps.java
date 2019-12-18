@@ -64,10 +64,12 @@ public class RecipeIngredientListServiceClientSteps {
     private IngredientListServiceClientSteps ingredientListServiceClientSteps;
     @Steps
     private RecipeIngredientAdditionServiceClientSteps recipeIngredientAdditionServiceClient;
+    @Steps
+    private RecipeIngredientRemovalServiceClientSteps recipeIngredientRemovalServiceClient;
 
     @Step("Assume recipe {0} contains no ingredient")
     public void assumeRecipeContainsNoIngredient(@NonNull RecipeValue recipe) {
-        // TODO delete recipe ingredients if not empty
+        recipeIngredientRemovalServiceClient.removeIngredientsFromRecipe(recipe);
         assumeThat(fetchRecipeIngredients(recipe)).isEmpty();
     }
 

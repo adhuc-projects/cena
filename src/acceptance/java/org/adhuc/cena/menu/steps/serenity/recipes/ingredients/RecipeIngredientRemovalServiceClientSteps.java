@@ -48,6 +48,11 @@ public class RecipeIngredientRemovalServiceClientSteps {
     @Delegate
     private final RecipeStorageDelegate recipeStorage = new RecipeStorageDelegate();
 
+    @Step("Remove ingredients from recipe {0}")
+    public void removeIngredientsFromRecipe(RecipeValue recipe) {
+        rest().delete(recipe.getIngredients()).andReturn();
+    }
+
     @Step("Remove ingredient {0} from recipe {1}")
     public void removeIngredientFromRecipe(IngredientValue ingredient, RecipeValue recipe) {
         var recipeIngredient = listClient.getFromRecipeIngredientsList(ingredient, recipe);
@@ -59,6 +64,11 @@ public class RecipeIngredientRemovalServiceClientSteps {
     public void attemptRemoveIngredientFromRecipe(IngredientValue ingredient, RecipeValue recipe) {
         var recipeIngredient = RecipeIngredientValue.buildUnknownRecipeIngredientValue(ingredient, recipe);
         rest().delete(recipeIngredient.selfLink()).andReturn();
+    }
+
+    @Step("Assert ingredients has been successfully removed from recipe {0}")
+    public void assertIngredientsSuccessfullyRemovedFromRecipe(RecipeValue recipe) {
+        assertNoContent();
     }
 
     @Step("Assert ingredient {0} has been successfully removed from recipe {1}")

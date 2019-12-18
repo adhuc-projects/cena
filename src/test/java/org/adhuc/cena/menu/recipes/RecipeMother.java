@@ -95,6 +95,10 @@ public class RecipeMother {
         return new RemoveIngredientFromRecipe(ingredientId, recipeId);
     }
 
+    public static RemoveIngredientsFromRecipe removeIngredientsCommand() {
+        return new RemoveIngredientsFromRecipe(ID);
+    }
+
     public static Recipe recipe() {
         return fromDefault().withIngredients(TOMATO_ID, CUCUMBER_ID).build();
     }

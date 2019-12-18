@@ -17,14 +17,13 @@ package org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients;
 
 import static java.lang.String.format;
 
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Mockito.*;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import static org.adhuc.cena.menu.ingredients.IngredientMother.CUCUMBER_ID;
@@ -33,6 +32,7 @@ import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
 import java.util.List;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -132,7 +132,7 @@ class RecipeIngredientsControllerShould {
         void haveRecipeLinkOnList() throws Exception {
             var result = mvc.perform(get(RECIPE_INGREDIENTS_API_URL, ID));
             result.andExpect(jsonPath("$._links.recipe.href",
-                    endsWith(format("/api/recipes/%s", ID))));
+                    Matchers.endsWith(format("/api/recipes/%s", ID))));
         }
 
         @Test
@@ -208,7 +208,23 @@ class RecipeIngredientsControllerShould {
                 .contentType(HAL_JSON)
                 .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\"}")
         ).andExpect(header().exists(LOCATION))
-                .andExpect(header().string(LOCATION, endsWith("3fa85f64-5717-4562-b3fc-2c963f66afa6")));
+                .andExpect(header().string(LOCATION, Matchers.endsWith("3fa85f64-5717-4562-b3fc-2c963f66afa6")));
+    }
+
+    @Test
+    @DisplayName("respond No Content when deleting recipe's ingredients")
+    void respond204OnDeletion() throws Exception {
+        mvc.perform(delete(RECIPE_INGREDIENTS_API_URL, ID))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("call application service when deleting recipe's ingredients")
+    void callServiceOnDeletion() throws Exception {
+        mvc.perform(delete(RECIPE_INGREDIENTS_API_URL, ID))
+                .andExpect(status().isNoContent());
+
+        verify(recipeIngredientAppServiceMock).removeIngredientsFromRecipe(removeIngredientsCommand());
     }
 
     void assertJsonContainsRecipeIngredient(ResultActions resultActions, String jsonPath,

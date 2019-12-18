@@ -34,6 +34,7 @@ class RecipeIngredientAppServiceImpl implements RecipeIngredientAppService {
 
     private final IngredientToRecipeAdditionService ingredientToRecipeAdditionService;
     private final IngredientFromRecipeRemovalService ingredientFromRecipeRemovalService;
+    private final RecipeRepository recipeRepository;
 
     @Override
     public void addIngredientToRecipe(@NonNull AddIngredientToRecipe command) {
@@ -43,6 +44,12 @@ class RecipeIngredientAppServiceImpl implements RecipeIngredientAppService {
     @Override
     public void removeIngredientFromRecipe(@NonNull RemoveIngredientFromRecipe command) {
         ingredientFromRecipeRemovalService.removeIngredientFromRecipe(command);
+    }
+
+    @Override
+    public void removeIngredientsFromRecipe(@NonNull RemoveIngredientsFromRecipe command) {
+        var recipe = recipeRepository.findNotNullById(command.recipeId());
+        recipe.removeIngredients(command);
     }
 
 }

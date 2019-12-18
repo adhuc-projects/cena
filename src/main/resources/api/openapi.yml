@@ -198,6 +198,22 @@ paths:
           $ref: '#/components/responses/401-Unauthorized'
         403:
           $ref: '#/components/responses/403-Forbidden'
+    delete:
+      summary: Remove all recipe's related ingredients. Only an authenticated user can remove all ingredient from a recipe
+      operationId: deleteRecipeIngredients
+      tags:
+        - Recipes
+      security:
+        - basicAuth:[]
+      parameters:
+        - $ref: '#/components/parameters/recipeId'
+      responses:
+        204:
+          description: All recipe's related ingredients have been removed
+        401:
+          $ref: '#/components/responses/401-Unauthorized'
+        403:
+          $ref: '#/components/responses/403-Forbidden'
   /recipes/{recipeId}/ingredients/{ingredientId}:
     get:
       summary: Get the details of an ingredient related to the recipe. Ingredient detail is accessible for every user, either authenticated or not

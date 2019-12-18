@@ -71,6 +71,11 @@ public class RecipeIngredientListServiceClientSteps {
         assumeThat(fetchRecipeIngredients(recipe)).isEmpty();
     }
 
+    @Step("Assert empty recipe {0} ingredients list")
+    public void assertEmptyRecipeIngredientList(RecipeValue recipe) {
+        assertThat(fetchRecipeIngredients(recipe)).isEmpty();
+    }
+
     @Step("Assert empty recipe ingredients list {0}")
     public void assertEmptyRecipeIngredientList(Collection<RecipeIngredientValue> recipeIngredients) {
         assertThat(recipeIngredients).isEmpty();

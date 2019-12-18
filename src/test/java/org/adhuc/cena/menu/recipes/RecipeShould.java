@@ -181,6 +181,31 @@ class RecipeShould {
     }
 
     @Test
+    @DisplayName("throw IllegalArgumentException when removing ingredients from null command")
+    void removeIngredientsNullCommand() {
+        assertThrows(IllegalArgumentException.class, () -> recipe().removeIngredients(null));
+    }
+
+    @Test
+    @DisplayName("throw IllegalArgumentException when removing ingredients from recipe with wrong id")
+    void removeIngredientsWrongRecipeId() {
+        var exception = assertThrows(IllegalArgumentException.class, () -> recipe().removeIngredients(
+                new RemoveIngredientsFromRecipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)));
+        assertThat(exception.getMessage()).isEqualTo("Wrong command recipe identity " +
+                TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID + " to remove ingredients from recipe with identity " + ID);
+    }
+
+    @Test
+    @DisplayName("have no more related ingredients after removing all related ingredients")
+    void removeIngredientsFromRecipe() {
+        var recipe = recipe();
+        assumeThat(recipe.ingredients()).isNotEmpty();
+
+        recipe.removeIngredients(new RemoveIngredientsFromRecipe(ID));
+        assertThat(recipe.ingredients()).isEmpty();
+    }
+
+    @Test
     @DisplayName("throw EntityNotFoundException when retrieving unknown ingredient")
     void unknownIngredient() {
         var recipe = recipe();

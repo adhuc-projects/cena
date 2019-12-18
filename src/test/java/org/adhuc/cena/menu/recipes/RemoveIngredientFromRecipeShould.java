@@ -86,12 +86,12 @@ class RemoveIngredientFromRecipeShould {
     }
 
     private static Stream<Arguments> equalitySource() {
-        var addTomato = removeIngredientCommand(TOMATO_ID, ID);
+        var removeTomato = removeIngredientCommand(TOMATO_ID, ID);
         return Stream.of(
-                Arguments.of(addTomato, addTomato, true),
-                Arguments.of(addTomato, removeIngredientCommand(TOMATO_ID, ID), true),
-                Arguments.of(addTomato, removeIngredientCommand(CUCUMBER_ID, ID), false),
-                Arguments.of(addTomato, removeIngredientCommand(TOMATO_ID, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID), false)
+                Arguments.of(removeTomato, removeTomato, true),
+                Arguments.of(removeTomato, removeIngredientCommand(TOMATO_ID, ID), true),
+                Arguments.of(removeTomato, removeIngredientCommand(CUCUMBER_ID, ID), false),
+                Arguments.of(removeTomato, removeIngredientCommand(TOMATO_ID, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID), false)
         );
     }
 

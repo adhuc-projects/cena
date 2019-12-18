@@ -336,6 +336,10 @@ to the ingredients that compose it.
 A `GET` request will list the recipe's related ingredients. Recipe's ingredients collection is accessible for every
 user, either authenticated or not.
 
+==== Path Parameters
+
+include::{snippets}/recipe-ingredients-list-example/path-parameters.adoc[]
+
 ==== Response structure
 
 include::{snippets}/recipe-ingredients-list-example/response-fields.adoc[]
@@ -359,6 +363,10 @@ include::{snippets}/recipe-ingredients-list-example/links.adoc[]
 A `POST` request will add an ingredient to a recipe's related ingredients collection. Only an authenticated user can add
 ingredients to recipes.
 
+==== Path Parameters
+
+include::{snippets}/recipe-ingredients-create-example/path-parameters.adoc[]
+
 ==== Request structure
 
 include::{snippets}/recipe-ingredients-create-example/request-fields.adoc[]
@@ -370,6 +378,20 @@ include::{snippets}/recipe-ingredients-create-example/curl-request.adoc[]
 ==== Example response
 
 include::{snippets}/recipe-ingredients-create-example/http-response.adoc[]
+
+[[resources-recipe-ingredients-delete]]
+=== Deleting recipe ingredients
+
+A `DELETE` request will delete all of the recipe's related ingredients. Only an authenticated user can delete all
+recipe's ingredients directly.
+
+==== Example request
+
+include::{snippets}/recipes-delete-example/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/recipes-delete-example/http-response.adoc[]
 
 [[resources-recipe-ingredient]]
 == Recipe Ingredient

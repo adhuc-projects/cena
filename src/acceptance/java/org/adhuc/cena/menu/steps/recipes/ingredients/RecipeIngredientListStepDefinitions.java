@@ -78,6 +78,12 @@ public class RecipeIngredientListStepDefinitions {
         recipeIngredientListServiceClient.storeRecipeIngredients(ingredients);
     }
 
+    @Then("^no ingredient is related to the recipe$")
+    public void noIngredientRelatedToRecipe() {
+        recipeIngredientListServiceClient.assertEmptyRecipeIngredientList(
+                recipeIngredientListServiceClient.storedRecipe());
+    }
+
     @Then("^the recipe's ingredients list is empty$")
     public void emptyRecipeIngredientList() {
         recipeIngredientListServiceClient.assertEmptyRecipeIngredientList(

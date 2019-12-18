@@ -35,6 +35,12 @@ public class RecipeIngredientRemovalStepDefinitions {
     @Steps
     private RecipeIngredientRemovalServiceClientSteps recipeIngredientRemovalServiceClient;
 
+    @When("^he removes all the ingredients from the recipe$")
+    public void removeIngredientsFromRecipe() {
+        recipeIngredientRemovalServiceClient.removeIngredientsFromRecipe(
+                recipeIngredientRemovalServiceClient.storedRecipe());
+    }
+
     @When("^he removes the ingredient from the recipe$")
     public void removeIngredientFromRecipe() {
         recipeIngredientRemovalServiceClient.removeIngredientFromRecipe(
@@ -46,6 +52,12 @@ public class RecipeIngredientRemovalStepDefinitions {
     public void attemptRemovingIngredientFromRecipe() {
         recipeIngredientRemovalServiceClient.attemptRemoveIngredientFromRecipe(
                 recipeIngredientRemovalServiceClient.storedIngredient(),
+                recipeIngredientRemovalServiceClient.storedRecipe());
+    }
+
+    @Then("^the ingredients are removed from the recipe$")
+    public void recipeIngredientsRemoved() {
+        recipeIngredientRemovalServiceClient.assertIngredientsSuccessfullyRemovedFromRecipe(
                 recipeIngredientRemovalServiceClient.storedRecipe());
     }
 

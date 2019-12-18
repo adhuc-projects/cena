@@ -52,7 +52,7 @@ class RecipeIngredientAppServiceImplShould {
         ingredientRepository = new InMemoryIngredientRepository();
         var additionService = new IngredientToRecipeAdditionService(recipeRepository, ingredientRepository);
         var removalService = new IngredientFromRecipeRemovalService(recipeRepository, ingredientRepository);
-        service = new RecipeIngredientAppServiceImpl(additionService, removalService);
+        service = new RecipeIngredientAppServiceImpl(additionService, removalService, recipeRepository);
     }
 
     @Test
@@ -65,6 +65,12 @@ class RecipeIngredientAppServiceImplShould {
     @DisplayName("throw IllegalArgumentException when removing ingredient from recipe from null command")
     void throwIAERemoveIngredientFromRecipeNullCommand() {
         assertThrows(IllegalArgumentException.class, () -> service.removeIngredientFromRecipe(null));
+    }
+
+    @Test
+    @DisplayName("throw IllegalArgumentException when removing ingredients from recipe from null command")
+    void throwIAERemoveIngredientsFromRecipeNullCommand() {
+        assertThrows(IllegalArgumentException.class, () -> service.removeIngredientsFromRecipe(null));
     }
 
     @Nested
@@ -111,6 +117,12 @@ class RecipeIngredientAppServiceImplShould {
         void removeIngredientFromUnknownRecipe() {
             assertThrows(EntityNotFoundException.class, () -> service.removeIngredientFromRecipe(removeIngredientCommand()));
         }
+
+        @Test
+        @DisplayName("throw EntityNotFoundException when removing ingredients from unknown recipe")
+        void removeIngredientsFromUnknownRecipe() {
+            assertThrows(EntityNotFoundException.class, () -> service.removeIngredientsFromRecipe(removeIngredientsCommand()));
+        }
     }
 
     @Nested
@@ -137,10 +149,30 @@ class RecipeIngredientAppServiceImplShould {
 
         @Test
         @DisplayName("remove ingredient from recipe successfully")
-        void removeIngredientToRecipe() {
+        void removeIngredientFromRecipe() {
             service.removeIngredientFromRecipe(removeIngredientCommand(CUCUMBER_ID));
             assertThat(recipeRepository.findNotNullById(RecipeMother.ID).ingredients()).doesNotContain(recipeIngredient(CUCUMBER_ID));
         }
+
+        @Nested
+        @DisplayName("with recipe related to multiple ingredients")
+        class WithRecipeWithMultipleIngredients {
+            @BeforeEach
+            void setUp() {
+                recipeRepository.save(recipe());
+                assumeThat(recipeRepository.exists(RecipeMother.ID)).isTrue();
+                assumeThat(recipeRepository.findNotNullById(RecipeMother.ID).ingredients())
+                        .hasSizeGreaterThanOrEqualTo(2);
+            }
+
+            @Test
+            @DisplayName("remove ingredients from recipe successfully")
+            void removeIngredientsFromRecipe() {
+                service.removeIngredientsFromRecipe(removeIngredientsCommand());
+                assertThat(recipeRepository.findNotNullById(RecipeMother.ID).ingredients()).isEmpty();
+            }
+        }
+
     }
 
 }

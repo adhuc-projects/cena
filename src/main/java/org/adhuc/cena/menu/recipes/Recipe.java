@@ -122,4 +122,17 @@ public class Recipe extends BasicEntity<RecipeId> {
         ingredients.remove(ingredient);
     }
 
+    /**
+     * Removes all ingredients from the recipe.
+     *
+     * @param command the command.
+     * @throws IllegalArgumentException if the command's recipe identity does not correspond to this recipe identity.
+     */
+    void removeIngredients(@NonNull RemoveIngredientsFromRecipe command) {
+        isTrue(id().equals(command.recipeId()),
+                () -> String.format("Wrong command recipe identity %s to remove ingredients from recipe with identity %s",
+                        command.recipeId(), id()));
+        ingredients.clear();
+    }
+
 }

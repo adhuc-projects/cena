@@ -19,9 +19,10 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import static org.adhuc.cena.menu.recipes.RecipeMother.ID;
@@ -92,6 +93,9 @@ class RecipeIngredientsDocumentation {
                                 linkWithRel("self").description("This <<resources-recipe-ingredients,recipe's ingredients list>>"),
                                 linkWithRel("recipe").description("The related <<resources-recipe,recipe>>")
                         ),
+                        pathParameters(
+                                parameterWithName("id").description("The <<resources-recipe,recipe>> identity")
+                        ),
                         responseFields(
                                 subsectionWithPath("_embedded.data")
                                         .description("An array of <<resources-recipe-ingredient, Recipe ingredient resources>>"),
@@ -108,8 +112,20 @@ class RecipeIngredientsDocumentation {
         mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID).contentType(APPLICATION_JSON)
                 .content(String.format("{\"id\":\"%s\"}", IngredientMother.ID)))
                 .andExpect(status().isCreated()).andDo(documentationHandler
-                .document(requestFields(
+                .document(pathParameters(
+                        parameterWithName("id").description("The <<resources-recipe,recipe>> identity")
+                ), requestFields(
                         fields.withPath("id").description("The ingredient identity")
+                )));
+    }
+
+    @Test
+    @DisplayName("generate recipe ingredients deletion example")
+    void recipeIngredientsDeletionExample() throws Exception {
+        mvc.perform(delete(RECIPE_INGREDIENTS_API_URL, ID))
+                .andExpect(status().isNoContent()).andDo(documentationHandler
+                .document(pathParameters(
+                        parameterWithName("id").description("The <<resources-recipe,recipe>> identity")
                 )));
     }
 

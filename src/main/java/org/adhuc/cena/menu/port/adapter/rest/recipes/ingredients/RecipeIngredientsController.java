@@ -16,6 +16,7 @@
 package org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients;
 
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -37,6 +38,7 @@ import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
 import org.adhuc.cena.menu.recipes.RecipeId;
 import org.adhuc.cena.menu.recipes.RecipeIngredientAppService;
+import org.adhuc.cena.menu.recipes.RemoveIngredientsFromRecipe;
 
 /**
  * A REST controller exposing /api/recipes/{recipeId}/ingredients resource.
@@ -78,6 +80,15 @@ public class RecipeIngredientsController {
         recipeIngredientAppService.addIngredientToRecipe(request.toCommand(new RecipeId(recipeId)));
         return ResponseEntity.created(new URI(links.linkFor(RecipeIngredientModel.class, recipeId)
                 .slash(request.getIngredientId()).withSelfRel().getHref())).build();
+    }
+
+    /**
+     * Deletes all recipe ingredients.
+     */
+    @DeleteMapping
+    @ResponseStatus(NO_CONTENT)
+    void deleteRecipeIngredients(@PathVariable String recipeId) {
+        recipeIngredientAppService.removeIngredientsFromRecipe(new RemoveIngredientsFromRecipe(new RecipeId(recipeId)));
     }
 
 }

@@ -33,3 +33,20 @@ Feature: Remove ingredients from recipe
     And recipe does not contain ingredient
     When he attempts removing the ingredient from the recipe
     Then an error notifies that recipe does not contain ingredient
+
+  Scenario: Remove all ingredients from a recipe
+    Given an authenticated user
+    And an existing "Tomato, cucumber and mozzarella salad" recipe
+    And the following existing ingredients
+      | name       |
+      | Tomato     |
+      | Cucumber   |
+      | Mozzarella |
+    And the following ingredients in the recipe
+      | name       |
+      | Tomato     |
+      | Cucumber   |
+      | Mozzarella |
+    When he removes all the ingredients from the recipe
+    Then the ingredients are removed from the recipe
+    And no ingredient is related to the recipe

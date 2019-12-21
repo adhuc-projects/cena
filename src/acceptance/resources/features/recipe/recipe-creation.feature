@@ -2,12 +2,14 @@
 Feature: Create a recipe in the system
   As an authenticated user, I want to create a recipe in the system so that I can retrieve it later to follow it
 
+  @Edge
   Scenario: Create a recipe without name
     Given an authenticated user
     When he creates a recipe without name
     Then an error notifies that recipe must have a name
     And the recipe cannot be found in the list
 
+  @Edge
   Scenario: Create a recipe without content
     Given an authenticated user
     When he creates a recipe without content

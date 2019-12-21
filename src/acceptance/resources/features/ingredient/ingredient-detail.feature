@@ -2,6 +2,7 @@
 Feature: Retrieve ingredient details
   As a community user, I want to retrieve a specific ingredient in the system so that I can update it later
 
+  @Edge
   Scenario: Unknown ingredient
     Given a community user
     And the following existing ingredients

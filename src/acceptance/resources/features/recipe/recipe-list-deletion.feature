@@ -2,6 +2,7 @@
 Feature: Delete recipes
   As a super administrator, I want to delete all recipes in the system so that I can clean-up the system
 
+  @Edge
   Scenario: Empty recipes list
     Given an authenticated super administrator
     And no existing recipe

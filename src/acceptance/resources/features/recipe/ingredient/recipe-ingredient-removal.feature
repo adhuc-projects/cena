@@ -2,6 +2,7 @@
 Feature: Remove ingredients from recipe
   As an authenticated user, I want to remove ingredients from a recipe so that I can change my recipe
 
+  @Edge
   Scenario: Remove an unknown ingredient from an existing recipe
     Given an authenticated user
     And a non-existent "Tomato" ingredient
@@ -9,6 +10,7 @@ Feature: Remove ingredients from recipe
     When he attempts removing the ingredient from the recipe
     Then an error notifies that ingredient has not been found
 
+  @Edge
   Scenario: Remove an existing ingredient from an unknown recipe
     Given an authenticated user
     And an existing "Tomato" ingredient
@@ -26,6 +28,7 @@ Feature: Remove ingredients from recipe
     Then the ingredient is removed from the recipe
     And the ingredient cannot be found in the recipe's ingredients list
 
+  @Edge
   Scenario: Remove a not related ingredient from a recipe
     Given an authenticated user
     And an existing "Tomato" ingredient

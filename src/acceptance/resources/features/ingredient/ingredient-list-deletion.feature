@@ -2,6 +2,7 @@
 Feature: Delete ingredients
   As a super administrator, I want to delete all ingredients in the system so that I can clean-up the system
 
+  @Edge
   Scenario: Empty ingredients list
     Given an authenticated super administrator
     And no existing ingredient

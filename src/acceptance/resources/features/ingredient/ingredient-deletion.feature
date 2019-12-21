@@ -2,6 +2,7 @@
 Feature: Delete an ingredient from the system
   As an ingredient manager, I want to delete an ingredient in the system so that ingredient list is not polluted with misconfigured ingredients
 
+  @Edge
   Scenario: Delete an unknown ingredient
     Given an authenticated ingredient manager
     And a non-existent "Tomato" ingredient

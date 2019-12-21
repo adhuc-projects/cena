@@ -2,6 +2,7 @@
 Feature: Retrieve recipe details
   As a community user, I want to retrieve a specific recipe in the system so that I can follow it
 
+  @Edge
   Scenario: Unknown recipe
     Given a community user
     And the following existing recipes

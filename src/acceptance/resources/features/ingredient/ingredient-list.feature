@@ -2,6 +2,7 @@
 Feature: List ingredients
   As a community user, I want to list ingredients in the system so that I can use them in recipes
 
+  @Edge
   Scenario: Empty ingredients list
     Given a community user
     And no existing ingredient

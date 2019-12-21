@@ -2,6 +2,7 @@
 Feature: Delete a recipe from the system
   As a super administrator, I want to delete a recipe in the system so that recipe list is not polluted with misconfigured recipes
 
+  @Edge
   Scenario: Delete an unknown recipe
     Given an authenticated super administrator
     And a non-existent "Tomato, cucumber and mozzarella salad" recipe

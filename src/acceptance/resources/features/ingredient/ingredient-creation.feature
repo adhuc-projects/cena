@@ -2,6 +2,7 @@
 Feature: Create an ingredient in the system
   As an ingredient manager, I want to create an ingredient in the system so that recipes can be composed of ingredients
 
+  @Edge
   Scenario: Create an ingredient without name
     Given an authenticated ingredient manager
     When he creates an ingredient without name
@@ -16,6 +17,7 @@ Feature: Create an ingredient in the system
     Then the ingredient is created
     And the ingredient can be found in the list
 
+  @Edge
   Scenario: Create an ingredient with already used name
     Given an authenticated ingredient manager
     And an existing "Tomato" ingredient

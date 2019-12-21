@@ -2,6 +2,7 @@
 Feature: List recipe's ingredients
   As a community user, I want to list recipe's ingredients so that I can buy ingredients before following the recipe
 
+  @Edge
   Scenario: Empty recipe's ingredients list
     Given a community user
     And an existing "Tomato, cucumber and mozzarella salad" recipe

@@ -69,7 +69,7 @@ public class RecipeIngredientListServiceClientSteps {
 
     @Step("Assume recipe {0} contains no ingredient")
     public void assumeRecipeContainsNoIngredient(@NonNull RecipeValue recipe) {
-        recipeIngredientRemovalServiceClient.removeIngredientsFromRecipe(recipe);
+        recipeIngredientRemovalServiceClient.removeIngredientsFromRecipeAsSuperAdministrator(recipe);
         assumeThat(fetchRecipeIngredients(recipe)).isEmpty();
     }
 
@@ -86,7 +86,7 @@ public class RecipeIngredientListServiceClientSteps {
     @Step("Assume ingredient {0} is in recipe {1} ingredients list")
     public RecipeIngredientValue assumeIngredientRelatedToRecipe(@NonNull IngredientValue ingredient, @NonNull RecipeValue recipe) {
         if (getFromRecipeIngredientsList(ingredient, recipe).isEmpty()) {
-            recipeIngredientAdditionServiceClient.addIngredientToRecipe(ingredient, recipe);
+            recipeIngredientAdditionServiceClient.addIngredientToRecipeAsSuperAdministrator(ingredient, recipe);
         }
         var recipeIngredient = getFromRecipeIngredientsList(ingredient, recipe);
         assumeThat(recipeIngredient).isPresent();
@@ -104,7 +104,8 @@ public class RecipeIngredientListServiceClientSteps {
 
     @Step("Assume ingredient {0} is not in recipe {1} ingredients list")
     public void assumeIngredientNotRelatedToRecipe(@NonNull IngredientValue ingredient, @NonNull RecipeValue recipe) {
-        // TODO delete relation if existing
+        getFromRecipeIngredientsList(ingredient, recipe).ifPresent(
+                i -> recipeIngredientRemovalServiceClient.removeIngredientFromRecipeAsSuperAdministrator(ingredient, recipe));
         assumeThat(getFromRecipeIngredientsList(ingredient, recipe)).isEmpty();
     }
 

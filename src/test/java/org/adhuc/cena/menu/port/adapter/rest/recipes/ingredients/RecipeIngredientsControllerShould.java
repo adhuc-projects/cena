@@ -49,6 +49,10 @@ import org.adhuc.cena.menu.port.adapter.rest.recipes.RecipeModelAssembler;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.RecipesController;
 import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.recipes.*;
+import org.adhuc.cena.menu.support.WithAuthenticatedUser;
+import org.adhuc.cena.menu.support.WithCommunityUser;
+import org.adhuc.cena.menu.support.WithIngredientManager;
+import org.adhuc.cena.menu.support.WithSuperAdministrator;
 
 /**
  * The {@link RecipeIngredientsController} test class.
@@ -164,6 +168,17 @@ class RecipeIngredientsControllerShould {
     }
 
     @Test
+    @WithCommunityUser
+    @DisplayName("respond Unauthorized when creating recipe ingredient as a community user")
+    void respond401OnCreationAsCommunityUser() throws Exception {
+        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID)
+                .contentType(APPLICATION_JSON)
+                .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\"}")
+        ).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Not Found when creating recipe ingredient for unknown recipe")
     void respond404CreateUnknownRecipe() throws Exception {
         doThrow(new EntityNotFoundException(Recipe.class, RecipeMother.ID))
@@ -175,6 +190,7 @@ class RecipeIngredientsControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Bad Request when creating recipe ingredient without id")
     void respond400OnCreationWithoutId() throws Exception {
         mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID)
@@ -184,6 +200,7 @@ class RecipeIngredientsControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Created when creating recipe ingredient with JSON content")
     void respond201OnCreationJson() throws Exception {
         mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID)
@@ -193,6 +210,7 @@ class RecipeIngredientsControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Created when creating recipe ingredient with HAL content")
     void respond201OnCreationHal() throws Exception {
         mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID)
@@ -202,6 +220,7 @@ class RecipeIngredientsControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("respond with a Location header when creating recipe ingredient successfully")
     void respondWithLocationAfterCreationSuccess() throws Exception {
         mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID)
@@ -212,6 +231,35 @@ class RecipeIngredientsControllerShould {
     }
 
     @Test
+    @WithIngredientManager
+    @DisplayName("respond Created when creating recipe ingredient as ingredient manager")
+    void respond201OnCreationAsIngredientManager() throws Exception {
+        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID)
+                .contentType(APPLICATION_JSON)
+                .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\"}")
+        ).andExpect(status().isCreated());
+    }
+
+    @Test
+    @WithSuperAdministrator
+    @DisplayName("respond Created when creating recipe ingredient as super administrator")
+    void respond201OnCreationAsSuperAdministrator() throws Exception {
+        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID)
+                .contentType(APPLICATION_JSON)
+                .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\"}")
+        ).andExpect(status().isCreated());
+    }
+
+    @Test
+    @WithCommunityUser
+    @DisplayName("respond Unauthorized when deleting recipe's ingredients as a community user")
+    void respond401OnDeletionAsCommunityUser() throws Exception {
+        mvc.perform(delete(RECIPE_INGREDIENTS_API_URL, ID))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithAuthenticatedUser
     @DisplayName("respond No Content when deleting recipe's ingredients")
     void respond204OnDeletion() throws Exception {
         mvc.perform(delete(RECIPE_INGREDIENTS_API_URL, ID))
@@ -219,12 +267,29 @@ class RecipeIngredientsControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("call application service when deleting recipe's ingredients")
     void callServiceOnDeletion() throws Exception {
         mvc.perform(delete(RECIPE_INGREDIENTS_API_URL, ID))
                 .andExpect(status().isNoContent());
 
         verify(recipeIngredientAppServiceMock).removeIngredientsFromRecipe(removeIngredientsCommand());
+    }
+
+    @Test
+    @WithIngredientManager
+    @DisplayName("respond No Content when deleting recipe's ingredients as ingredient manager")
+    void respond204OnDeletionAsIngredientManager() throws Exception {
+        mvc.perform(delete(RECIPE_INGREDIENTS_API_URL, ID))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @WithSuperAdministrator
+    @DisplayName("respond No Content when deleting recipe's ingredients as super administrator")
+    void respond204OnDeletionAsSuperAdministrator() throws Exception {
+        mvc.perform(delete(RECIPE_INGREDIENTS_API_URL, ID))
+                .andExpect(status().isNoContent());
     }
 
     void assertJsonContainsRecipeIngredient(ResultActions resultActions, String jsonPath,

@@ -20,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import org.adhuc.cena.menu.common.security.AsAuthenticatedUser;
+
 /**
  * A {@link RecipeIngredientAppService} implementation.
  *
@@ -37,16 +39,19 @@ class RecipeIngredientAppServiceImpl implements RecipeIngredientAppService {
     private final RecipeRepository recipeRepository;
 
     @Override
+    @AsAuthenticatedUser
     public void addIngredientToRecipe(@NonNull AddIngredientToRecipe command) {
         ingredientToRecipeAdditionService.addIngredientToRecipe(command);
     }
 
     @Override
+    @AsAuthenticatedUser
     public void removeIngredientFromRecipe(@NonNull RemoveIngredientFromRecipe command) {
         ingredientFromRecipeRemovalService.removeIngredientFromRecipe(command);
     }
 
     @Override
+    @AsAuthenticatedUser
     public void removeIngredientsFromRecipe(@NonNull RemoveIngredientsFromRecipe command) {
         var recipe = recipeRepository.findNotNullById(command.recipeId());
         recipe.removeIngredients(command);

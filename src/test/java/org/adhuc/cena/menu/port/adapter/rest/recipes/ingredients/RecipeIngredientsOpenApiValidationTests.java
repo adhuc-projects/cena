@@ -24,7 +24,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.adhuc.cena.menu.common.ExceptionCode.INVALID_REQUEST;
 import static org.adhuc.cena.menu.ingredients.IngredientMother.ingredient;
 import static org.adhuc.cena.menu.port.adapter.rest.assertion.support.ErrorAssert.assertThat;
-import static org.adhuc.cena.menu.recipes.RecipeMother.*;
+import static org.adhuc.cena.menu.recipes.RecipeMother.ID;
+import static org.adhuc.cena.menu.recipes.RecipeMother.fromDefault;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
+import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
 import org.adhuc.cena.menu.ingredients.IngredientMother;
 import org.adhuc.cena.menu.ingredients.IngredientRepository;
 import org.adhuc.cena.menu.port.adapter.rest.assertion.support.Error;
@@ -58,6 +60,8 @@ class RecipeIngredientsOpenApiValidationTests {
     @LocalServerPort
     private int port;
     @Autowired
+    private MenuGenerationProperties properties;
+    @Autowired
     private RecipeRepository recipeRepository;
     @Autowired
     private IngredientRepository ingredientRepository;
@@ -74,6 +78,8 @@ class RecipeIngredientsOpenApiValidationTests {
     void respond400OnCreationWithoutId() throws Exception {
         var error = given()
                 .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                        properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
                 .body("{}")
                 .when()
@@ -93,6 +99,8 @@ class RecipeIngredientsOpenApiValidationTests {
     void respond201OnCreationWithAdditionalProperty() throws Exception {
         given()
                 .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
                 .body(String.format("{\"id\":\"%s\",\"other\":\"some value\"}", IngredientMother.ID))
                 .when()

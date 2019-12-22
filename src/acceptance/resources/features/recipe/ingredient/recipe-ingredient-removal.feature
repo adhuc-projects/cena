@@ -37,8 +37,106 @@ Feature: Remove ingredients from recipe
     When he attempts removing the ingredient from the recipe
     Then an error notifies that recipe does not contain ingredient
 
+  @Security
+  Scenario: Remove an ingredient from a recipe as community user
+    Given a community user
+    And an existing "Tomato" ingredient
+    And an existing "Tomato, cucumber and mozzarella salad" recipe
+    And recipe contains ingredient
+    When he removes the ingredient from the recipe
+    Then an error notifies that user is not authenticated
+    And the ingredient can be found in the recipe's ingredients list
+
+  @Security
+  Scenario: Remove an ingredient from a recipe as ingredient manager
+    Given an authenticated ingredient manager
+    And an existing "Tomato" ingredient
+    And an existing "Tomato, cucumber and mozzarella salad" recipe
+    And recipe contains ingredient
+    When he removes the ingredient from the recipe
+    Then the ingredient is removed from the recipe
+    And the ingredient cannot be found in the recipe's ingredients list
+
+  @Security
+  Scenario: Remove an ingredient from a recipe as super administrator
+    Given an authenticated super administrator
+    And an existing "Tomato" ingredient
+    And an existing "Tomato, cucumber and mozzarella salad" recipe
+    And recipe contains ingredient
+    When he removes the ingredient from the recipe
+    Then the ingredient is removed from the recipe
+    And the ingredient cannot be found in the recipe's ingredients list
+
+  @Edge
+  Scenario: Remove all ingredients from a recipe related to no ingredient
+    Given an authenticated user
+    And an existing "Tomato, cucumber and mozzarella salad" recipe
+    And the following existing ingredients
+      | name       |
+      | Tomato     |
+      | Cucumber   |
+      | Mozzarella |
+    And the recipe contains no ingredient
+    When he removes all the ingredients from the recipe
+    Then the ingredients are removed from the recipe
+    And no ingredient is related to the recipe
+
+  @Smoke @Security
   Scenario: Remove all ingredients from a recipe
     Given an authenticated user
+    And an existing "Tomato, cucumber and mozzarella salad" recipe
+    And the following existing ingredients
+      | name       |
+      | Tomato     |
+      | Cucumber   |
+      | Mozzarella |
+    And the following ingredients in the recipe
+      | name       |
+      | Tomato     |
+      | Cucumber   |
+      | Mozzarella |
+    When he removes all the ingredients from the recipe
+    Then the ingredients are removed from the recipe
+    And no ingredient is related to the recipe
+
+  @Security
+  Scenario: Remove all ingredients from a recipe as community user
+    Given a community user
+    And an existing "Tomato, cucumber and mozzarella salad" recipe
+    And the following existing ingredients
+      | name       |
+      | Tomato     |
+      | Cucumber   |
+      | Mozzarella |
+    And the following ingredients in the recipe
+      | name       |
+      | Tomato     |
+      | Cucumber   |
+      | Mozzarella |
+    When he removes all the ingredients from the recipe
+    Then an error notifies that user is not authenticated
+
+  @Smoke @Security
+  Scenario: Remove all ingredients from a recipe as ingredient manager
+    Given an authenticated ingredient manager
+    And an existing "Tomato, cucumber and mozzarella salad" recipe
+    And the following existing ingredients
+      | name       |
+      | Tomato     |
+      | Cucumber   |
+      | Mozzarella |
+    And the following ingredients in the recipe
+      | name       |
+      | Tomato     |
+      | Cucumber   |
+      | Mozzarella |
+    When he removes all the ingredients from the recipe
+    Then the ingredients are removed from the recipe
+    And no ingredient is related to the recipe
+
+  @Smoke @Security
+  Scenario: Remove all ingredients from a recipe as super administrator
+    Given an authenticated super administrator
     And an existing "Tomato, cucumber and mozzarella salad" recipe
     And the following existing ingredients
       | name       |

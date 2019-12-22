@@ -45,3 +45,33 @@ Feature: Add ingredients to recipe
     When he adds the ingredient to the recipe
     Then the ingredient is added to the recipe
     And the ingredient can be found in the recipe's ingredients list
+
+  @Security
+  Scenario: Add an ingredient to a recipe as community user
+    Given a community user
+    And an existing "Tomato" ingredient
+    And an existing "Tomato, cucumber and mozzarella salad" recipe
+    And recipe does not contain ingredient
+    When he adds the ingredient to the recipe
+    Then an error notifies that user is not authenticated
+    And the ingredient cannot be found in the recipe's ingredients list
+
+  @Security
+  Scenario: Add an ingredient to a recipe as ingredient manager
+    Given an authenticated ingredient manager
+    And an existing "Tomato" ingredient
+    And an existing "Tomato, cucumber and mozzarella salad" recipe
+    And recipe does not contain ingredient
+    When he adds the ingredient to the recipe
+    Then the ingredient is added to the recipe
+    And the ingredient can be found in the recipe's ingredients list
+
+  @Security
+  Scenario: Add an ingredient to a recipe as super administrator
+    Given an authenticated super administrator
+    And an existing "Tomato" ingredient
+    And an existing "Tomato, cucumber and mozzarella salad" recipe
+    And recipe does not contain ingredient
+    When he adds the ingredient to the recipe
+    Then the ingredient is added to the recipe
+    And the ingredient can be found in the recipe's ingredients list

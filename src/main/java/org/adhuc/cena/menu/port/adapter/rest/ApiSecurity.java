@@ -50,7 +50,7 @@ public class ApiSecurity extends WebSecurityConfigurerAdapter {
     private static final String BASE_RECIPE_INGREDIENTS_PATH = RECIPE_INGREDIENTS_PATH + WILDCARD;
 
     @Override
-    protected void configure(final HttpSecurity http) throws Exception {
+    protected void configure(HttpSecurity http) throws Exception {
         var authorizationConfigurer = http.authorizeRequests();
         authorizationConfigurer
                 // Ingredients resources
@@ -58,7 +58,9 @@ public class ApiSecurity extends WebSecurityConfigurerAdapter {
                 .mvcMatchers(DELETE, INGREDIENTS_PATH).hasRole(SUPER_ADMINISTRATOR_ROLE)
                 .mvcMatchers(DELETE, BASE_INGREDIENTS_PATH).hasAnyRole(INGREDIENT_MANAGER_ROLE, SUPER_ADMINISTRATOR_ROLE)
                 // Recipe ingredients resources
-                .mvcMatchers(DELETE, BASE_RECIPE_INGREDIENTS_PATH).permitAll()
+                .mvcMatchers(POST, RECIPE_INGREDIENTS_PATH).authenticated()
+                .mvcMatchers(DELETE, RECIPE_INGREDIENTS_PATH).authenticated()
+                .mvcMatchers(DELETE, BASE_RECIPE_INGREDIENTS_PATH).authenticated()
                 // Recipes resources
                 .mvcMatchers(POST, RECIPES_PATH).authenticated()
                 .mvcMatchers(DELETE, RECIPES_PATH).hasRole(SUPER_ADMINISTRATOR_ROLE)

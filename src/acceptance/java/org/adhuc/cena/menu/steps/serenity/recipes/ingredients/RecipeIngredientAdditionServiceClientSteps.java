@@ -20,6 +20,11 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpHeaders.LOCATION;
 
+import static org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType.SUPER_ADMINISTRATOR;
+
+import java.util.function.Supplier;
+
+import io.restassured.specification.RequestSpecification;
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
@@ -54,7 +59,18 @@ public class RecipeIngredientAdditionServiceClientSteps {
 
     @Step("Add ingredient {0} to recipe {1}")
     public void addIngredientToRecipe(IngredientValue ingredient, RecipeValue recipe) {
-        rest().contentType(HAL_JSON_VALUE).body(new RecipeIngredientValue(ingredient)).post(recipe.getIngredients()).andReturn();
+        addIngredientToRecipe(ingredient, recipe, this::rest);
+    }
+
+    @Step("Add ingredient {0} to recipe {1} as super administrator")
+    public void addIngredientToRecipeAsSuperAdministrator(IngredientValue ingredient, RecipeValue recipe) {
+        addIngredientToRecipe(ingredient, recipe, () -> rest(SUPER_ADMINISTRATOR));
+    }
+
+    private void addIngredientToRecipe(IngredientValue ingredient, RecipeValue recipe,
+                                       Supplier<RequestSpecification> specificationSupplier) {
+        specificationSupplier.get().contentType(HAL_JSON_VALUE).body(new RecipeIngredientValue(ingredient))
+                .post(recipe.getIngredients()).andReturn();
     }
 
     @Step("Add ingredient without id to recipe {0}")

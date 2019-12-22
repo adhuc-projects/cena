@@ -17,6 +17,11 @@ package org.adhuc.cena.menu.steps.serenity.recipes.ingredients;
 
 import static org.assertj.core.api.Assumptions.assumeThat;
 
+import static org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType.SUPER_ADMINISTRATOR;
+
+import java.util.function.Supplier;
+
+import io.restassured.specification.RequestSpecification;
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 import org.assertj.core.api.SoftAssertions;
@@ -53,11 +58,26 @@ public class RecipeIngredientRemovalServiceClientSteps {
         rest().delete(recipe.getIngredients()).andReturn();
     }
 
+    @Step("Remove ingredients from recipe {0} as super administrator")
+    public void removeIngredientsFromRecipeAsSuperAdministrator(RecipeValue recipe) {
+        rest(SUPER_ADMINISTRATOR).delete(recipe.getIngredients()).andReturn();
+    }
+
     @Step("Remove ingredient {0} from recipe {1}")
     public void removeIngredientFromRecipe(IngredientValue ingredient, RecipeValue recipe) {
+        removeIngredientFromRecipe(ingredient, recipe, this::rest);
+    }
+
+    @Step("Remove ingredient {0} from recipe {1} as super administrator")
+    public void removeIngredientFromRecipeAsSuperAdministrator(IngredientValue ingredient, RecipeValue recipe) {
+        removeIngredientFromRecipe(ingredient, recipe, () -> rest(SUPER_ADMINISTRATOR));
+    }
+
+    private void removeIngredientFromRecipe(IngredientValue ingredient, RecipeValue recipe,
+                                            Supplier<RequestSpecification> specificationSupplier) {
         var recipeIngredient = listClient.getFromRecipeIngredientsList(ingredient, recipe);
         assumeThat(recipeIngredient).isPresent();
-        rest().delete(recipeIngredient.get().selfLink()).andReturn();
+        specificationSupplier.get().delete(recipeIngredient.get().selfLink()).andReturn();
     }
 
     @Step("Attempt removing ingredient {0} from recipe {1}")

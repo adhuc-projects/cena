@@ -44,6 +44,10 @@ import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.recipes.Recipe;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
 import org.adhuc.cena.menu.recipes.RecipeIngredientAppService;
+import org.adhuc.cena.menu.support.WithAuthenticatedUser;
+import org.adhuc.cena.menu.support.WithCommunityUser;
+import org.adhuc.cena.menu.support.WithIngredientManager;
+import org.adhuc.cena.menu.support.WithSuperAdministrator;
 
 /**
  * The {@link RecipeIngredientController} test class.
@@ -72,6 +76,7 @@ class RecipeIngredientControllerShould {
     private IngredientAppService ingredientAppServiceMock;
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Not Found when retrieving ingredient from unknown recipe")
     void respond404GetRecipeIngredientUnknownRecipe() throws Exception {
         when(recipeAppServiceMock.getRecipe(ID)).thenThrow(new EntityNotFoundException(Recipe.class, ID));
@@ -79,6 +84,7 @@ class RecipeIngredientControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Not Found when retrieving unknown ingredient from recipe")
     void respond404GetRecipeIngredientUnknownIngredient() throws Exception {
         when(recipeAppServiceMock.getRecipe(ID)).thenReturn(fromDefault().build());
@@ -86,6 +92,7 @@ class RecipeIngredientControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Not Found when deleting ingredient from unknown recipe")
     void respond404DeleteRecipeIngredientUnknownRecipe() throws Exception {
         doThrow(new EntityNotFoundException(Recipe.class, ID)).when(recipeIngredientAppServiceMock)
@@ -94,6 +101,7 @@ class RecipeIngredientControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Not Found when deleting unknown ingredient from recipe")
     void respond404DeleteRecipeIngredientUnknownIngredient() throws Exception {
         doThrow(new EntityNotFoundException(Ingredient.class, IngredientMother.ID)).when(recipeIngredientAppServiceMock)
@@ -102,16 +110,40 @@ class RecipeIngredientControllerShould {
     }
 
     @Test
-    @DisplayName("return No Content status on recipe ingredient deletion")
-    void deleteRecipeIngredientStatusNoContent() throws Exception {
+    @WithCommunityUser
+    @DisplayName("respond Unauthorized on recipe ingredient deletion as a community user")
+    void respond401DeleteRecipeIngredientAsCommunityUser() throws Exception {
+        mvc.perform(delete(RECIPE_INGREDIENT_API_URL, ID, IngredientMother.ID))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("respond No Content on recipe ingredient deletion")
+    void respond204DeleteRecipeIngredient() throws Exception {
         mvc.perform(delete(RECIPE_INGREDIENT_API_URL, ID, IngredientMother.ID)).andExpect(status().isNoContent());
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("call application service on recipe ingredient deletion")
     void deleteRecipeIngredientCallAppService() throws Exception {
         mvc.perform(delete(RECIPE_INGREDIENT_API_URL, ID, IngredientMother.ID)).andReturn();
         verify(recipeIngredientAppServiceMock).removeIngredientFromRecipe(removeIngredientCommand());
+    }
+
+    @Test
+    @WithIngredientManager
+    @DisplayName("respond No Content on recipe ingredient deletion as ingredient manager")
+    void respond204DeleteRecipeIngredientAsIngredientManager() throws Exception {
+        mvc.perform(delete(RECIPE_INGREDIENT_API_URL, ID, IngredientMother.ID)).andExpect(status().isNoContent());
+    }
+
+    @Test
+    @WithSuperAdministrator
+    @DisplayName("respond No Content on recipe ingredient deletion as super administrator")
+    void respond204DeleteRecipeIngredientAsSuperAdministrator() throws Exception {
+        mvc.perform(delete(RECIPE_INGREDIENT_API_URL, ID, IngredientMother.ID)).andExpect(status().isNoContent());
     }
 
     @Nested

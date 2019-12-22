@@ -49,6 +49,7 @@ import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
 import org.adhuc.cena.menu.recipes.RecipeIngredientAppService;
 import org.adhuc.cena.menu.recipes.RecipeMother;
+import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 
 /**
  * The recipe ingredient related rest-services documentation.
@@ -105,6 +106,7 @@ class RecipeIngredientDocumentation {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("generates recipe ingredient deletion example")
     void recipeIngredientDeleteExample() throws Exception {
         mvc.perform(delete(RECIPE_INGREDIENT_API_URL, RecipeMother.ID, IngredientMother.ID)).andExpect(status().isNoContent())

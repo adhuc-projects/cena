@@ -50,6 +50,7 @@ import org.adhuc.cena.menu.port.adapter.rest.recipes.RecipesController;
 import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
 import org.adhuc.cena.menu.recipes.RecipeIngredientAppService;
+import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 
 /**
  * The recipe ingredients related rest-services documentation.
@@ -106,6 +107,7 @@ class RecipeIngredientsDocumentation {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("generates recipe ingredient creation example")
     void recipeIngredientsCreateExample() throws Exception {
         var fields = new ConstrainedFields(CreateRecipeIngredientRequest.class);
@@ -120,6 +122,7 @@ class RecipeIngredientsDocumentation {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("generate recipe ingredients deletion example")
     void recipeIngredientsDeletionExample() throws Exception {
         mvc.perform(delete(RECIPE_INGREDIENTS_API_URL, ID))

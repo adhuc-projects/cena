@@ -26,10 +26,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import static org.adhuc.cena.menu.ingredients.IngredientMother.CUCUMBER_ID;
-import static org.adhuc.cena.menu.ingredients.IngredientMother.TOMATO_ID;
 import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.*;
@@ -83,9 +82,7 @@ class RecipesControllerShould {
 
         @BeforeEach
         void setUp() {
-            recipes = List.of(recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID, TOMATO_CUCUMBER_MOZZA_SALAD_NAME,
-                    TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT, TOMATO_ID, CUCUMBER_ID), recipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID,
-                    TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT, TOMATO_ID));
+            recipes = new ArrayList<>(recipes());
             when(recipeAppServiceMock.getRecipes()).thenReturn(recipes);
         }
 

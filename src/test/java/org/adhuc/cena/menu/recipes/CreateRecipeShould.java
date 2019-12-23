@@ -85,18 +85,18 @@ class CreateRecipeShould {
     }
 
     private static Stream<Arguments> equalitySource() {
-        var createTomatoCucumberAndMozzaSalad = createCommand(recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID,
-                TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT));
+        var createTomatoCucumberAndMozzaSalad = new CreateRecipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID,
+                TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT);
         return Stream.of(
                 Arguments.of(createTomatoCucumberAndMozzaSalad, createTomatoCucumberAndMozzaSalad, true),
-                Arguments.of(createTomatoCucumberAndMozzaSalad, createCommand(recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID,
-                        TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT)), true),
-                Arguments.of(createTomatoCucumberAndMozzaSalad, createCommand(recipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID,
-                        TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT)), false),
-                Arguments.of(createTomatoCucumberAndMozzaSalad, createCommand(recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID,
-                        TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT)), false),
-                Arguments.of(createTomatoCucumberAndMozzaSalad, createCommand(recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID,
-                        TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT)), false)
+                Arguments.of(createTomatoCucumberAndMozzaSalad, new CreateRecipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID,
+                        TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT), true),
+                Arguments.of(createTomatoCucumberAndMozzaSalad, new CreateRecipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID,
+                        TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT), false),
+                Arguments.of(createTomatoCucumberAndMozzaSalad, new CreateRecipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID,
+                        TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT), false),
+                Arguments.of(createTomatoCucumberAndMozzaSalad, new CreateRecipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID,
+                        TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT), false)
         );
     }
 

@@ -15,12 +15,19 @@
  */
 package org.adhuc.cena.menu.recipes;
 
+import static lombok.AccessLevel.PRIVATE;
+
 import static org.adhuc.cena.menu.ingredients.IngredientMother.CUCUMBER_ID;
 import static org.adhuc.cena.menu.ingredients.IngredientMother.TOMATO_ID;
 
-import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.With;
 
 import org.adhuc.cena.menu.ingredients.IngredientId;
 import org.adhuc.cena.menu.ingredients.IngredientMother;
@@ -100,15 +107,18 @@ public class RecipeMother {
     }
 
     public static Recipe recipe() {
-        return fromDefault().withIngredients(TOMATO_ID, CUCUMBER_ID).build();
+        return builder().withIngredients(TOMATO_ID, CUCUMBER_ID).build();
     }
 
-    public static Recipe recipe(@NonNull RecipeId id, @NonNull String name, @NonNull String content, IngredientId... ingredientIds) {
-        var builder = from(id, name, content);
-        if (ingredientIds != null) {
-            builder.withIngredients(ingredientIds);
-        }
-        return builder.build();
+    public static Collection<Recipe> recipes() {
+        var tomatoCucumberMozzaSalad = recipe();
+        var tomatoCucumberOliveAndFetaSalad = builder()
+                .withId(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)
+                .withName(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME)
+                .withContent(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT)
+                .withIngredients(TOMATO_ID)
+                .build();
+        return List.of(tomatoCucumberMozzaSalad, tomatoCucumberOliveAndFetaSalad);
     }
 
     public static RecipeIngredient recipeIngredient() {
@@ -123,27 +133,26 @@ public class RecipeMother {
         return new RecipeIngredient(recipeId, ingredientId);
     }
 
-    public static Builder fromDefault() {
-        return new Builder(ID, NAME, CONTENT);
+    public static Builder builder() {
+        return new Builder();
     }
 
-    public static Builder from(@NonNull RecipeId id, @NonNull String name, @NonNull String content) {
-        return new Builder(id, name, content);
-    }
-
+    @With
+    @NoArgsConstructor(access = PRIVATE)
+    @AllArgsConstructor(access = PRIVATE)
     public static class Builder {
-        private Recipe recipe;
-
-        private Builder(RecipeId id, String name, String content) {
-            recipe = new Recipe(id, name, content);
-        }
+        private RecipeId id = ID;
+        private String name = NAME;
+        private String content = CONTENT;
+        private Set<IngredientId> ingredients = Set.of();
 
         public Builder withIngredients(@NonNull IngredientId... ids) {
-            Arrays.stream(ids).forEach(id -> recipe.addIngredient(addIngredientCommand(id, recipe.id())));
-            return this;
+            return new Builder(id, name, content, Set.of(ids));
         }
 
         public Recipe build() {
+            var recipe = new Recipe(id, name, content);
+            ingredients.forEach(id -> recipe.addIngredient(addIngredientCommand(id, recipe.id())));
             return recipe;
         }
     }

@@ -19,9 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import static org.adhuc.cena.menu.ingredients.IngredientMother.TOMATO_ID;
 import static org.adhuc.cena.menu.recipes.RecipeMother.*;
-import static org.adhuc.cena.menu.recipes.RecipeMother.ID;
 
 import org.junit.jupiter.api.*;
 
@@ -76,7 +74,7 @@ class RecipeAppServiceImplShould {
     @Test
     @DisplayName("create recipe successfully")
     void createRecipe() {
-        var recipe = fromDefault().build();
+        var recipe = builder().build();
         var created = service.createRecipe(createCommand(recipe));
         assertThat(created).isNotNull().isEqualToComparingFieldByField(recipe);
     }
@@ -84,7 +82,7 @@ class RecipeAppServiceImplShould {
     @Test
     @DisplayName("retrieve recipe with identity after creation")
     void retrieveRecipeWithIdAfterCreation() {
-        var recipe = fromDefault().build();
+        var recipe = builder().build();
         service.createRecipe(createCommand(recipe));
         assertThat(service.getRecipe(recipe.id())).isNotNull().isEqualToComparingFieldByField(recipe);
     }
@@ -109,8 +107,11 @@ class RecipeAppServiceImplShould {
 
         @BeforeEach
         void setUp() {
-            tomatoCucumberAndMozzaSalad = recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID, TOMATO_CUCUMBER_MOZZA_SALAD_NAME,
-                    TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT);
+            tomatoCucumberAndMozzaSalad = builder()
+                    .withId(TOMATO_CUCUMBER_MOZZA_SALAD_ID)
+                    .withName(TOMATO_CUCUMBER_MOZZA_SALAD_NAME)
+                    .withContent(TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT)
+                    .build();
             recipeRepository.save(tomatoCucumberAndMozzaSalad);
         }
 
@@ -157,8 +158,11 @@ class RecipeAppServiceImplShould {
 
             @BeforeEach
             void setUp() {
-                tomatoCucumberOliveAndFetaSalad = recipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID,
-                        TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT, TOMATO_ID);
+                tomatoCucumberOliveAndFetaSalad = builder()
+                        .withId(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)
+                        .withName(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME)
+                        .withContent(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT)
+                        .build();
                 recipeRepository.save(tomatoCucumberOliveAndFetaSalad);
             }
 

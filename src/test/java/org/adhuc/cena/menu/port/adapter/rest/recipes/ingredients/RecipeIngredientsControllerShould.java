@@ -156,7 +156,7 @@ class RecipeIngredientsControllerShould {
     class WithEmptyList {
         @BeforeEach
         void setUp() throws Exception {
-            when(recipeAppServiceMock.getRecipe(ID)).thenReturn(fromDefault().build());
+            when(recipeAppServiceMock.getRecipe(ID)).thenReturn(builder().build());
         }
 
         @Test

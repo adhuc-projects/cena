@@ -69,7 +69,7 @@ class RecipeShould {
     @Test
     @DisplayName("contain id, name and content used during creation")
     void containCreationValues() {
-        var recipe = fromDefault().build();
+        var recipe = builder().build();
         assertSoftly(softly -> {
             softly.assertThat(recipe.id()).isEqualTo(ID);
             softly.assertThat(recipe.name()).isEqualTo(NAME);
@@ -96,7 +96,7 @@ class RecipeShould {
     @Test
     @DisplayName("return non modifiable ingredients set")
     void ingredientsNotModifiable() {
-        var recipe = fromDefault().withIngredients(CUCUMBER_ID).build();
+        var recipe = builder().withIngredients(CUCUMBER_ID).build();
         assertThrows(UnsupportedOperationException.class, () -> recipe.ingredients().add(recipeIngredient()));
     }
 
@@ -104,7 +104,7 @@ class RecipeShould {
     @DisplayName("be related to ingredient after adding ingredient to recipe")
     void addIngredientToRecipe() {
         var recipeIngredient = recipeIngredient(TOMATO_ID);
-        var recipe = fromDefault().build();
+        var recipe = builder().build();
         assumeThat(recipe.ingredients()).isEmpty();
 
         recipe.addIngredient(addIngredientCommand(recipeIngredient));
@@ -115,7 +115,7 @@ class RecipeShould {
     @DisplayName("be related to ingredient after adding ingredient to recipe twice")
     void addIngredientToRecipeTwice() {
         var recipeIngredient = recipeIngredient(TOMATO_ID);
-        var recipe = fromDefault().withIngredients(TOMATO_ID).build();
+        var recipe = builder().withIngredients(TOMATO_ID).build();
         assumeThat(recipe.ingredients()).contains(recipeIngredient);
 
         recipe.addIngredient(addIngredientCommand(recipeIngredient));
@@ -126,7 +126,7 @@ class RecipeShould {
     @DisplayName("be related to multiple ingredients after adding ingredient to recipe already related to ingredients")
     void addIngredientToRecipeMultiple() {
         var recipeIngredient = recipeIngredient(IngredientId.generate());
-        var recipe = fromDefault().withIngredients(TOMATO_ID, CUCUMBER_ID).build();
+        var recipe = builder().withIngredients(TOMATO_ID, CUCUMBER_ID).build();
         assumeThat(recipe.ingredients()).isNotEmpty().doesNotContain(recipeIngredient);
         var existingIngredients = recipe.ingredients();
 
@@ -152,7 +152,7 @@ class RecipeShould {
     @Test
     @DisplayName("throw IngredientNotRelatedToRecipeException when removing non related ingredient from recipe")
     void removeUnknownIngredient() {
-        var recipe = fromDefault().withIngredients(CUCUMBER_ID).build();
+        var recipe = builder().withIngredients(CUCUMBER_ID).build();
         var exception = assertThrows(IngredientNotRelatedToRecipeException.class, () ->
                 recipe.removeIngredient(removeIngredientCommand(TOMATO_ID)));
         assertThat(exception.getMessage()).isEqualTo("Ingredient '" + TOMATO_ID + "' is not related to recipe '" + ID + "'");
@@ -173,7 +173,7 @@ class RecipeShould {
     @DisplayName("be related to non removed ingredients after removing ingredient from recipe")
     void removeIngredientFromRecipeOthersStillRelated() {
         var recipeIngredient = recipeIngredient(TOMATO_ID);
-        var recipe = fromDefault().withIngredients(TOMATO_ID, CUCUMBER_ID).build();
+        var recipe = builder().withIngredients(TOMATO_ID, CUCUMBER_ID).build();
         assumeThat(recipe.ingredients()).contains(recipeIngredient);
 
         recipe.removeIngredient(removeIngredientCommand(recipeIngredient));
@@ -236,20 +236,19 @@ class RecipeShould {
     }
 
     private static Stream<Arguments> equalitySource() {
-        var tomatoCucumberMozzaSalad = recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID, TOMATO_CUCUMBER_MOZZA_SALAD_NAME,
-                TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT, TOMATO_ID, CUCUMBER_ID);
+        var builder = builder()
+                .withId(TOMATO_CUCUMBER_MOZZA_SALAD_ID)
+                .withName(TOMATO_CUCUMBER_MOZZA_SALAD_NAME)
+                .withContent(TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT)
+                .withIngredients(TOMATO_ID, CUCUMBER_ID);
+        var tomatoCucumberMozzaSalad = builder.build();
         return Stream.of(
                 Arguments.of(tomatoCucumberMozzaSalad, tomatoCucumberMozzaSalad, true),
-                Arguments.of(tomatoCucumberMozzaSalad, recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID,
-                        TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT, TOMATO_ID, CUCUMBER_ID), true),
-                Arguments.of(tomatoCucumberMozzaSalad, recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID,
-                        TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT), true),
-                Arguments.of(tomatoCucumberMozzaSalad, recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID,
-                        TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT), true),
-                Arguments.of(tomatoCucumberMozzaSalad, recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID,
-                        TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT, TOMATO_ID), true),
-                Arguments.of(tomatoCucumberMozzaSalad, recipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID,
-                        TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT), false)
+                Arguments.of(tomatoCucumberMozzaSalad, builder.build(), true),
+                Arguments.of(tomatoCucumberMozzaSalad, builder.withName(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME).build(), true),
+                Arguments.of(tomatoCucumberMozzaSalad, builder.withContent(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT).build(), true),
+                Arguments.of(tomatoCucumberMozzaSalad, builder.withIngredients().build(), true),
+                Arguments.of(tomatoCucumberMozzaSalad, builder.withId(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID).build(), false)
         );
     }
 

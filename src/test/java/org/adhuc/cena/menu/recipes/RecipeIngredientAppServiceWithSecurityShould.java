@@ -79,7 +79,7 @@ class RecipeIngredientAppServiceWithSecurityShould {
         ingredientRepository.save(ingredient(CUCUMBER_ID, CUCUMBER));
 
         repository.deleteAll();
-        repository.save(fromDefault().withIngredients(CUCUMBER_ID).build());
+        repository.save(builder().withIngredients(CUCUMBER_ID).build());
         assumeThat(repository.findNotNullById(RecipeMother.ID).ingredients()).noneMatch(i -> i.ingredientId().equals(TOMATO_ID));
     }
 

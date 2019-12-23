@@ -24,11 +24,10 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import static org.adhuc.cena.menu.ingredients.IngredientMother.CUCUMBER_ID;
-import static org.adhuc.cena.menu.ingredients.IngredientMother.TOMATO_ID;
-import static org.adhuc.cena.menu.recipes.RecipeMother.*;
+import static org.adhuc.cena.menu.recipes.RecipeMother.recipe;
+import static org.adhuc.cena.menu.recipes.RecipeMother.recipes;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -82,10 +81,7 @@ class RecipesDocumentation {
     @Test
     @DisplayName("generates recipes list example")
     void recipesListExample() throws Exception {
-        when(recipeAppServiceMock.getRecipes()).thenReturn(List.of(
-                recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID, TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT, TOMATO_ID, CUCUMBER_ID),
-                recipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT, TOMATO_ID)
-        ));
+        when(recipeAppServiceMock.getRecipes()).thenReturn(new ArrayList<>(recipes()));
 
         mvc.perform(get(RECIPES_API_URL)).andExpect(status().isOk())
                 .andDo(documentationHandler.document(

@@ -72,15 +72,18 @@ class InMemoryRecipeRepositoryShould {
 
         @BeforeEach
         void setUp() {
-            tomatoCucumberAndMozzaSalad = recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID, TOMATO_CUCUMBER_MOZZA_SALAD_NAME,
-                    TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT);
+            tomatoCucumberAndMozzaSalad = builder()
+                    .withId(TOMATO_CUCUMBER_MOZZA_SALAD_ID)
+                    .withName(TOMATO_CUCUMBER_MOZZA_SALAD_NAME)
+                    .withContent(TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT)
+                    .build();
             repository.save(tomatoCucumberAndMozzaSalad);
         }
 
         @Test
         @DisplayName("return a collection containing recipe")
         void returnCollectionContainingRecipe() {
-            assertThat(repository.findAll()).containsExactly(tomatoCucumberAndMozzaSalad);
+            assertThat(repository.findAll()).usingFieldByFieldElementComparator().containsExactly(tomatoCucumberAndMozzaSalad);
         }
 
         @Test
@@ -147,16 +150,25 @@ class InMemoryRecipeRepositoryShould {
         @Test
         @DisplayName("delete recipe with tomato, cucumber and mozzarella salad identity and other name and content")
         void deleteWithIdAndDifferentNameAndContent() {
-            repository.delete(recipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME,
-                    TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT, TOMATO_ID, CUCUMBER_ID));
+            var recipe = builder()
+                    .withId(TOMATO_CUCUMBER_MOZZA_SALAD_ID)
+                    .withName(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME)
+                    .withContent(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT)
+                    .withIngredients(TOMATO_ID, CUCUMBER_ID)
+                    .build();
+            repository.delete(recipe);
             assertThat(repository.findAll()).doesNotContain(tomatoCucumberAndMozzaSalad);
         }
 
         @Test
         @DisplayName("do nothing when deleting unknown recipe")
         void deleteUnknownRecipe() {
-            repository.delete(recipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID, TOMATO_CUCUMBER_MOZZA_SALAD_NAME,
-                    TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT));
+            var recipe = builder()
+                    .withId(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)
+                    .withName(TOMATO_CUCUMBER_MOZZA_SALAD_NAME)
+                    .withContent(TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT)
+                    .build();
+            repository.delete(recipe);
             assertThat(repository.findAll()).containsOnly(tomatoCucumberAndMozzaSalad);
         }
 
@@ -168,8 +180,11 @@ class InMemoryRecipeRepositoryShould {
 
             @BeforeEach
             void setUp() {
-                tomatoCucumberOliveAndFetaSalad = recipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID,
-                        TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT);
+                tomatoCucumberOliveAndFetaSalad = builder()
+                        .withId(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)
+                        .withName(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME)
+                        .withContent(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT)
+                        .build();
                 repository.save(tomatoCucumberOliveAndFetaSalad);
             }
 

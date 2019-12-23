@@ -87,7 +87,7 @@ class RecipeIngredientControllerShould {
     @WithAuthenticatedUser
     @DisplayName("respond Not Found when retrieving unknown ingredient from recipe")
     void respond404GetRecipeIngredientUnknownIngredient() throws Exception {
-        when(recipeAppServiceMock.getRecipe(ID)).thenReturn(fromDefault().build());
+        when(recipeAppServiceMock.getRecipe(ID)).thenReturn(builder().build());
         mvc.perform(get(RECIPE_INGREDIENT_API_URL, ID, IngredientMother.ID)).andExpect(status().isNotFound());
     }
 

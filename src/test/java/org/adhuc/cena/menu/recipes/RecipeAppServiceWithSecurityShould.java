@@ -71,8 +71,7 @@ class RecipeAppServiceWithSecurityShould {
     @BeforeEach
     void setUp() {
         repository.deleteAll();
-        repository.save(recipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME,
-                TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT));
+        repository.save(builder().withId(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID).build());
     }
 
     @Test

@@ -25,7 +25,7 @@ import static org.adhuc.cena.menu.common.ExceptionCode.INVALID_REQUEST;
 import static org.adhuc.cena.menu.ingredients.IngredientMother.ingredient;
 import static org.adhuc.cena.menu.port.adapter.rest.assertion.support.ErrorAssert.assertThat;
 import static org.adhuc.cena.menu.recipes.RecipeMother.ID;
-import static org.adhuc.cena.menu.recipes.RecipeMother.fromDefault;
+import static org.adhuc.cena.menu.recipes.RecipeMother.builder;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,7 +69,7 @@ class RecipeIngredientsOpenApiValidationTests {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        recipeRepository.save(fromDefault().build());
+        recipeRepository.save(builder().build());
         ingredientRepository.save(ingredient());
     }
 

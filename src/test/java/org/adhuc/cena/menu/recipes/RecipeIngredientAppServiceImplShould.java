@@ -78,7 +78,7 @@ class RecipeIngredientAppServiceImplShould {
     class WithUnknownIngredient {
         @BeforeEach
         void setUp() {
-            recipeRepository.save(fromDefault().build());
+            recipeRepository.save(builder().build());
             assumeThat(recipeRepository.exists(RecipeMother.ID)).isTrue();
             assumeThat(ingredientRepository.exists(IngredientMother.ID)).isFalse();
         }
@@ -130,7 +130,7 @@ class RecipeIngredientAppServiceImplShould {
     class WithIngredientAndRecipe {
         @BeforeEach
         void setUp() {
-            recipeRepository.save(fromDefault().withIngredients(CUCUMBER_ID).build());
+            recipeRepository.save(builder().withIngredients(CUCUMBER_ID).build());
             assumeThat(recipeRepository.exists(RecipeMother.ID)).isTrue();
             assumeThat(recipeRepository.findNotNullById(RecipeMother.ID).ingredients())
                     .containsExactly(recipeIngredient(CUCUMBER_ID));

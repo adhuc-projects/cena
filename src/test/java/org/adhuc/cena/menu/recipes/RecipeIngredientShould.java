@@ -17,6 +17,7 @@ package org.adhuc.cena.menu.recipes;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
@@ -29,6 +30,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import org.adhuc.cena.menu.ingredients.IngredientId;
 import org.adhuc.cena.menu.ingredients.IngredientMother;
 
 /**
@@ -42,6 +44,20 @@ import org.adhuc.cena.menu.ingredients.IngredientMother;
 @Tag("domain")
 @DisplayName("Recipe ingredient should")
 class RecipeIngredientShould {
+
+    @ParameterizedTest
+    @MethodSource("invalidCreationParameters")
+    @DisplayName("not be creatable with invalid parameters")
+    void notBeCreatableWithInvalidParameters(RecipeId recipeId, IngredientId ingredientId) {
+        assertThrows(IllegalArgumentException.class, () -> new RecipeIngredient(recipeId, ingredientId));
+    }
+
+    private static Stream<Arguments> invalidCreationParameters() {
+        return Stream.of(
+                Arguments.of(null, IngredientMother.ID),
+                Arguments.of(ID, null)
+        );
+    }
 
     @Test
     @DisplayName("contain recipe and ingredient identities used during construction")

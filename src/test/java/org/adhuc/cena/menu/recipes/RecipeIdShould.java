@@ -16,6 +16,7 @@
 package org.adhuc.cena.menu.recipes;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
@@ -26,7 +27,11 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+
+import org.adhuc.cena.menu.common.EntityNotFoundException;
 
 /**
  * The {@link RecipeId} test class.
@@ -39,6 +44,14 @@ import org.junit.jupiter.params.provider.MethodSource;
 @Tag("domain")
 @DisplayName("Recipe identity should")
 class RecipeIdShould {
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @CsvSource({"invalid"})
+    @DisplayName("not be creatable from invalid value")
+    void notBeCreatableFromInvalidValue(String value) {
+        assertThrows(EntityNotFoundException.class, () -> new RecipeId(value));
+    }
 
     @Test
     @DisplayName("contain identity value used during construction")

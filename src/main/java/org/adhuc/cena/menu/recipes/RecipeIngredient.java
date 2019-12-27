@@ -15,6 +15,7 @@
  */
 package org.adhuc.cena.menu.recipes;
 
+import lombok.NonNull;
 import lombok.Value;
 import lombok.experimental.Accessors;
 
@@ -31,7 +32,9 @@ import org.adhuc.cena.menu.ingredients.IngredientId;
 @Accessors(fluent = true)
 public class RecipeIngredient {
 
+    @NonNull
     private RecipeId recipeId;
+    @NonNull
     private IngredientId ingredientId;
 
 }

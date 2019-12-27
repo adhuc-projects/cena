@@ -21,6 +21,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.Principal;
 import javax.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
@@ -71,10 +72,10 @@ public class RecipesController {
      * Creates a recipe.
      */
     @PostMapping
-    ResponseEntity<Void> createRecipe(@RequestBody @Valid CreateRecipeRequest request, Errors errors) throws URISyntaxException {
+    ResponseEntity<Void> createRecipe(@RequestBody @Valid CreateRecipeRequest request, Principal principal, Errors errors) throws URISyntaxException {
         var identity = RecipeId.generate();
         validateRequest(errors);
-        recipeAppService.createRecipe(request.toCommand(identity));
+        recipeAppService.createRecipe(request.toCommand(identity, principal.getName()));
         return ResponseEntity.created(new URI(links.linkToItemResource(RecipeModel.class, identity).getHref())).build();
     }
 

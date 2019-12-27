@@ -22,6 +22,7 @@ import lombok.NonNull;
 import lombok.ToString;
 
 import org.adhuc.cena.menu.recipes.CreateRecipe;
+import org.adhuc.cena.menu.recipes.RecipeAuthor;
 import org.adhuc.cena.menu.recipes.RecipeId;
 
 /**
@@ -43,11 +44,12 @@ class CreateRecipeRequest {
     /**
      * Converts this request to a {@code CreateRecipe} command.
      *
-     * @param id the recipe identity.
+     * @param id         the recipe identity.
+     * @param authorName the recipe author name.
      * @return the recipe creation command.
      */
-    CreateRecipe toCommand(@NonNull RecipeId id) {
-        return new CreateRecipe(id, name, content);
+    CreateRecipe toCommand(@NonNull RecipeId id, @NonNull String authorName) {
+        return new CreateRecipe(id, name, content, new RecipeAuthor(authorName));
     }
 
 }

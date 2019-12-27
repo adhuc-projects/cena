@@ -83,6 +83,16 @@ public class AuthenticationProvider {
     }
 
     /**
+     * Gets the currently authenticated user, or {@code null} if none is authenticated.
+     *
+     * @return the currently authenticated user, set using one of {@link #withAuthenticatedUser()},
+     * {@link #withIngredientManager()}, {@link #withActuatorManager()} or {@link #withSuperAdministrator()}.
+     */
+    public String currentlyAuthenticatedUser() {
+        return authentication.getUser();
+    }
+
+    /**
      * Authenticates with community user.
      */
     public void withCommunityUser() {

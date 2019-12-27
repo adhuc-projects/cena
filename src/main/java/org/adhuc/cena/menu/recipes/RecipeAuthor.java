@@ -13,26 +13,36 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.steps.serenity.support.authentication;
+package org.adhuc.cena.menu.recipes;
 
-import io.restassured.specification.RequestSpecification;
+import lombok.NonNull;
+import lombok.Value;
+import lombok.experimental.Accessors;
+
+import org.adhuc.cena.menu.util.Assert;
 
 /**
- * An anonymous authentication process, responsible for ensuring that no authentication is set on a request
- * specification.
+ * A recipe author definition. Author is the only user (except super administrators) that will be able to change recipe
+ * definition.
  *
  * @author Alexandre Carbenay
  * @version 0.2.0
- * @since 0.0.1
+ * @since 0.2.0
  */
-class AnonymousAuthentication implements Authentication {
-    @Override
-    public String getUser() {
-        return null;
+@Value
+@Accessors(fluent = true)
+public class RecipeAuthor {
+
+    private String authorName;
+
+    public RecipeAuthor(@NonNull String authorName) {
+        Assert.hasText(authorName, "Cannot create recipe author with invalid name");
+        this.authorName = authorName;
     }
 
     @Override
-    public RequestSpecification authenticate(RequestSpecification specification) {
-        return specification.auth().none();
+    public String toString() {
+        return this.authorName;
     }
+
 }

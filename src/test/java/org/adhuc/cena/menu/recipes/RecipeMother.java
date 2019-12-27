@@ -45,21 +45,24 @@ public class RecipeMother {
     public static final RecipeId TOMATO_CUCUMBER_MOZZA_SALAD_ID = new RecipeId("d71e2fc7-09e3-4241-97a5-dc3383d35e98");
     public static final String TOMATO_CUCUMBER_MOZZA_SALAD_NAME = "Tomato, cucumber and mozzarella salad";
     public static final String TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT = "Cut everything into dices, mix it, dress it";
+    public static final RecipeAuthor TOMATO_CUCUMBER_MOZZA_SALAD_AUTHOR = new RecipeAuthor("some user");
 
     public static final RecipeId TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID = new RecipeId("6ef45220-0e64-4303-9f71-ced6cefa6834");
     public static final String TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME = "Tomato, cucumber, olive and feta salad";
     public static final String TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT = "Stone olives, cut everything into dices, mix it, dress it";
+    public static final RecipeAuthor TOMATO_CUCUMBER_OLIVE_FETA_SALAD_AUTHOR = new RecipeAuthor("other user");
 
     public static final RecipeId ID = TOMATO_CUCUMBER_MOZZA_SALAD_ID;
     public static final String NAME = TOMATO_CUCUMBER_MOZZA_SALAD_NAME;
     public static final String CONTENT = TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT;
+    public static final RecipeAuthor AUTHOR = TOMATO_CUCUMBER_MOZZA_SALAD_AUTHOR;
 
     public static CreateRecipe createCommand() {
         return createCommand(recipe());
     }
 
     public static CreateRecipe createCommand(@NonNull Recipe recipe) {
-        return new CreateRecipe(recipe.id(), recipe.name(), recipe.content());
+        return new CreateRecipe(recipe.id(), recipe.name(), recipe.content(), recipe.author());
     }
 
     public static DeleteRecipe deleteCommand() {
@@ -116,6 +119,7 @@ public class RecipeMother {
                 .withId(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)
                 .withName(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME)
                 .withContent(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT)
+                .withAuthor(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_AUTHOR)
                 .withIngredients(TOMATO_ID)
                 .build();
         return List.of(tomatoCucumberMozzaSalad, tomatoCucumberOliveAndFetaSalad);
@@ -144,14 +148,19 @@ public class RecipeMother {
         private RecipeId id = ID;
         private String name = NAME;
         private String content = CONTENT;
+        private RecipeAuthor author = AUTHOR;
         private Set<IngredientId> ingredients = Set.of();
 
+        public Builder withAuthorName(@NonNull String authorName) {
+            return new Builder(id, name, content, new RecipeAuthor(authorName), ingredients);
+        }
+
         public Builder withIngredients(@NonNull IngredientId... ids) {
-            return new Builder(id, name, content, Set.of(ids));
+            return new Builder(id, name, content, author, Set.of(ids));
         }
 
         public Recipe build() {
-            var recipe = new Recipe(id, name, content);
+            var recipe = new Recipe(id, name, content, author);
             ingredients.forEach(id -> recipe.addIngredient(addIngredientCommand(id, recipe.id())));
             return recipe;
         }

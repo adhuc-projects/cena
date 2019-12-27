@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
  * A basic authentication process.
  *
  * @author Alexandre Carbenay
- * @version 0.0.1
+ * @version 0.2.0
  * @since 0.0.1
  */
 @RequiredArgsConstructor
@@ -32,6 +32,11 @@ class BasicAuthentication implements Authentication {
     private final String username;
     @NonNull
     private final String password;
+
+    @Override
+    public String getUser() {
+        return username;
+    }
 
     @Override
     public RequestSpecification authenticate(RequestSpecification specification) {

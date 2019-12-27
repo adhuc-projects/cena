@@ -32,6 +32,7 @@ import net.thucydides.core.annotations.Steps;
 import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.RestClientDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
+import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationProvider;
 
 /**
  * The recipe creation rest-service client steps definition.
@@ -87,6 +88,7 @@ public class RecipeCreationServiceClientSteps {
         assertThat(recipeLocation).isNotBlank();
         var retrievedRecipe = recipeDetailServiceClient.getRecipeFromUrl(recipeLocation);
         retrievedRecipe.assertEqualTo(recipe);
+        assertThat(retrievedRecipe.author()).isEqualTo(AuthenticationProvider.instance().currentlyAuthenticatedUser());
     }
 
 }

@@ -54,7 +54,7 @@ class RecipeAppServiceImpl implements RecipeAppService {
     @AsAuthenticatedUser
     public Recipe createRecipe(@NonNull CreateRecipe command) {
         log.info("Create recipe from command {}", command);
-        var recipe = new Recipe(command.recipeId(), command.recipeName(), command.recipeContent());
+        var recipe = new Recipe(command.recipeId(), command.recipeName(), command.recipeContent(), command.recipeAuthor());
         return repository.save(recipe);
     }
 

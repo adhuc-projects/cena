@@ -45,17 +45,18 @@ class CreateRecipeShould {
     @ParameterizedTest
     @MethodSource("invalidCreationParameters")
     @DisplayName("not be creatable with invalid parameters")
-    void notBeCreatableWithInvalidParameters(RecipeId recipeId, String name, String content) {
-        assertThrows(IllegalArgumentException.class, () -> new CreateRecipe(recipeId, name, content));
+    void notBeCreatableWithInvalidParameters(RecipeId recipeId, String name, String content, RecipeAuthor author) {
+        assertThrows(IllegalArgumentException.class, () -> new CreateRecipe(recipeId, name, content, author));
     }
 
     private static Stream<Arguments> invalidCreationParameters() {
         return Stream.of(
-                Arguments.of(null, NAME, CONTENT),
-                Arguments.of(ID, null, CONTENT),
-                Arguments.of(ID, "", CONTENT),
-                Arguments.of(ID, NAME, null),
-                Arguments.of(ID, NAME, "")
+                Arguments.of(null, NAME, CONTENT, AUTHOR),
+                Arguments.of(ID, null, CONTENT, AUTHOR),
+                Arguments.of(ID, "", CONTENT, AUTHOR),
+                Arguments.of(ID, NAME, null, AUTHOR),
+                Arguments.of(ID, NAME, "", AUTHOR),
+                Arguments.of(ID, NAME, CONTENT, null)
         );
     }
 
@@ -67,6 +68,7 @@ class CreateRecipeShould {
             softly.assertThat(command.recipeId()).isEqualTo(ID);
             softly.assertThat(command.recipeName()).isEqualTo(NAME);
             softly.assertThat(command.recipeContent()).isEqualTo(CONTENT);
+            softly.assertThat(command.recipeAuthor()).isEqualTo(AUTHOR);
         });
     }
 
@@ -86,17 +88,24 @@ class CreateRecipeShould {
 
     private static Stream<Arguments> equalitySource() {
         var createTomatoCucumberAndMozzaSalad = new CreateRecipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID,
-                TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT);
+                TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT, TOMATO_CUCUMBER_MOZZA_SALAD_AUTHOR);
         return Stream.of(
                 Arguments.of(createTomatoCucumberAndMozzaSalad, createTomatoCucumberAndMozzaSalad, true),
                 Arguments.of(createTomatoCucumberAndMozzaSalad, new CreateRecipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID,
-                        TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT), true),
+                        TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT,
+                        TOMATO_CUCUMBER_MOZZA_SALAD_AUTHOR), true),
                 Arguments.of(createTomatoCucumberAndMozzaSalad, new CreateRecipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID,
-                        TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT), false),
+                        TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT,
+                        TOMATO_CUCUMBER_MOZZA_SALAD_AUTHOR), false),
                 Arguments.of(createTomatoCucumberAndMozzaSalad, new CreateRecipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID,
-                        TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT), false),
+                        TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT,
+                        TOMATO_CUCUMBER_MOZZA_SALAD_AUTHOR), false),
                 Arguments.of(createTomatoCucumberAndMozzaSalad, new CreateRecipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID,
-                        TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT), false)
+                        TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT,
+                        TOMATO_CUCUMBER_MOZZA_SALAD_AUTHOR), false),
+                Arguments.of(createTomatoCucumberAndMozzaSalad, new CreateRecipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID,
+                        TOMATO_CUCUMBER_MOZZA_SALAD_NAME, TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT,
+                        TOMATO_CUCUMBER_OLIVE_FETA_SALAD_AUTHOR), false)
         );
     }
 

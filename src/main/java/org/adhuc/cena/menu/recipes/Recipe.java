@@ -52,6 +52,9 @@ public class Recipe extends BasicEntity<RecipeId> {
     @Getter
     @NonNull
     private String content;
+    @Getter
+    @NonNull
+    private RecipeAuthor author;
     private Set<RecipeIngredient> ingredients = new HashSet<>();
 
     /**
@@ -60,13 +63,15 @@ public class Recipe extends BasicEntity<RecipeId> {
      * @param id      the recipe identity.
      * @param name    the recipe name.
      * @param content the recipe content.
+     * @param author  the recipe author.
      */
-    public Recipe(@NonNull RecipeId id, @NonNull String name, @NonNull String content) {
+    public Recipe(@NonNull RecipeId id, @NonNull String name, @NonNull String content, @NonNull RecipeAuthor author) {
         super(id);
         hasText(name, "Cannot set recipe name with invalid value");
         hasText(content, "Cannot set recipe content with invalid value");
         this.name = name;
         this.content = content;
+        this.author = author;
     }
 
     /**

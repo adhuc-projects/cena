@@ -21,10 +21,18 @@ import io.restassured.specification.RequestSpecification;
  * Provides convenient methods to set the authentication process into a rest-assured {@link RequestSpecification}.
  *
  * @author Alexandre Carbenay
- * @version 0.0.1
+ * @version 0.2.0
  * @since 0.0.1
  */
 interface Authentication {
+
+    /**
+     * Gets the user corresponding to the authentication.
+     *
+     * @return the user corresponding to authentication, or {@code null} if none authenticates.
+     */
+    String getUser();
+
     /**
      * Sets the authentication process into the specified request specification.
      *
@@ -32,4 +40,5 @@ interface Authentication {
      * @return the request specification.
      */
     RequestSpecification authenticate(RequestSpecification specification);
+
 }

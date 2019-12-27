@@ -46,10 +46,7 @@ import org.adhuc.cena.menu.recipes.CreateRecipe;
 import org.adhuc.cena.menu.recipes.Recipe;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
 import org.adhuc.cena.menu.recipes.RecipeIngredientAppService;
-import org.adhuc.cena.menu.support.WithAuthenticatedUser;
-import org.adhuc.cena.menu.support.WithCommunityUser;
-import org.adhuc.cena.menu.support.WithIngredientManager;
-import org.adhuc.cena.menu.support.WithSuperAdministrator;
+import org.adhuc.cena.menu.support.*;
 
 /**
  * The {@link RecipesController} test class.
@@ -229,6 +226,7 @@ class RecipesControllerShould {
     @DisplayName("call application service when creating recipe")
     void callServiceOnCreation() throws Exception {
         var commandCaptor = ArgumentCaptor.forClass(CreateRecipe.class);
+        var expectedCommand = createCommand(builder().withAuthorName(UserProvider.AUTHENTICATED_USER).build());
 
         mvc.perform(post(RECIPES_API_URL)
                 .contentType(HAL_JSON)
@@ -236,7 +234,7 @@ class RecipesControllerShould {
         ).andExpect(status().isCreated());
 
         verify(recipeAppServiceMock).createRecipe(commandCaptor.capture());
-        assertThat(commandCaptor.getValue()).isEqualToIgnoringGivenFields(createCommand(), "recipeId");
+        assertThat(commandCaptor.getValue()).isEqualToIgnoringGivenFields(expectedCommand, "recipeId");
     }
 
     @Test
@@ -303,7 +301,9 @@ class RecipesControllerShould {
         resultActions.andExpect(jsonPath(jsonPath + ".name").exists())
                 .andExpect(jsonPath(jsonPath + ".name", equalTo(recipe.name())))
                 .andExpect(jsonPath(jsonPath + ".content").exists())
-                .andExpect(jsonPath(jsonPath + ".content", equalTo(recipe.content())));
+                .andExpect(jsonPath(jsonPath + ".content", equalTo(recipe.content())))
+                .andExpect(jsonPath(jsonPath + ".author").exists())
+                .andExpect(jsonPath(jsonPath + ".author", equalTo(recipe.author().authorName())));
     }
 
 }

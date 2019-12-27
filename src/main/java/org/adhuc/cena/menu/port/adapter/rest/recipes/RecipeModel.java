@@ -43,11 +43,15 @@ public class RecipeModel extends RepresentationModel<RecipeModel> {
     @NonNull
     @JsonProperty("content")
     private final String recipeContent;
+    @NonNull
+    @JsonProperty("author")
+    private final String recipeAuthor;
 
     RecipeModel(@NonNull Recipe recipe) {
         recipeId = recipe.id().toString();
         recipeName = recipe.name();
         recipeContent = recipe.content();
+        recipeAuthor = recipe.author().toString();
     }
 
 }

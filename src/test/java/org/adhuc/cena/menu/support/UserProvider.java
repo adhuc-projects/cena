@@ -23,14 +23,14 @@ import lombok.NoArgsConstructor;
  * A user provider, for testing purposes.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @NoArgsConstructor(access = PRIVATE)
-final class UserProvider {
+public final class UserProvider {
 
-    static final String AUTHENTICATED_USER = "user";
-    static final String INGREDIENT_MANAGER = "ingredient-manager";
-    static final String SUPER_ADMINISTRATOR = "super-admin";
+    public static final String AUTHENTICATED_USER = "user";
+    public static final String INGREDIENT_MANAGER = "ingredient-manager";
+    public static final String SUPER_ADMINISTRATOR = "super-admin";
 
 }

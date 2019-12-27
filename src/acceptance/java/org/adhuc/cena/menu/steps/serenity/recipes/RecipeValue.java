@@ -57,9 +57,10 @@ public class RecipeValue extends HateoasClientResourceSupport {
     private final String id;
     private final String name;
     private final String content;
+    private final String author;
 
     public static RecipeValue buildUnknownRecipeValue(String name, String recipesResourceUrl) {
-        var recipe = new RecipeValue(UUID.randomUUID().toString(), name, DEFAULT_CONTENT);
+        var recipe = new RecipeValue(UUID.randomUUID().toString(), name, DEFAULT_CONTENT, null);
         recipe.addLink(SELF_LINK, String.format("%s/%s", recipesResourceUrl, recipe.id));
         recipe.addLink(RECIPE_INGREDIENTS_LINK, String.format("%s/%s/ingredients", recipesResourceUrl, recipe.id));
         return recipe;
@@ -70,7 +71,7 @@ public class RecipeValue extends HateoasClientResourceSupport {
     }
 
     public RecipeValue(String name, String content) {
-        this(null, name, content);
+        this(null, name, content, null);
     }
 
     @JsonIgnore

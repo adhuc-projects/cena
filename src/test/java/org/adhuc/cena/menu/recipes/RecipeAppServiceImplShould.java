@@ -111,6 +111,7 @@ class RecipeAppServiceImplShould {
                     .withId(TOMATO_CUCUMBER_MOZZA_SALAD_ID)
                     .withName(TOMATO_CUCUMBER_MOZZA_SALAD_NAME)
                     .withContent(TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT)
+                    .withAuthor(TOMATO_CUCUMBER_MOZZA_SALAD_AUTHOR)
                     .build();
             recipeRepository.save(tomatoCucumberAndMozzaSalad);
         }
@@ -162,6 +163,7 @@ class RecipeAppServiceImplShould {
                         .withId(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)
                         .withName(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME)
                         .withContent(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT)
+                        .withAuthor(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_AUTHOR)
                         .build();
                 recipeRepository.save(tomatoCucumberOliveAndFetaSalad);
             }

@@ -104,6 +104,7 @@ class RecipeDocumentation {
         return responseFields(fieldWithPath("id").description("The recipe identity"),
                 fieldWithPath("name").description("The recipe name"),
                 fieldWithPath("content").description("The recipe content"),
+                fieldWithPath("author").description("The recipe author name"),
                 subsectionWithPath("_links").description(linksDescription));
     }
 

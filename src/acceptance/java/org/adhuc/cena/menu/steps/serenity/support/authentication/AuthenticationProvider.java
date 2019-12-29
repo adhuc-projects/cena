@@ -42,6 +42,7 @@ public class AuthenticationProvider {
 
     private static AuthenticationProvider INSTANCE = new AuthenticationProvider();
 
+    private AuthenticationType authenticationType;
     private Authentication authentication;
 
     public static AuthenticationProvider instance() {
@@ -56,7 +57,7 @@ public class AuthenticationProvider {
      * Cleans the currently defined authentication.
      */
     public void clean() {
-        authentication = authentication(COMMUNITY_USER);
+        authenticate(COMMUNITY_USER);
     }
 
     /**
@@ -83,6 +84,25 @@ public class AuthenticationProvider {
     }
 
     /**
+     * Indicates whether a user is currently authenticated.
+     *
+     * @return {@code true} if a user has been authenticated, {@code false} otherwise.
+     */
+    public boolean isAuthenticated() {
+        return currentlyAuthenticatedUser() != null;
+    }
+
+    /**
+     * Gets the current authentication, as set through {@link #withAuthenticatedUser()},
+     * {@link #withIngredientManager()}, {@link #withActuatorManager()} or {@link #withSuperAdministrator()}.
+     *
+     * @return the current authentication.
+     */
+    public AuthenticationType currentAuthentication() {
+        return authenticationType;
+    }
+
+    /**
      * Gets the currently authenticated user, or {@code null} if none is authenticated.
      *
      * @return the currently authenticated user, set using one of {@link #withAuthenticatedUser()},
@@ -103,32 +123,36 @@ public class AuthenticationProvider {
      * Authenticates with authenticated user.
      */
     public void withAuthenticatedUser() {
-        authentication = authentication(AUTHENTICATED_USER);
+        authenticate(AUTHENTICATED_USER);
     }
 
     /**
      * Authenticates with ingredient manager.
      */
     public void withIngredientManager() {
-        authentication = authentication(INGREDIENT_MANAGER);
+        authenticate(INGREDIENT_MANAGER);
     }
 
     /**
      * Authenticates with actuator manager.
      */
     public void withActuatorManager() {
-        authentication = authentication(ACTUATOR_MANAGER);
+        authenticate(ACTUATOR_MANAGER);
     }
 
     /**
      * Authenticates with super administrator.
      */
     public void withSuperAdministrator() {
-        authentication = authentication(SUPER_ADMINISTRATOR);
+        authenticate(SUPER_ADMINISTRATOR);
+    }
+
+    private void authenticate(AuthenticationType authenticationType) {
+        this.authenticationType = authenticationType;
+        authentication = authentication(authenticationType);
     }
 
     private Authentication authentication(AuthenticationType authenticationType) {
         return authenticationType.getAuthenticationSupplier().get();
     }
-
 }

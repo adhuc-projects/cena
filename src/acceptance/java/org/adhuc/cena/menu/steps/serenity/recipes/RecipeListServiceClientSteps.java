@@ -22,6 +22,8 @@ import static org.assertj.core.api.Assumptions.assumeThat;
 
 import static org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue.COMPARATOR;
 import static org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue.NAME_AND_CONTENT_COMPARATOR;
+import static org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType.AUTHENTICATED_USER;
+import static org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType.INGREDIENT_MANAGER;
 
 import java.util.Collection;
 
@@ -30,6 +32,8 @@ import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
+import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationProvider;
+import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType;
 
 /**
  * The recipes list rest-service client steps definition.
@@ -70,12 +74,41 @@ public class RecipeListServiceClientSteps {
 
     @Step("Assume recipe {0} is in recipes list")
     public RecipeValue assumeInRecipesList(RecipeValue recipe) {
+        var author = AuthenticationProvider.instance().isAuthenticated()
+                ? AuthenticationProvider.instance().currentAuthentication()
+                : AUTHENTICATED_USER;
+        return assumeInRecipesList(recipe, author);
+    }
+
+    private RecipeValue assumeInRecipesList(RecipeValue recipe, AuthenticationType author) {
         if (getFromRecipesList(recipe).isEmpty()) {
-            recipeCreationServiceClient.createRecipeAsAuthenticatedUser(recipe);
+            recipeCreationServiceClient.createRecipeAs(recipe, author);
         }
         var recipes = fetchRecipes();
         assumeThat(recipes).usingElementComparator(RecipeValue.COMPARATOR).contains(recipe);
         return recipes.stream().filter(i -> RecipeValue.COMPARATOR.compare(i, recipe) == 0).findFirst().get();
+    }
+
+    @Step("Assume recipe {0} is in recipes list and authored by currently authenticated user")
+    public RecipeValue assumeInRecipesListAuthoredByCurrentUser(RecipeValue recipe) {
+        var author = AuthenticationProvider.instance().currentAuthentication();
+        return assumeInRecipesListAuthoredBy(recipe, author);
+    }
+
+    @Step("Assume recipe {0} is in recipes list and authored by another user than currently authenticated")
+    public RecipeValue assumeInRecipesListAuthoredByAnotherUser(RecipeValue recipe) {
+        var author = AuthenticationProvider.instance().currentAuthentication() != AUTHENTICATED_USER
+                ? AUTHENTICATED_USER : INGREDIENT_MANAGER;
+        return assumeInRecipesListAuthoredBy(recipe, author);
+    }
+
+    @Step("Assume recipe {0} is in recipes list and has been authored by {1}")
+    public RecipeValue assumeInRecipesListAuthoredBy(RecipeValue recipe, AuthenticationType authenticationType) {
+        var existingRecipe = getFromRecipesList(recipe);
+        if (existingRecipe.isPresent() && !existingRecipe.get().author().equals(authenticationType.toString())) {
+            recipeDeletionServiceClient.deleteRecipeAsSuperAdministrator(existingRecipe.get());
+        }
+        return assumeInRecipesList(recipe, authenticationType);
     }
 
     @Step("Assume recipes {0} are in recipes list")

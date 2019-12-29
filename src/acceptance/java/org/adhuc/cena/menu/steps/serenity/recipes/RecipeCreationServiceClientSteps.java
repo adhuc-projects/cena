@@ -33,6 +33,7 @@ import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.RestClientDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationProvider;
+import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType;
 
 /**
  * The recipe creation rest-service client steps definition.
@@ -62,7 +63,12 @@ public class RecipeCreationServiceClientSteps {
 
     @Step("Create the recipe {0} as authenticated user")
     public void createRecipeAsAuthenticatedUser(RecipeValue recipe) {
-        createRecipe(recipe, () -> rest(AUTHENTICATED_USER));
+        createRecipeAs(recipe, AUTHENTICATED_USER);
+    }
+
+    @Step("Create the recipe {0} as {1}")
+    public void createRecipeAs(RecipeValue recipe, AuthenticationType authenticationType) {
+        createRecipe(recipe, () -> rest(authenticationType));
     }
 
     private void createRecipe(RecipeValue recipe, Supplier<RequestSpecification> specificationSupplier) {

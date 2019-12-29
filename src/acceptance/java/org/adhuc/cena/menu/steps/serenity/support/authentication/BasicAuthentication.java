@@ -42,4 +42,9 @@ class BasicAuthentication implements Authentication {
     public RequestSpecification authenticate(RequestSpecification specification) {
         return specification.auth().preemptive().basic(username, password);
     }
+
+    @Override
+    public String toString() {
+        return username;
+    }
 }

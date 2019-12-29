@@ -60,6 +60,16 @@ public class RecipeListStepDefinitions {
         recipeListServiceClient.storeRecipe(recipeListServiceClient.assumeInRecipesList(new RecipeValue(recipeName)));
     }
 
+    @Given("^an existing \"(.*)\" recipe authored by the authenticated user$")
+    public void existingRecipeAuthoredByCurrentUser(String recipeName) {
+        recipeListServiceClient.storeRecipe(recipeListServiceClient.assumeInRecipesListAuthoredByCurrentUser(new RecipeValue(recipeName)));
+    }
+
+    @Given("^an existing \"(.*)\" recipe authored by another user$")
+    public void existingRecipeAuthoredByAnotherUser(String recipeName) {
+        recipeListServiceClient.storeRecipe(recipeListServiceClient.assumeInRecipesListAuthoredByAnotherUser(new RecipeValue(recipeName)));
+    }
+
     @Given("^a non-existent \"(.*)\" recipe$")
     public void nonExistentRecipe(String recipeName) {
         recipeListServiceClient.storeRecipe(recipeListServiceClient.assumeNotInRecipesList(

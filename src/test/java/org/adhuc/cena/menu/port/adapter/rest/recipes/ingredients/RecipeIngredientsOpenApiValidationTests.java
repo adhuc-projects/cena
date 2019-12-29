@@ -69,7 +69,7 @@ class RecipeIngredientsOpenApiValidationTests {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        recipeRepository.save(builder().build());
+        recipeRepository.save(builder().withAuthorName(properties.getSecurity().getUser().getUsername()).build());
         ingredientRepository.save(ingredient());
     }
 

@@ -19,6 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import static org.adhuc.cena.menu.common.security.RolesDefinition.INGREDIENT_MANAGER_ROLE;
+import static org.adhuc.cena.menu.common.security.RolesDefinition.USER_ROLE;
 import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
 import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
@@ -35,6 +37,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -43,10 +46,7 @@ import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
 import org.adhuc.cena.menu.ingredients.IngredientRepository;
 import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryIngredientRepository;
 import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryRecipeRepository;
-import org.adhuc.cena.menu.support.WithAuthenticatedUser;
-import org.adhuc.cena.menu.support.WithCommunityUser;
-import org.adhuc.cena.menu.support.WithIngredientManager;
-import org.adhuc.cena.menu.support.WithSuperAdministrator;
+import org.adhuc.cena.menu.support.*;
 
 /**
  * The {@link RecipeIngredientAppServiceImpl} security tests.
@@ -61,6 +61,8 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
 @ContextConfiguration
 @DisplayName("Recipe ingredient service with security should")
 class RecipeIngredientAppServiceWithSecurityShould {
+
+    private static final String RECIPE_AUTHOR_NAME = "recipe author";
 
     private static final Condition<RecipeIngredient> TOMATO_PRESENT = new Condition<>(i -> i.ingredientId().equals(TOMATO_ID),
             "tomato ingredient");
@@ -79,7 +81,7 @@ class RecipeIngredientAppServiceWithSecurityShould {
         ingredientRepository.save(ingredient(CUCUMBER_ID, CUCUMBER));
 
         repository.deleteAll();
-        repository.save(builder().withIngredients(CUCUMBER_ID).build());
+        repository.save(builder().withAuthorName(RECIPE_AUTHOR_NAME).withIngredients(CUCUMBER_ID).build());
         assumeThat(repository.findNotNullById(RecipeMother.ID).ingredients()).noneMatch(i -> i.ingredientId().equals(TOMATO_ID));
     }
 
@@ -91,19 +93,34 @@ class RecipeIngredientAppServiceWithSecurityShould {
     }
 
     @Test
+    @WithMockUser(username = RECIPE_AUTHOR_NAME, roles = USER_ROLE)
+    @DisplayName("grant recipe ingredient addition access to recipe author")
+    void grantRecipeIngredientAdditionAsRecipeAuthor() {
+        var command = addIngredientCommand();
+        service.addIngredientToRecipe(command);
+        assertThat(repository.findNotNullById(RecipeMother.ID).ingredients()).haveExactly(1, TOMATO_PRESENT);
+    }
+
+    @Test
     @WithAuthenticatedUser
-    @DisplayName("grant recipe ingredient addition access to authenticated user")
-    void grantRecipeIngredientAdditionAsAuthenticatedUser() {
+    @DisplayName("deny recipe ingredient addition access to authenticated user that is not recipe author")
+    void denyRecipeIngredientAdditionAsAuthenticatedUserNotRecipeAuthor() {
+        assertThrows(AccessDeniedException.class, () -> service.addIngredientToRecipe(addIngredientCommand()));
+    }
+
+    @Test
+    @WithMockUser(username = RECIPE_AUTHOR_NAME, roles = INGREDIENT_MANAGER_ROLE)
+    @DisplayName("grant recipe ingredient addition access to ingredient manager that is recipe author")
+    void grantRecipeIngredientAdditionAsIngredientManagerRecipeAuthor() {
         service.addIngredientToRecipe(addIngredientCommand());
         assertThat(repository.findNotNullById(RecipeMother.ID).ingredients()).haveExactly(1, TOMATO_PRESENT);
     }
 
     @Test
     @WithIngredientManager
-    @DisplayName("grant recipe ingredient addition access to ingredient manager")
-    void grantRecipeIngredientAdditionAsIngredientManager() {
-        service.addIngredientToRecipe(addIngredientCommand());
-        assertThat(repository.findNotNullById(RecipeMother.ID).ingredients()).haveExactly(1, TOMATO_PRESENT);
+    @DisplayName("deny recipe ingredient addition access to ingredient manager that is not recipe author")
+    void denyRecipeIngredientAdditionAsIngredientManagerNotRecipeAuthor() {
+        assertThrows(AccessDeniedException.class, () -> service.addIngredientToRecipe(addIngredientCommand()));
     }
 
     @Test

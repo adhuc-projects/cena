@@ -33,12 +33,20 @@ import lombok.Getter;
 @AllArgsConstructor(access = PRIVATE)
 public enum AuthenticationType {
 
-    COMMUNITY_USER(() -> new AnonymousAuthentication()),
-    ACTUATOR_MANAGER(() -> new BasicAuthentication("actuator", "actuator")),
-    AUTHENTICATED_USER(() -> new BasicAuthentication("user", "password")),
-    INGREDIENT_MANAGER(() -> new BasicAuthentication("ingredient-manager", "ingredient-manager")),
-    SUPER_ADMINISTRATOR(() -> new BasicAuthentication("super-admin", "super-admin"));
+    COMMUNITY_USER(new AnonymousAuthentication()),
+    ACTUATOR_MANAGER(new BasicAuthentication("actuator", "actuator")),
+    AUTHENTICATED_USER(new BasicAuthentication("user", "password")),
+    INGREDIENT_MANAGER(new BasicAuthentication("ingredient-manager", "ingredient-manager")),
+    SUPER_ADMINISTRATOR(new BasicAuthentication("super-admin", "super-admin"));
 
-    private Supplier<Authentication> authenticationSupplier;
+    private Authentication authentication;
 
+    public Supplier<Authentication> getAuthenticationSupplier() {
+        return () -> authentication;
+    }
+
+    @Override
+    public String toString() {
+        return authentication.toString();
+    }
 }

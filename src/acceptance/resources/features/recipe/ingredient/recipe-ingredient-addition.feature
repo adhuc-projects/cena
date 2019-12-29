@@ -30,7 +30,7 @@ Feature: Add ingredients to recipe
   Scenario: Add an existing ingredient to an existing recipe
     Given an authenticated user
     And an existing "Tomato" ingredient
-    And an existing "Tomato, cucumber and mozzarella salad" recipe
+    And an existing "Tomato, cucumber and mozzarella salad" recipe authored by the authenticated user
     And recipe does not contain ingredient
     When he adds the ingredient to the recipe
     Then the ingredient is added to the recipe
@@ -57,10 +57,20 @@ Feature: Add ingredients to recipe
     And the ingredient cannot be found in the recipe's ingredients list
 
   @Security
+  Scenario: Add an ingredient to a recipe authored by another user
+    Given an authenticated user
+    And an existing "Tomato" ingredient
+    And an existing "Tomato, cucumber and mozzarella salad" recipe authored by another user
+    And recipe does not contain ingredient
+    When he adds the ingredient to the recipe
+    Then an error notifies that user is not authorized
+    And the ingredient cannot be found in the recipe's ingredients list
+
+  @Security
   Scenario: Add an ingredient to a recipe as ingredient manager
     Given an authenticated ingredient manager
     And an existing "Tomato" ingredient
-    And an existing "Tomato, cucumber and mozzarella salad" recipe
+    And an existing "Tomato, cucumber and mozzarella salad" recipe authored by the authenticated user
     And recipe does not contain ingredient
     When he adds the ingredient to the recipe
     Then the ingredient is added to the recipe
@@ -70,7 +80,17 @@ Feature: Add ingredients to recipe
   Scenario: Add an ingredient to a recipe as super administrator
     Given an authenticated super administrator
     And an existing "Tomato" ingredient
-    And an existing "Tomato, cucumber and mozzarella salad" recipe
+    And an existing "Tomato, cucumber and mozzarella salad" recipe authored by the authenticated user
+    And recipe does not contain ingredient
+    When he adds the ingredient to the recipe
+    Then the ingredient is added to the recipe
+    And the ingredient can be found in the recipe's ingredients list
+
+  @Security
+  Scenario: Add an ingredient to a recipe authored by another user as super administrator
+    Given an authenticated super administrator
+    And an existing "Tomato" ingredient
+    And an existing "Tomato, cucumber and mozzarella salad" recipe authored by another user
     And recipe does not contain ingredient
     When he adds the ingredient to the recipe
     Then the ingredient is added to the recipe

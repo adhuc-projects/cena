@@ -39,7 +39,7 @@ class RecipeIngredientAppServiceImpl implements RecipeIngredientAppService {
     private final RecipeRepository recipeRepository;
 
     @Override
-    @AsAuthenticatedUser
+    @AsRecipeAuthor
     public void addIngredientToRecipe(@NonNull AddIngredientToRecipe command) {
         ingredientToRecipeAdditionService.addIngredientToRecipe(command);
     }

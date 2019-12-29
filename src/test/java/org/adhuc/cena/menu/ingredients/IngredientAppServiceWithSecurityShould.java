@@ -40,6 +40,8 @@ import org.adhuc.cena.menu.common.EntityNotFoundException;
 import org.adhuc.cena.menu.configuration.ApplicationSecurityConfiguration;
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
 import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryIngredientRepository;
+import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryRecipeRepository;
+import org.adhuc.cena.menu.recipes.RecipeRepository;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 import org.adhuc.cena.menu.support.WithCommunityUser;
 import org.adhuc.cena.menu.support.WithIngredientManager;
@@ -209,6 +211,11 @@ class IngredientAppServiceWithSecurityShould {
         @Bean
         IngredientRepository ingredientRepository() {
             return new InMemoryIngredientRepository();
+        }
+
+        @Bean
+        RecipeRepository recipeRepository() {
+            return new InMemoryRecipeRepository();
         }
     }
 

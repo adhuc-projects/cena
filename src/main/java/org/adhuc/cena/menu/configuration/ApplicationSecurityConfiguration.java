@@ -18,9 +18,13 @@ package org.adhuc.cena.menu.configuration;
 import static org.adhuc.cena.menu.common.security.RolesDefinition.*;
 
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.User.UserBuilder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -38,9 +42,18 @@ import org.adhuc.cena.menu.configuration.MenuGenerationProperties.Security.Crede
  * @version 0.2.0
  * @since 0.1.0
  */
+@RequiredArgsConstructor
 @Configuration
+@ComponentScan("org.adhuc.cena.menu.configuration.security")
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class ApplicationSecurityConfiguration {
+public class ApplicationSecurityConfiguration extends GlobalMethodSecurityConfiguration {
+
+    private final MethodSecurityExpressionHandler methodSecurityExpressionHandler;
+
+    @Override
+    protected MethodSecurityExpressionHandler createExpressionHandler() {
+        return methodSecurityExpressionHandler;
+    }
 
     @Bean
     UserDetailsService userDetailsService(@NonNull PasswordEncoder passwordEncoder,

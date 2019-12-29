@@ -18,6 +18,7 @@ open module org.adhuc.cena.menu {
     requires com.fasterxml.jackson.annotation;
     requires java.validation;
     requires org.apache.commons.io;
+    requires spring.aop;
     requires spring.beans;
     requires spring.context;
     requires spring.core;

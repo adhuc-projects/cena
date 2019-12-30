@@ -15,6 +15,7 @@
  */
 package org.adhuc.cena.menu.support;
 
+import static org.adhuc.cena.menu.common.security.RolesDefinition.INGREDIENT_MANAGER_ROLE;
 import static org.adhuc.cena.menu.support.UserProvider.INGREDIENT_MANAGER;
 
 import java.lang.annotation.*;
@@ -25,14 +26,13 @@ import org.springframework.security.test.context.support.WithMockUser;
  * Indicates that a test must be run with ingredient manager.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-@WithMockUser(username = INGREDIENT_MANAGER, roles = "INGREDIENT_MANAGER")
+@WithMockUser(username = INGREDIENT_MANAGER, roles = INGREDIENT_MANAGER_ROLE)
 public @interface WithIngredientManager {
-
 }

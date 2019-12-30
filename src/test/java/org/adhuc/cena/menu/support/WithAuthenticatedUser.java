@@ -15,6 +15,7 @@
  */
 package org.adhuc.cena.menu.support;
 
+import static org.adhuc.cena.menu.common.security.RolesDefinition.USER_ROLE;
 import static org.adhuc.cena.menu.support.UserProvider.AUTHENTICATED_USER;
 
 import java.lang.annotation.*;
@@ -32,6 +33,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-@WithMockUser(username = AUTHENTICATED_USER, roles = "USER")
+@WithMockUser(username = AUTHENTICATED_USER, roles = USER_ROLE)
 public @interface WithAuthenticatedUser {
 }

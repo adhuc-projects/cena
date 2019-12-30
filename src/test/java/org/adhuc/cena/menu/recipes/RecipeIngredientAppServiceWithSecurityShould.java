@@ -139,9 +139,25 @@ class RecipeIngredientAppServiceWithSecurityShould {
     }
 
     @Test
+    @WithMockUser(username = RECIPE_AUTHOR_NAME, roles = USER_ROLE)
+    @DisplayName("grant recipe ingredient removal access to recipe author")
+    void grantRecipeIngredientRemovalAsRecipeAuthor() {
+        assumeThat(repository.findNotNullById(RecipeMother.ID).ingredients()).isNotEmpty();
+        service.removeIngredientFromRecipe(removeIngredientCommand(CUCUMBER_ID));
+        assertThat(repository.findNotNullById(RecipeMother.ID).ingredients()).isEmpty();
+    }
+
+    @Test
     @WithAuthenticatedUser
-    @DisplayName("grant recipe ingredient removal access to authenticated user")
-    void grantRecipeIngredientRemovalAsAuthenticatedUser() {
+    @DisplayName("deny recipe ingredient removal access to authenticated user that is not recipe author")
+    void denyRecipeIngredientRemovalAsAuthenticatedUserNotRecipeAuthor() {
+        assertThrows(AccessDeniedException.class, () -> service.removeIngredientFromRecipe(removeIngredientCommand(CUCUMBER_ID)));
+    }
+
+    @Test
+    @WithMockUser(username = RECIPE_AUTHOR_NAME, roles = INGREDIENT_MANAGER_ROLE)
+    @DisplayName("grant recipe ingredient removal access to ingredient manager that is recipe author")
+    void grantRecipeIngredientRemovalAsIngredientManagerRecipeAuthor() {
         assumeThat(repository.findNotNullById(RecipeMother.ID).ingredients()).isNotEmpty();
         service.removeIngredientFromRecipe(removeIngredientCommand(CUCUMBER_ID));
         assertThat(repository.findNotNullById(RecipeMother.ID).ingredients()).isEmpty();
@@ -149,11 +165,9 @@ class RecipeIngredientAppServiceWithSecurityShould {
 
     @Test
     @WithIngredientManager
-    @DisplayName("grant recipe ingredient removal access to ingredient manager")
-    void grantRecipeIngredientRemovalAsIngredientManager() {
-        assumeThat(repository.findNotNullById(RecipeMother.ID).ingredients()).isNotEmpty();
-        service.removeIngredientFromRecipe(removeIngredientCommand(CUCUMBER_ID));
-        assertThat(repository.findNotNullById(RecipeMother.ID).ingredients()).isEmpty();
+    @DisplayName("deny recipe ingredient removal access to ingredient manager that is not recipe author")
+    void denyRecipeIngredientRemovalAsIngredientManagerNotRecipeAuthor() {
+        assertThrows(AccessDeniedException.class, () -> service.removeIngredientFromRecipe(removeIngredientCommand(CUCUMBER_ID)));
     }
 
     @Test
@@ -173,9 +187,25 @@ class RecipeIngredientAppServiceWithSecurityShould {
     }
 
     @Test
+    @WithMockUser(username = RECIPE_AUTHOR_NAME, roles = USER_ROLE)
+    @DisplayName("grant recipe ingredients removal access to recipe author")
+    void grantRecipeIngredientsRemovalAsRecipeAuthor() {
+        assumeThat(repository.findNotNullById(RecipeMother.ID).ingredients()).isNotEmpty();
+        service.removeIngredientsFromRecipe(removeIngredientsCommand());
+        assertThat(repository.findNotNullById(RecipeMother.ID).ingredients()).isEmpty();
+    }
+
+    @Test
     @WithAuthenticatedUser
-    @DisplayName("grant recipe ingredients removal access to authenticated user")
-    void grantRecipeIngredientsRemovalAsAuthenticatedUser() {
+    @DisplayName("deny recipe ingredients removal access to authenticated user that is not recipe author")
+    void denyRecipeIngredientsRemovalAsAuthenticatedUserNotRecipeAuthor() {
+        assertThrows(AccessDeniedException.class, () -> service.removeIngredientsFromRecipe(removeIngredientsCommand()));
+    }
+
+    @Test
+    @WithMockUser(username = RECIPE_AUTHOR_NAME, roles = INGREDIENT_MANAGER_ROLE)
+    @DisplayName("grant recipe ingredients removal access to ingredient manager that is recipe author")
+    void grantRecipeIngredientsRemovalAsIngredientManagerRecipeAuthor() {
         assumeThat(repository.findNotNullById(RecipeMother.ID).ingredients()).isNotEmpty();
         service.removeIngredientsFromRecipe(removeIngredientsCommand());
         assertThat(repository.findNotNullById(RecipeMother.ID).ingredients()).isEmpty();
@@ -183,11 +213,9 @@ class RecipeIngredientAppServiceWithSecurityShould {
 
     @Test
     @WithIngredientManager
-    @DisplayName("grant recipe ingredients removal access to ingredient manager")
-    void grantRecipeIngredientsRemovalAsIngredientManager() {
-        assumeThat(repository.findNotNullById(RecipeMother.ID).ingredients()).isNotEmpty();
-        service.removeIngredientsFromRecipe(removeIngredientsCommand());
-        assertThat(repository.findNotNullById(RecipeMother.ID).ingredients()).isEmpty();
+    @DisplayName("deny recipe ingredients removal access to ingredient manager that is not recipe author")
+    void denyRecipeIngredientsRemovalAsIngredientManagerNotRecipeAuthor() {
+        assertThrows(AccessDeniedException.class, () -> service.removeIngredientsFromRecipe(removeIngredientsCommand()));
     }
 
     @Test

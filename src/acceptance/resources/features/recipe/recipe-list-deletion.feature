@@ -37,7 +37,7 @@ Feature: Delete recipes
     And no existing recipe has been deleted
 
   @Security
-  Scenario: Delete ingredients as community user
+  Scenario: Delete ingredients as authenticated user
     Given an authenticated user
     And the following existing recipes
       | name                                   | content                                                                                                                                  |

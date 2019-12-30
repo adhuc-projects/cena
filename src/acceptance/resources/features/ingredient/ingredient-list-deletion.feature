@@ -37,7 +37,7 @@ Feature: Delete ingredients
     And no existing ingredient has been deleted
 
   @Security
-  Scenario: Delete ingredients as community user
+  Scenario: Delete ingredients as authenticated user
     Given an authenticated user
     And the following existing ingredients
       | name       |

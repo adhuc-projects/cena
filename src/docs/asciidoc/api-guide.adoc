@@ -249,7 +249,8 @@ include::{snippets}/recipes-list-example/links.adoc[]
 [[resources-recipes-create]]
 === Creating a recipe
 
-A `POST` request will create a recipe. Only an authenticated user can create recipes.
+A `POST` request will create a recipe. Only an authenticated user can create recipes. The user that creates a recipe is
+called a recipe author.
 
 ==== Request structure
 
@@ -360,8 +361,8 @@ include::{snippets}/recipe-ingredients-list-example/links.adoc[]
 [[resources-recipe-ingredients-create]]
 === Creating a recipe ingredient
 
-A `POST` request will add an ingredient to a recipe's related ingredients collection. Only an authenticated user can add
-ingredients to recipes.
+A `POST` request will add an ingredient to a recipe's related ingredients collection. Only the recipe author or a super
+administrator can add an ingredient to a recipe.
 
 ==== Path Parameters
 
@@ -382,8 +383,8 @@ include::{snippets}/recipe-ingredients-create-example/http-response.adoc[]
 [[resources-recipe-ingredients-delete]]
 === Deleting recipe ingredients
 
-A `DELETE` request will delete all of the recipe's related ingredients. Only an authenticated user can delete all
-recipe's ingredients directly.
+A `DELETE` request will delete all of the recipe's related ingredients. Only the recipe author or a super administrator
+can delete all recipe's ingredients directly.
 
 ==== Example request
 
@@ -428,7 +429,8 @@ include::{snippets}/recipe-ingredient-detail-example/http-response.adoc[]
 [[resources-recipe-ingredient-delete]]
 === Delete a recipe ingredient
 
-A `DELETE` request will delete the recipe ingredient. Only an authenticated user can remove ingredients from recipes.
+A `DELETE` request will delete the recipe ingredient. Only the recipe author or a super administrator can remove
+ingredients from recipes.
 
 ==== Path Parameters
 

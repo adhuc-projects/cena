@@ -103,7 +103,7 @@ paths:
         200:
           $ref: '#/components/responses/Recipes'
     post:
-      summary: Create a recipe in recipes collection. Only an authenticated user can create recipes
+      summary: Create a recipe in recipes collection. Only an authenticated user can create recipes. The user that creates a recipe is called a recipe author
       operationId: createRecipe
       tags:
         - Recipes
@@ -179,7 +179,7 @@ paths:
         404:
           $ref: '#/components/responses/404-NotFound'
     post:
-      summary: Add an ingredient to a recipe's related ingredients collection. Only an authenticated user can add an ingredient to a recipe
+      summary: Add an ingredient to a recipe's related ingredients collection. Only the recipe author or a super administrator can add an ingredient to a recipe
       operationId: addIngredientToRecipe
       tags:
         - Recipe Ingredients
@@ -199,7 +199,7 @@ paths:
         403:
           $ref: '#/components/responses/403-Forbidden'
     delete:
-      summary: Remove all recipe's related ingredients. Only an authenticated user can remove all ingredient from a recipe
+      summary: Remove all recipe's related ingredients. Only the recipe author or a super administrator can delete all recipe's ingredients directly
       operationId: deleteRecipeIngredients
       tags:
         - Recipes
@@ -229,7 +229,7 @@ paths:
         404:
           $ref: '#/components/responses/404-NotFound'
     delete:
-      summary: Remove an ingredient from a recipe's related ingredients collection. Only an authenticated user can remove an ingredient from a recipe
+      summary: Remove an ingredient from a recipe's related ingredients collection. Only the recipe author or a super administrator can remove ingredients from recipes
       operationId: removeIngredientFromRecipe
       tags:
         - Recipes

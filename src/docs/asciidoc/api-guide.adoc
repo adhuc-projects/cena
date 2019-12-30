@@ -311,7 +311,7 @@ include::{snippets}/recipe-detail-example/http-response.adoc[]
 [[resources-recipe-delete]]
 === Delete a recipe
 
-A `DELETE` request will delete the recipe. Only a super administrator can delete a recipe.
+A `DELETE` request will delete the recipe. Only the recipe author or a super administrator can delete a recipe.
 
 ==== Path Parameters
 

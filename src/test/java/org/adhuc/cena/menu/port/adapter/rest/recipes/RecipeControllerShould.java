@@ -76,6 +76,14 @@ class RecipeControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
+    @DisplayName("respond Not Found when deleting unknown recipe")
+    void respond404DeleteUnknownRecipe() throws Exception {
+        doThrow(new EntityNotFoundException(Recipe.class, ID)).when(recipeAppServiceMock).deleteRecipe(deleteCommand());
+        mvc.perform(delete(RECIPE_API_URL, ID)).andExpect(status().isNotFound());
+    }
+
+    @Test
     @WithCommunityUser
     @DisplayName("respond Unauthorized when deleting recipe as an anonymous user")
     void respond401OnDeletionAsAnonymous() throws Exception {
@@ -84,29 +92,23 @@ class RecipeControllerShould {
 
     @Test
     @WithAuthenticatedUser
-    @DisplayName("respond Unauthorized when deleting recipe as an authenticated user")
-    void respond401OnDeletionAsAuthenticatedUser() throws Exception {
-        mvc.perform(delete(RECIPE_API_URL, ID)).andExpect(status().isForbidden());
+    @DisplayName("respond No Content when deleting recipe successfully as an authenticated user")
+    void respond204OnDeletionAsAuthenticatedUser() throws Exception {
+        mvc.perform(delete(RECIPE_API_URL, ID)).andExpect(status().isNoContent());
+        verify(recipeAppServiceMock).deleteRecipe(deleteCommand());
     }
 
     @Test
     @WithIngredientManager
-    @DisplayName("respond Unauthorized when deleting recipe as an ingredient manager")
-    void respond401OnDeletionAsIngredientManager() throws Exception {
-        mvc.perform(delete(RECIPE_API_URL, ID)).andExpect(status().isForbidden());
+    @DisplayName("respond No Content when deleting recipe successfully as an ingredient manager")
+    void respond204OnDeletionAsIngredientManager() throws Exception {
+        mvc.perform(delete(RECIPE_API_URL, ID)).andExpect(status().isNoContent());
+        verify(recipeAppServiceMock).deleteRecipe(deleteCommand());
     }
 
     @Test
     @WithSuperAdministrator
-    @DisplayName("respond Not Found when deleting unknown recipe")
-    void respond404DeleteUnknownRecipe() throws Exception {
-        doThrow(new EntityNotFoundException(Recipe.class, ID)).when(recipeAppServiceMock).deleteRecipe(deleteCommand());
-        mvc.perform(delete(RECIPE_API_URL, ID)).andExpect(status().isNotFound());
-    }
-
-    @Test
-    @WithSuperAdministrator
-    @DisplayName("respond No Content when deleting recipe successfully")
+    @DisplayName("respond No Content when deleting recipe successfully as super administrator")
     void respond204DeleteRecipe() throws Exception {
         mvc.perform(delete(RECIPE_API_URL, ID)).andExpect(status().isNoContent());
         verify(recipeAppServiceMock).deleteRecipe(deleteCommand());

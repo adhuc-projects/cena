@@ -64,7 +64,7 @@ public class ApiSecurity extends WebSecurityConfigurerAdapter {
                 // Recipes resources
                 .mvcMatchers(POST, RECIPES_PATH).authenticated()
                 .mvcMatchers(DELETE, RECIPES_PATH).hasRole(SUPER_ADMINISTRATOR_ROLE)
-                .mvcMatchers(DELETE, BASE_RECIPES_PATH).hasRole(SUPER_ADMINISTRATOR_ROLE)
+                .mvcMatchers(DELETE, BASE_RECIPES_PATH).authenticated()
                 // Other resources
                 .mvcMatchers(BASE_API_PATH).permitAll();
         http.csrf().disable();

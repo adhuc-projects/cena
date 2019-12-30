@@ -19,6 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import static org.adhuc.cena.menu.common.security.RolesDefinition.INGREDIENT_MANAGER_ROLE;
+import static org.adhuc.cena.menu.common.security.RolesDefinition.USER_ROLE;
 import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +36,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -61,6 +64,8 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
 @DisplayName("Recipe service with security should")
 class RecipeAppServiceWithSecurityShould {
 
+    private static final String RECIPE_AUTHOR_NAME = "recipe author";
+
     @Autowired
     private RecipeAppService service;
     @Autowired
@@ -71,7 +76,7 @@ class RecipeAppServiceWithSecurityShould {
     @BeforeEach
     void setUp() {
         repository.deleteAll();
-        repository.save(builder().withId(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID).build());
+        repository.save(builder().withId(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID).withAuthorName(RECIPE_AUTHOR_NAME).build());
     }
 
     @Test
@@ -113,6 +118,13 @@ class RecipeAppServiceWithSecurityShould {
     }
 
     @Test
+    @WithAuthenticatedUser
+    @DisplayName("deny recipes deletion access to authenticated user")
+    void denyRecipesDeletionAsAuthenticatedUser() {
+        assertThrows(AccessDeniedException.class, () -> service.deleteRecipes());
+    }
+
+    @Test
     @WithIngredientManager
     @DisplayName("deny recipes deletion access to ingredient manager")
     void denyRecipesDeletionAsIngredientManager() {
@@ -137,17 +149,35 @@ class RecipeAppServiceWithSecurityShould {
     }
 
     @Test
+    @WithMockUser(username = RECIPE_AUTHOR_NAME, roles = USER_ROLE)
+    @DisplayName("grant recipe deletion access to recipe author")
+    void grantRecipeDeletionAsRecipeAuthor() {
+        assumeThat(service.getRecipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)).isNotNull();
+        service.deleteRecipe(deleteCommand(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID));
+        assertThrows(EntityNotFoundException.class, () -> service.getRecipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID));
+    }
+
+    @Test
     @WithAuthenticatedUser
-    @DisplayName("deny recipe deletion access to authenticated user")
-    void denyRecipeDeletionAsAuthenticatedUser() {
+    @DisplayName("deny recipe deletion access to authenticated user that is not recipe author")
+    void denyRecipeDeletionAsAuthenticatedUserNotRecipeAuthor() {
         assumeThat(service.getRecipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)).isNotNull();
         assertThrows(AccessDeniedException.class, () -> service.deleteRecipe(deleteCommand(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)));
     }
 
     @Test
+    @WithMockUser(username = RECIPE_AUTHOR_NAME, roles = INGREDIENT_MANAGER_ROLE)
+    @DisplayName("grant recipe deletion access to ingredient manager that is recipe author")
+    void grantRecipeDeletionAsIngredientManagerRecipeAuthor() {
+        assumeThat(service.getRecipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)).isNotNull();
+        service.deleteRecipe(deleteCommand(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID));
+        assertThrows(EntityNotFoundException.class, () -> service.getRecipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID));
+    }
+
+    @Test
     @WithIngredientManager
-    @DisplayName("deny recipe deletion access to ingredient manager")
-    void denyRecipeDeletionAsIngredientManager() {
+    @DisplayName("deny recipe deletion access to ingredient manager that is not recipe author")
+    void denyRecipeDeletionAsIngredientManagerNotRecipeAuthor() {
         assumeThat(service.getRecipe(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)).isNotNull();
         assertThrows(AccessDeniedException.class, () -> service.deleteRecipe(deleteCommand(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)));
     }

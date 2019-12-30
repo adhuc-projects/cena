@@ -11,8 +11,8 @@ Feature: Delete a recipe from the system
 
   @Smoke @Security
   Scenario: Delete a recipe successfully
-    Given an authenticated super administrator
-    And an existing "Tomato, cucumber and mozzarella salad" recipe
+    Given an authenticated user
+    And an existing "Tomato, cucumber and mozzarella salad" recipe authored by the authenticated user
     When he deletes the recipe
     Then the recipe is deleted
     And the recipe cannot be found in the list
@@ -26,17 +26,33 @@ Feature: Delete a recipe from the system
     And the recipe can be found in the list
 
   @Security
-  Scenario: Delete an ingredient as authenticated user
+  Scenario: Delete a recipe authored by another user
     Given an authenticated user
-    And an existing "Tomato, cucumber and mozzarella salad" recipe
+    And an existing "Tomato, cucumber and mozzarella salad" recipe authored by another user
     When he deletes the recipe
     Then an error notifies that user is not authorized
     And the recipe can be found in the list
 
   @Security
-  Scenario: Delete an ingredient as ingredient manager
+  Scenario: Delete a recipe as ingredient manager
     Given an authenticated ingredient manager
-    And an existing "Tomato, cucumber and mozzarella salad" recipe
+    And an existing "Tomato, cucumber and mozzarella salad" recipe authored by the authenticated user
     When he deletes the recipe
-    Then an error notifies that user is not authorized
-    And the recipe can be found in the list
+    Then the recipe is deleted
+    And the recipe cannot be found in the list
+
+  @Security
+  Scenario: Delete a recipe as super administrator
+    Given an authenticated super administrator
+    And an existing "Tomato, cucumber and mozzarella salad" recipe authored by the authenticated user
+    When he deletes the recipe
+    Then the recipe is deleted
+    And the recipe cannot be found in the list
+
+  @Security
+  Scenario: Delete a recipe authored by another user as super administrator
+    Given an authenticated super administrator
+    And an existing "Tomato, cucumber and mozzarella salad" recipe authored by another user
+    When he deletes the recipe
+    Then the recipe is deleted
+    And the recipe cannot be found in the list

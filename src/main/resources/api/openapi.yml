@@ -148,7 +148,7 @@ paths:
         404:
           $ref: '#/components/responses/404-NotFound'
     delete:
-      summary: Delete a recipe from the system. Only a super administrator can delete a recipe
+      summary: Delete a recipe from the system. Only the recipe author or a super administrator can delete a recipe
       operationId: deleteRecipe
       tags:
         - Recipes

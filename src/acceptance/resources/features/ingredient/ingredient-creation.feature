@@ -9,6 +9,14 @@ Feature: Create an ingredient in the system
     Then an error notifies that ingredient must have a name
     And the ingredient cannot be found in the list
 
+  @Edge
+  Scenario: Create an ingredient without quantity type
+    Given an authenticated ingredient manager
+    And a non-existent "Tomato" ingredient
+    When he creates the ingredient without quantity type
+    Then the ingredient is created
+    And the ingredient can be found in the list
+
   @Smoke @Security
   Scenario: Create an ingredient successfully
     Given an authenticated ingredient manager

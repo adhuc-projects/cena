@@ -45,6 +45,13 @@ public class IngredientCreationStepDefinitions {
         ingredientCreationServiceClient.createIngredientWithoutName();
     }
 
+    @When("^he creates the ingredient without quantity type$")
+    public void createIngredientWithoutQuantityType() {
+        var ingredient = ingredientCreationServiceClient.storeIngredient(
+                ingredientCreationServiceClient.storedIngredient().withoutQuantityType());
+        ingredientCreationServiceClient.createIngredient(ingredient);
+    }
+
     @Then("^the ingredient is created$")
     public void ingredientCreated() {
         ingredientCreationServiceClient.assertIngredientSuccessfullyCreated(ingredientCreationServiceClient.storedIngredient());

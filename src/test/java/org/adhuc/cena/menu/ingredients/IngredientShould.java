@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
@@ -34,7 +35,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  * The {@link Ingredient} test class.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @Tag("unit")
@@ -51,26 +52,36 @@ class IngredientShould {
     @ParameterizedTest
     @MethodSource("invalidCreationParameters")
     @DisplayName("not be creatable with invalid parameters")
-    void notBeCreatableWithInvalidParameters(IngredientId ingredientId, String name) {
-        assertThrows(IllegalArgumentException.class, () -> new Ingredient(ingredientId, name));
+    void notBeCreatableWithInvalidParameters(IngredientId ingredientId, String name, List<QuantityType> quantityTypes) {
+        assertThrows(IllegalArgumentException.class, () -> new Ingredient(ingredientId, name, quantityTypes));
     }
 
     private static Stream<Arguments> invalidCreationParameters() {
         return Stream.of(
-                Arguments.of(null, NAME),
-                Arguments.of(ID, null),
-                Arguments.of(ID, "")
+                Arguments.of(null, NAME, QUANTITY_TYPES),
+                Arguments.of(ID, null, QUANTITY_TYPES),
+                Arguments.of(ID, "", QUANTITY_TYPES),
+                Arguments.of(ID, NAME, null)
         );
     }
 
-    @Test
-    @DisplayName("contain id and name used during creation")
-    void containCreationValues() {
-        var ingredient = ingredient();
+    @ParameterizedTest
+    @MethodSource("validCreationParameters")
+    @DisplayName("contain id, name and quantity types used during creation")
+    void containCreationValues(IngredientId ingredientId, String name, List<QuantityType> quantityTypes) {
+        var ingredient = new Ingredient(ingredientId, name, quantityTypes);
         assertSoftly(softly -> {
-            softly.assertThat(ingredient.id()).isEqualTo(ID);
-            softly.assertThat(ingredient.name()).isEqualTo(NAME);
+            softly.assertThat(ingredient.id()).isEqualTo(ingredientId);
+            softly.assertThat(ingredient.name()).isEqualTo(name);
+            softly.assertThat(ingredient.quantityTypes()).isEqualTo(quantityTypes);
         });
+    }
+
+    private static Stream<Arguments> validCreationParameters() {
+        return Stream.of(
+                Arguments.of(ID, NAME, QUANTITY_TYPES),
+                Arguments.of(ID, NAME, List.of())
+        );
     }
 
     @ParameterizedTest
@@ -88,12 +99,14 @@ class IngredientShould {
     }
 
     private static Stream<Arguments> equalitySource() {
-        var tomato = ingredient(TOMATO_ID, TOMATO);
+        var tomato = ingredient(TOMATO_ID, TOMATO, TOMATO_QUANTITY_TYPES);
         return Stream.of(
                 Arguments.of(tomato, tomato, true),
-                Arguments.of(tomato, ingredient(TOMATO_ID, TOMATO), true),
-                Arguments.of(tomato, ingredient(TOMATO_ID, CUCUMBER), true),
-                Arguments.of(tomato, ingredient(CUCUMBER_ID, TOMATO), false)
+                Arguments.of(tomato, ingredient(TOMATO_ID, TOMATO, TOMATO_QUANTITY_TYPES), true),
+                Arguments.of(tomato, ingredient(TOMATO_ID, CUCUMBER, TOMATO_QUANTITY_TYPES), true),
+                Arguments.of(tomato, ingredient(TOMATO_ID, TOMATO, List.of()), true),
+                Arguments.of(tomato, ingredient(TOMATO_ID, TOMATO, CUCUMBER_QUANTITY_TYPES), true),
+                Arguments.of(tomato, ingredient(CUCUMBER_ID, TOMATO, TOMATO_QUANTITY_TYPES), false)
         );
     }
 

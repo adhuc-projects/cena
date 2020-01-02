@@ -521,7 +521,7 @@ components:
                   type: string
                   example: 'https://cena.adhuc.org/api/ingredients'
     Ingredient:
-      description: An ingredient detail, containing its identity and name
+      description: An ingredient detail, containing its identity, name and quantity types
       type: object
       required:
         - id
@@ -539,6 +539,16 @@ components:
           type: string
           minLength: 1
           example: 'Tomato'
+        quantityTypes:
+          description: Ingredient quantity types, used to determine which types of quantities ingredients accept when associated to recipes
+          type: array
+          items:
+            type: string
+            enum:
+              - WEIGHT
+              - VOLUME
+              - COUNT
+              - AT_CONVENIENCE
         '_links':
           type: object
           readOnly: true

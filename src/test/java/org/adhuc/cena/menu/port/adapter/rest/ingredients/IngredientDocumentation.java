@@ -92,7 +92,8 @@ class IngredientDocumentation {
 
     static ResponseFieldsSnippet ingredientResponseFields(String linksDescription) {
         return responseFields(fieldWithPath("id").description("The ingredient identity"),
-                fieldWithPath("name").description("The ingredient name"),
+                fieldWithPath("name").description("The name of the ingredient"),
+                fieldWithPath("quantityTypes").description("The types of quantities of the ingredient"),
                 subsectionWithPath("_links").description(linksDescription));
     }
 

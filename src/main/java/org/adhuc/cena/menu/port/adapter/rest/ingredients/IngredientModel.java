@@ -15,6 +15,13 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.ingredients;
 
+import static java.util.stream.Collectors.toList;
+
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
+
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.NonNull;
 import lombok.ToString;
@@ -32,6 +39,7 @@ import org.adhuc.cena.menu.ingredients.Ingredient;
  */
 @ToString(callSuper = true)
 @Relation(collectionRelation = "data")
+@JsonInclude(NON_EMPTY)
 public class IngredientModel extends RepresentationModel<IngredientModel> {
 
     @NonNull
@@ -40,10 +48,13 @@ public class IngredientModel extends RepresentationModel<IngredientModel> {
     @NonNull
     @JsonProperty("name")
     private final String ingredientName;
+    @JsonProperty("quantityTypes")
+    private final List<String> ingredientQuantityTypes;
 
     IngredientModel(@NonNull Ingredient ingredient) {
         ingredientId = ingredient.id().toString();
         ingredientName = ingredient.name();
+        ingredientQuantityTypes = ingredient.quantityTypes().stream().map(Enum::toString).collect(toList());
     }
 
 }

@@ -15,7 +15,9 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.ingredients;
 
+import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.*;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -24,6 +26,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
+
+import java.util.List;
 
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,9 +133,16 @@ class IngredientControllerShould {
         @Test
         @DisplayName("contain tomato data")
         void getIngredientFoundContainsData() throws Exception {
+            var ingredient = ingredient();
+            assumeThat(ingredient.quantityTypes().size()).isEqualTo(2);
+
             mvc.perform(get(INGREDIENT_API_URL, ID))
-                    .andExpect(jsonPath("$.id").value(ingredient().id().toString()))
-                    .andExpect(jsonPath("$.name").value(ingredient().name()));
+                    .andExpect(jsonPath("$.id").value(ingredient.id().toString()))
+                    .andExpect(jsonPath("$.name").value(ingredient.name()))
+                    .andExpect(jsonPath("$.quantityTypes").isArray())
+                    .andExpect(jsonPath("$.quantityTypes", hasSize(2)))
+                    .andExpect(jsonPath("$.quantityTypes[0]").value(ingredient.quantityTypes().get(0).toString()))
+                    .andExpect(jsonPath("$.quantityTypes[1]").value(ingredient.quantityTypes().get(1).toString()));
         }
 
         @Test
@@ -142,6 +153,18 @@ class IngredientControllerShould {
                     .andExpect(jsonPath("$._links.self.href", equalTo(result.andReturn().getRequest().getRequestURL().toString())));
         }
 
+    }
+
+    @Test
+    @DisplayName("not contain any quantity type when retrieving ingredient without quantity type")
+    void getIngredientWithoutQuantityType() throws Exception {
+        var ingredient = ingredient(ID, NAME, List.of());
+        when(ingredientAppServiceMock.getIngredient(ID)).thenReturn(ingredient);
+
+        mvc.perform(get(INGREDIENT_API_URL, ID))
+                .andExpect(jsonPath("$.id").value(ingredient.id().toString()))
+                .andExpect(jsonPath("$.name").value(ingredient.name()))
+                .andExpect(jsonPath("$.quantityTypes").doesNotExist());
     }
 
 }

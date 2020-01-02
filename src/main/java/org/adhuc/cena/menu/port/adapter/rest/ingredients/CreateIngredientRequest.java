@@ -15,6 +15,7 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.ingredients;
 
+import java.util.List;
 import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -23,6 +24,7 @@ import lombok.ToString;
 
 import org.adhuc.cena.menu.ingredients.CreateIngredient;
 import org.adhuc.cena.menu.ingredients.IngredientId;
+import org.adhuc.cena.menu.ingredients.QuantityType;
 
 /**
  * A request to create an ingredient.
@@ -37,6 +39,7 @@ class CreateIngredientRequest {
 
     @NotBlank
     private String name;
+    private List<QuantityType> quantityTypes;
 
     /**
      * Converts this request to a {@code CreateIngredient} command.
@@ -45,7 +48,7 @@ class CreateIngredientRequest {
      * @return the ingredient creation command.
      */
     CreateIngredient toCommand(@NonNull IngredientId id) {
-        return new CreateIngredient(id, name);
+        return new CreateIngredient(id, name, quantityTypes != null ? quantityTypes : List.of());
     }
 
 }

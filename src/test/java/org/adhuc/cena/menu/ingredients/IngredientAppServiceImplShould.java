@@ -107,7 +107,7 @@ class IngredientAppServiceImplShould {
 
         @BeforeEach
         void setUp() {
-            tomato = ingredient(TOMATO_ID, TOMATO);
+            tomato = ingredient(TOMATO_ID, TOMATO, TOMATO_QUANTITY_TYPES);
             ingredientRepository.save(tomato);
         }
 
@@ -133,7 +133,7 @@ class IngredientAppServiceImplShould {
         @Test
         @DisplayName("create cucumber successfully")
         void createIngredient() {
-            var ingredient = ingredient(CUCUMBER_ID, CUCUMBER);
+            var ingredient = ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_QUANTITY_TYPES);
             var createdIngredient = service.createIngredient(createCommand(ingredient));
             assertThat(createdIngredient).isEqualToComparingFieldByField(ingredient);
             assertThat(service.getIngredient(ingredient.id())).isNotNull().isEqualToComparingFieldByField(ingredient);
@@ -169,7 +169,7 @@ class IngredientAppServiceImplShould {
 
             @BeforeEach
             void setUp() {
-                cucumber = ingredient(CUCUMBER_ID, CUCUMBER);
+                cucumber = ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_QUANTITY_TYPES);
                 ingredientRepository.save(cucumber);
             }
 

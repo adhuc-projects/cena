@@ -17,6 +17,8 @@ package org.adhuc.cena.menu.ingredients;
 
 import static org.adhuc.cena.menu.util.Assert.hasText;
 
+import java.util.List;
+
 import lombok.NonNull;
 import lombok.Value;
 import lombok.experimental.Accessors;
@@ -25,7 +27,7 @@ import lombok.experimental.Accessors;
  * An ingredient creation command.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @Value
@@ -34,17 +36,21 @@ public class CreateIngredient {
 
     private final IngredientId ingredientId;
     private final String ingredientName;
+    private final List<QuantityType> ingredientQuantityTypes;
 
     /**
      * Creates an ingredient creation command.
      *
-     * @param ingredientId   the ingredient identity.
+     * @param ingredientId the ingredient identity.
      * @param ingredientName the ingredient name.
+     * @param ingredientQuantityTypes the ingredient quantity types.
      */
-    public CreateIngredient(@NonNull IngredientId ingredientId, @NonNull String ingredientName) {
+    public CreateIngredient(@NonNull IngredientId ingredientId, @NonNull String ingredientName,
+                            @NonNull List<QuantityType> ingredientQuantityTypes) {
         hasText(ingredientName, "Cannot create ingredient creation command with invalid ingredient name");
         this.ingredientId = ingredientId;
         this.ingredientName = ingredientName;
+        this.ingredientQuantityTypes = List.copyOf(ingredientQuantityTypes);
     }
 
 }

@@ -17,6 +17,8 @@ package org.adhuc.cena.menu.ingredients;
 
 import static org.adhuc.cena.menu.util.Assert.hasText;
 
+import java.util.List;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
@@ -29,7 +31,7 @@ import org.adhuc.cena.menu.common.BasicEntity;
  * An ingredient definition.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @Accessors(fluent = true)
@@ -40,6 +42,9 @@ public class Ingredient extends BasicEntity<IngredientId> {
     @Getter
     @NonNull
     private String name;
+    @Getter
+    @NonNull
+    private List<QuantityType> quantityTypes;
 
     /**
      * Creates an ingredient based on the specified creation command.
@@ -47,19 +52,21 @@ public class Ingredient extends BasicEntity<IngredientId> {
      * @param command the ingredient creation command.
      */
     public Ingredient(@NonNull CreateIngredient command) {
-        this(command.ingredientId(), command.ingredientName());
+        this(command.ingredientId(), command.ingredientName(), command.ingredientQuantityTypes());
     }
 
     /**
      * Creates an ingredient.
      *
-     * @param id   the ingredient identity.
+     * @param id the ingredient identity.
      * @param name the ingredient name.
+     * @param quantityTypes the ingredient quantity types.
      */
-    Ingredient(@NonNull IngredientId id, @NonNull String name) {
+    Ingredient(@NonNull IngredientId id, @NonNull String name, @NonNull List<QuantityType> quantityTypes) {
         super(id);
         hasText(name, "Cannot set ingredient name with invalid value");
         this.name = name;
+        this.quantityTypes = quantityTypes;
     }
 
 }

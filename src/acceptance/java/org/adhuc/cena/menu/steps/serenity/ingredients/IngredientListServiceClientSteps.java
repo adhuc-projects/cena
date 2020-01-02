@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
 
 import static org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue.COMPARATOR;
+import static org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue.NAME_AND_QUANTITY_TYPES_COMPARATOR;
 
 import java.util.Collection;
 
@@ -73,8 +74,8 @@ public class IngredientListServiceClientSteps {
             ingredientCreationServiceClient.createIngredientAsIngredientManager(ingredient);
         }
         var ingredients = fetchIngredients();
-        assumeThat(ingredients).usingElementComparator(COMPARATOR).contains(ingredient);
-        return ingredients.stream().filter(i -> COMPARATOR.compare(i, ingredient) == 0).findFirst().get();
+        assumeThat(ingredients).usingElementComparator(NAME_AND_QUANTITY_TYPES_COMPARATOR).contains(ingredient);
+        return ingredients.stream().filter(i -> NAME_AND_QUANTITY_TYPES_COMPARATOR.compare(i, ingredient) == 0).findFirst().get();
     }
 
     @Step("Assume ingredients {0} are in ingredients list")
@@ -82,11 +83,12 @@ public class IngredientListServiceClientSteps {
         var existingIngredients = fetchIngredients();
         ingredients.stream()
                 .filter(ingredient -> existingIngredients.stream()
-                        .noneMatch(existing -> COMPARATOR.compare(existing, ingredient) == 0))
+                        .noneMatch(existing -> NAME_AND_QUANTITY_TYPES_COMPARATOR.compare(existing, ingredient) == 0))
                 .forEach(ingredient -> ingredientCreationServiceClient.createIngredientAsIngredientManager(ingredient));
         var allIngredients = fetchIngredients();
-        assumeThat(allIngredients).usingElementComparator(COMPARATOR).containsAll(ingredients);
-        return allIngredients.stream().filter(i -> ingredients.stream().anyMatch(i2 -> COMPARATOR.compare(i, i2) == 0)).collect(toList());
+        assumeThat(allIngredients).usingElementComparator(NAME_AND_QUANTITY_TYPES_COMPARATOR).containsAll(ingredients);
+        return allIngredients.stream().filter(i -> ingredients.stream()
+                .anyMatch(i2 -> NAME_AND_QUANTITY_TYPES_COMPARATOR.compare(i, i2) == 0)).collect(toList());
     }
 
     @Step("Assume ingredient {0} is not in ingredients list")
@@ -98,12 +100,13 @@ public class IngredientListServiceClientSteps {
 
     @Step("Assert ingredient {0} is in ingredients list")
     public void assertInIngredientsList(IngredientValue ingredient) {
-        assertThat(getFromIngredientsList(ingredient)).isPresent();
+        assertThat(getFromIngredientsList(ingredient)).isPresent().get()
+                .usingComparator(NAME_AND_QUANTITY_TYPES_COMPARATOR).isEqualTo(ingredient);
     }
 
     @Step("Assert ingredients {0} are in ingredients list {1}")
     public void assertInIngredientsList(Collection<IngredientValue> expected, Collection<IngredientValue> actual) {
-        assertThat(actual).usingElementComparator(COMPARATOR).containsAll(expected);
+        assertThat(actual).usingElementComparator(NAME_AND_QUANTITY_TYPES_COMPARATOR).containsAll(expected);
     }
 
     @Step("Assert ingredient {0} is not in ingredients list")

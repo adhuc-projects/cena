@@ -21,11 +21,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -34,7 +34,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  * The {@link CreateIngredient} test class.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @Tag("unit")
@@ -45,26 +45,36 @@ class CreateIngredientShould {
     @ParameterizedTest
     @MethodSource("invalidCreationParameters")
     @DisplayName("not be creatable with invalid parameters")
-    void notBeCreatableWithInvalidParameters(IngredientId ingredientId, String name) {
-        assertThrows(IllegalArgumentException.class, () -> new CreateIngredient(ingredientId, name));
+    void notBeCreatableWithInvalidParameters(IngredientId ingredientId, String name, List<QuantityType> quantityTypes) {
+        assertThrows(IllegalArgumentException.class, () -> new CreateIngredient(ingredientId, name, quantityTypes));
     }
 
     private static Stream<Arguments> invalidCreationParameters() {
         return Stream.of(
-                Arguments.of(null, NAME),
-                Arguments.of(ID, null),
-                Arguments.of(ID, "")
+                Arguments.of(null, NAME, QUANTITY_TYPES),
+                Arguments.of(ID, null, QUANTITY_TYPES),
+                Arguments.of(ID, "", QUANTITY_TYPES),
+                Arguments.of(ID, NAME, null)
         );
     }
 
-    @Test
-    @DisplayName("contain id and name used during creation")
-    void containCreationValues() {
-        var command = createCommand();
+    @ParameterizedTest
+    @MethodSource("validCreationParameters")
+    @DisplayName("contain id, name and quantity types used during creation")
+    void containCreationValues(IngredientId ingredientId, String name, List<QuantityType> quantityTypes) {
+        var command = new CreateIngredient(ingredientId, name, quantityTypes);
         assertSoftly(softly -> {
-            softly.assertThat(command.ingredientId()).isEqualTo(ID);
-            softly.assertThat(command.ingredientName()).isEqualTo(NAME);
+            softly.assertThat(command.ingredientId()).isEqualTo(ingredientId);
+            softly.assertThat(command.ingredientName()).isEqualTo(name);
+            softly.assertThat(command.ingredientQuantityTypes()).isEqualTo(quantityTypes);
         });
+    }
+
+    private static Stream<Arguments> validCreationParameters() {
+        return Stream.of(
+                Arguments.of(ID, NAME, QUANTITY_TYPES),
+                Arguments.of(ID, NAME, List.of())
+        );
     }
 
     @ParameterizedTest
@@ -82,12 +92,14 @@ class CreateIngredientShould {
     }
 
     private static Stream<Arguments> equalitySource() {
-        var createTomato = createCommand(ingredient(TOMATO_ID, TOMATO));
+        var createTomato = new CreateIngredient(TOMATO_ID, TOMATO, TOMATO_QUANTITY_TYPES);
         return Stream.of(
                 Arguments.of(createTomato, createTomato, true),
-                Arguments.of(createTomato, createCommand(ingredient(TOMATO_ID, TOMATO)), true),
-                Arguments.of(createTomato, createCommand(ingredient(TOMATO_ID, CUCUMBER)), false),
-                Arguments.of(createTomato, createCommand(ingredient(CUCUMBER_ID, TOMATO)), false)
+                Arguments.of(createTomato, new CreateIngredient(TOMATO_ID, TOMATO, TOMATO_QUANTITY_TYPES), true),
+                Arguments.of(createTomato, new CreateIngredient(CUCUMBER_ID, TOMATO, TOMATO_QUANTITY_TYPES), false),
+                Arguments.of(createTomato, new CreateIngredient(TOMATO_ID, CUCUMBER, TOMATO_QUANTITY_TYPES), false),
+                Arguments.of(createTomato, new CreateIngredient(TOMATO_ID, CUCUMBER, List.of()), false),
+                Arguments.of(createTomato, new CreateIngredient(TOMATO_ID, CUCUMBER, CUCUMBER_QUANTITY_TYPES), false)
         );
     }
 

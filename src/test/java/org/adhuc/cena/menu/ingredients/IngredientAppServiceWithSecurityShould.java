@@ -69,7 +69,7 @@ class IngredientAppServiceWithSecurityShould {
     @BeforeEach
     void setUp() {
         repository.deleteAll();
-        repository.save(ingredient(CUCUMBER_ID, CUCUMBER));
+        repository.save(ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_QUANTITY_TYPES));
     }
 
     @Test

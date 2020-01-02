@@ -48,8 +48,8 @@ public class RecipeValue extends HateoasClientResourceSupport {
 
     private static final String RECIPE_INGREDIENTS_LINK = "ingredients";
 
-    public static final Comparator<RecipeValue> COMPARATOR = new RecipeNameComparator();
-    public static final Comparator<RecipeValue> NAME_AND_CONTENT_COMPARATOR = new RecipeNameAndContentComparator();
+    public static final Comparator<RecipeValue> COMPARATOR = Comparator.comparing(RecipeValue::name);
+    public static final Comparator<RecipeValue> NAME_AND_CONTENT_COMPARATOR = COMPARATOR.thenComparing(RecipeValue::content);
 
     public static final String DEFAULT_NAME = "Recipe default name";
     public static final String DEFAULT_CONTENT = "Recipe default content";
@@ -85,21 +85,6 @@ public class RecipeValue extends HateoasClientResourceSupport {
 
     void assertEqualTo(RecipeValue expected) {
         assertThat(this).usingComparator(NAME_AND_CONTENT_COMPARATOR).isEqualTo(expected);
-    }
-
-    static class RecipeNameComparator implements Comparator<RecipeValue> {
-        @Override
-        public int compare(RecipeValue recipe1, RecipeValue recipe2) {
-            return Comparator.comparing(RecipeValue::name, String::compareTo).compare(recipe1, recipe2);
-        }
-    }
-
-    static class RecipeNameAndContentComparator implements Comparator<RecipeValue> {
-        @Override
-        public int compare(RecipeValue recipe1, RecipeValue recipe2) {
-            return Comparator.comparing(RecipeValue::name, String::compareTo)
-                    .thenComparing(RecipeValue::content, String::compareTo).compare(recipe1, recipe2);
-        }
     }
 
 }

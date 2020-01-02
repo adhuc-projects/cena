@@ -85,8 +85,8 @@ public class RecipeListServiceClientSteps {
             recipeCreationServiceClient.createRecipeAs(recipe, author);
         }
         var recipes = fetchRecipes();
-        assumeThat(recipes).usingElementComparator(RecipeValue.COMPARATOR).contains(recipe);
-        return recipes.stream().filter(i -> RecipeValue.COMPARATOR.compare(i, recipe) == 0).findFirst().get();
+        assumeThat(recipes).usingElementComparator(COMPARATOR).contains(recipe);
+        return recipes.stream().filter(i -> COMPARATOR.compare(i, recipe) == 0).findFirst().get();
     }
 
     @Step("Assume recipe {0} is in recipes list and authored by currently authenticated user")

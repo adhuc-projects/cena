@@ -47,7 +47,7 @@ import org.adhuc.cena.menu.steps.serenity.support.resource.HateoasClientResource
 @JsonInclude(NON_EMPTY)
 public class IngredientValue extends HateoasClientResourceSupport {
 
-    public static final Comparator<IngredientValue> COMPARATOR = new IngredientNameComparator();
+    public static final Comparator<IngredientValue> COMPARATOR = Comparator.comparing(IngredientValue::name);
 
     private String id;
     private final String name;
@@ -64,13 +64,6 @@ public class IngredientValue extends HateoasClientResourceSupport {
 
     void assertEqualTo(IngredientValue expected) {
         assertThat(this).usingComparator(COMPARATOR).isEqualTo(expected);
-    }
-
-    static class IngredientNameComparator implements Comparator<IngredientValue> {
-        @Override
-        public int compare(IngredientValue ingredient1, IngredientValue ingredient2) {
-            return Comparator.comparing(IngredientValue::name, String::compareTo).compare(ingredient1, ingredient2);
-        }
     }
 
 }

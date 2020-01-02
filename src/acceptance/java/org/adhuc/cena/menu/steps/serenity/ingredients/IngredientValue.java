@@ -58,6 +58,10 @@ public class IngredientValue extends HateoasClientResourceSupport {
         return ingredient;
     }
 
+    IngredientValue withoutId() {
+        return new IngredientValue(null, name);
+    }
+
     void assertEqualTo(IngredientValue expected) {
         assertThat(this).usingComparator(COMPARATOR).isEqualTo(expected);
     }

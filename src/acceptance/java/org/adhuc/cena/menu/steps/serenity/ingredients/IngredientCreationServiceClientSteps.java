@@ -66,7 +66,9 @@ public class IngredientCreationServiceClientSteps {
 
     private void createIngredient(IngredientValue ingredient, Supplier<RequestSpecification> specificationSupplier) {
         var ingredientsResourceUrl = ingredientsResourceUrl();
-        specificationSupplier.get().contentType(HAL_JSON_VALUE).body(ingredient).post(ingredientsResourceUrl).andReturn();
+        specificationSupplier.get().contentType(HAL_JSON_VALUE)
+                .body(ingredient.withoutId())
+                .post(ingredientsResourceUrl).andReturn();
     }
 
     @Step("Create an ingredient without name")

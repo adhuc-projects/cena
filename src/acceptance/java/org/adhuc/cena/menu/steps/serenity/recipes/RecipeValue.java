@@ -74,6 +74,10 @@ public class RecipeValue extends HateoasClientResourceSupport {
         this(null, name, content, null);
     }
 
+    RecipeValue withoutId() {
+        return new RecipeValue(null, name, content, author);
+    }
+
     @JsonIgnore
     public String getIngredients() {
         return link(RECIPE_INGREDIENTS_LINK);

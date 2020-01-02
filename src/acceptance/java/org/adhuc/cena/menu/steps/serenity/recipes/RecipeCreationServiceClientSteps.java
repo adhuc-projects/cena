@@ -73,7 +73,9 @@ public class RecipeCreationServiceClientSteps {
 
     private void createRecipe(RecipeValue recipe, Supplier<RequestSpecification> specificationSupplier) {
         var recipesResourceUrl = recipesResourceUrl();
-        specificationSupplier.get().contentType(HAL_JSON_VALUE).body(recipe).post(recipesResourceUrl).andReturn();
+        specificationSupplier.get().contentType(HAL_JSON_VALUE)
+                .body(recipe.withoutId())
+                .post(recipesResourceUrl).andReturn();
     }
 
     @Step("Create a recipe without name")

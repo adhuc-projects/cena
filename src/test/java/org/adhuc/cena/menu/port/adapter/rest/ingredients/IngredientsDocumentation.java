@@ -75,8 +75,8 @@ class IngredientsDocumentation {
     @DisplayName("generates ingredients list example")
     void ingredientsListExample() throws Exception {
         when(ingredientAppServiceMock.getIngredients()).thenReturn(List.of(
-                ingredient(TOMATO_ID, TOMATO, TOMATO_QUANTITY_TYPES),
-                ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_QUANTITY_TYPES)));
+                ingredient(TOMATO_ID, TOMATO, TOMATO_MEASUREMENT_TYPES),
+                ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES)));
 
         mvc.perform(get(INGREDIENTS_API_URL)).andExpect(status().isOk())
                 .andDo(documentationHandler.document(
@@ -96,11 +96,11 @@ class IngredientsDocumentation {
 
         var fields = new ConstrainedFields(CreateIngredientRequest.class);
         mvc.perform(post(INGREDIENTS_API_URL).contentType(APPLICATION_JSON)
-                .content("{\"name\":\"Tomato\",\"quantityTypes\":[\"WEIGHT\", \"COUNT\"]}"))
+                .content("{\"name\":\"Tomato\",\"measurementTypes\":[\"WEIGHT\", \"COUNT\"]}"))
                 .andExpect(status().isCreated()).andDo(documentationHandler
                 .document(requestFields(
                         fields.withPath("name").description("The name of the ingredient"),
-                        fields.withPath("quantityTypes").description("The types of quantities of the ingredient")
+                        fields.withPath("measurementTypes").description("The types of measurement of the ingredient")
                 )));
     }
 

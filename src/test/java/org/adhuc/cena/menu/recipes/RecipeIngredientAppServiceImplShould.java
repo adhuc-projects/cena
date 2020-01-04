@@ -135,7 +135,7 @@ class RecipeIngredientAppServiceImplShould {
             assumeThat(recipeRepository.findNotNullById(RecipeMother.ID).ingredients())
                     .containsExactly(recipeIngredient(CUCUMBER_ID));
             ingredientRepository.save(ingredient());
-            ingredientRepository.save(ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_QUANTITY_TYPES));
+            ingredientRepository.save(ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES));
             assumeThat(ingredientRepository.exists(IngredientMother.ID)).isTrue();
             assumeThat(ingredientRepository.exists(CUCUMBER_ID)).isTrue();
         }

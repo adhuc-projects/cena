@@ -82,8 +82,8 @@ class IngredientsControllerShould {
 
         @BeforeEach
         void setUp() {
-            ingredients = List.of(ingredient(TOMATO_ID, TOMATO, TOMATO_QUANTITY_TYPES),
-                    ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_QUANTITY_TYPES));
+            ingredients = List.of(ingredient(TOMATO_ID, TOMATO, TOMATO_MEASUREMENT_TYPES),
+                    ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES));
             when(ingredientAppServiceMock.getIngredients()).thenReturn(ingredients);
         }
 
@@ -150,7 +150,7 @@ class IngredientsControllerShould {
     void respond401OnCreationAsCommunityUser() throws Exception {
         mvc.perform(post(INGREDIENTS_API_URL)
                 .contentType(APPLICATION_JSON)
-                .content("{\"name\":\"Tomato\",\"quantityTypes\":[\"WEIGHT\", \"COUNT\"]}")
+                .content("{\"name\":\"Tomato\",\"measurementTypes\":[\"WEIGHT\", \"COUNT\"]}")
         ).andExpect(status().isUnauthorized());
     }
 
@@ -160,7 +160,7 @@ class IngredientsControllerShould {
     void respond403OnCreationAsAuthenticatedUser() throws Exception {
         mvc.perform(post(INGREDIENTS_API_URL)
                 .contentType(APPLICATION_JSON)
-                .content("{\"name\":\"Tomato\",\"quantityTypes\":[\"WEIGHT\", \"COUNT\"]}")
+                .content("{\"name\":\"Tomato\",\"measurementTypes\":[\"WEIGHT\", \"COUNT\"]}")
         ).andExpect(status().isForbidden());
     }
 
@@ -173,10 +173,10 @@ class IngredientsControllerShould {
                 .content(
                         "<ingredient>" +
                                 "<name>Tomato</name>" +
-                                "<quantityTypes>" +
-                                "<quantityType>WEIGHT</quantityType>" +
-                                "<quantityType>COUNT</quantityType>" +
-                                "</quantityTypes>" +
+                                "<measurementTypes>" +
+                                "<measurementType>WEIGHT</measurementType>" +
+                                "<measurementType>COUNT</measurementType>" +
+                                "</measurementTypes>" +
                                 "</ingredient>")
         ).andExpect(status().isUnsupportedMediaType());
     }
@@ -187,7 +187,7 @@ class IngredientsControllerShould {
     void respond400OnCreationWithoutName() throws Exception {
         mvc.perform(post(INGREDIENTS_API_URL)
                 .contentType(APPLICATION_JSON)
-                .content("{\"quantityTypes\":[\"WEIGHT\", \"COUNT\"]}")
+                .content("{\"measurementTypes\":[\"WEIGHT\", \"COUNT\"]}")
         ).andExpect(status().isBadRequest());
     }
 
@@ -197,7 +197,7 @@ class IngredientsControllerShould {
     void respond400OnCreationWithBlankName() throws Exception {
         mvc.perform(post(INGREDIENTS_API_URL)
                 .contentType(APPLICATION_JSON)
-                .content("{\"name\":\" \t\",\"quantityTypes\":[\"WEIGHT\", \"COUNT\"]}")
+                .content("{\"name\":\" \t\",\"measurementTypes\":[\"WEIGHT\", \"COUNT\"]}")
         ).andExpect(status().isBadRequest());
     }
 
@@ -208,7 +208,7 @@ class IngredientsControllerShould {
         doThrow(new IngredientNameAlreadyUsedException("Tomato")).when(ingredientAppServiceMock).createIngredient(any());
         mvc.perform(post(INGREDIENTS_API_URL)
                 .contentType(APPLICATION_JSON)
-                .content("{\"name\":\"Tomato\",\"quantityTypes\":[\"WEIGHT\", \"COUNT\"]}")
+                .content("{\"name\":\"Tomato\",\"measurementTypes\":[\"WEIGHT\", \"COUNT\"]}")
         ).andExpect(status().isConflict());
     }
 
@@ -218,7 +218,7 @@ class IngredientsControllerShould {
     void respond201OnCreationJson() throws Exception {
         mvc.perform(post(INGREDIENTS_API_URL)
                 .contentType(APPLICATION_JSON)
-                .content("{\"name\":\"Tomato\",\"quantityTypes\":[\"WEIGHT\", \"COUNT\"]}")
+                .content("{\"name\":\"Tomato\",\"measurementTypes\":[\"WEIGHT\", \"COUNT\"]}")
         ).andExpect(status().isCreated());
     }
 
@@ -228,7 +228,7 @@ class IngredientsControllerShould {
     void respond201OnCreationHal() throws Exception {
         mvc.perform(post(INGREDIENTS_API_URL)
                 .contentType(HAL_JSON)
-                .content("{\"name\":\"Tomato\",\"quantityTypes\":[\"WEIGHT\", \"COUNT\"]}")
+                .content("{\"name\":\"Tomato\",\"measurementTypes\":[\"WEIGHT\", \"COUNT\"]}")
         ).andExpect(status().isCreated());
     }
 
@@ -238,7 +238,7 @@ class IngredientsControllerShould {
     void respondWithLocationAfterCreationSuccess() throws Exception {
         mvc.perform(post(INGREDIENTS_API_URL)
                 .contentType(HAL_JSON)
-                .content("{\"name\":\"Tomato\",\"quantityTypes\":[\"WEIGHT\", \"COUNT\"]}")
+                .content("{\"name\":\"Tomato\",\"measurementTypes\":[\"WEIGHT\", \"COUNT\"]}")
         ).andExpect(header().exists(LOCATION));
     }
 
@@ -250,7 +250,7 @@ class IngredientsControllerShould {
 
         mvc.perform(post(INGREDIENTS_API_URL)
                 .contentType(HAL_JSON)
-                .content(String.format("{\"name\":\"%s\",\"quantityTypes\":[\"WEIGHT\", \"COUNT\"]}", NAME))
+                .content(String.format("{\"name\":\"%s\",\"measurementTypes\":[\"WEIGHT\", \"COUNT\"]}", NAME))
         ).andExpect(status().isCreated());
 
         verify(ingredientAppServiceMock).createIngredient(commandCaptor.capture());
@@ -259,8 +259,8 @@ class IngredientsControllerShould {
 
     @Test
     @WithIngredientManager
-    @DisplayName("call application service when creating ingredient without quantity type")
-    void callServiceOnCreationWithoutQuantityType() throws Exception {
+    @DisplayName("call application service when creating ingredient without measurement type")
+    void callServiceOnCreationWithoutMeasurementType() throws Exception {
         var commandCaptor = ArgumentCaptor.forClass(CreateIngredient.class);
 
         mvc.perform(post(INGREDIENTS_API_URL)
@@ -274,13 +274,13 @@ class IngredientsControllerShould {
 
     @Test
     @WithIngredientManager
-    @DisplayName("call application service when creating ingredient with empty quantity type")
-    void callServiceOnCreationWithEmptyQuantityType() throws Exception {
+    @DisplayName("call application service when creating ingredient with empty measurement type")
+    void callServiceOnCreationWithEmptyMeasurementType() throws Exception {
         var commandCaptor = ArgumentCaptor.forClass(CreateIngredient.class);
 
         mvc.perform(post(INGREDIENTS_API_URL)
                 .contentType(APPLICATION_JSON)
-                .content("{\"name\":\"Tomato\",\"quantityTypes\":[]}")
+                .content("{\"name\":\"Tomato\",\"measurementTypes\":[]}")
         ).andExpect(status().isCreated());
 
         verify(ingredientAppServiceMock).createIngredient(commandCaptor.capture());
@@ -293,7 +293,7 @@ class IngredientsControllerShould {
     void respond201OnCreationAsSuperAdministrator() throws Exception {
         mvc.perform(post(INGREDIENTS_API_URL)
                 .contentType(HAL_JSON)
-                .content("{\"name\":\"Tomato\",\"quantityTypes\":[\"WEIGHT\", \"COUNT\"]}")
+                .content("{\"name\":\"Tomato\",\"measurementTypes\":[\"WEIGHT\", \"COUNT\"]}")
         ).andExpect(status().isCreated());
     }
 
@@ -333,12 +333,12 @@ class IngredientsControllerShould {
                                       Ingredient ingredient) throws Exception {
         resultActions.andExpect(jsonPath(jsonPath + ".name").exists())
                 .andExpect(jsonPath(jsonPath + ".name", equalTo(ingredient.name())));
-        if (!ingredient.quantityTypes().isEmpty()) {
-            resultActions.andExpect(jsonPath(jsonPath + ".quantityTypes").isArray())
-                    .andExpect(jsonPath(jsonPath + ".quantityTypes", hasSize(ingredient.quantityTypes().size())));
-            for (int i = 0; i < ingredient.quantityTypes().size(); i++) {
-                resultActions.andExpect(jsonPath(format("%s.quantityTypes[%d]", jsonPath, i))
-                        .value(ingredient.quantityTypes().get(i).toString()));
+        if (!ingredient.measurementTypes().isEmpty()) {
+            resultActions.andExpect(jsonPath(jsonPath + ".measurementTypes").isArray())
+                    .andExpect(jsonPath(jsonPath + ".measurementTypes", hasSize(ingredient.measurementTypes().size())));
+            for (int i = 0; i < ingredient.measurementTypes().size(); i++) {
+                resultActions.andExpect(jsonPath(format("%s.measurementTypes[%d]", jsonPath, i))
+                        .value(ingredient.measurementTypes().get(i).toString()));
             }
         }
     }

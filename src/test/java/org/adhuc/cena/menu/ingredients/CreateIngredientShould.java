@@ -45,34 +45,34 @@ class CreateIngredientShould {
     @ParameterizedTest
     @MethodSource("invalidCreationParameters")
     @DisplayName("not be creatable with invalid parameters")
-    void notBeCreatableWithInvalidParameters(IngredientId ingredientId, String name, List<QuantityType> quantityTypes) {
-        assertThrows(IllegalArgumentException.class, () -> new CreateIngredient(ingredientId, name, quantityTypes));
+    void notBeCreatableWithInvalidParameters(IngredientId ingredientId, String name, List<MeasurementType> measurementTypes) {
+        assertThrows(IllegalArgumentException.class, () -> new CreateIngredient(ingredientId, name, measurementTypes));
     }
 
     private static Stream<Arguments> invalidCreationParameters() {
         return Stream.of(
-                Arguments.of(null, NAME, QUANTITY_TYPES),
-                Arguments.of(ID, null, QUANTITY_TYPES),
-                Arguments.of(ID, "", QUANTITY_TYPES),
+                Arguments.of(null, NAME, MEASUREMENT_TYPES),
+                Arguments.of(ID, null, MEASUREMENT_TYPES),
+                Arguments.of(ID, "", MEASUREMENT_TYPES),
                 Arguments.of(ID, NAME, null)
         );
     }
 
     @ParameterizedTest
     @MethodSource("validCreationParameters")
-    @DisplayName("contain id, name and quantity types used during creation")
-    void containCreationValues(IngredientId ingredientId, String name, List<QuantityType> quantityTypes) {
-        var command = new CreateIngredient(ingredientId, name, quantityTypes);
+    @DisplayName("contain id, name and measurement types used during creation")
+    void containCreationValues(IngredientId ingredientId, String name, List<MeasurementType> measurementTypes) {
+        var command = new CreateIngredient(ingredientId, name, measurementTypes);
         assertSoftly(softly -> {
             softly.assertThat(command.ingredientId()).isEqualTo(ingredientId);
             softly.assertThat(command.ingredientName()).isEqualTo(name);
-            softly.assertThat(command.ingredientQuantityTypes()).isEqualTo(quantityTypes);
+            softly.assertThat(command.ingredientMeasurementTypes()).isEqualTo(measurementTypes);
         });
     }
 
     private static Stream<Arguments> validCreationParameters() {
         return Stream.of(
-                Arguments.of(ID, NAME, QUANTITY_TYPES),
+                Arguments.of(ID, NAME, MEASUREMENT_TYPES),
                 Arguments.of(ID, NAME, List.of())
         );
     }
@@ -92,14 +92,14 @@ class CreateIngredientShould {
     }
 
     private static Stream<Arguments> equalitySource() {
-        var createTomato = new CreateIngredient(TOMATO_ID, TOMATO, TOMATO_QUANTITY_TYPES);
+        var createTomato = new CreateIngredient(TOMATO_ID, TOMATO, TOMATO_MEASUREMENT_TYPES);
         return Stream.of(
                 Arguments.of(createTomato, createTomato, true),
-                Arguments.of(createTomato, new CreateIngredient(TOMATO_ID, TOMATO, TOMATO_QUANTITY_TYPES), true),
-                Arguments.of(createTomato, new CreateIngredient(CUCUMBER_ID, TOMATO, TOMATO_QUANTITY_TYPES), false),
-                Arguments.of(createTomato, new CreateIngredient(TOMATO_ID, CUCUMBER, TOMATO_QUANTITY_TYPES), false),
+                Arguments.of(createTomato, new CreateIngredient(TOMATO_ID, TOMATO, TOMATO_MEASUREMENT_TYPES), true),
+                Arguments.of(createTomato, new CreateIngredient(CUCUMBER_ID, TOMATO, TOMATO_MEASUREMENT_TYPES), false),
+                Arguments.of(createTomato, new CreateIngredient(TOMATO_ID, CUCUMBER, TOMATO_MEASUREMENT_TYPES), false),
                 Arguments.of(createTomato, new CreateIngredient(TOMATO_ID, CUCUMBER, List.of()), false),
-                Arguments.of(createTomato, new CreateIngredient(TOMATO_ID, CUCUMBER, CUCUMBER_QUANTITY_TYPES), false)
+                Arguments.of(createTomato, new CreateIngredient(TOMATO_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES), false)
         );
     }
 

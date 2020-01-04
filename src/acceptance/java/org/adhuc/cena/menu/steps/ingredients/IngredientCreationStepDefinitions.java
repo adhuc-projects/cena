@@ -26,7 +26,7 @@ import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientCreationServiceC
  * The ingredient creation steps definitions for rest-services acceptance tests.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @StepDefAnnotation
@@ -45,10 +45,10 @@ public class IngredientCreationStepDefinitions {
         ingredientCreationServiceClient.createIngredientWithoutName();
     }
 
-    @When("^he creates the ingredient without quantity type$")
-    public void createIngredientWithoutQuantityType() {
+    @When("^he creates the ingredient without measurement type$")
+    public void createIngredientWithoutMeasurementType() {
         var ingredient = ingredientCreationServiceClient.storeIngredient(
-                ingredientCreationServiceClient.storedIngredient().withoutQuantityType());
+                ingredientCreationServiceClient.storedIngredient().withoutMeasurementType());
         ingredientCreationServiceClient.createIngredient(ingredient);
     }
 

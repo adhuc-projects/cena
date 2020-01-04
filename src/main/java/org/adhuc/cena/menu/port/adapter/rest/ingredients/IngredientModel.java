@@ -48,13 +48,13 @@ public class IngredientModel extends RepresentationModel<IngredientModel> {
     @NonNull
     @JsonProperty("name")
     private final String ingredientName;
-    @JsonProperty("quantityTypes")
-    private final List<String> ingredientQuantityTypes;
+    @JsonProperty("measurementTypes")
+    private final List<String> ingredientMeasurementTypes;
 
     IngredientModel(@NonNull Ingredient ingredient) {
         ingredientId = ingredient.id().toString();
         ingredientName = ingredient.name();
-        ingredientQuantityTypes = ingredient.quantityTypes().stream().map(Enum::toString).collect(toList());
+        ingredientMeasurementTypes = ingredient.measurementTypes().stream().map(Enum::toString).collect(toList());
     }
 
 }

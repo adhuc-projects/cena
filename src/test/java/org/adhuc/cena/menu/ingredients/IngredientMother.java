@@ -15,8 +15,8 @@
  */
 package org.adhuc.cena.menu.ingredients;
 
-import static org.adhuc.cena.menu.ingredients.QuantityType.COUNT;
-import static org.adhuc.cena.menu.ingredients.QuantityType.WEIGHT;
+import static org.adhuc.cena.menu.ingredients.MeasurementType.COUNT;
+import static org.adhuc.cena.menu.ingredients.MeasurementType.WEIGHT;
 
 import java.util.List;
 
@@ -36,12 +36,12 @@ public class IngredientMother {
     public static final String TOMATO = "Tomato";
     public static final String CUCUMBER = "Cucumber";
 
-    public static final List<QuantityType> TOMATO_QUANTITY_TYPES = List.of(WEIGHT, COUNT);
-    public static final List<QuantityType> CUCUMBER_QUANTITY_TYPES = List.of(COUNT);
+    public static final List<MeasurementType> TOMATO_MEASUREMENT_TYPES = List.of(WEIGHT, COUNT);
+    public static final List<MeasurementType> CUCUMBER_MEASUREMENT_TYPES = List.of(COUNT);
 
     public static final IngredientId ID = TOMATO_ID;
     public static final String NAME = TOMATO;
-    public static final List<QuantityType> QUANTITY_TYPES = TOMATO_QUANTITY_TYPES;
+    public static final List<MeasurementType> MEASUREMENT_TYPES = TOMATO_MEASUREMENT_TYPES;
 
     public static CreateIngredient createCommand() {
         return createCommand(ingredient());
@@ -52,7 +52,7 @@ public class IngredientMother {
     }
 
     public static CreateIngredient createCommand(Ingredient ingredient) {
-        return new CreateIngredient(ingredient.id(), ingredient.name(), ingredient.quantityTypes());
+        return new CreateIngredient(ingredient.id(), ingredient.name(), ingredient.measurementTypes());
     }
 
     public static DeleteIngredient deleteCommand() {
@@ -64,11 +64,11 @@ public class IngredientMother {
     }
 
     public static Ingredient ingredient() {
-        return ingredient(ID, NAME, QUANTITY_TYPES);
+        return ingredient(ID, NAME, MEASUREMENT_TYPES);
     }
 
-    public static Ingredient ingredient(IngredientId id, String name, List<QuantityType> quantityTypes) {
-        return new Ingredient(id, name, quantityTypes);
+    public static Ingredient ingredient(IngredientId id, String name, List<MeasurementType> measurementTypes) {
+        return new Ingredient(id, name, measurementTypes);
     }
 
 }

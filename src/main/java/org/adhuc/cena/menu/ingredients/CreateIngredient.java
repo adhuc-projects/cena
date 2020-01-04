@@ -36,21 +36,21 @@ public class CreateIngredient {
 
     private final IngredientId ingredientId;
     private final String ingredientName;
-    private final List<QuantityType> ingredientQuantityTypes;
+    private final List<MeasurementType> ingredientMeasurementTypes;
 
     /**
      * Creates an ingredient creation command.
      *
      * @param ingredientId the ingredient identity.
      * @param ingredientName the ingredient name.
-     * @param ingredientQuantityTypes the ingredient quantity types.
+     * @param ingredientMeasurementTypes the ingredient measurement types.
      */
     public CreateIngredient(@NonNull IngredientId ingredientId, @NonNull String ingredientName,
-                            @NonNull List<QuantityType> ingredientQuantityTypes) {
+                            @NonNull List<MeasurementType> ingredientMeasurementTypes) {
         hasText(ingredientName, "Cannot create ingredient creation command with invalid ingredient name");
         this.ingredientId = ingredientId;
         this.ingredientName = ingredientName;
-        this.ingredientQuantityTypes = List.copyOf(ingredientQuantityTypes);
+        this.ingredientMeasurementTypes = List.copyOf(ingredientMeasurementTypes);
     }
 
 }

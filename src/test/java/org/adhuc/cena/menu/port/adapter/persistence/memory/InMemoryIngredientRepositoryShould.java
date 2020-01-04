@@ -76,7 +76,7 @@ class InMemoryIngredientRepositoryShould {
 
         @BeforeEach
         void setUp() {
-            tomato = ingredient(TOMATO_ID, TOMATO, TOMATO_QUANTITY_TYPES);
+            tomato = ingredient(TOMATO_ID, TOMATO, TOMATO_MEASUREMENT_TYPES);
             repository.save(tomato);
         }
 
@@ -154,16 +154,16 @@ class InMemoryIngredientRepositoryShould {
         }
 
         @Test
-        @DisplayName("delete ingredient with tomato identity and cucumber name and quantity types")
+        @DisplayName("delete ingredient with tomato identity and cucumber name and measurement types")
         void deleteWithTomatoIdAndCucumberName() {
-            repository.delete(ingredient(TOMATO_ID, CUCUMBER, CUCUMBER_QUANTITY_TYPES));
+            repository.delete(ingredient(TOMATO_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES));
             assertThat(repository.findAll()).doesNotContain(tomato);
         }
 
         @Test
         @DisplayName("do nothing when deleting unknown ingredient")
         void deleteUnknownIngredient() {
-            repository.delete(ingredient(CUCUMBER_ID, TOMATO, TOMATO_QUANTITY_TYPES));
+            repository.delete(ingredient(CUCUMBER_ID, TOMATO, TOMATO_MEASUREMENT_TYPES));
             assertThat(repository.findAll()).containsOnly(tomato);
         }
 
@@ -175,7 +175,7 @@ class InMemoryIngredientRepositoryShould {
 
             @BeforeEach
             void setUp() {
-                cucumber = ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_QUANTITY_TYPES);
+                cucumber = ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES);
                 repository.save(cucumber);
             }
 

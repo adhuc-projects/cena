@@ -10,10 +10,10 @@ Feature: Create an ingredient in the system
     And the ingredient cannot be found in the list
 
   @Edge
-  Scenario: Create an ingredient without quantity type
+  Scenario: Create an ingredient without measurement type
     Given an authenticated ingredient manager
     And a non-existent "Tomato" ingredient
-    When he creates the ingredient without quantity type
+    When he creates the ingredient without measurement type
     Then the ingredient is created
     And the ingredient can be found in the list
 

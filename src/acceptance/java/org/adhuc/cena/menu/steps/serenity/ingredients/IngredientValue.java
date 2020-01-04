@@ -50,35 +50,35 @@ import org.adhuc.cena.menu.util.ListComparator;
 public class IngredientValue extends HateoasClientResourceSupport {
 
     public static final Comparator<IngredientValue> COMPARATOR = Comparator.comparing(IngredientValue::name);
-    public static final Comparator<IngredientValue> NAME_AND_QUANTITY_TYPES_COMPARATOR = COMPARATOR
-            .thenComparing(IngredientValue::quantityTypes, new ListComparator<>());
+    public static final Comparator<IngredientValue> NAME_AND_MEASUREMENT_TYPES_COMPARATOR = COMPARATOR
+            .thenComparing(IngredientValue::measurementTypes, new ListComparator<>());
 
-    public static final List<String> DEFAULT_QUANTITY_TYPES = List.of("WEIGHT", "COUNT");
+    public static final List<String> DEFAULT_MEASUREMENT_TYPES = List.of("WEIGHT", "COUNT");
 
     private String id;
     private final String name;
-    private final List<String> quantityTypes;
+    private final List<String> measurementTypes;
 
     public static IngredientValue buildUnknownIngredientValue(String name, String ingredientsResourceUrl) {
-        var ingredient = new IngredientValue(UUID.randomUUID().toString(), name, DEFAULT_QUANTITY_TYPES);
+        var ingredient = new IngredientValue(UUID.randomUUID().toString(), name, DEFAULT_MEASUREMENT_TYPES);
         ingredient.addLink(SELF_LINK, String.format("%s/%s", ingredientsResourceUrl, ingredient.id));
         return ingredient;
     }
 
     public IngredientValue(String name) {
-        this(name, DEFAULT_QUANTITY_TYPES);
+        this(name, DEFAULT_MEASUREMENT_TYPES);
     }
 
     IngredientValue withoutId() {
-        return new IngredientValue(null, name, quantityTypes);
+        return new IngredientValue(null, name, measurementTypes);
     }
 
-    public IngredientValue withoutQuantityType() {
+    public IngredientValue withoutMeasurementType() {
         return new IngredientValue(id, name, List.of());
     }
 
     void assertEqualTo(IngredientValue expected) {
-        assertThat(this).usingComparator(NAME_AND_QUANTITY_TYPES_COMPARATOR).isEqualTo(expected);
+        assertThat(this).usingComparator(NAME_AND_MEASUREMENT_TYPES_COMPARATOR).isEqualTo(expected);
     }
 
 }

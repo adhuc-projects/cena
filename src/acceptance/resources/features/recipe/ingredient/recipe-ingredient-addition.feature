@@ -1,7 +1,7 @@
 @Functional @Recipes
 Feature: Add ingredients to recipe
   As an authenticated user, I want to add ingredients to create a recipe in the system so that I can have an exhaustive
-  list of ingredients required to follow the recipe
+  list of ingredients with necessary quantities required to follow the recipe
 
   @Edge
   Scenario: Add an ingredient to recipe without ingredient identity

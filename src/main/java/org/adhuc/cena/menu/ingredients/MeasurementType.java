@@ -16,13 +16,13 @@
 package org.adhuc.cena.menu.ingredients;
 
 /**
- * The quantity types, used to determine which types of quantities ingredients accept when associated to recipes.
+ * The measurement types, used to determine which types of measurements ingredients accept when associated to recipes.
  *
  * @author Alexandre Carbenay
  * @version 0.2.0
  * @since 0.2.0
  */
-public enum QuantityType {
+public enum MeasurementType {
 
     WEIGHT,
     VOLUME,

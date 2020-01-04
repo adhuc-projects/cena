@@ -134,15 +134,15 @@ class IngredientControllerShould {
         @DisplayName("contain tomato data")
         void getIngredientFoundContainsData() throws Exception {
             var ingredient = ingredient();
-            assumeThat(ingredient.quantityTypes().size()).isEqualTo(2);
+            assumeThat(ingredient.measurementTypes().size()).isEqualTo(2);
 
             mvc.perform(get(INGREDIENT_API_URL, ID))
                     .andExpect(jsonPath("$.id").value(ingredient.id().toString()))
                     .andExpect(jsonPath("$.name").value(ingredient.name()))
-                    .andExpect(jsonPath("$.quantityTypes").isArray())
-                    .andExpect(jsonPath("$.quantityTypes", hasSize(2)))
-                    .andExpect(jsonPath("$.quantityTypes[0]").value(ingredient.quantityTypes().get(0).toString()))
-                    .andExpect(jsonPath("$.quantityTypes[1]").value(ingredient.quantityTypes().get(1).toString()));
+                    .andExpect(jsonPath("$.measurementTypes").isArray())
+                    .andExpect(jsonPath("$.measurementTypes", hasSize(2)))
+                    .andExpect(jsonPath("$.measurementTypes[0]").value(ingredient.measurementTypes().get(0).toString()))
+                    .andExpect(jsonPath("$.measurementTypes[1]").value(ingredient.measurementTypes().get(1).toString()));
         }
 
         @Test
@@ -156,15 +156,15 @@ class IngredientControllerShould {
     }
 
     @Test
-    @DisplayName("not contain any quantity type when retrieving ingredient without quantity type")
-    void getIngredientWithoutQuantityType() throws Exception {
+    @DisplayName("not contain any measurement type when retrieving ingredient without measurement type")
+    void getIngredientWithoutMeasurementType() throws Exception {
         var ingredient = ingredient(ID, NAME, List.of());
         when(ingredientAppServiceMock.getIngredient(ID)).thenReturn(ingredient);
 
         mvc.perform(get(INGREDIENT_API_URL, ID))
                 .andExpect(jsonPath("$.id").value(ingredient.id().toString()))
                 .andExpect(jsonPath("$.name").value(ingredient.name()))
-                .andExpect(jsonPath("$.quantityTypes").doesNotExist());
+                .andExpect(jsonPath("$.measurementTypes").doesNotExist());
     }
 
 }

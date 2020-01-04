@@ -77,8 +77,8 @@ class RecipeIngredientAppServiceWithSecurityShould {
     @BeforeEach
     void setUp() {
         ingredientRepository.deleteAll();
-        ingredientRepository.save(ingredient(TOMATO_ID, TOMATO, TOMATO_QUANTITY_TYPES));
-        ingredientRepository.save(ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_QUANTITY_TYPES));
+        ingredientRepository.save(ingredient(TOMATO_ID, TOMATO, TOMATO_MEASUREMENT_TYPES));
+        ingredientRepository.save(ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES));
 
         repository.deleteAll();
         repository.save(builder().withAuthorName(RECIPE_AUTHOR_NAME).withIngredients(CUCUMBER_ID).build());

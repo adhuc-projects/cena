@@ -44,7 +44,7 @@ public class Ingredient extends BasicEntity<IngredientId> {
     private String name;
     @Getter
     @NonNull
-    private List<QuantityType> quantityTypes;
+    private List<MeasurementType> measurementTypes;
 
     /**
      * Creates an ingredient based on the specified creation command.
@@ -52,7 +52,7 @@ public class Ingredient extends BasicEntity<IngredientId> {
      * @param command the ingredient creation command.
      */
     public Ingredient(@NonNull CreateIngredient command) {
-        this(command.ingredientId(), command.ingredientName(), command.ingredientQuantityTypes());
+        this(command.ingredientId(), command.ingredientName(), command.ingredientMeasurementTypes());
     }
 
     /**
@@ -60,13 +60,13 @@ public class Ingredient extends BasicEntity<IngredientId> {
      *
      * @param id the ingredient identity.
      * @param name the ingredient name.
-     * @param quantityTypes the ingredient quantity types.
+     * @param measurementTypes the ingredient measurement types.
      */
-    Ingredient(@NonNull IngredientId id, @NonNull String name, @NonNull List<QuantityType> quantityTypes) {
+    Ingredient(@NonNull IngredientId id, @NonNull String name, @NonNull List<MeasurementType> measurementTypes) {
         super(id);
         hasText(name, "Cannot set ingredient name with invalid value");
         this.name = name;
-        this.quantityTypes = quantityTypes;
+        this.measurementTypes = measurementTypes;
     }
 
 }

@@ -24,7 +24,7 @@ import lombok.ToString;
 
 import org.adhuc.cena.menu.ingredients.CreateIngredient;
 import org.adhuc.cena.menu.ingredients.IngredientId;
-import org.adhuc.cena.menu.ingredients.QuantityType;
+import org.adhuc.cena.menu.ingredients.MeasurementType;
 
 /**
  * A request to create an ingredient.
@@ -39,7 +39,7 @@ class CreateIngredientRequest {
 
     @NotBlank
     private String name;
-    private List<QuantityType> quantityTypes;
+    private List<MeasurementType> measurementTypes;
 
     /**
      * Converts this request to a {@code CreateIngredient} command.
@@ -48,7 +48,7 @@ class CreateIngredientRequest {
      * @return the ingredient creation command.
      */
     CreateIngredient toCommand(@NonNull IngredientId id) {
-        return new CreateIngredient(id, name, quantityTypes != null ? quantityTypes : List.of());
+        return new CreateIngredient(id, name, measurementTypes != null ? measurementTypes : List.of());
     }
 
 }

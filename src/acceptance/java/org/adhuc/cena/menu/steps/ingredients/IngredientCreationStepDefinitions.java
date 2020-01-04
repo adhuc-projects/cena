@@ -15,6 +15,7 @@
  */
 package org.adhuc.cena.menu.steps.ingredients;
 
+import cucumber.api.DataTable;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import cucumber.runtime.java.StepDefAnnotation;
@@ -38,6 +39,13 @@ public class IngredientCreationStepDefinitions {
     @When("^he creates the ingredient$")
     public void createIngredient() {
         ingredientCreationServiceClient.createIngredient(ingredientCreationServiceClient.storedIngredient());
+    }
+
+    @When("^he creates the ingredient with the following measurement types$")
+    public void createIngredientWithMeasurementTypes(DataTable dataTable) {
+        var measurementTypes = dataTable.asList(String.class);
+        ingredientCreationServiceClient.createIngredient(
+                ingredientCreationServiceClient.storedIngredient().withMeasurementTypes(measurementTypes));
     }
 
     @When("^he creates an ingredient without name$")
@@ -66,6 +74,12 @@ public class IngredientCreationStepDefinitions {
     @Then("^an error notifies that ingredient name already exists$")
     public void errorOnIngredientCreationDuplicatedName() {
         ingredientCreationServiceClient.assertIngredientNameAlreadyExists(ingredientCreationServiceClient.storedIngredient().name());
+    }
+
+    @Then("^an error notifies that ingredient cannot be created with unknown measurement type$")
+    public void errorOnIngredientCreationWithUnknownMeasurementType() {
+        ingredientCreationServiceClient.assertInvalidRequest();
+        // TODO assert response indicates field in error
     }
 
 }

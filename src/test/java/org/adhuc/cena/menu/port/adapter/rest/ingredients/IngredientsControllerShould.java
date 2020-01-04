@@ -203,6 +203,16 @@ class IngredientsControllerShould {
 
     @Test
     @WithIngredientManager
+    @DisplayName("respond Bad Request when creating ingredient with unknown measurement type")
+    void respond400OnCreationWithUnknownMeasurementType() throws Exception {
+        mvc.perform(post(INGREDIENTS_API_URL)
+                .contentType(APPLICATION_JSON)
+                .content("{\"measurementTypes\":[\"VOLUME\", \"AT_CONVENIENCE\", \"UNKNOWN\"]}")
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithIngredientManager
     @DisplayName("respond Conflict when ingredient service throws IngredientNameAlreadyUsedException")
     void respond409OnCreationIngredientNameAlreadyUsed() throws Exception {
         doThrow(new IngredientNameAlreadyUsedException("Tomato")).when(ingredientAppServiceMock).createIngredient(any());

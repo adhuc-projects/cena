@@ -17,6 +17,16 @@ Feature: Create an ingredient in the system
     Then the ingredient is created
     And the ingredient can be found in the list
 
+  @Edge
+  Scenario: Create an ingredient with unknown measurement type
+    Given an authenticated ingredient manager
+    And a non-existent "Tomato" ingredient
+    When he creates the ingredient with the following measurement types
+      | VOLUME          |
+      | AT_CONVENIENCE  |
+      | UNKNOWN         |
+    Then an error notifies that ingredient cannot be created with unknown measurement type
+
   @Smoke @Security
   Scenario: Create an ingredient successfully
     Given an authenticated ingredient manager

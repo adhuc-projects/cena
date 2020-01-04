@@ -77,8 +77,11 @@ public class IngredientValue extends HateoasClientResourceSupport {
         return new IngredientValue(id, name, List.of());
     }
 
+    public IngredientValue withMeasurementTypes(List<String> measurementTypes) {
+        return new IngredientValue(id, name, List.copyOf(measurementTypes));
+    }
+
     void assertEqualTo(IngredientValue expected) {
         assertThat(this).usingComparator(NAME_AND_MEASUREMENT_TYPES_COMPARATOR).isEqualTo(expected);
     }
-
 }

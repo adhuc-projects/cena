@@ -6,10 +6,10 @@ Feature: Retrieve ingredient details
   Scenario: Unknown ingredient
     Given a community user
     And the following existing ingredients
-      | name       |
-      | Cucumber   |
-      | Mozzarella |
-      | Olive      |
+      | name       | measurementTypes       |
+      | Cucumber   | WEIGHT, COUNT          |
+      | Olive oil  | VOLUME                 |
+      | Pepper     | AT_CONVENIENCE         |
     And a non-existent "Tomato" ingredient
     When he attempts retrieving "Tomato" ingredient
     Then an error notifies that ingredient has not been found
@@ -18,10 +18,10 @@ Feature: Retrieve ingredient details
   Scenario: Known ingredient
     Given a community user
     And the following existing ingredients
-      | name       |
-      | Tomato     |
-      | Cucumber   |
-      | Mozzarella |
-      | Olive      |
+      | name       | measurementTypes       |
+      | Tomato     | WEIGHT, COUNT          |
+      | Cucumber   | WEIGHT, COUNT          |
+      | Olive oil  | VOLUME                 |
+      | Pepper     | AT_CONVENIENCE         |
     When he retrieves "Tomato" ingredient
     Then the ingredient details is accessible

@@ -14,11 +14,12 @@ Feature: Delete ingredients
   Scenario: List with ingredients
     Given an authenticated super administrator
     And the following existing ingredients
-      | name       |
-      | Tomato     |
-      | Cucumber   |
-      | Mozzarella |
-      | Olive      |
+      | name       | measurementTypes       |
+      | Tomato     | WEIGHT, COUNT          |
+      | Cucumber   | WEIGHT, COUNT          |
+      | Mozzarella | WEIGHT, COUNT          |
+      | Olive oil  | VOLUME                 |
+      | Pepper     | AT_CONVENIENCE         |
     When he deletes the ingredients
     Then the ingredients have been deleted
     And no ingredient is left in the ingredients list
@@ -27,11 +28,12 @@ Feature: Delete ingredients
   Scenario: Delete ingredients as community user
     Given a community user
     And the following existing ingredients
-      | name       |
-      | Tomato     |
-      | Cucumber   |
-      | Mozzarella |
-      | Olive      |
+      | name       | measurementTypes       |
+      | Tomato     | WEIGHT, COUNT          |
+      | Cucumber   | WEIGHT, COUNT          |
+      | Mozzarella | WEIGHT, COUNT          |
+      | Olive oil  | VOLUME                 |
+      | Pepper     | AT_CONVENIENCE         |
     When he deletes the ingredients
     Then an error notifies that user is not authenticated
     And no existing ingredient has been deleted
@@ -40,11 +42,12 @@ Feature: Delete ingredients
   Scenario: Delete ingredients as authenticated user
     Given an authenticated user
     And the following existing ingredients
-      | name       |
-      | Tomato     |
-      | Cucumber   |
-      | Mozzarella |
-      | Olive      |
+      | name       | measurementTypes       |
+      | Tomato     | WEIGHT, COUNT          |
+      | Cucumber   | WEIGHT, COUNT          |
+      | Mozzarella | WEIGHT, COUNT          |
+      | Olive oil  | VOLUME                 |
+      | Pepper     | AT_CONVENIENCE         |
     When he deletes the ingredients
     Then an error notifies that user is not authorized
     And no existing ingredient has been deleted
@@ -53,11 +56,12 @@ Feature: Delete ingredients
   Scenario: Delete ingredients as ingredient manager
     Given an authenticated ingredient manager
     And the following existing ingredients
-      | name       |
-      | Tomato     |
-      | Cucumber   |
-      | Mozzarella |
-      | Olive      |
+      | name       | measurementTypes       |
+      | Tomato     | WEIGHT, COUNT          |
+      | Cucumber   | WEIGHT, COUNT          |
+      | Mozzarella | WEIGHT, COUNT          |
+      | Olive oil  | VOLUME                 |
+      | Pepper     | AT_CONVENIENCE         |
     When he deletes the ingredients
     Then an error notifies that user is not authorized
     And no existing ingredient has been deleted

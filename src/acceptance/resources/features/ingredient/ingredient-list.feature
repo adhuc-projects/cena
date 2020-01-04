@@ -13,10 +13,11 @@ Feature: List ingredients
   Scenario: List with ingredients
     Given a community user
     And the following existing ingredients
-      | name       |
-      | Tomato     |
-      | Cucumber   |
-      | Mozzarella |
-      | Olive      |
+      | name       | measurementTypes       |
+      | Tomato     | WEIGHT, COUNT          |
+      | Cucumber   | WEIGHT, COUNT          |
+      | Mozzarella | WEIGHT, COUNT          |
+      | Olive oil  | VOLUME                 |
+      | Pepper     | AT_CONVENIENCE         |
     When he lists the ingredients
     Then the ingredients list contains the existing ingredients

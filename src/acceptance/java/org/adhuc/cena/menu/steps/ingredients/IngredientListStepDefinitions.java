@@ -17,6 +17,8 @@ package org.adhuc.cena.menu.steps.ingredients;
 
 import static java.util.stream.Collectors.toList;
 
+import java.util.List;
+
 import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -38,6 +40,7 @@ import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue;
 public class IngredientListStepDefinitions {
 
     private static final String NAME_ATTRIBUTE = "name";
+    private static final String MEASUREMENT_TYPE_ATTRIBUTE = "measurementTypes";
 
     @Steps
     private IngredientListServiceClientSteps ingredientListServiceClient;
@@ -50,7 +53,10 @@ public class IngredientListStepDefinitions {
     @Given("^the following existing ingredients$")
     public void existingIngredients(DataTable dataTable) {
         var ingredients = dataTable.asMaps(String.class, String.class).stream()
-                .map(attributes -> new IngredientValue(attributes.get(NAME_ATTRIBUTE))).collect(toList());
+                .map(attributes -> new IngredientValue(
+                        attributes.get(NAME_ATTRIBUTE),
+                        List.of(attributes.get(MEASUREMENT_TYPE_ATTRIBUTE).split(", "))
+                )).collect(toList());
         ingredientListServiceClient.storeAssumedIngredients(ingredientListServiceClient.assumeInIngredientsList(ingredients));
     }
 

@@ -121,7 +121,7 @@ lombok {
 
 license {
 	header rootProject.file('.license')
-	excludes(['**/*.feature', '**/*.yml', '**/*.snippet'])
+	excludes(['**/*.feature', '**/*.yml', '**/*.snippet', '**/*.properties'])
 }
 
 compileJava {

@@ -28,8 +28,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import static org.adhuc.cena.menu.ingredients.IngredientMother.CUCUMBER_ID;
 import static org.adhuc.cena.menu.ingredients.IngredientMother.TOMATO_ID;
+import static org.adhuc.cena.menu.recipes.Quantity.UNDEFINED;
 import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hamcrest.Matchers;
@@ -43,6 +45,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import org.adhuc.cena.menu.common.EntityNotFoundException;
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
+import org.adhuc.cena.menu.ingredients.IngredientMother;
 import org.adhuc.cena.menu.port.adapter.rest.ingredients.IngredientModelAssembler;
 import org.adhuc.cena.menu.port.adapter.rest.ingredients.IngredientsController;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.RecipeModelAssembler;
@@ -97,8 +100,9 @@ class RecipeIngredientsControllerShould {
 
         @BeforeEach
         void setUp() {
-            when(recipeAppServiceMock.getRecipe(ID)).thenReturn(recipe());
-            ingredients = List.of(recipeIngredient(CUCUMBER_ID), recipeIngredient(TOMATO_ID));
+            var recipe = builder().withIngredient(TOMATO_ID, QUANTITY).andIngredient(CUCUMBER_ID, UNDEFINED).build();
+            when(recipeAppServiceMock.getRecipe(ID)).thenReturn(recipe);
+            ingredients = new ArrayList<>(recipe.ingredients());
         }
 
         @Test
@@ -173,7 +177,7 @@ class RecipeIngredientsControllerShould {
     void respond401OnCreationAsCommunityUser() throws Exception {
         mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID)
                 .contentType(APPLICATION_JSON)
-                .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\"}")
+                .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \"quantity\":1, \"measurementUnit\":\"DOZEN\"}")
         ).andExpect(status().isUnauthorized());
     }
 
@@ -185,7 +189,7 @@ class RecipeIngredientsControllerShould {
                 .when(recipeIngredientAppServiceMock).addIngredientToRecipe(Mockito.any());
         mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID)
                 .contentType(APPLICATION_JSON)
-                .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\"}")
+                .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \"quantity\":1, \"measurementUnit\":\"DOZEN\"}")
         ).andExpect(status().isNotFound());
     }
 
@@ -201,11 +205,31 @@ class RecipeIngredientsControllerShould {
 
     @Test
     @WithAuthenticatedUser
+    @DisplayName("respond Bad Request when creating recipe ingredient with quantity but no measurement unit")
+    void respond400OnCreationWithQuantityNoMeasurementUnit() throws Exception {
+        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID)
+                .contentType(APPLICATION_JSON)
+                .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \"quantity\":1}")
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("respond Bad Request when creating recipe ingredient with measurement unit but no quantity")
+    void respond400OnCreationWithMeasurementUnitNoQuantity() throws Exception {
+        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID)
+                .contentType(APPLICATION_JSON)
+                .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \"measurementUnit\":\"DOZEN\"}")
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Created when creating recipe ingredient with JSON content")
     void respond201OnCreationJson() throws Exception {
         mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID)
                 .contentType(APPLICATION_JSON)
-                .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\"}")
+                .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \"quantity\":1, \"measurementUnit\":\"DOZEN\"}")
         ).andExpect(status().isCreated());
     }
 
@@ -215,7 +239,7 @@ class RecipeIngredientsControllerShould {
     void respond201OnCreationHal() throws Exception {
         mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID)
                 .contentType(HAL_JSON)
-                .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\"}")
+                .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \"quantity\":1, \"measurementUnit\":\"DOZEN\"}")
         ).andExpect(status().isCreated());
     }
 
@@ -225,9 +249,43 @@ class RecipeIngredientsControllerShould {
     void respondWithLocationAfterCreationSuccess() throws Exception {
         mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID)
                 .contentType(HAL_JSON)
-                .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\"}")
+                .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \"quantity\":1, \"measurementUnit\":\"DOZEN\"}")
         ).andExpect(header().exists(LOCATION))
                 .andExpect(header().string(LOCATION, Matchers.endsWith("3fa85f64-5717-4562-b3fc-2c963f66afa6")));
+    }
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("call application service when creating recipe ingredient with quantity")
+    void callServiceWithQuantityOnCreationWithQuantity() throws Exception {
+        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID)
+                .contentType(APPLICATION_JSON)
+                .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \"quantity\":1, \"measurementUnit\":\"DOZEN\"}")
+        ).andExpect(status().isCreated());
+
+        verify(recipeIngredientAppServiceMock).addIngredientToRecipe(addIngredientCommand(IngredientMother.ID, ID, QUANTITY));
+    }
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("respond Created when creating recipe ingredient with no quantity")
+    void respond201OnCreationWithoutQuantity() throws Exception {
+        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID)
+                .contentType(APPLICATION_JSON)
+                .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\"}")
+        ).andExpect(status().isCreated());
+    }
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("call application service when creating recipe ingredient with no quantity")
+    void callServiceWithUnknownQuantityOnCreationWithoutQuantity() throws Exception {
+        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID)
+                .contentType(APPLICATION_JSON)
+                .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\"}")
+        ).andExpect(status().isCreated());
+
+        verify(recipeIngredientAppServiceMock).addIngredientToRecipe(addIngredientCommand(IngredientMother.ID, ID, UNDEFINED));
     }
 
     @Test
@@ -296,6 +354,17 @@ class RecipeIngredientsControllerShould {
                                   RecipeIngredient recipeIngredient) throws Exception {
         resultActions.andExpect(jsonPath(jsonPath + ".id").exists())
                 .andExpect(jsonPath(jsonPath + ".id", equalTo(recipeIngredient.ingredientId().toString())));
+        if (UNDEFINED.equals(recipeIngredient.quantity())) {
+            resultActions
+                    .andExpect(jsonPath(jsonPath + ".quantity").doesNotExist())
+                    .andExpect(jsonPath(jsonPath + ".measurementUnit").doesNotExist());
+        } else {
+            resultActions
+                    .andExpect(jsonPath(jsonPath + ".quantity").exists())
+                    .andExpect(jsonPath(jsonPath + ".quantity", equalTo(recipeIngredient.quantity().value())))
+                    .andExpect(jsonPath(jsonPath + ".measurementUnit").exists())
+                    .andExpect(jsonPath(jsonPath + ".measurementUnit", equalTo(recipeIngredient.quantity().unit().name())));
+        }
     }
 
 }

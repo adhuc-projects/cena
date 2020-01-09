@@ -20,6 +20,8 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpHeaders.LOCATION;
 
+import static org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientValue.DEFAULT_MEASUREMENT_UNIT;
+import static org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientValue.DEFAULT_QUANTITY;
 import static org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType.SUPER_ADMINISTRATOR;
 
 import java.util.function.Supplier;
@@ -53,24 +55,33 @@ public class RecipeIngredientAdditionServiceClientSteps {
     private final IngredientStorageDelegate ingredientStorage = new IngredientStorageDelegate();
     @Delegate
     private final RecipeStorageDelegate recipeStorage = new RecipeStorageDelegate();
+    @Delegate
+    private final RecipeIngredientStorageDelegate recipeIngredientStorageDelegate = new RecipeIngredientStorageDelegate();
 
     @Steps
     private RecipeIngredientDetailServiceClientSteps recipeIngredientDetailServiceClient;
 
+    @Step("Add ingredient {0} to recipe {1} with quantity as {2} {3}")
+    public RecipeIngredientValue addIngredientToRecipe(IngredientValue ingredient, RecipeValue recipe, int quantity, String measurementUnit) {
+        return addIngredientToRecipe(new RecipeIngredientValue(ingredient, quantity, measurementUnit), recipe, this::rest);
+    }
+
     @Step("Add ingredient {0} to recipe {1}")
-    public void addIngredientToRecipe(IngredientValue ingredient, RecipeValue recipe) {
-        addIngredientToRecipe(ingredient, recipe, this::rest);
+    public RecipeIngredientValue addIngredientToRecipeWithoutQuantity(IngredientValue ingredient, RecipeValue recipe) {
+        return addIngredientToRecipe(new RecipeIngredientValue(ingredient), recipe, this::rest);
     }
 
     @Step("Add ingredient {0} to recipe {1} as super administrator")
-    public void addIngredientToRecipeAsSuperAdministrator(IngredientValue ingredient, RecipeValue recipe) {
-        addIngredientToRecipe(ingredient, recipe, () -> rest(SUPER_ADMINISTRATOR));
+    public RecipeIngredientValue addIngredientToRecipeAsSuperAdministrator(IngredientValue ingredient, RecipeValue recipe) {
+        return addIngredientToRecipe(new RecipeIngredientValue(ingredient, DEFAULT_QUANTITY, DEFAULT_MEASUREMENT_UNIT),
+                recipe, () -> rest(SUPER_ADMINISTRATOR));
     }
 
-    private void addIngredientToRecipe(IngredientValue ingredient, RecipeValue recipe,
+    private RecipeIngredientValue addIngredientToRecipe(RecipeIngredientValue recipeIngredient, RecipeValue recipe,
                                        Supplier<RequestSpecification> specificationSupplier) {
-        specificationSupplier.get().contentType(HAL_JSON_VALUE).body(new RecipeIngredientValue(ingredient))
+        specificationSupplier.get().contentType(HAL_JSON_VALUE).body(recipeIngredient)
                 .post(recipe.getIngredients()).andReturn();
+        return recipeIngredient;
     }
 
     @Step("Add ingredient without id to recipe {0}")

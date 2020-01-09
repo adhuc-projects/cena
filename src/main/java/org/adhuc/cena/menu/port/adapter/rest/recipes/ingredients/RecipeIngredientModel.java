@@ -15,12 +15,17 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.NonNull;
 import lombok.ToString;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
+import org.adhuc.cena.menu.recipes.Quantity;
 import org.adhuc.cena.menu.recipes.RecipeIngredient;
 
 /**
@@ -32,14 +37,21 @@ import org.adhuc.cena.menu.recipes.RecipeIngredient;
  */
 @ToString(callSuper = true)
 @Relation(collectionRelation = "data")
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+@JsonInclude(NON_EMPTY)
 public class RecipeIngredientModel extends RepresentationModel<RecipeIngredientModel> {
 
     @NonNull
     @JsonProperty("id")
     private final String ingredientId;
+    private final Integer quantity;
+    private final String measurementUnit;
 
     RecipeIngredientModel(@NonNull RecipeIngredient recipeIngredient) {
         this.ingredientId = recipeIngredient.ingredientId().toString();
+        var quantity = recipeIngredient.quantity();
+        this.quantity = Quantity.UNDEFINED.equals(quantity) ? null : quantity.value();
+        this.measurementUnit = Quantity.UNDEFINED.equals(quantity) ? null : quantity.unit().name();
     }
 
 }

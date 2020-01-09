@@ -56,12 +56,27 @@ final class RecipeIngredientListClientDelegate {
      * The recipe's ingredients list is retrieved from the server. If recipe ingredient is retrieved from server, it
      * should be populated with all attributes, especially its identity and links.
      *
+     * @param ingredient the ingredient.
      * @param recipe the recipe.
-     * @param ingredient the ingredient related to recipe.
      * @return the recipe ingredient retrieved from list.
      */
     public Optional<RecipeIngredientValue> getFromRecipeIngredientsList(@NonNull IngredientValue ingredient, @NonNull RecipeValue recipe) {
         return Optional.ofNullable(getRawRecipeIngredientList(recipe).param("id", ingredient.id())
+                .getObject("_embedded.data.find { ingredient->ingredient.id == id }", RecipeIngredientValue.class));
+    }
+
+    /**
+     * Gets the recipe ingredient corresponding to the specified one from the recipe's ingredients list if existing,
+     * based on its identity.
+     * The recipe's ingredients list is retrieved from the server. If recipe ingredient is retrieved from server, it
+     * should be populated with all attributes, especially its identity and links.
+     *
+     * @param recipeIngredient the recipe ingredient.
+     * @param recipe the recipe.
+     * @return the recipe ingredient retrieved from list.
+     */
+    public Optional<RecipeIngredientValue> getFromRecipeIngredientsList(@NonNull RecipeIngredientValue recipeIngredient, @NonNull RecipeValue recipe) {
+        return Optional.ofNullable(getRawRecipeIngredientList(recipe).param("id", recipeIngredient.id())
                 .getObject("_embedded.data.find { ingredient->ingredient.id == id }", RecipeIngredientValue.class));
     }
 

@@ -15,14 +15,19 @@
  */
 package org.adhuc.cena.menu.recipes;
 
+import static java.util.stream.Collectors.toList;
+
 import static lombok.AccessLevel.PRIVATE;
 
 import static org.adhuc.cena.menu.ingredients.IngredientMother.CUCUMBER_ID;
 import static org.adhuc.cena.menu.ingredients.IngredientMother.TOMATO_ID;
+import static org.adhuc.cena.menu.recipes.MeasurementUnit.DOZEN;
+import static org.adhuc.cena.menu.recipes.MeasurementUnit.UNIT;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -57,6 +62,8 @@ public class RecipeMother {
     public static final String CONTENT = TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT;
     public static final RecipeAuthor AUTHOR = TOMATO_CUCUMBER_MOZZA_SALAD_AUTHOR;
 
+    public static final Quantity QUANTITY = new Quantity(1, DOZEN);
+
     public static CreateRecipe createCommand() {
         return createCommand(recipe());
     }
@@ -78,15 +85,17 @@ public class RecipeMother {
     }
 
     public static AddIngredientToRecipe addIngredientCommand(@NonNull RecipeIngredient recipeIngredient) {
-        return addIngredientCommand(recipeIngredient.ingredientId(), recipeIngredient.recipeId());
+        return addIngredientCommand(recipeIngredient.ingredientId(), recipeIngredient.recipeId(), recipeIngredient.quantity());
     }
 
     public static AddIngredientToRecipe addIngredientCommand(@NonNull IngredientId ingredientId) {
-        return addIngredientCommand(ingredientId, ID);
+        return addIngredientCommand(ingredientId, ID, QUANTITY);
     }
 
-    public static AddIngredientToRecipe addIngredientCommand(@NonNull IngredientId ingredientId, @NonNull RecipeId recipeId) {
-        return new AddIngredientToRecipe(ingredientId, recipeId);
+    public static AddIngredientToRecipe addIngredientCommand(@NonNull IngredientId ingredientId,
+                                                             @NonNull RecipeId recipeId,
+                                                             @NonNull Quantity quantity) {
+        return new AddIngredientToRecipe(ingredientId, recipeId, quantity);
     }
 
     public static RemoveIngredientFromRecipe removeIngredientCommand() {
@@ -110,7 +119,7 @@ public class RecipeMother {
     }
 
     public static Recipe recipe() {
-        return builder().withIngredients(TOMATO_ID, CUCUMBER_ID).build();
+        return builder().withIngredient(TOMATO_ID, QUANTITY).andIngredient(CUCUMBER_ID, new Quantity(3, UNIT)).build();
     }
 
     public static Collection<Recipe> recipes() {
@@ -126,42 +135,66 @@ public class RecipeMother {
     }
 
     public static RecipeIngredient recipeIngredient() {
-        return recipeIngredient(IngredientMother.ID);
+        return recipeIngredient(IngredientMother.ID, QUANTITY);
     }
 
-    public static RecipeIngredient recipeIngredient(@NonNull IngredientId ingredientId) {
-        return recipeIngredient(ID, ingredientId);
+    public static RecipeIngredient recipeIngredient(@NonNull IngredientId ingredientId, @NonNull Quantity quantity) {
+        return recipeIngredient(ID, ingredientId, quantity);
     }
 
-    public static RecipeIngredient recipeIngredient(@NonNull RecipeId recipeId, @NonNull IngredientId ingredientId) {
-        return new RecipeIngredient(recipeId, ingredientId);
+    public static RecipeIngredient recipeIngredient(@NonNull RecipeId recipeId,
+                                                    @NonNull IngredientId ingredientId,
+                                                    @NonNull Quantity quantity) {
+        return new RecipeIngredient(recipeId, ingredientId, quantity);
     }
 
     public static Builder builder() {
         return new Builder();
     }
 
-    @With
     @NoArgsConstructor(access = PRIVATE)
     @AllArgsConstructor(access = PRIVATE)
     public static class Builder {
         private RecipeId id = ID;
+        @With
         private String name = NAME;
+        @With
         private String content = CONTENT;
+        @With
         private RecipeAuthor author = AUTHOR;
-        private Set<IngredientId> ingredients = Set.of();
+        private List<RecipeIngredient> ingredients = List.of();
+
+        public Builder withId(@NonNull RecipeId recipeId) {
+            return new Builder(recipeId, name, content, author,
+                    ingredients.stream()
+                            .map(ingredient -> new RecipeIngredient(recipeId, ingredient.ingredientId(), ingredient.quantity()))
+                            .collect(toList()));
+        }
 
         public Builder withAuthorName(@NonNull String authorName) {
             return new Builder(id, name, content, new RecipeAuthor(authorName), ingredients);
         }
 
-        public Builder withIngredients(@NonNull IngredientId... ids) {
-            return new Builder(id, name, content, author, Set.of(ids));
+        public Builder withIngredients(@NonNull IngredientId... ingredientIds) {
+            return new Builder(id, name, content, author,
+                    Arrays.stream(ingredientIds)
+                            .map(ingredientId -> new RecipeIngredient(id, ingredientId, QUANTITY))
+                            .collect(toList()));
+        }
+
+        public Builder withIngredient(@NonNull IngredientId ingredientId, @NonNull Quantity quantity) {
+            return new Builder(id, name, content, author, List.of(new RecipeIngredient(id, ingredientId, quantity)));
+        }
+
+        public Builder andIngredient(@NonNull IngredientId ingredientId, @NonNull Quantity quantity) {
+            var ingredients = new HashSet<>(this.ingredients);
+            ingredients.add(new RecipeIngredient(id, ingredientId, quantity));
+            return new Builder(id, name, content, author, List.copyOf(ingredients));
         }
 
         public Recipe build() {
             var recipe = new Recipe(id, name, content, author);
-            ingredients.forEach(id -> recipe.addIngredient(addIngredientCommand(id, recipe.id())));
+            ingredients.forEach(ingredient -> recipe.addIngredient(addIngredientCommand(ingredient)));
             return recipe;
         }
     }

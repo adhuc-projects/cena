@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import static org.adhuc.cena.menu.recipes.MeasurementUnit.UNIT;
 import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
 import java.util.stream.Stream;
@@ -48,48 +49,51 @@ class RecipeIngredientShould {
     @ParameterizedTest
     @MethodSource("invalidCreationParameters")
     @DisplayName("not be creatable with invalid parameters")
-    void notBeCreatableWithInvalidParameters(RecipeId recipeId, IngredientId ingredientId) {
-        assertThrows(IllegalArgumentException.class, () -> new RecipeIngredient(recipeId, ingredientId));
+    void notBeCreatableWithInvalidParameters(RecipeId recipeId, IngredientId ingredientId, Quantity quantity) {
+        assertThrows(IllegalArgumentException.class, () -> new RecipeIngredient(recipeId, ingredientId, quantity));
     }
 
     private static Stream<Arguments> invalidCreationParameters() {
         return Stream.of(
-                Arguments.of(null, IngredientMother.ID),
-                Arguments.of(ID, null)
+                Arguments.of(null, IngredientMother.ID, QUANTITY),
+                Arguments.of(ID, null, QUANTITY),
+                Arguments.of(ID, IngredientMother.ID, null)
         );
     }
 
     @Test
-    @DisplayName("contain recipe and ingredient identities used during construction")
+    @DisplayName("contain recipe and ingredient identities and quantity used during construction")
     void containCreationValue() {
-        var recipeIngredient = new RecipeIngredient(ID, IngredientMother.ID);
+        var recipeIngredient = new RecipeIngredient(ID, IngredientMother.ID, QUANTITY);
         assertSoftly(softAssertions -> {
             softAssertions.assertThat(recipeIngredient.recipeId()).isEqualTo(ID);
             softAssertions.assertThat(recipeIngredient.ingredientId()).isEqualTo(IngredientMother.ID);
+            softAssertions.assertThat(recipeIngredient.quantity()).isEqualTo(QUANTITY);
         });
     }
 
     @ParameterizedTest
     @MethodSource("equalitySource")
-    @DisplayName("be equal when recipe and ingredient identities are equal")
+    @DisplayName("be equal when recipe and ingredient identities and quantity are equal")
     void isEqual(RecipeIngredient r1, RecipeIngredient r2, boolean expected) {
         assertThat(r1.equals(r2)).isEqualTo(expected);
     }
 
     @ParameterizedTest
     @MethodSource("equalitySource")
-    @DisplayName("have same hash code when recipe and ingredient identities are equal")
+    @DisplayName("have same hash code when recipe and ingredient identities and quantity are equal")
     void sameHashCode(RecipeIngredient r1, RecipeIngredient r2, boolean expected) {
         assertThat(r1.hashCode() == r2.hashCode()).isEqualTo(expected);
     }
 
     private static Stream<Arguments> equalitySource() {
-        var recipeIngredient = new RecipeIngredient(TOMATO_CUCUMBER_MOZZA_SALAD_ID, IngredientMother.TOMATO_ID);
+        var recipeIngredient = new RecipeIngredient(TOMATO_CUCUMBER_MOZZA_SALAD_ID, IngredientMother.TOMATO_ID, QUANTITY);
         return Stream.of(
                 Arguments.of(recipeIngredient, recipeIngredient, true),
-                Arguments.of(recipeIngredient, new RecipeIngredient(TOMATO_CUCUMBER_MOZZA_SALAD_ID, IngredientMother.TOMATO_ID), true),
-                Arguments.of(recipeIngredient, new RecipeIngredient(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID, IngredientMother.TOMATO_ID), false),
-                Arguments.of(recipeIngredient, new RecipeIngredient(TOMATO_CUCUMBER_MOZZA_SALAD_ID, IngredientMother.CUCUMBER_ID), false)
+                Arguments.of(recipeIngredient, new RecipeIngredient(TOMATO_CUCUMBER_MOZZA_SALAD_ID, IngredientMother.TOMATO_ID, QUANTITY), true),
+                Arguments.of(recipeIngredient, new RecipeIngredient(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID, IngredientMother.TOMATO_ID, QUANTITY), false),
+                Arguments.of(recipeIngredient, new RecipeIngredient(TOMATO_CUCUMBER_MOZZA_SALAD_ID, IngredientMother.CUCUMBER_ID, QUANTITY), false),
+                Arguments.of(recipeIngredient, new RecipeIngredient(TOMATO_CUCUMBER_MOZZA_SALAD_ID, IngredientMother.TOMATO_ID, new Quantity(11, UNIT)), false)
         );
     }
 

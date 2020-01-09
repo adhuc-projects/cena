@@ -47,9 +47,17 @@ public class RecipeIngredientValue extends HateoasClientResourceSupport {
 
     private static final String RECIPE_LINK = "recipe";
 
-    public static final Comparator<RecipeIngredientValue> COMPARATOR = new RecipeIngredientIdComparator();
+    public static final int DEFAULT_QUANTITY = 200;
+    public static final String DEFAULT_MEASUREMENT_UNIT = "GRAM";
+
+    public static final Comparator<RecipeIngredientValue> COMPARATOR = Comparator.comparing(RecipeIngredientValue::id, String::compareTo);
+    public static final Comparator<RecipeIngredientValue> ID_AND_QUANTITY_COMPARATOR = COMPARATOR
+            .thenComparing(RecipeIngredientValue::quantity, Comparator.nullsLast(Integer::compareTo))
+            .thenComparing(RecipeIngredientValue::measurementUnit, Comparator.nullsLast(String::compareTo));
 
     private final String id;
+    private final Integer quantity;
+    private final String measurementUnit;
 
     public static RecipeIngredientValue buildUnknownRecipeIngredientValue(IngredientValue ingredient, RecipeValue recipe) {
         var recipeIngredient = new RecipeIngredientValue(ingredient);
@@ -58,19 +66,18 @@ public class RecipeIngredientValue extends HateoasClientResourceSupport {
     }
 
     public RecipeIngredientValue(IngredientValue ingredient) {
+        this(ingredient, null, null);
+    }
+
+    public RecipeIngredientValue(IngredientValue ingredient, Integer quantity, String measurementUnit) {
         this.id = ingredient != null ? ingredient.id() : null;
+        this.quantity = quantity;
+        this.measurementUnit = measurementUnit;
     }
 
     @JsonIgnore
     public String getRecipe() {
         return link(RECIPE_LINK);
-    }
-
-    static class RecipeIngredientIdComparator implements Comparator<RecipeIngredientValue> {
-        @Override
-        public int compare(RecipeIngredientValue ingredient1, RecipeIngredientValue ingredient2) {
-            return Comparator.comparing(RecipeIngredientValue::id, String::compareTo).compare(ingredient1, ingredient2);
-        }
     }
 
 }

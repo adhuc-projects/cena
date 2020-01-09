@@ -303,7 +303,11 @@ components:
               - id
             properties:
               id:
-                $ref: '#/components/schemas/IngredientId'
+                $ref: '#/components/schemas/RecipeIngredientId'
+              quantity:
+                $ref: '#/components/schemas/Quantity'
+              measurementUnit:
+                $ref: '#/components/schemas/MeasurementUnit'
             additionalProperties: true
         application/json:
           schema:
@@ -312,7 +316,11 @@ components:
               - id
             properties:
               id:
-                $ref: '#/components/schemas/IngredientId'
+                $ref: '#/components/schemas/RecipeIngredientId'
+              quantity:
+                $ref: '#/components/schemas/Quantity'
+              measurementUnit:
+                $ref: '#/components/schemas/MeasurementUnit'
             additionalProperties: true
   responses:
     Index:
@@ -712,6 +720,10 @@ components:
           format: uuid
           readOnly: true
           example: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+        quantity:
+          $ref: '#/schemas/components/Quantity'
+        measurementUnit:
+          $ref: '#/schemas/components/MeasurementUnit'
         '_links':
           type: object
           readOnly: true
@@ -748,6 +760,19 @@ components:
                   type: string
                   example: 'https://cena.adhuc.org/api/ingredients/3fa85f64-5717-4562-b3fc-2c963f66afa6'
       additionalProperties: true
+    RecipeIngredientId:
+      description: Recipe ingredient identity. Corresponds to the identity of the related ingredient
+      type: string
+      format: uuid
+      example: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+    Quantity:
+      description: Quantity of ingredient in a recipe
+      type: integer
+      example: 4
+    MeasurementUnit:
+      description: Unit of measurement for a quantity of ingredient in a recipe. Depends on the measurement types defined for the ingredient
+      type: string
+      enum: ['LITER', 'CENTILITER', 'MILLILITER', 'TABLESPOON', 'TEASPOON', 'GRAM', 'KILOGRAM', 'POUND', 'UNIT', 'TEN', 'DOZEN', 'PINCH']
     Error:
       description: General error structure
       type: object

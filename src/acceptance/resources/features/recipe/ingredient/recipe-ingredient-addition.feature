@@ -15,7 +15,7 @@ Feature: Add ingredients to recipe
     Given an authenticated user
     And a non-existent "Tomato" ingredient
     And an existing "Tomato, cucumber and mozzarella salad" recipe
-    When he adds the ingredient to the recipe
+    When he adds the ingredient to the recipe specifying quantity as 4 "UNIT"
     Then an error notifies that ingredient has not been found
 
   @Edge
@@ -23,7 +23,7 @@ Feature: Add ingredients to recipe
     Given an authenticated user
     And an existing "Tomato" ingredient
     And a non-existent "Tomato, cucumber and mozzarella salad" recipe
-    When he adds the ingredient to the recipe
+    When he adds the ingredient to the recipe specifying quantity as 4 "UNIT"
     Then an error notifies that recipe has not been found
 
   @Smoke @Security
@@ -32,7 +32,17 @@ Feature: Add ingredients to recipe
     And an existing "Tomato" ingredient
     And an existing "Tomato, cucumber and mozzarella salad" recipe authored by the authenticated user
     And recipe does not contain ingredient
-    When he adds the ingredient to the recipe
+    When he adds the ingredient to the recipe specifying quantity as 4 "UNIT"
+    Then the ingredient is added to the recipe
+    And the ingredient can be found in the recipe's ingredients list
+
+  @Smoke @Security
+  Scenario: Add an ingredient to a recipe without quantity
+    Given an authenticated user
+    And an existing "Tomato" ingredient
+    And an existing "Tomato, cucumber and mozzarella salad" recipe authored by the authenticated user
+    And recipe does not contain ingredient
+    When he adds the ingredient to the recipe without specifying any quantity
     Then the ingredient is added to the recipe
     And the ingredient can be found in the recipe's ingredients list
 
@@ -42,7 +52,7 @@ Feature: Add ingredients to recipe
     And an existing "Tomato" ingredient
     And an existing "Tomato, cucumber and mozzarella salad" recipe
     And recipe contains ingredient
-    When he adds the ingredient to the recipe
+    When he adds the ingredient to the recipe specifying quantity as 4 "UNIT"
     Then the ingredient is added to the recipe
     And the ingredient can be found in the recipe's ingredients list
 
@@ -52,7 +62,7 @@ Feature: Add ingredients to recipe
     And an existing "Tomato" ingredient
     And an existing "Tomato, cucumber and mozzarella salad" recipe
     And recipe does not contain ingredient
-    When he adds the ingredient to the recipe
+    When he adds the ingredient to the recipe specifying quantity as 4 "UNIT"
     Then an error notifies that user is not authenticated
     And the ingredient cannot be found in the recipe's ingredients list
 
@@ -62,7 +72,7 @@ Feature: Add ingredients to recipe
     And an existing "Tomato" ingredient
     And an existing "Tomato, cucumber and mozzarella salad" recipe authored by another user
     And recipe does not contain ingredient
-    When he adds the ingredient to the recipe
+    When he adds the ingredient to the recipe specifying quantity as 4 "UNIT"
     Then an error notifies that user is not authorized
     And the ingredient cannot be found in the recipe's ingredients list
 
@@ -72,7 +82,7 @@ Feature: Add ingredients to recipe
     And an existing "Tomato" ingredient
     And an existing "Tomato, cucumber and mozzarella salad" recipe authored by the authenticated user
     And recipe does not contain ingredient
-    When he adds the ingredient to the recipe
+    When he adds the ingredient to the recipe specifying quantity as 4 "UNIT"
     Then the ingredient is added to the recipe
     And the ingredient can be found in the recipe's ingredients list
 
@@ -82,7 +92,7 @@ Feature: Add ingredients to recipe
     And an existing "Tomato" ingredient
     And an existing "Tomato, cucumber and mozzarella salad" recipe authored by the authenticated user
     And recipe does not contain ingredient
-    When he adds the ingredient to the recipe
+    When he adds the ingredient to the recipe specifying quantity as 4 "UNIT"
     Then the ingredient is added to the recipe
     And the ingredient can be found in the recipe's ingredients list
 
@@ -92,6 +102,6 @@ Feature: Add ingredients to recipe
     And an existing "Tomato" ingredient
     And an existing "Tomato, cucumber and mozzarella salad" recipe authored by another user
     And recipe does not contain ingredient
-    When he adds the ingredient to the recipe
+    When he adds the ingredient to the recipe specifying quantity as 4 "UNIT"
     Then the ingredient is added to the recipe
     And the ingredient can be found in the recipe's ingredients list

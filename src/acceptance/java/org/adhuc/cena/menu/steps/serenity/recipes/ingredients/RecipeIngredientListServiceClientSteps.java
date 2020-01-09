@@ -20,7 +20,7 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
 
-import static org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientValue.COMPARATOR;
+import static org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientValue.ID_AND_QUANTITY_COMPARATOR;
 
 import java.util.Collection;
 import java.util.List;
@@ -86,7 +86,8 @@ public class RecipeIngredientListServiceClientSteps {
     @Step("Assume ingredient {0} is in recipe {1} ingredients list")
     public RecipeIngredientValue assumeIngredientRelatedToRecipe(@NonNull IngredientValue ingredient, @NonNull RecipeValue recipe) {
         if (getFromRecipeIngredientsList(ingredient, recipe).isEmpty()) {
-            recipeIngredientAdditionServiceClient.addIngredientToRecipeAsSuperAdministrator(ingredient, recipe);
+            var recipeIngredient = recipeIngredientAdditionServiceClient.addIngredientToRecipeAsSuperAdministrator(ingredient, recipe);
+            recipeIngredientAdditionServiceClient.storeRecipeIngredient(recipeIngredient);
         }
         var recipeIngredient = getFromRecipeIngredientsList(ingredient, recipe);
         assumeThat(recipeIngredient).isPresent();
@@ -111,18 +112,18 @@ public class RecipeIngredientListServiceClientSteps {
 
     @Step("Assert recipe ingredients {0} are in recipe ingredients list {1}")
     public void assertInRecipeIngredientsList(Collection<RecipeIngredientValue> expected, Collection<RecipeIngredientValue> actual) {
-        assertThat(actual).usingElementComparator(COMPARATOR).containsAll(expected);
+        assertThat(actual).usingElementComparator(ID_AND_QUANTITY_COMPARATOR).containsAll(expected);
     }
 
     @Step("Assert ingredient {0} is in recipe {1} ingredients list")
-    public void assertIngredientRelatedToRecipe(@NonNull IngredientValue ingredient, @NonNull RecipeValue recipe) {
-        assertThat(getFromRecipeIngredientsList(ingredient, recipe)).isPresent().get()
-                .usingComparator(COMPARATOR).isEqualTo(new RecipeIngredientValue(ingredient));
+    public void assertIngredientRelatedToRecipe(@NonNull RecipeIngredientValue recipeIngredient, @NonNull RecipeValue recipe) {
+        assertThat(getFromRecipeIngredientsList(recipeIngredient, recipe)).isPresent().get()
+                .usingComparator(ID_AND_QUANTITY_COMPARATOR).isEqualTo(recipeIngredient);
     }
 
     @Step("Assert ingredient {0} is not in recipe {1} ingredients list")
-    public void assertIngredientNotRelatedToRecipe(@NonNull IngredientValue ingredient, @NonNull RecipeValue recipe) {
-        assertThat(getFromRecipeIngredientsList(ingredient, recipe)).isNotPresent();
+    public void assertIngredientNotRelatedToRecipe(@NonNull RecipeIngredientValue recipeIngredient, @NonNull RecipeValue recipe) {
+        assertThat(getFromRecipeIngredientsList(recipeIngredient, recipe)).isNotPresent();
     }
 
     @Step("Get recipe {0} ingredients list")

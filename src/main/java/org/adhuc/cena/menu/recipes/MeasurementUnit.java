@@ -15,28 +15,27 @@
  */
 package org.adhuc.cena.menu.recipes;
 
-import lombok.NonNull;
-import lombok.Value;
-import lombok.experimental.Accessors;
-
-import org.adhuc.cena.menu.ingredients.IngredientId;
-
 /**
- * A recipe ingredient definition.
+ * The measurement units, used to determine the quantity of ingredients in recipes.
  *
  * @author Alexandre Carbenay
  * @version 0.2.0
  * @since 0.2.0
  */
-@Value
-@Accessors(fluent = true)
-public class RecipeIngredient {
+public enum MeasurementUnit {
 
-    @NonNull
-    private RecipeId recipeId;
-    @NonNull
-    private IngredientId ingredientId;
-    @NonNull
-    private Quantity quantity;
+    LITER,
+    CENTILITER,
+    MILLILITER,
+    TABLESPOON,
+    TEASPOON,
+    GRAM,
+    KILOGRAM,
+    POUND,
+    UNIT,
+    TEN,
+    DOZEN,
+    PINCH,
+    UNDEFINED;
 
 }

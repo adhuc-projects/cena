@@ -100,6 +100,8 @@ class RecipeIngredientDocumentation {
                         ),
                         responseFields(
                                 fieldWithPath("id").description("The recipe's ingredient identity"),
+                                fieldWithPath("quantity").description("The quantity of ingredient in the recipe"),
+                                fieldWithPath("measurementUnit").description("The unit of measurement for the quantity of ingredient in the recipe"),
                                 subsectionWithPath("_links").description("<<resources-recipe-ingredient-links,Links>> to other resources")
                         )
                 ));

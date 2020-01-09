@@ -32,6 +32,7 @@ public final class RecipeIngredientStorageDelegate {
 
     private static final String ASSUMED_RECIPE_INGREDIENTS_SESSION_KEY = "assumedRecipeIngredients";
     private static final String RECIPE_INGREDIENTS_SESSION_KEY = "recipeIngredients";
+    private static final String RECIPE_INGREDIENT_SESSION_KEY = "recipeIngredient";
 
     /**
      * Stores the recipe ingredients.
@@ -96,6 +97,29 @@ public final class RecipeIngredientStorageDelegate {
         assertThat(Serenity.hasASessionVariableCalled(sessionKey))
                 .as("Recipe ingredients in session (%s) must have been set previously", sessionKey).isTrue();
         return Serenity.sessionVariableCalled(sessionKey);
+    }
+
+    /**
+     * Stores the recipe ingredient.
+     *
+     * @param recipeIngredient the recipe ingredient to store.
+     * @return the recipe ingredient.
+     */
+    public RecipeIngredientValue storeRecipeIngredient(RecipeIngredientValue recipeIngredient) {
+        Serenity.setSessionVariable(RECIPE_INGREDIENT_SESSION_KEY).to(recipeIngredient);
+        return recipeIngredient;
+    }
+
+    /**
+     * Gets the stored recipe ingredient, or fails if recipe ingredient was not previously stored.
+     *
+     * @return the stored recipe ingredient.
+     * @throws AssertionError if recipe ingredient was not previously stored.
+     */
+    public RecipeIngredientValue storedRecipeIngredient() {
+        RecipeIngredientValue recipeIngredient = Serenity.sessionVariableCalled(RECIPE_INGREDIENT_SESSION_KEY);
+        assertThat(recipeIngredient).isNotNull();
+        return recipeIngredient;
     }
 
 }

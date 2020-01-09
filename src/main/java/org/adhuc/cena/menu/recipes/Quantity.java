@@ -19,10 +19,10 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.experimental.Accessors;
 
-import org.adhuc.cena.menu.ingredients.IngredientId;
+import org.adhuc.cena.menu.util.Assert;
 
 /**
- * A recipe ingredient definition.
+ * A quantity definition. Quantity value must be positive.
  *
  * @author Alexandre Carbenay
  * @version 0.2.0
@@ -30,13 +30,23 @@ import org.adhuc.cena.menu.ingredients.IngredientId;
  */
 @Value
 @Accessors(fluent = true)
-public class RecipeIngredient {
+public class Quantity {
 
+    /** A quantity definition used when no quantity has been explicitly defined for an ingredient in a recipe. */
+    public static final Quantity UNDEFINED = new Quantity(1, MeasurementUnit.UNDEFINED);
+
+    private final int value;
     @NonNull
-    private RecipeId recipeId;
-    @NonNull
-    private IngredientId ingredientId;
-    @NonNull
-    private Quantity quantity;
+    private final MeasurementUnit unit;
+
+    public Quantity(int value, @NonNull MeasurementUnit unit) {
+        Assert.isTrue(value > 0, () -> "Cannot create quantity with negative or zero value");
+        this.value = value;
+        this.unit = unit;
+    }
+
+    public String toString() {
+        return String.format("%d %s", value, unit.name().toLowerCase());
+    }
 
 }

@@ -35,11 +35,20 @@ public class RecipeIngredientAdditionStepDefinitions {
     @Steps
     private RecipeIngredientAdditionServiceClientSteps recipeIngredientAdditionServiceClient;
 
-    @When("^he adds the ingredient to the recipe$")
-    public void addIngredientToRecipe() {
-        recipeIngredientAdditionServiceClient.addIngredientToRecipe(
+    @When("^he adds the ingredient to the recipe specifying quantity as (\\d+) \"(.*)\"$")
+    public void addIngredientToRecipe(int quantity, String measurementUnit) {
+        var recipeIngredient = recipeIngredientAdditionServiceClient.addIngredientToRecipe(
+                recipeIngredientAdditionServiceClient.storedIngredient(),
+                recipeIngredientAdditionServiceClient.storedRecipe(), quantity, measurementUnit);
+        recipeIngredientAdditionServiceClient.storeRecipeIngredient(recipeIngredient);
+    }
+
+    @When("^he adds the ingredient to the recipe without specifying any quantity$")
+    public void addIngredientToRecipeWithoutQuantity() {
+        var recipeIngredient = recipeIngredientAdditionServiceClient.addIngredientToRecipeWithoutQuantity(
                 recipeIngredientAdditionServiceClient.storedIngredient(),
                 recipeIngredientAdditionServiceClient.storedRecipe());
+        recipeIngredientAdditionServiceClient.storeRecipeIngredient(recipeIngredient);
     }
 
     @When("^he add an ingredient without identity to the recipe$")

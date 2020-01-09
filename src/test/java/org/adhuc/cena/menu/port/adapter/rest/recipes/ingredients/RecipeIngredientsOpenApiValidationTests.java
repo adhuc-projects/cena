@@ -81,7 +81,7 @@ class RecipeIngredientsOpenApiValidationTests {
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                         properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body("{}")
+                .body("{\"quantity\":1, \"measurementUnit\":\"DOZEN\"}")
                 .when()
                 .post(RECIPE_INGREDIENTS_API_URL, ID.toString())
                 .then()

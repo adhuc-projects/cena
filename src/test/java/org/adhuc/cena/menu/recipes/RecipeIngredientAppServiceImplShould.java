@@ -133,7 +133,7 @@ class RecipeIngredientAppServiceImplShould {
             recipeRepository.save(builder().withIngredients(CUCUMBER_ID).build());
             assumeThat(recipeRepository.exists(RecipeMother.ID)).isTrue();
             assumeThat(recipeRepository.findNotNullById(RecipeMother.ID).ingredients())
-                    .containsExactly(recipeIngredient(CUCUMBER_ID));
+                    .containsExactly(recipeIngredient(CUCUMBER_ID, QUANTITY));
             ingredientRepository.save(ingredient());
             ingredientRepository.save(ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES));
             assumeThat(ingredientRepository.exists(IngredientMother.ID)).isTrue();
@@ -151,7 +151,7 @@ class RecipeIngredientAppServiceImplShould {
         @DisplayName("remove ingredient from recipe successfully")
         void removeIngredientFromRecipe() {
             service.removeIngredientFromRecipe(removeIngredientCommand(CUCUMBER_ID));
-            assertThat(recipeRepository.findNotNullById(RecipeMother.ID).ingredients()).doesNotContain(recipeIngredient(CUCUMBER_ID));
+            assertThat(recipeRepository.findNotNullById(RecipeMother.ID).ingredients()).doesNotContain(recipeIngredient(CUCUMBER_ID, QUANTITY));
         }
 
         @Nested

@@ -18,10 +18,7 @@ package org.adhuc.cena.menu.recipes;
 import static org.adhuc.cena.menu.util.Assert.hasText;
 import static org.adhuc.cena.menu.util.Assert.isTrue;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -55,7 +52,7 @@ public class Recipe extends BasicEntity<RecipeId> {
     @Getter
     @NonNull
     private RecipeAuthor author;
-    private Set<RecipeIngredient> ingredients = new HashSet<>();
+    private Map<IngredientId, RecipeIngredient> ingredients = new HashMap<>();
 
     /**
      * Creates a recipe.
@@ -80,7 +77,7 @@ public class Recipe extends BasicEntity<RecipeId> {
      * @return the ingredients composing the recipe.
      */
     public Set<RecipeIngredient> ingredients() {
-        return Collections.unmodifiableSet(ingredients);
+        return Set.copyOf(ingredients.values());
     }
 
     /**
@@ -91,11 +88,10 @@ public class Recipe extends BasicEntity<RecipeId> {
      * @throws EntityNotFoundException if the ingredient could not be found from the set of ingredients.
      */
     public RecipeIngredient ingredient(IngredientId ingredientId) {
-        return maybeIngredient(ingredientId).orElseThrow(() -> new EntityNotFoundException(Ingredient.class, ingredientId));
-    }
-
-    private Optional<RecipeIngredient> maybeIngredient(IngredientId ingredientId) {
-        return ingredients.stream().filter(i -> i.ingredientId().equals(ingredientId)).findFirst();
+        if (ingredients.containsKey(ingredientId)) {
+            return ingredients.get(ingredientId);
+        }
+        throw new EntityNotFoundException(Ingredient.class, ingredientId);
     }
 
     /**
@@ -108,7 +104,7 @@ public class Recipe extends BasicEntity<RecipeId> {
         isTrue(id().equals(command.recipeId()),
                 () -> String.format("Wrong command recipe identity %s to add ingredient to recipe with identity %s",
                         command.recipeId(), id()));
-        ingredients.add(new RecipeIngredient(id(), command.ingredientId()));
+        ingredients.put(command.ingredientId(), new RecipeIngredient(id(), command.ingredientId(), command.quantity()));
     }
 
     /**
@@ -122,9 +118,9 @@ public class Recipe extends BasicEntity<RecipeId> {
         isTrue(id().equals(command.recipeId()),
                 () -> String.format("Wrong command recipe identity %s to remove ingredient from recipe with identity %s",
                         command.recipeId(), id()));
-        var ingredient = maybeIngredient(command.ingredientId()).orElseThrow(() ->
-                new IngredientNotRelatedToRecipeException(command.ingredientId(), command.recipeId()));
-        ingredients.remove(ingredient);
+        if (ingredients.remove(command.ingredientId()) == null) {
+            throw new IngredientNotRelatedToRecipeException(command.ingredientId(), command.recipeId());
+        }
     }
 
     /**

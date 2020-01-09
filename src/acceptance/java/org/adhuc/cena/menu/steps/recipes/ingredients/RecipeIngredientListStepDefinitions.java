@@ -59,9 +59,10 @@ public class RecipeIngredientListStepDefinitions {
 
     @Given("^recipe contains ingredient$")
     public void recipeContainsIngredient() {
-        recipeIngredientListServiceClient.assumeIngredientRelatedToRecipe(
+        var recipeIngredient = recipeIngredientListServiceClient.assumeIngredientRelatedToRecipe(
                 recipeIngredientListServiceClient.storedIngredient(),
                 recipeIngredientListServiceClient.storedRecipe());
+        recipeIngredientListServiceClient.storeRecipeIngredient(recipeIngredient);
     }
 
     @Given("^recipe does not contain ingredient$")
@@ -100,14 +101,14 @@ public class RecipeIngredientListStepDefinitions {
     @Then("^the ingredient can be found in the recipe's ingredients list$")
     public void ingredientInRecipeIngredientsList() {
         recipeIngredientListServiceClient.assertIngredientRelatedToRecipe(
-                recipeIngredientListServiceClient.storedIngredient(),
+                recipeIngredientListServiceClient.storedRecipeIngredient(),
                 recipeIngredientListServiceClient.storedRecipe());
     }
 
     @Then("^the ingredient cannot be found in the recipe's ingredients list$")
     public void ingredientNotInRecipeIngredientsList() {
         recipeIngredientListServiceClient.assertIngredientNotRelatedToRecipe(
-                recipeIngredientListServiceClient.storedIngredient(),
+                recipeIngredientListServiceClient.storedRecipeIngredient(),
                 recipeIngredientListServiceClient.storedRecipe());
     }
 

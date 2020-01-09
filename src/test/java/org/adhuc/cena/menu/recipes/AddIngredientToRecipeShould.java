@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.adhuc.cena.menu.ingredients.IngredientMother.CUCUMBER_ID;
 import static org.adhuc.cena.menu.ingredients.IngredientMother.TOMATO_ID;
+import static org.adhuc.cena.menu.recipes.MeasurementUnit.UNIT;
 import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
 import java.util.stream.Stream;
@@ -50,24 +51,26 @@ class AddIngredientToRecipeShould {
     @ParameterizedTest
     @MethodSource("invalidCreationParameters")
     @DisplayName("not be creatable with invalid parameters")
-    void notBeCreatableWithInvalidParameters(IngredientId ingredientId, RecipeId recipeId) {
-        assertThrows(IllegalArgumentException.class, () -> new AddIngredientToRecipe(ingredientId, recipeId));
+    void notBeCreatableWithInvalidParameters(IngredientId ingredientId, RecipeId recipeId, Quantity quantity) {
+        assertThrows(IllegalArgumentException.class, () -> new AddIngredientToRecipe(ingredientId, recipeId, quantity));
     }
 
     private static Stream<Arguments> invalidCreationParameters() {
         return Stream.of(
-                Arguments.of(null, ID),
-                Arguments.of(IngredientMother.ID, null)
+                Arguments.of(null, ID, QUANTITY),
+                Arguments.of(IngredientMother.ID, null, QUANTITY),
+                Arguments.of(IngredientMother.ID, ID, null)
         );
     }
 
     @Test
-    @DisplayName("contain ingredient and recipe ids used during creation")
+    @DisplayName("contain ingredient and recipe ids and quantity used during creation")
     void containCreationValues() {
         var command = addIngredientCommand();
         assertSoftly(softly -> {
             softly.assertThat(command.ingredientId()).isEqualTo(IngredientMother.ID);
             softly.assertThat(command.recipeId()).isEqualTo(ID);
+            softly.assertThat(command.quantity()).isEqualTo(QUANTITY);
         });
     }
 
@@ -86,12 +89,13 @@ class AddIngredientToRecipeShould {
     }
 
     private static Stream<Arguments> equalitySource() {
-        var addTomato = addIngredientCommand(TOMATO_ID, ID);
+        var addTomato = addIngredientCommand(TOMATO_ID, ID, QUANTITY);
         return Stream.of(
                 Arguments.of(addTomato, addTomato, true),
-                Arguments.of(addTomato, addIngredientCommand(TOMATO_ID, ID), true),
-                Arguments.of(addTomato, addIngredientCommand(CUCUMBER_ID, ID), false),
-                Arguments.of(addTomato, addIngredientCommand(TOMATO_ID, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID), false)
+                Arguments.of(addTomato, addIngredientCommand(TOMATO_ID, ID, QUANTITY), true),
+                Arguments.of(addTomato, addIngredientCommand(CUCUMBER_ID, ID, QUANTITY), false),
+                Arguments.of(addTomato, addIngredientCommand(TOMATO_ID, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID, QUANTITY), false),
+                Arguments.of(addTomato, addIngredientCommand(TOMATO_ID, ID, new Quantity(3, UNIT)), false)
         );
     }
 

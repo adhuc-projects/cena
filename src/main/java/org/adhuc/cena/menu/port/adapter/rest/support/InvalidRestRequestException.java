@@ -13,10 +13,15 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.port.adapter.rest;
+package org.adhuc.cena.menu.port.adapter.rest.support;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import lombok.NonNull;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import org.adhuc.cena.menu.common.CenaException;
@@ -26,19 +31,32 @@ import org.adhuc.cena.menu.common.ExceptionCode;
  * An exception occurring while executing a rest-service call with invalid request.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @ResponseStatus(BAD_REQUEST)
-public class InvalidRestRequestException extends CenaException {
+class InvalidRestRequestException extends CenaException {
 
     private static final ExceptionCode EXCEPTION_CODE = ExceptionCode.INVALID_REQUEST;
 
+    @NonNull
+    private final Errors errors;
+
     /**
-     * Constructs a new {@code InvalidRestRequestException}.
+     * Constructs a new {@code InvalidRestRequestException} based on the specified validation errors.
      */
-    public InvalidRestRequestException() {
+    public InvalidRestRequestException(@NonNull Errors errors) {
         super(EXCEPTION_CODE);
+        this.errors = errors;
+    }
+
+    /**
+     * Gets the validation errors messages.
+     *
+     * @return the validation errors messages.
+     */
+    public List<String> getErrorMessages() {
+        return errors.getAllErrors().stream().map(e -> e.getDefaultMessage()).collect(Collectors.toList());
     }
 
 }

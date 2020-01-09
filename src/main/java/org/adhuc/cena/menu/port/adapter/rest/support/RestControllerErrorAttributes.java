@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.servlet.ServletException;
 
 import com.atlassian.oai.validator.springmvc.InvalidRequestException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.WebRequest;
@@ -33,22 +34,25 @@ import org.adhuc.cena.menu.common.ExceptionCode;
  * {@link DefaultErrorAttributes} implementation, that provides the {@link ExceptionCode} value in the response.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
+@Slf4j
 @Component
 class RestControllerErrorAttributes extends DefaultErrorAttributes {
 
     @Override
     public Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
         var errorAttributes = super.getErrorAttributes(webRequest, includeStackTrace);
-        addExceptionCode(errorAttributes, webRequest);
-        enhanceOpenAPIValidationError(errorAttributes, webRequest);
+        var error = getError(webRequest);
+        log.debug("Enhance error attributes for error of type {}", error != null ? error.getClass().getCanonicalName() : "'null'");
+        addRootExceptionCode(errorAttributes, error);
+        enhanceInvalidRequestError(errorAttributes, error);
+        enhanceOpenAPIValidationError(errorAttributes, error);
         return errorAttributes;
     }
 
-    private void addExceptionCode(Map<String, Object> errorAttributes, WebRequest webRequest) {
-        var error = getError(webRequest);
+    private void addRootExceptionCode(Map<String, Object> errorAttributes, Throwable error) {
         if (error != null) {
             while (ServletException.class.isAssignableFrom(error.getClass()) && error.getCause() != null) {
                 error = ((ServletException) error).getCause();
@@ -69,8 +73,15 @@ class RestControllerErrorAttributes extends DefaultErrorAttributes {
         errorAttributes.put("error", exceptionCode.description());
     }
 
-    private void enhanceOpenAPIValidationError(Map<String, Object> errorAttributes, WebRequest webRequest) {
-        var error = getError(webRequest);
+    private void enhanceInvalidRequestError(Map<String, Object> errorAttributes, Throwable error) {
+        if (error != null && InvalidRestRequestException.class.isAssignableFrom(error.getClass())) {
+            var invalidRequestError = (InvalidRestRequestException) error;
+            errorAttributes.put("message", "Validation error");
+            errorAttributes.put("details", invalidRequestError.getErrorMessages());
+        }
+    }
+
+    private void enhanceOpenAPIValidationError(Map<String, Object> errorAttributes, Throwable error) {
         if (error != null && InvalidRequestException.class.isAssignableFrom(error.getClass())) {
             var openApiError = (InvalidRequestException) error;
             errorAttributes.put("message", "OpenAPI validation error");

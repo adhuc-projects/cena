@@ -95,6 +95,48 @@ class RecipeIngredientsOpenApiValidationTests {
     }
 
     @Test
+    @DisplayName("respond Bad Request with validation error on creation when request contains quantity but no measurement unit")
+    void respond400OnCreationWithQuantityNoMeasurementUnit() throws Exception {
+        var error = given()
+                .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                        properties.getSecurity().getUser().getPassword())
+                .contentType(APPLICATION_JSON_VALUE)
+                .body("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \"quantity\":1}")
+                .when()
+                .post(RECIPE_INGREDIENTS_API_URL, ID.toString())
+                .then()
+                .statusCode(BAD_REQUEST.value())
+                .assertThat()
+                .extract().jsonPath().getObject("", Error.class);
+        assertThat(error)
+                .hasCode(INVALID_REQUEST)
+                .hasMessage("Validation error")
+                .detailsContainsExactlyInAnyOrder("Object should have either none or both properties ([\"measurementUnit\",\"quantity\"])");
+    }
+
+    @Test
+    @DisplayName("respond Bad Request with validation error on creation when request contains measurement unit but no quantity")
+    void respond400OnCreationWithMeasurementUnitNoQuantity() throws Exception {
+        var error = given()
+                .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                        properties.getSecurity().getUser().getPassword())
+                .contentType(APPLICATION_JSON_VALUE)
+                .body("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \"measurementUnit\":\"DOZEN\"}")
+                .when()
+                .post(RECIPE_INGREDIENTS_API_URL, ID.toString())
+                .then()
+                .statusCode(BAD_REQUEST.value())
+                .assertThat()
+                .extract().jsonPath().getObject("", Error.class);
+        assertThat(error)
+                .hasCode(INVALID_REQUEST)
+                .hasMessage("Validation error")
+                .detailsContainsExactlyInAnyOrder("Object should have either none or both properties ([\"measurementUnit\",\"quantity\"])");
+    }
+
+    @Test
     @DisplayName("respond Created on creation when request contains additional property")
     void respond201OnCreationWithAdditionalProperty() throws Exception {
         given()

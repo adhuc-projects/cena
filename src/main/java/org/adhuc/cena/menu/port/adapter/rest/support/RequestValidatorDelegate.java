@@ -19,8 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
-import org.adhuc.cena.menu.port.adapter.rest.InvalidRestRequestException;
-
 /**
  * A request validator delegate, dedicated to throwing {@link InvalidRestRequestException} in case of validation errors.
  *
@@ -35,7 +33,7 @@ public class RequestValidatorDelegate {
     public void validateRequest(Errors errors) {
         if (errors.hasErrors()) {
             log.debug("Request validation raises errors : {}", errors);
-            throw new InvalidRestRequestException();
+            throw new InvalidRestRequestException(errors);
         }
     }
 

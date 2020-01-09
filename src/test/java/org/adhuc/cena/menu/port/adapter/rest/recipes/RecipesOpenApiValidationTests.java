@@ -62,6 +62,27 @@ class RecipesOpenApiValidationTests {
     }
 
     @Test
+    @DisplayName("respond Bad Request with OpenAPI validation error on creation when request does not contain name nor content properties")
+    void respond400OnCreationWithoutNameNorContent() throws Exception {
+        var error = given()
+                .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                        properties.getSecurity().getUser().getPassword())
+                .contentType(APPLICATION_JSON_VALUE)
+                .body("{}")
+                .when()
+                .post(RECIPES_API_URL)
+                .then()
+                .statusCode(BAD_REQUEST.value())
+                .assertThat()
+                .extract().jsonPath().getObject("", Error.class);
+        assertThat(error)
+                .hasCode(INVALID_REQUEST)
+                .hasMessage("OpenAPI validation error")
+                .detailsContainsExactlyInAnyOrder("Object has missing required properties ([\"content\",\"name\"])");
+    }
+
+    @Test
     @DisplayName("respond Bad Request with OpenAPI validation error on creation when request does not contain name property")
     void respond400OnCreationWithoutName() throws Exception {
         var error = given()

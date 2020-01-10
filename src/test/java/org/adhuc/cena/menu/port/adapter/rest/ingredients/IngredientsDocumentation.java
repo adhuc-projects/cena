@@ -26,7 +26,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -36,10 +38,13 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
+import org.springframework.restdocs.operation.Operation;
+import org.springframework.restdocs.snippet.TemplatedSnippet;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
+import org.adhuc.cena.menu.ingredients.MeasurementType;
 import org.adhuc.cena.menu.port.adapter.rest.ResultHandlerConfiguration;
 import org.adhuc.cena.menu.port.adapter.rest.documentation.support.ConstrainedFields;
 import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
@@ -100,8 +105,9 @@ class IngredientsDocumentation {
                 .andExpect(status().isCreated()).andDo(documentationHandler
                 .document(requestFields(
                         fields.withPath("name").description("The name of the ingredient"),
-                        fields.withPath("measurementTypes").description("The types of measurement of the ingredient")
-                )));
+                        fields.withPath("measurementTypes").description("The <<measurement-types-list, types of measurement>> of the ingredient")
+                ),
+                new MeasurementTypesSnippet()));
     }
 
     @Test
@@ -110,6 +116,19 @@ class IngredientsDocumentation {
     void ingredientsDeleteExample() throws Exception {
         mvc.perform(delete(INGREDIENTS_API_URL))
                 .andExpect(status().isNoContent()).andDo(documentationHandler.document());
+    }
+
+    private static class MeasurementTypesSnippet extends TemplatedSnippet {
+        public MeasurementTypesSnippet() {
+            super("measurement-types", null);
+        }
+
+        @Override
+        protected Map<String, Object> createModel(Operation operation) {
+            final Map<String, Object> model = new HashMap<>();
+            model.put("measurementTypes", List.of(MeasurementType.values()));
+            return model;
+        }
     }
 
 }

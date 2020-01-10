@@ -15,6 +15,8 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients;
 
+import static java.util.stream.Collectors.toList;
+
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
@@ -25,9 +27,16 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import static org.adhuc.cena.menu.recipes.MeasurementUnit.UNDEFINED;
 import static org.adhuc.cena.menu.recipes.RecipeMother.ID;
 import static org.adhuc.cena.menu.recipes.RecipeMother.recipe;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -36,6 +45,8 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
+import org.springframework.restdocs.operation.Operation;
+import org.springframework.restdocs.snippet.TemplatedSnippet;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -48,6 +59,7 @@ import org.adhuc.cena.menu.port.adapter.rest.ingredients.IngredientsController;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.RecipeModelAssembler;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.RecipesController;
 import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
+import org.adhuc.cena.menu.recipes.MeasurementUnit;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
 import org.adhuc.cena.menu.recipes.RecipeIngredientAppService;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
@@ -112,13 +124,18 @@ class RecipeIngredientsDocumentation {
     void recipeIngredientsCreateExample() throws Exception {
         var fields = new ConstrainedFields(CreateRecipeIngredientRequest.class);
         mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID).contentType(APPLICATION_JSON)
-                .content(String.format("{\"id\":\"%s\"}", IngredientMother.ID)))
+                .content(String.format("{\"id\":\"%s\",\"quantity\":10,\"measurementUnit\":\"UNIT\"}", IngredientMother.ID)))
                 .andExpect(status().isCreated()).andDo(documentationHandler
                 .document(pathParameters(
                         parameterWithName("id").description("The <<resources-recipe,recipe>> identity")
                 ), requestFields(
-                        fields.withPath("id").description("The ingredient identity")
-                )));
+                        fields.withPath("id").description("The recipe ingredient identity. Corresponds to the identity of the related <<resources-ingredient,ingredient>>"),
+                        fields.withPath("quantity").description("The quantity of ingredient in the recipe"),
+                        fields.withPath("measurementUnit").description("<<measurement-units-list,Unit of measurement>> " +
+                                "for a quantity of ingredient in a recipe. Depends on the <<measurement-types-list,measurement types>> " +
+                                "defined for the ingredient")
+                ),
+                new MeasurementUnitsSnippet()));
     }
 
     @Test
@@ -130,6 +147,29 @@ class RecipeIngredientsDocumentation {
                 .document(pathParameters(
                         parameterWithName("id").description("The <<resources-recipe,recipe>> identity")
                 )));
+    }
+
+    private static class MeasurementUnitsSnippet extends TemplatedSnippet {
+        public MeasurementUnitsSnippet() {
+            super("measurement-units", null);
+        }
+
+        @Override
+        protected Map<String, Object> createModel(Operation operation) {
+            final Map<String, Object> model = new HashMap<>();
+            model.put("measurementUnits", Arrays.stream(MeasurementUnit.values())
+                    .filter(unit -> !UNDEFINED.equals(unit))
+                    .map(unit -> new MeasurementUnitRepresentation(unit.name(), unit.associatedType().name()))
+                    .collect(toList()));
+            return model;
+        }
+    }
+
+    @Getter
+    @RequiredArgsConstructor
+    private static class MeasurementUnitRepresentation {
+        private final String name;
+        private final String type;
     }
 
 }

@@ -548,7 +548,7 @@ components:
           minLength: 1
           example: 'Tomato'
         measurementTypes:
-          description: Ingredient measurement types, used to determine which types of measurements ingredients accept when associated to recipes
+          description: Ingredient measurement types, used to determine which units of measurements ingredients accept when associated to recipes
           type: array
           items:
             type: string

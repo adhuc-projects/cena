@@ -23,8 +23,10 @@ import java.util.Collection;
 import java.util.Set;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 
 import org.adhuc.cena.menu.ingredients.MeasurementType;
 import org.adhuc.cena.menu.util.Assert;
@@ -36,6 +38,8 @@ import org.adhuc.cena.menu.util.Assert;
  * @version 0.2.0
  * @since 0.2.0
  */
+@Getter
+@Accessors(fluent = true)
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public enum MeasurementUnit {
 

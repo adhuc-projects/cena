@@ -7,6 +7,13 @@ Alexandre Carbenay;
 :toclevels: 4
 :sectlinks:
 
+[[openapi-specification]]
+== Open API Specification
+
+Menu Generation RESTful API also defines an https://swagger.io/specification/[Open API] specification. This specification is part of the incoming requests validation, and should be used by clients to consume the API.
+
+The Open API specification can be found link:openapi.yml[here].
+
 [[overview]]
 = Overview
 
@@ -157,6 +164,13 @@ include::{snippets}/ingredients-create-example/curl-request.adoc[]
 ==== Example response
 
 include::{snippets}/ingredients-create-example/http-response.adoc[]
+
+[[measurement-types-list]]
+==== Measurement types list
+
+Here is the list of all measurement types that can be used to create an ingredient.
+
+include::{snippets}/ingredients-create-example/measurement-types.adoc[]
 
 [[resources-ingredients-delete]]
 === Deleting ingredients
@@ -379,6 +393,15 @@ include::{snippets}/recipe-ingredients-create-example/curl-request.adoc[]
 ==== Example response
 
 include::{snippets}/recipe-ingredients-create-example/http-response.adoc[]
+
+[[measurement-units-list]]
+==== Measurement units list
+
+Here is the list of all measurement units that can be used to create a recipe ingredient with their associated
+<<measurement-types-list, measurement type>>. Note that a measurement unit won't be accepted during recipe ingredient
+creation if its associated type does not belong to the ingredient's measurement types.
+
+include::{snippets}/recipe-ingredients-create-example/measurement-units.adoc[]
 
 [[resources-recipe-ingredients-delete]]
 === Deleting recipe ingredients

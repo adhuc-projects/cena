@@ -17,6 +17,7 @@ package org.adhuc.cena.menu.util;
 
 import static lombok.AccessLevel.PRIVATE;
 
+import java.util.Collection;
 import java.util.function.Supplier;
 
 import lombok.NoArgsConstructor;
@@ -64,13 +65,28 @@ public final class Assert {
      * Assert.isTrue(i &gt; 0, () -&gt; "The value '" + i + "' must be greater than zero");
      * </pre>
      * @param expression a boolean expression
-     * @param messageSupplier a supplier for the exception message to use if the
-     * assertion fails
+     * @param messageSupplier a supplier for the exception message to use if the assertion fails
      * @throws IllegalArgumentException if {@code expression} is {@code false}
      * @see org.springframework.util.Assert#isTrue(boolean, Supplier)
      */
     public static void isTrue(boolean expression, Supplier<String> messageSupplier) {
         org.springframework.util.Assert.isTrue(expression, messageSupplier);
+    }
+
+    /**
+     * Assert that a collection contains elements; that is, it must not be
+     * {@code null} and must contain at least one element.
+     * <pre class="code">
+     * Assert.notEmpty(collection, () -&gt; "The " + collectionType + " collection must contain elements");
+     * </pre>
+     *
+     * @param collection      the collection to check
+     * @param messageSupplier a supplier for the exception message to use if the assertion fails
+     * @throws IllegalArgumentException if the collection is {@code null} or contains no elements
+     * @see org.springframework.util.Assert#notEmpty(Collection, Supplier)
+     */
+    public static void notEmpty(Collection<?> collection, Supplier<String> messageSupplier) {
+        org.springframework.util.Assert.notEmpty(collection, messageSupplier);
     }
 
 }

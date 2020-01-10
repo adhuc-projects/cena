@@ -26,6 +26,14 @@ Feature: Add ingredients to recipe
     When he adds the ingredient to the recipe specifying quantity as 4 "UNIT"
     Then an error notifies that recipe has not been found
 
+  @Edge
+  Scenario: Add an ingredient to a recipe with measurement unit not corresponding to ingredient's measurement type
+    Given an authenticated user
+    And an existing "Tomato" ingredient with measurement types "WEIGHT, AT_CONVENIENCE"
+    And an existing "Tomato, cucumber and mozzarella salad" recipe authored by the authenticated user
+    When he adds the ingredient to the recipe specifying quantity as 4 "UNIT"
+    Then an error notifies that measurement unit does not correspond to ingredient measurement type
+
   @Smoke @Security
   Scenario: Add an existing ingredient to an existing recipe
     Given an authenticated user

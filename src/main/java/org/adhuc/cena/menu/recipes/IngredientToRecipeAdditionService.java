@@ -46,8 +46,13 @@ class IngredientToRecipeAdditionService {
      * @throws EntityNotFoundException if either ingredient or recipe does not exist.
      */
     void addIngredientToRecipe(AddIngredientToRecipe command) {
-        if (!ingredientRepository.exists(command.ingredientId())) {
+        var ingredient = ingredientRepository.findById(command.ingredientId());
+        if (ingredient.isEmpty()) {
             throw new EntityNotFoundException(Ingredient.class, command.ingredientId());
+        }
+        if (!command.quantity().unit().isAssociatedToOneOf(ingredient.get().measurementTypes())) {
+            throw new InvalidMeasurementUnitForIngredientException(command.ingredientId(), command.recipeId(),
+                    command.quantity().unit(), ingredient.get().measurementTypes());
         }
         var recipe = recipeRepository.findNotNullById(command.recipeId());
         recipe.addIngredient(command);

@@ -24,6 +24,7 @@ import static org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue.COM
 import static org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue.NAME_AND_MEASUREMENT_TYPES_COMPARATOR;
 
 import java.util.Collection;
+import java.util.List;
 
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
@@ -35,7 +36,7 @@ import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
  * The ingredients list rest-service client steps definition.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 public class IngredientListServiceClientSteps {
@@ -70,12 +71,7 @@ public class IngredientListServiceClientSteps {
 
     @Step("Assume ingredient {0} is in ingredients list")
     public IngredientValue assumeInIngredientsList(IngredientValue ingredient) {
-        if (getFromIngredientsList(ingredient).isEmpty()) {
-            ingredientCreationServiceClient.createIngredientAsIngredientManager(ingredient);
-        }
-        var ingredients = fetchIngredients();
-        assumeThat(ingredients).usingElementComparator(NAME_AND_MEASUREMENT_TYPES_COMPARATOR).contains(ingredient);
-        return ingredients.stream().filter(i -> NAME_AND_MEASUREMENT_TYPES_COMPARATOR.compare(i, ingredient) == 0).findFirst().get();
+        return assumeInIngredientsList(List.of(ingredient)).stream().findFirst().get();
     }
 
     @Step("Assume ingredients {0} are in ingredients list")
@@ -84,7 +80,13 @@ public class IngredientListServiceClientSteps {
         ingredients.stream()
                 .filter(ingredient -> existingIngredients.stream()
                         .noneMatch(existing -> NAME_AND_MEASUREMENT_TYPES_COMPARATOR.compare(existing, ingredient) == 0))
-                .forEach(ingredient -> ingredientCreationServiceClient.createIngredientAsIngredientManager(ingredient));
+                .forEach(ingredient -> {
+                    var ingredientToDelete = existingIngredients.stream().filter(i -> COMPARATOR.compare(i, ingredient) == 0).findFirst();
+                    if (ingredientToDelete.isPresent()) {
+                        ingredientDeletionServiceClient.deleteIngredientAsIngredientManager(ingredientToDelete.get());
+                    }
+                    ingredientCreationServiceClient.createIngredientAsIngredientManager(ingredient);
+                });
         var allIngredients = fetchIngredients();
         assumeThat(allIngredients).usingElementComparator(NAME_AND_MEASUREMENT_TYPES_COMPARATOR).containsAll(ingredients);
         return allIngredients.stream().filter(i -> ingredients.stream()

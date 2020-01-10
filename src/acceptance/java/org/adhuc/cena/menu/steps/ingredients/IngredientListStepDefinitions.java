@@ -65,6 +65,12 @@ public class IngredientListStepDefinitions {
         ingredientListServiceClient.storeIngredient(ingredientListServiceClient.assumeInIngredientsList(new IngredientValue(ingredientName)));
     }
 
+    @Given("^an existing \"(.*)\" ingredient with measurement types \"(.*)\"$")
+    public void existingIngredient(String ingredientName, String measurementTypes) {
+        var ingredient = new IngredientValue(ingredientName, List.of(measurementTypes.split(", ")));
+        ingredientListServiceClient.storeIngredient(ingredientListServiceClient.assumeInIngredientsList(ingredient));
+    }
+
     @Given("^a non-existent \"(.*)\" ingredient$")
     public void nonExistentIngredient(String ingredientName) {
         ingredientListServiceClient.storeIngredient(ingredientListServiceClient.assumeNotInIngredientsList(

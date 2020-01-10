@@ -32,7 +32,7 @@ import org.adhuc.cena.menu.ingredients.IngredientId;
  * @since 0.2.0
  */
 @ResponseStatus(NOT_FOUND)
-public class IngredientNotRelatedToRecipeException extends CenaException {
+class IngredientNotRelatedToRecipeException extends CenaException {
 
     private static final ExceptionCode EXCEPTION_CODE = ExceptionCode.INGREDIENT_NOT_RELATED_TO_RECIPE;
 
@@ -42,7 +42,7 @@ public class IngredientNotRelatedToRecipeException extends CenaException {
      * @param ingredientId the ingredient identity.
      * @param recipeId     the recipe identity.
      */
-    public IngredientNotRelatedToRecipeException(@NonNull IngredientId ingredientId, @NonNull RecipeId recipeId) {
+    IngredientNotRelatedToRecipeException(@NonNull IngredientId ingredientId, @NonNull RecipeId recipeId) {
         super(String.format("Ingredient '%s' is not related to recipe '%s'", ingredientId, recipeId), EXCEPTION_CODE);
     }
 

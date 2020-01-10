@@ -70,4 +70,13 @@ public class RecipeIngredientAdditionStepDefinitions {
         // TODO assert response indicates field in error
     }
 
+    @Then("^an error notifies that measurement unit does not correspond to ingredient measurement type$")
+    public void errorOnNonCorrespondingMeasurementUnit() {
+        recipeIngredientAdditionServiceClient.assertNonCorrespondingMeasurementUnit(
+                recipeIngredientAdditionServiceClient.storedIngredient(),
+                recipeIngredientAdditionServiceClient.storedRecipe(),
+                recipeIngredientAdditionServiceClient.storedRecipeIngredient());
+        // TODO assert response indicates field in error
+    }
+
 }

@@ -20,7 +20,9 @@ import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
+import static org.adhuc.cena.menu.recipes.MeasurementUnit.CENTILITER;
 import static org.adhuc.cena.menu.recipes.RecipeMother.*;
+import static org.adhuc.cena.menu.recipes.RecipeMother.ID;
 
 import org.junit.jupiter.api.*;
 
@@ -138,6 +140,17 @@ class RecipeIngredientAppServiceImplShould {
             ingredientRepository.save(ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES));
             assumeThat(ingredientRepository.exists(IngredientMother.ID)).isTrue();
             assumeThat(ingredientRepository.exists(CUCUMBER_ID)).isTrue();
+        }
+
+        @Test
+        @DisplayName("add ingredient to recipe with measurement unit not corresponding to ingredient's measurement type")
+        void addIngredientToRecipeMeasurementUnitNotCorrespondingToMeasurementType() {
+            var command = addIngredientCommand(IngredientMother.ID, RecipeMother.ID, new Quantity(200, CENTILITER));
+            var exception = assertThrows(InvalidMeasurementUnitForIngredientException.class,
+                    () -> service.addIngredientToRecipe(command));
+            assertThat(exception.getMessage()).isEqualTo("Unable to add ingredient '" + IngredientMother.ID +
+                    "' to recipe '" + ID + "': measurement unit " + CENTILITER + " does not correspond to ingredient's " +
+                    "measurement types " + MEASUREMENT_TYPES);
         }
 
         @Test

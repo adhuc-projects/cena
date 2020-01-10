@@ -17,41 +17,62 @@ package org.adhuc.cena.menu.port.adapter.rest.documentation.support;
 
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.snippet.Attributes.key;
+import static org.springframework.util.StringUtils.collectionToDelimitedString;
 
+import java.util.List;
+
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.restdocs.constraints.ConstraintDescriptions;
 import org.springframework.restdocs.payload.FieldDescriptor;
-import org.springframework.util.StringUtils;
 
 /**
  * A supporting class to document constrained fields.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @see ConstraintDescriptions
  * @since 0.1.0
  */
 public class ConstrainedFields {
 
     private final ConstraintDescriptions constraintDescriptions;
+    private final List<FieldAlias> aliases;
 
     /**
      * Creates constrained fields documentation based on the specified constrained class.
      *
      * @param input the constrained class.
+     * @param aliases the field aliases to use when a request field's name is not the same as the corresponding request
+     *                class' property name.
      */
-    public ConstrainedFields(Class<?> input) {
+    public ConstrainedFields(Class<?> input, FieldAlias... aliases) {
         constraintDescriptions = new ConstraintDescriptions(input);
+        this.aliases = List.of(aliases);
     }
 
     /**
-     * Gets a field descriptor corresponding to the specified path in the constrained class.
+     * Gets a field descriptor corresponding to the specified path in the constrained class. The path may have been
+     * aliased, then constrained are retrieved for the corresponding property name.
      *
      * @param path the field path.
      * @return a field descriptor with documented constraints.
      */
     public FieldDescriptor withPath(String path) {
         return fieldWithPath(path).attributes(key("constraints").value(
-                StringUtils.collectionToDelimitedString(constraintDescriptions.descriptionsForProperty(path), ". ")));
+                collectionToDelimitedString(constraintDescriptions.descriptionsForProperty(propertyNameForPath(path)), ". ")));
+    }
+
+    private String propertyNameForPath(String path) {
+        return aliases.stream().filter(alias -> alias.path.equals(path)).map(alias -> alias.propertyName).findFirst().orElse(path);
+    }
+
+    @RequiredArgsConstructor
+    public static class FieldAlias {
+        @NonNull
+        private final String path;
+        @NonNull
+        private final String propertyName;
     }
 
 }

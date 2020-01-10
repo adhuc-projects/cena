@@ -54,6 +54,7 @@ import org.adhuc.cena.menu.ingredients.IngredientAppService;
 import org.adhuc.cena.menu.ingredients.IngredientMother;
 import org.adhuc.cena.menu.port.adapter.rest.ResultHandlerConfiguration;
 import org.adhuc.cena.menu.port.adapter.rest.documentation.support.ConstrainedFields;
+import org.adhuc.cena.menu.port.adapter.rest.documentation.support.ConstrainedFields.FieldAlias;
 import org.adhuc.cena.menu.port.adapter.rest.ingredients.IngredientModelAssembler;
 import org.adhuc.cena.menu.port.adapter.rest.ingredients.IngredientsController;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.RecipeModelAssembler;
@@ -122,7 +123,7 @@ class RecipeIngredientsDocumentation {
     @WithAuthenticatedUser
     @DisplayName("generates recipe ingredient creation example")
     void recipeIngredientsCreateExample() throws Exception {
-        var fields = new ConstrainedFields(CreateRecipeIngredientRequest.class);
+        var fields = new ConstrainedFields(CreateRecipeIngredientRequest.class, new FieldAlias("id", "ingredientId"));
         mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID).contentType(APPLICATION_JSON)
                 .content(String.format("{\"id\":\"%s\",\"quantity\":10,\"measurementUnit\":\"UNIT\"}", IngredientMother.ID)))
                 .andExpect(status().isCreated()).andDo(documentationHandler

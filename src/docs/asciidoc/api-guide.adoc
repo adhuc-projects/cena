@@ -151,7 +151,7 @@ include::{snippets}/ingredients-list-example/links.adoc[]
 [[resources-ingredients-create]]
 === Creating an ingredient
 
-A `POST` request will create an ingredient. The specified ingredient name must not already be used by an existing ingredient. Only an ingredient manager can create ingredients.
+A `POST` request will create an ingredient. The specified ingredient name *must not already be used* by an existing ingredient. Only an ingredient manager can create ingredients.
 
 ==== Request structure
 

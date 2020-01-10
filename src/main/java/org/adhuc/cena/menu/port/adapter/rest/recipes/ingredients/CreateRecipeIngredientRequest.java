@@ -25,8 +25,8 @@ import javax.validation.Constraint;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import javax.validation.Payload;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -51,10 +51,10 @@ import org.adhuc.cena.menu.recipes.RecipeId;
 @CreateRecipeIngredientRequest.ValidRequest
 class CreateRecipeIngredientRequest {
 
-    @NotNull
+    @NotBlank
     @JsonProperty("id")
     private String ingredientId;
-    @Min(1)
+    @Positive
     private Integer quantity;
     private MeasurementUnit measurementUnit;
 

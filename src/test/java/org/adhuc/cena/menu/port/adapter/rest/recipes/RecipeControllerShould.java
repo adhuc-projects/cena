@@ -149,7 +149,8 @@ class RecipeControllerShould {
             mvc.perform(get(RECIPE_API_URL, ID))
                     .andExpect(jsonPath("$.id").value(recipe().id().toString()))
                     .andExpect(jsonPath("$.name").value(recipe().name()))
-                    .andExpect(jsonPath("$.content").value(recipe().content()));
+                    .andExpect(jsonPath("$.content").value(recipe().content()))
+                    .andExpect(jsonPath("$.servings").value(recipe().servings().value()));
         }
 
         @Test

@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpHeaders.LOCATION;
 
-import static org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue.DEFAULT_NAME;
+import static org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue.*;
 import static org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType.AUTHENTICATED_USER;
 
 import java.util.function.Supplier;
@@ -57,37 +57,41 @@ public class RecipeCreationServiceClientSteps {
     private RecipeDetailServiceClientSteps recipeDetailServiceClient;
 
     @Step("Create the recipe {0}")
-    public void createRecipe(RecipeValue recipe) {
-        createRecipe(recipe, this::rest);
+    public RecipeValue createRecipe(RecipeValue recipe) {
+        return createRecipe(recipe, this::rest);
+    }
+
+    @Step("Create the recipe {0} without number of servings")
+    public RecipeValue createRecipeWithoutServings(RecipeValue recipe) {
+        return createRecipe(recipe.withoutServings(), this::rest);
     }
 
     @Step("Create the recipe {0} as authenticated user")
-    public void createRecipeAsAuthenticatedUser(RecipeValue recipe) {
-        createRecipeAs(recipe, AUTHENTICATED_USER);
+    public RecipeValue createRecipeAsAuthenticatedUser(RecipeValue recipe) {
+        return createRecipeAs(recipe, AUTHENTICATED_USER);
     }
 
     @Step("Create the recipe {0} as {1}")
-    public void createRecipeAs(RecipeValue recipe, AuthenticationType authenticationType) {
-        createRecipe(recipe, () -> rest(authenticationType));
+    public RecipeValue createRecipeAs(RecipeValue recipe, AuthenticationType authenticationType) {
+        return createRecipe(recipe, () -> rest(authenticationType));
     }
 
-    private void createRecipe(RecipeValue recipe, Supplier<RequestSpecification> specificationSupplier) {
+    private RecipeValue createRecipe(RecipeValue recipe, Supplier<RequestSpecification> specificationSupplier) {
         var recipesResourceUrl = recipesResourceUrl();
         specificationSupplier.get().contentType(HAL_JSON_VALUE)
                 .body(recipe.withoutId())
                 .post(recipesResourceUrl).andReturn();
+        return recipe;
     }
 
     @Step("Create a recipe without name")
-    public void createRecipeWithoutName() {
-        var recipe = storeRecipe(new RecipeValue(null));
-        createRecipe(recipe);
+    public RecipeValue createRecipeWithoutName() {
+        return createRecipe(new RecipeValue(null));
     }
 
     @Step("Create a recipe without content")
-    public void createRecipeWithoutContent() {
-        var recipe = storeRecipe(new RecipeValue(DEFAULT_NAME, null));
-        createRecipe(recipe);
+    public RecipeValue createRecipeWithoutContent() {
+        return createRecipe(new RecipeValue(DEFAULT_NAME, null, DEFAULT_SERVINGS));
     }
 
     @Step("Assert recipe {0} has been successfully created")

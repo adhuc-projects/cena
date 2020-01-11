@@ -15,6 +15,7 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.recipes;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.NonNull;
 import lombok.ToString;
@@ -32,6 +33,7 @@ import org.adhuc.cena.menu.recipes.Recipe;
  */
 @ToString(callSuper = true)
 @Relation(collectionRelation = "data")
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class RecipeModel extends RepresentationModel<RecipeModel> {
 
     @NonNull
@@ -46,12 +48,14 @@ public class RecipeModel extends RepresentationModel<RecipeModel> {
     @NonNull
     @JsonProperty("author")
     private final String recipeAuthor;
+    private final int servings;
 
     RecipeModel(@NonNull Recipe recipe) {
         recipeId = recipe.id().toString();
         recipeName = recipe.name();
         recipeContent = recipe.content();
         recipeAuthor = recipe.author().toString();
+        servings = recipe.servings().value();
     }
 
 }

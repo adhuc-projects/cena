@@ -15,6 +15,8 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients;
 
+import static java.lang.String.format;
+
 import static io.restassured.RestAssured.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -32,6 +34,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -136,6 +140,28 @@ class RecipeIngredientsOpenApiValidationTests {
                 .detailsContainsExactlyInAnyOrder("Object should have either none or both properties ([\"measurementUnit\",\"quantity\"])");
     }
 
+    @ParameterizedTest
+    @ValueSource(ints = {Integer.MIN_VALUE, -1, 0})
+    @DisplayName("respond Bad Request with validation error on creation when request contains negative quantity")
+    void respond400OnCreationWithNegativeQuantity(int quantity) throws Exception {
+        var error = given()
+                .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                        properties.getSecurity().getUser().getPassword())
+                .contentType(APPLICATION_JSON_VALUE)
+                .body(format("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \"measurementUnit\":\"DOZEN\", \"quantity\": %d}", quantity))
+                .when()
+                .post(RECIPE_INGREDIENTS_API_URL, ID.toString())
+                .then()
+                .statusCode(BAD_REQUEST.value())
+                .assertThat()
+                .extract().jsonPath().getObject("", Error.class);
+        assertThat(error)
+                .hasCode(INVALID_REQUEST)
+                .hasMessage("OpenAPI validation error")
+                .detailsContainsExactlyInAnyOrder(format("[Path '/quantity'] Numeric instance is lower than the required minimum (minimum: 1, found: %d)", quantity));
+    }
+
     @Test
     @DisplayName("respond Created on creation when request contains additional property")
     void respond201OnCreationWithAdditionalProperty() throws Exception {
@@ -144,7 +170,7 @@ class RecipeIngredientsOpenApiValidationTests {
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                 properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body(String.format("{\"id\":\"%s\",\"other\":\"some value\"}", IngredientMother.ID))
+                .body(format("{\"id\":\"%s\",\"other\":\"some value\"}", IngredientMother.ID))
                 .when()
                 .post(RECIPE_INGREDIENTS_API_URL, ID.toString())
                 .then()

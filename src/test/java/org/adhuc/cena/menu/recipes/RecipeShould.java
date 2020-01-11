@@ -53,18 +53,19 @@ class RecipeShould {
     @ParameterizedTest
     @MethodSource("invalidCreationParameters")
     @DisplayName("not be creatable with invalid parameters")
-    void notBeCreatableWithInvalidParameters(RecipeId recipeId, String name, String content, RecipeAuthor author) {
-        assertThrows(IllegalArgumentException.class, () -> new Recipe(recipeId, name, content, author));
+    void notBeCreatableWithInvalidParameters(RecipeId recipeId, String name, String content, RecipeAuthor author, Servings servings) {
+        assertThrows(IllegalArgumentException.class, () -> new Recipe(recipeId, name, content, author, servings));
     }
 
     private static Stream<Arguments> invalidCreationParameters() {
         return Stream.of(
-                Arguments.of(null, NAME, CONTENT, AUTHOR),
-                Arguments.of(ID, null, CONTENT, AUTHOR),
-                Arguments.of(ID, "", CONTENT, AUTHOR),
-                Arguments.of(ID, NAME, null, AUTHOR),
-                Arguments.of(ID, NAME, "", AUTHOR),
-                Arguments.of(ID, NAME, CONTENT, null)
+                Arguments.of(null, NAME, CONTENT, AUTHOR, SERVINGS),
+                Arguments.of(ID, null, CONTENT, AUTHOR, SERVINGS),
+                Arguments.of(ID, "", CONTENT, AUTHOR, SERVINGS),
+                Arguments.of(ID, NAME, null, AUTHOR, SERVINGS),
+                Arguments.of(ID, NAME, "", AUTHOR, SERVINGS),
+                Arguments.of(ID, NAME, CONTENT, null, SERVINGS),
+                Arguments.of(ID, NAME, CONTENT, AUTHOR, null)
         );
     }
 
@@ -78,6 +79,7 @@ class RecipeShould {
             softly.assertThat(recipe.content()).isEqualTo(CONTENT);
             softly.assertThat(recipe.ingredients()).isEmpty();
             softly.assertThat(recipe.author()).isEqualTo(AUTHOR);
+            softly.assertThat(recipe.servings()).isEqualTo(SERVINGS);
         });
     }
 
@@ -253,6 +255,7 @@ class RecipeShould {
                 .withName(TOMATO_CUCUMBER_MOZZA_SALAD_NAME)
                 .withContent(TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT)
                 .withAuthor(TOMATO_CUCUMBER_MOZZA_SALAD_AUTHOR)
+                .withServings(TOMATO_CUCUMBER_MOZZA_SALAD_SERVINGS)
                 .withIngredients(TOMATO_ID, CUCUMBER_ID);
         var tomatoCucumberMozzaSalad = builder.build();
         return Stream.of(
@@ -261,6 +264,7 @@ class RecipeShould {
                 Arguments.of(tomatoCucumberMozzaSalad, builder.withName(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME).build(), true),
                 Arguments.of(tomatoCucumberMozzaSalad, builder.withContent(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT).build(), true),
                 Arguments.of(tomatoCucumberMozzaSalad, builder.withAuthor(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_AUTHOR).build(), true),
+                Arguments.of(tomatoCucumberMozzaSalad, builder.withServings(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_SERVINGS).build(), true),
                 Arguments.of(tomatoCucumberMozzaSalad, builder.withIngredients().build(), true),
                 Arguments.of(tomatoCucumberMozzaSalad, builder.withId(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID).build(), false)
         );

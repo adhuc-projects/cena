@@ -39,6 +39,7 @@ public class RecipeListStepDefinitions {
 
     private static final String NAME_ATTRIBUTE = "name";
     private static final String CONTENT_ATTRIBUTE = "content";
+    private static final String SERVINGS_ATTRIBUTE = "servings";
 
     @Steps
     private RecipeListServiceClientSteps recipeListServiceClient;
@@ -51,7 +52,8 @@ public class RecipeListStepDefinitions {
     @Given("^the following existing recipes$")
     public void existingRecipes(DataTable dataTable) {
         var recipes = dataTable.asMaps(String.class, String.class).stream()
-                .map(attributes -> new RecipeValue(attributes.get(NAME_ATTRIBUTE), attributes.get(CONTENT_ATTRIBUTE))).collect(toList());
+                .map(attributes -> new RecipeValue(attributes.get(NAME_ATTRIBUTE), attributes.get(CONTENT_ATTRIBUTE),
+                        Integer.parseInt(attributes.get(SERVINGS_ATTRIBUTE)))).collect(toList());
         recipeListServiceClient.storeAssumedRecipes(recipeListServiceClient.assumeInRecipesList(recipes));
     }
 

@@ -103,11 +103,12 @@ class RecipesDocumentation {
 
         var fields = new ConstrainedFields(CreateRecipeRequest.class);
         mvc.perform(post(RECIPES_API_URL).contentType(APPLICATION_JSON)
-                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\"}"))
+                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":2}"))
                 .andExpect(status().isCreated()).andDo(documentationHandler
                 .document(requestFields(
                         fields.withPath("name").description("The name of the recipe"),
-                        fields.withPath("content").description("The content of the recipe")
+                        fields.withPath("content").description("The content of the recipe"),
+                        fields.withPath("servings").description("The number of servings for the recipe")
                 )));
     }
 

@@ -36,6 +36,7 @@ public class CreateRecipe {
     private final String recipeName;
     private final String recipeContent;
     private final RecipeAuthor recipeAuthor;
+    private final Servings servings;
 
     /**
      * Creates a recipe creation command.
@@ -44,15 +45,30 @@ public class CreateRecipe {
      * @param recipeName    the recipe name.
      * @param recipeContent the recipe content.
      * @param recipeAuthor  the recipe author.
+     * @param servings      the number of servings.
      */
     public CreateRecipe(@NonNull RecipeId recipeId, @NonNull String recipeName, @NonNull String recipeContent,
-                        @NonNull RecipeAuthor recipeAuthor) {
+                        @NonNull RecipeAuthor recipeAuthor, @NonNull Servings servings) {
         hasText(recipeName, "Cannot create recipe creation command with invalid recipe name");
         hasText(recipeContent, "Cannot create recipe creation command with invalid recipe content");
         this.recipeId = recipeId;
         this.recipeName = recipeName;
         this.recipeContent = recipeContent;
         this.recipeAuthor = recipeAuthor;
+        this.servings = servings;
+    }
+
+    /**
+     * Creates a recipe creation command with default value for number of servings.
+     *
+     * @param recipeId      the recipe identity.
+     * @param recipeName    the recipe name.
+     * @param recipeContent the recipe content.
+     * @param recipeAuthor  the recipe author.
+     */
+    public CreateRecipe(@NonNull RecipeId recipeId, @NonNull String recipeName, @NonNull String recipeContent,
+                        @NonNull RecipeAuthor recipeAuthor) {
+        this(recipeId, recipeName, recipeContent, recipeAuthor, Servings.DEFAULT);
     }
 
 }

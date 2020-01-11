@@ -102,9 +102,10 @@ class RecipeDocumentation {
 
     static ResponseFieldsSnippet recipeResponseFields(String linksDescription) {
         return responseFields(fieldWithPath("id").description("The recipe identity"),
-                fieldWithPath("name").description("The recipe name"),
-                fieldWithPath("content").description("The recipe content"),
-                fieldWithPath("author").description("The recipe author name"),
+                fieldWithPath("name").description("The name of the recipe"),
+                fieldWithPath("content").description("The content of the recipe"),
+                fieldWithPath("author").description("The author name of the recipe"),
+                fieldWithPath("servings").description("The number of servings for the recipe"),
                 subsectionWithPath("_links").description(linksDescription));
     }
 

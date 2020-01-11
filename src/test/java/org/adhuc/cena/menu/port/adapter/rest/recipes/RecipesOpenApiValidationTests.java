@@ -15,6 +15,8 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.recipes;
 
+import static java.lang.String.format;
+
 import static io.restassured.RestAssured.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -29,6 +31,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -90,7 +94,7 @@ class RecipesOpenApiValidationTests {
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                         properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body("{\"content\":\"Cut everything into dices, mix it, dress it\"}")
+                .body("{\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":2}")
                 .when()
                 .post(RECIPES_API_URL)
                 .then()
@@ -111,7 +115,7 @@ class RecipesOpenApiValidationTests {
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                         properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body("{\"name\":\"Tomato, cucumber and mozzarella salad\"}")
+                .body("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"servings\":2}")
                 .when()
                 .post(RECIPES_API_URL)
                 .then()
@@ -125,6 +129,43 @@ class RecipesOpenApiValidationTests {
     }
 
     @Test
+    @DisplayName("respond Created on creation when request does not contain servings property")
+    void respond201OnCreationWithoutServings() throws Exception {
+        given()
+                .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                properties.getSecurity().getUser().getPassword())
+                .contentType(APPLICATION_JSON_VALUE)
+                .body("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\"}")
+                .when()
+                .post(RECIPES_API_URL)
+                .then()
+                .statusCode(CREATED.value());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {Integer.MIN_VALUE, -1, 0})
+    @DisplayName("respond Bad Request with OpenAPI validation error on creation when request contains negative or zero servings")
+    void respond400OnCreationWithNegativeServings(int value) throws Exception {
+        var error = given()
+                .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                        properties.getSecurity().getUser().getPassword())
+                .contentType(APPLICATION_JSON_VALUE)
+                .body(format("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":%d}", value))
+                .when()
+                .post(RECIPES_API_URL)
+                .then()
+                .statusCode(BAD_REQUEST.value())
+                .assertThat()
+                .extract().jsonPath().getObject("", Error.class);
+        assertThat(error)
+                .hasCode(INVALID_REQUEST)
+                .hasMessage("OpenAPI validation error")
+                .detailsContainsExactlyInAnyOrder(format("[Path '/servings'] Numeric instance is lower than the required minimum (minimum: 1, found: %d)", value));
+    }
+
+    @Test
     @DisplayName("respond Created on creation when request contains additional property")
     void respond201OnCreationWithAdditionalProperty() throws Exception {
         given()
@@ -132,7 +173,7 @@ class RecipesOpenApiValidationTests {
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                 properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\",\"other\":\"some value\"}")
+                .body("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":2,\"other\":\"some value\"}")
                 .when()
                 .post(RECIPES_API_URL)
                 .then()

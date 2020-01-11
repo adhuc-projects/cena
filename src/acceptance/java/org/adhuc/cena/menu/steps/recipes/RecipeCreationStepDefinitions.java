@@ -40,14 +40,20 @@ public class RecipeCreationStepDefinitions {
         recipeCreationServiceClient.createRecipe(recipeCreationServiceClient.storedRecipe());
     }
 
+    @When("^he creates the recipe without number of servings$")
+    public void createRecipeWithoutServings() {
+        recipeCreationServiceClient.storeRecipe(recipeCreationServiceClient.createRecipeWithoutServings(
+                recipeCreationServiceClient.storedRecipe()));
+    }
+
     @When("^he creates a recipe without name$")
     public void createRecipeWithoutName() {
-        recipeCreationServiceClient.createRecipeWithoutName();
+        recipeCreationServiceClient.storeRecipe(recipeCreationServiceClient.createRecipeWithoutName());
     }
 
     @When("^he creates a recipe without content$")
     public void createRecipeWithoutContent() {
-        recipeCreationServiceClient.createRecipeWithoutContent();
+        recipeCreationServiceClient.storeRecipe(recipeCreationServiceClient.createRecipeWithoutContent());
     }
 
     @Then("^the recipe is created$")

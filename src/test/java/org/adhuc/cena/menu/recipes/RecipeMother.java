@@ -51,16 +51,19 @@ public class RecipeMother {
     public static final String TOMATO_CUCUMBER_MOZZA_SALAD_NAME = "Tomato, cucumber and mozzarella salad";
     public static final String TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT = "Cut everything into dices, mix it, dress it";
     public static final RecipeAuthor TOMATO_CUCUMBER_MOZZA_SALAD_AUTHOR = new RecipeAuthor("some user");
+    public static final Servings TOMATO_CUCUMBER_MOZZA_SALAD_SERVINGS = new Servings(2);
 
     public static final RecipeId TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID = new RecipeId("6ef45220-0e64-4303-9f71-ced6cefa6834");
     public static final String TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME = "Tomato, cucumber, olive and feta salad";
     public static final String TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT = "Stone olives, cut everything into dices, mix it, dress it";
     public static final RecipeAuthor TOMATO_CUCUMBER_OLIVE_FETA_SALAD_AUTHOR = new RecipeAuthor("other user");
+    public static final Servings TOMATO_CUCUMBER_OLIVE_FETA_SALAD_SERVINGS = new Servings(6);
 
     public static final RecipeId ID = TOMATO_CUCUMBER_MOZZA_SALAD_ID;
     public static final String NAME = TOMATO_CUCUMBER_MOZZA_SALAD_NAME;
     public static final String CONTENT = TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT;
     public static final RecipeAuthor AUTHOR = TOMATO_CUCUMBER_MOZZA_SALAD_AUTHOR;
+    public static final Servings SERVINGS = TOMATO_CUCUMBER_MOZZA_SALAD_SERVINGS;
 
     public static final Quantity QUANTITY = new Quantity(1, DOZEN);
 
@@ -69,7 +72,7 @@ public class RecipeMother {
     }
 
     public static CreateRecipe createCommand(@NonNull Recipe recipe) {
-        return new CreateRecipe(recipe.id(), recipe.name(), recipe.content(), recipe.author());
+        return new CreateRecipe(recipe.id(), recipe.name(), recipe.content(), recipe.author(), recipe.servings());
     }
 
     public static DeleteRecipe deleteCommand() {
@@ -162,38 +165,40 @@ public class RecipeMother {
         private String content = CONTENT;
         @With
         private RecipeAuthor author = AUTHOR;
+        @With
+        private Servings servings = SERVINGS;
         private List<RecipeIngredient> ingredients = List.of();
 
         public Builder withId(@NonNull RecipeId recipeId) {
-            return new Builder(recipeId, name, content, author,
+            return new Builder(recipeId, name, content, author, servings,
                     ingredients.stream()
                             .map(ingredient -> new RecipeIngredient(recipeId, ingredient.ingredientId(), ingredient.quantity()))
                             .collect(toList()));
         }
 
         public Builder withAuthorName(@NonNull String authorName) {
-            return new Builder(id, name, content, new RecipeAuthor(authorName), ingredients);
+            return new Builder(id, name, content, new RecipeAuthor(authorName), servings, ingredients);
         }
 
         public Builder withIngredients(@NonNull IngredientId... ingredientIds) {
-            return new Builder(id, name, content, author,
+            return new Builder(id, name, content, author, servings,
                     Arrays.stream(ingredientIds)
                             .map(ingredientId -> new RecipeIngredient(id, ingredientId, QUANTITY))
                             .collect(toList()));
         }
 
         public Builder withIngredient(@NonNull IngredientId ingredientId, @NonNull Quantity quantity) {
-            return new Builder(id, name, content, author, List.of(new RecipeIngredient(id, ingredientId, quantity)));
+            return new Builder(id, name, content, author, servings, List.of(new RecipeIngredient(id, ingredientId, quantity)));
         }
 
         public Builder andIngredient(@NonNull IngredientId ingredientId, @NonNull Quantity quantity) {
             var ingredients = new HashSet<>(this.ingredients);
             ingredients.add(new RecipeIngredient(id, ingredientId, quantity));
-            return new Builder(id, name, content, author, List.copyOf(ingredients));
+            return new Builder(id, name, content, author, servings, List.copyOf(ingredients));
         }
 
         public Recipe build() {
-            var recipe = new Recipe(id, name, content, author);
+            var recipe = new Recipe(id, name, content, author, servings);
             ingredients.forEach(ingredient -> recipe.addIngredient(addIngredientCommand(ingredient)));
             return recipe;
         }

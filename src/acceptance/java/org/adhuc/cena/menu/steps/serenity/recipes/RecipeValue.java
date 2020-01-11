@@ -16,7 +16,6 @@
 package org.adhuc.cena.menu.steps.serenity.recipes;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Comparator;
 import java.util.UUID;
@@ -26,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.assertj.core.api.SoftAssertions;
 
 import org.adhuc.cena.menu.steps.serenity.support.resource.HateoasClientResourceSupport;
 
@@ -53,29 +53,37 @@ public class RecipeValue extends HateoasClientResourceSupport {
 
     public static final String DEFAULT_NAME = "Recipe default name";
     public static final String DEFAULT_CONTENT = "Recipe default content";
+    public static final int DEFAULT_SERVINGS = 2;
+    // Servings set by server if no servings value is specified in creation request
+    public static final int DEFAULT_SERVER_SERVINGS = 4;
 
     private final String id;
     private final String name;
     private final String content;
     private final String author;
+    private final Integer servings;
 
     public static RecipeValue buildUnknownRecipeValue(String name, String recipesResourceUrl) {
-        var recipe = new RecipeValue(UUID.randomUUID().toString(), name, DEFAULT_CONTENT, null);
+        var recipe = new RecipeValue(UUID.randomUUID().toString(), name, DEFAULT_CONTENT, null, DEFAULT_SERVINGS);
         recipe.addLink(SELF_LINK, String.format("%s/%s", recipesResourceUrl, recipe.id));
         recipe.addLink(RECIPE_INGREDIENTS_LINK, String.format("%s/%s/ingredients", recipesResourceUrl, recipe.id));
         return recipe;
     }
 
     public RecipeValue(String name) {
-        this(name, DEFAULT_CONTENT);
+        this(name, DEFAULT_CONTENT, DEFAULT_SERVINGS);
     }
 
-    public RecipeValue(String name, String content) {
-        this(null, name, content, null);
+    public RecipeValue(String name, String content, Integer servings) {
+        this(null, name, content, null, servings);
     }
 
     RecipeValue withoutId() {
-        return new RecipeValue(null, name, content, author);
+        return new RecipeValue(null, name, content, author, servings);
+    }
+
+    RecipeValue withoutServings() {
+        return new RecipeValue(id, name, content, author, null);
     }
 
     @JsonIgnore
@@ -84,7 +92,14 @@ public class RecipeValue extends HateoasClientResourceSupport {
     }
 
     void assertEqualTo(RecipeValue expected) {
-        assertThat(this).usingComparator(NAME_AND_CONTENT_COMPARATOR).isEqualTo(expected);
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(this).usingComparator(NAME_AND_CONTENT_COMPARATOR).isEqualTo(expected);
+            if (expected.servings != null) {
+                softly.assertThat(this.servings).isEqualTo(expected.servings);
+            } else {
+                softly.assertThat(this.servings).isEqualTo(DEFAULT_SERVER_SERVINGS);
+            }
+        });
     }
 
 }

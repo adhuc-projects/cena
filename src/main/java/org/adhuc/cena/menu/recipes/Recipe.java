@@ -18,7 +18,9 @@ package org.adhuc.cena.menu.recipes;
 import static org.adhuc.cena.menu.util.Assert.hasText;
 import static org.adhuc.cena.menu.util.Assert.isTrue;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -52,23 +54,28 @@ public class Recipe extends BasicEntity<RecipeId> {
     @Getter
     @NonNull
     private RecipeAuthor author;
+    @Getter
+    private Servings servings;
     private Map<IngredientId, RecipeIngredient> ingredients = new HashMap<>();
 
     /**
      * Creates a recipe.
      *
-     * @param id      the recipe identity.
-     * @param name    the recipe name.
-     * @param content the recipe content.
-     * @param author  the recipe author.
+     * @param id       the recipe identity.
+     * @param name     the recipe name.
+     * @param content  the recipe content.
+     * @param author   the recipe author.
+     * @param servings the number of servings for recipe.
      */
-    public Recipe(@NonNull RecipeId id, @NonNull String name, @NonNull String content, @NonNull RecipeAuthor author) {
+    public Recipe(@NonNull RecipeId id, @NonNull String name, @NonNull String content, @NonNull RecipeAuthor author,
+                  @NonNull Servings servings) {
         super(id);
         hasText(name, "Cannot set recipe name with invalid value");
         hasText(content, "Cannot set recipe content with invalid value");
         this.name = name;
         this.content = content;
         this.author = author;
+        this.servings = servings;
     }
 
     /**

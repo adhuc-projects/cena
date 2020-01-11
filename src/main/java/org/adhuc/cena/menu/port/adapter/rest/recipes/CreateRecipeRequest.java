@@ -16,6 +16,7 @@
 package org.adhuc.cena.menu.port.adapter.rest.recipes;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.NonNull;
@@ -24,6 +25,7 @@ import lombok.ToString;
 import org.adhuc.cena.menu.recipes.CreateRecipe;
 import org.adhuc.cena.menu.recipes.RecipeAuthor;
 import org.adhuc.cena.menu.recipes.RecipeId;
+import org.adhuc.cena.menu.recipes.Servings;
 
 /**
  * A request to create a recipe.
@@ -40,6 +42,8 @@ class CreateRecipeRequest {
     private String name;
     @NotBlank
     private String content;
+    @Positive
+    private Integer servings;
 
     /**
      * Converts this request to a {@code CreateRecipe} command.
@@ -49,7 +53,9 @@ class CreateRecipeRequest {
      * @return the recipe creation command.
      */
     CreateRecipe toCommand(@NonNull RecipeId id, @NonNull String authorName) {
-        return new CreateRecipe(id, name, content, new RecipeAuthor(authorName));
+        return servings != null
+                ? new CreateRecipe(id, name, content, new RecipeAuthor(authorName), new Servings(servings))
+                : new CreateRecipe(id, name, content, new RecipeAuthor(authorName));
     }
 
 }

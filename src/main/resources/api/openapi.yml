@@ -288,40 +288,20 @@ components:
       content:
         application/hal+json:
           schema:
-            $ref: '#/components/schemas/Recipe'
+            $ref: '#/components/schemas/CreateRecipe'
         application/json:
           schema:
-            $ref: '#/components/schemas/Recipe'
+            $ref: '#/components/schemas/CreateRecipe'
     AddIngredientToRecipe:
       required: true
       description: Ingredient addition to recipe's ingredients collection
       content:
         application/hal+json:
           schema:
-            type: object
-            required:
-              - id
-            properties:
-              id:
-                $ref: '#/components/schemas/RecipeIngredientId'
-              quantity:
-                $ref: '#/components/schemas/Quantity'
-              measurementUnit:
-                $ref: '#/components/schemas/MeasurementUnit'
-            additionalProperties: true
+            $ref: '#/components/schemas/AddIngredientToRecipe'
         application/json:
           schema:
-            type: object
-            required:
-              - id
-            properties:
-              id:
-                $ref: '#/components/schemas/RecipeIngredientId'
-              quantity:
-                $ref: '#/components/schemas/Quantity'
-              measurementUnit:
-                $ref: '#/components/schemas/MeasurementUnit'
-            additionalProperties: true
+            $ref: '#/components/schemas/AddIngredientToRecipe'
   responses:
     Index:
       description: Retrieve links to main API resources
@@ -617,24 +597,17 @@ components:
         - id
         - name
         - content
+        - servings
         - '_links'
       properties:
         id:
-          description: Recipe identity
-          type: string
-          format: uuid
-          readOnly: true
-          example: 'd71e2fc7-09e3-4241-97a5-dc3383d35e98'
+          $ref: '#/components/schemas/RecipeId'
         name:
-          description: Recipe name
-          type: string
-          minLength: 1
-          example: 'Tomato, cucumber and mozzarella salad'
+          $ref: '#/components/schemas/RecipeName'
         content:
-          description: Recipe content
-          type: string
-          minLength: 1
-          example: 'Cut everything into dices, mix it, dress it'
+          $ref: '#/components/schemas/RecipeContent'
+        servings:
+          $ref: '#/components/schemas/Servings'
         '_links':
           type: object
           readOnly: true
@@ -659,6 +632,40 @@ components:
                   type: string
                   example: 'https://cena.adhuc.org/api/recipes/d71e2fc7-09e3-4241-97a5-dc3383d35e98/ingredients'
       additionalProperties: true
+    CreateRecipe:
+      type: object
+      required:
+        - name
+        - content
+      properties:
+        name:
+          $ref: '#/components/schemas/RecipeName'
+        content:
+          $ref: '#/components/schemas/RecipeContent'
+        servings:
+          $ref: '#/components/schemas/Servings'
+      additionalProperties: true
+    RecipeId:
+      description: Recipe identity
+      type: string
+      format: uuid
+      readOnly: true
+      example: 'd71e2fc7-09e3-4241-97a5-dc3383d35e98'
+    RecipeName:
+      description: Recipe name
+      type: string
+      minLength: 1
+      example: 'Tomato, cucumber and mozzarella salad'
+    RecipeContent:
+      description: Recipe content
+      type: string
+      minLength: 1
+      example: 'Cut everything into dices, mix it, dress it'
+    Servings:
+      description: Number of servings for a recipe
+      type: integer
+      example: 2
+      minimum: 1
     RecipeIngredients:
       description: A collection of ingredients linked to a recipe, containing ingredients detail for each ingredient
       type: object
@@ -721,9 +728,9 @@ components:
           readOnly: true
           example: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
         quantity:
-          $ref: '#/schemas/components/Quantity'
+          $ref: '#/components/schemas/Quantity'
         measurementUnit:
-          $ref: '#/schemas/components/MeasurementUnit'
+          $ref: '#/components/schemas/MeasurementUnit'
         '_links':
           type: object
           readOnly: true
@@ -760,6 +767,18 @@ components:
                   type: string
                   example: 'https://cena.adhuc.org/api/ingredients/3fa85f64-5717-4562-b3fc-2c963f66afa6'
       additionalProperties: true
+    AddIngredientToRecipe:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          $ref: '#/components/schemas/RecipeIngredientId'
+        quantity:
+          $ref: '#/components/schemas/Quantity'
+        measurementUnit:
+          $ref: '#/components/schemas/MeasurementUnit'
+      additionalProperties: true
     RecipeIngredientId:
       description: Recipe ingredient identity. Corresponds to the identity of the related ingredient
       type: string
@@ -769,6 +788,7 @@ components:
       description: Quantity of ingredient in a recipe
       type: integer
       example: 4
+      minimum: 1
     MeasurementUnit:
       description: Unit of measurement for a quantity of ingredient in a recipe. Depends on the measurement types defined for the ingredient
       type: string

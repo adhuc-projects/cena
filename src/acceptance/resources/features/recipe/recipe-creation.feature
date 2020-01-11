@@ -24,6 +24,14 @@ Feature: Create a recipe in the system
     Then the recipe is created
     And the recipe can be found in the list
 
+  @Edge
+  Scenario: Create a recipe without number of servings
+    Given an authenticated user
+    And a non-existent "Tomato, cucumber and mozzarella salad" recipe
+    When he creates the recipe without number of servings
+    Then the recipe is created
+    And the recipe can be found in the list
+
   @Security
   Scenario: Create a recipe as community user
     Given a community user

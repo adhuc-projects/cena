@@ -138,7 +138,7 @@ class IngredientControllerShould {
 
             mvc.perform(get(INGREDIENT_API_URL, ID))
                     .andExpect(jsonPath("$.id").value(ingredient.id().toString()))
-                    .andExpect(jsonPath("$.name").value(ingredient.name()))
+                    .andExpect(jsonPath("$.name").value(ingredient.name().value()))
                     .andExpect(jsonPath("$.measurementTypes").isArray())
                     .andExpect(jsonPath("$.measurementTypes", hasSize(2)))
                     .andExpect(jsonPath("$.measurementTypes[0]").value(ingredient.measurementTypes().get(0).toString()))
@@ -163,7 +163,7 @@ class IngredientControllerShould {
 
         mvc.perform(get(INGREDIENT_API_URL, ID))
                 .andExpect(jsonPath("$.id").value(ingredient.id().toString()))
-                .andExpect(jsonPath("$.name").value(ingredient.name()))
+                .andExpect(jsonPath("$.name").value(ingredient.name().value()))
                 .andExpect(jsonPath("$.measurementTypes").doesNotExist());
     }
 

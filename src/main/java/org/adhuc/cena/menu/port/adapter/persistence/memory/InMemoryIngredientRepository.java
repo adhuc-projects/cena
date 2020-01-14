@@ -21,6 +21,7 @@ import lombok.NonNull;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
+import org.adhuc.cena.menu.common.Name;
 import org.adhuc.cena.menu.ingredients.Ingredient;
 import org.adhuc.cena.menu.ingredients.IngredientId;
 import org.adhuc.cena.menu.ingredients.IngredientRepository;
@@ -54,8 +55,13 @@ public class InMemoryIngredientRepository implements IngredientRepository {
     }
 
     @Override
-    public Optional<Ingredient> findByName(String ingredientName) {
+    public Optional<Ingredient> findByName(Name ingredientName) {
         return ingredients.values().stream().filter(i -> i.name().equals(ingredientName)).findFirst();
+    }
+
+    @Override
+    public Optional<Ingredient> findByNameIgnoreCase(Name ingredientName) {
+        return ingredients.values().stream().filter(i -> i.name().equalsIgnoreCase(ingredientName)).findFirst();
     }
 
     @Override

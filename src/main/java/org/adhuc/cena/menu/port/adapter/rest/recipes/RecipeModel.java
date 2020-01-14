@@ -52,7 +52,7 @@ public class RecipeModel extends RepresentationModel<RecipeModel> {
 
     RecipeModel(@NonNull Recipe recipe) {
         recipeId = recipe.id().toString();
-        recipeName = recipe.name();
+        recipeName = recipe.name().value();
         recipeContent = recipe.content();
         recipeAuthor = recipe.author().toString();
         servings = recipe.servings().value();

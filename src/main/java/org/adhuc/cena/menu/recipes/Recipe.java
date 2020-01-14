@@ -30,6 +30,7 @@ import lombok.experimental.Accessors;
 
 import org.adhuc.cena.menu.common.BasicEntity;
 import org.adhuc.cena.menu.common.EntityNotFoundException;
+import org.adhuc.cena.menu.common.Name;
 import org.adhuc.cena.menu.ingredients.Ingredient;
 import org.adhuc.cena.menu.ingredients.IngredientId;
 
@@ -47,7 +48,7 @@ public class Recipe extends BasicEntity<RecipeId> {
 
     @Getter
     @NonNull
-    private String name;
+    private Name name;
     @Getter
     @NonNull
     private String content;
@@ -67,10 +68,9 @@ public class Recipe extends BasicEntity<RecipeId> {
      * @param author   the recipe author.
      * @param servings the number of servings for recipe.
      */
-    public Recipe(@NonNull RecipeId id, @NonNull String name, @NonNull String content, @NonNull RecipeAuthor author,
+    public Recipe(@NonNull RecipeId id, @NonNull Name name, @NonNull String content, @NonNull RecipeAuthor author,
                   @NonNull Servings servings) {
         super(id);
-        hasText(name, "Cannot set recipe name with invalid value");
         hasText(content, "Cannot set recipe content with invalid value");
         this.name = name;
         this.content = content;

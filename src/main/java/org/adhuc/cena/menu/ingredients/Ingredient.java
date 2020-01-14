@@ -15,8 +15,6 @@
  */
 package org.adhuc.cena.menu.ingredients;
 
-import static org.adhuc.cena.menu.util.Assert.hasText;
-
 import java.util.List;
 
 import lombok.EqualsAndHashCode;
@@ -26,6 +24,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import org.adhuc.cena.menu.common.BasicEntity;
+import org.adhuc.cena.menu.common.Name;
 
 /**
  * An ingredient definition.
@@ -41,7 +40,7 @@ public class Ingredient extends BasicEntity<IngredientId> {
 
     @Getter
     @NonNull
-    private String name;
+    private Name name;
     @Getter
     @NonNull
     private List<MeasurementType> measurementTypes;
@@ -62,9 +61,8 @@ public class Ingredient extends BasicEntity<IngredientId> {
      * @param name the ingredient name.
      * @param measurementTypes the ingredient measurement types.
      */
-    Ingredient(@NonNull IngredientId id, @NonNull String name, @NonNull List<MeasurementType> measurementTypes) {
+    Ingredient(@NonNull IngredientId id, @NonNull Name name, @NonNull List<MeasurementType> measurementTypes) {
         super(id);
-        hasText(name, "Cannot set ingredient name with invalid value");
         this.name = name;
         this.measurementTypes = measurementTypes;
     }

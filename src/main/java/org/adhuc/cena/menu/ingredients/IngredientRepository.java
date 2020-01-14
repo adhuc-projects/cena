@@ -21,6 +21,7 @@ import java.util.Optional;
 import lombok.NonNull;
 
 import org.adhuc.cena.menu.common.EntityNotFoundException;
+import org.adhuc.cena.menu.common.Name;
 
 /**
  * An {@link Ingredient} repository.
@@ -75,7 +76,15 @@ public interface IngredientRepository {
      * @param ingredientName the ingredient name.
      * @return the ingredient if existing, empty otherwise.
      */
-    Optional<Ingredient> findByName(String ingredientName);
+    Optional<Ingredient> findByName(Name ingredientName);
+
+    /**
+     * Finds the ingredient corresponding to the specified name ignoring case.
+     *
+     * @param ingredientName the ingredient name.
+     * @return the ingredient if existing, empty otherwise.
+     */
+    Optional<Ingredient> findByNameIgnoreCase(Name ingredientName);
 
     /**
      * Saves the specified ingredient.

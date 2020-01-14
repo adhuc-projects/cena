@@ -105,6 +105,16 @@ class MenuGenerationArchitectureTests {
                             LOGGING_PACKAGES);
 
     @ArchTest
+    public static final ArchRule commonShouldAccessToNoOtherDomainPackage =
+            noClasses().that()
+                    .resideInAPackage(COMMON_DOMAIN_PACKAGE)
+                    .should()
+                    .accessClassesThat()
+                    .resideInAnyPackage(
+                            INGREDIENT_DOMAIN_PACKAGES,
+                            RECIPE_DOMAIN_PACKAGES);
+
+    @ArchTest
     public static final ArchRule ingredientsShouldNotAccessToRecipes =
             noClasses().that()
                     .resideInAPackage(INGREDIENT_DOMAIN_PACKAGES)

@@ -22,6 +22,7 @@ import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientCreationServiceClientSteps;
+import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue;
 
 /**
  * The ingredient creation steps definitions for rest-services acceptance tests.
@@ -39,6 +40,11 @@ public class IngredientCreationStepDefinitions {
     @When("^he creates the ingredient$")
     public void createIngredient() {
         ingredientCreationServiceClient.createIngredient(ingredientCreationServiceClient.storedIngredient());
+    }
+
+    @When("^he creates the ingredient with \"(.*)\" name$")
+    public void createIngredientWithName(String ingredientName) {
+        ingredientCreationServiceClient.createIngredient(new IngredientValue(ingredientName));
     }
 
     @When("^he creates the ingredient with the following measurement types$")

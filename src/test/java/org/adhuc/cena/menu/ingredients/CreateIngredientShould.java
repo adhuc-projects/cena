@@ -30,6 +30,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import org.adhuc.cena.menu.common.Name;
+
 /**
  * The {@link CreateIngredient} test class.
  *
@@ -45,7 +47,7 @@ class CreateIngredientShould {
     @ParameterizedTest
     @MethodSource("invalidCreationParameters")
     @DisplayName("not be creatable with invalid parameters")
-    void notBeCreatableWithInvalidParameters(IngredientId ingredientId, String name, List<MeasurementType> measurementTypes) {
+    void notBeCreatableWithInvalidParameters(IngredientId ingredientId, Name name, List<MeasurementType> measurementTypes) {
         assertThrows(IllegalArgumentException.class, () -> new CreateIngredient(ingredientId, name, measurementTypes));
     }
 
@@ -53,7 +55,6 @@ class CreateIngredientShould {
         return Stream.of(
                 Arguments.of(null, NAME, MEASUREMENT_TYPES),
                 Arguments.of(ID, null, MEASUREMENT_TYPES),
-                Arguments.of(ID, "", MEASUREMENT_TYPES),
                 Arguments.of(ID, NAME, null)
         );
     }
@@ -61,7 +62,7 @@ class CreateIngredientShould {
     @ParameterizedTest
     @MethodSource("validCreationParameters")
     @DisplayName("contain id, name and measurement types used during creation")
-    void containCreationValues(IngredientId ingredientId, String name, List<MeasurementType> measurementTypes) {
+    void containCreationValues(IngredientId ingredientId, Name name, List<MeasurementType> measurementTypes) {
         var command = new CreateIngredient(ingredientId, name, measurementTypes);
         assertSoftly(softly -> {
             softly.assertThat(command.ingredientId()).isEqualTo(ingredientId);

@@ -35,6 +35,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import org.adhuc.cena.menu.common.EntityNotFoundException;
+import org.adhuc.cena.menu.common.Name;
 import org.adhuc.cena.menu.ingredients.IngredientId;
 import org.adhuc.cena.menu.ingredients.IngredientMother;
 
@@ -53,7 +54,7 @@ class RecipeShould {
     @ParameterizedTest
     @MethodSource("invalidCreationParameters")
     @DisplayName("not be creatable with invalid parameters")
-    void notBeCreatableWithInvalidParameters(RecipeId recipeId, String name, String content, RecipeAuthor author, Servings servings) {
+    void notBeCreatableWithInvalidParameters(RecipeId recipeId, Name name, String content, RecipeAuthor author, Servings servings) {
         assertThrows(IllegalArgumentException.class, () -> new Recipe(recipeId, name, content, author, servings));
     }
 
@@ -61,7 +62,6 @@ class RecipeShould {
         return Stream.of(
                 Arguments.of(null, NAME, CONTENT, AUTHOR, SERVINGS),
                 Arguments.of(ID, null, CONTENT, AUTHOR, SERVINGS),
-                Arguments.of(ID, "", CONTENT, AUTHOR, SERVINGS),
                 Arguments.of(ID, NAME, null, AUTHOR, SERVINGS),
                 Arguments.of(ID, NAME, "", AUTHOR, SERVINGS),
                 Arguments.of(ID, NAME, CONTENT, null, SERVINGS),

@@ -21,8 +21,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import org.adhuc.cena.menu.common.EntityNotFoundException;
+import org.adhuc.cena.menu.common.Name;
 import org.adhuc.cena.menu.ingredients.Ingredient;
 
 /**
@@ -144,6 +147,19 @@ class InMemoryIngredientRepositoryShould {
         @DisplayName("return tomato when getting ingredient with tomato name")
         void returnTomatoByName() {
             assertThat(repository.findByName(TOMATO)).isPresent().contains(tomato);
+        }
+
+        @Test
+        @DisplayName("return empty ingredient when getting ingredient with unknown name ignoring case")
+        void returnEmptyUnknownNameIgnoreCase() {
+            assertThat(repository.findByNameIgnoreCase(CUCUMBER)).isEmpty();
+        }
+
+        @ParameterizedTest
+        @CsvSource({"Tomato", "tomato", "TOMATO"})
+        @DisplayName("return tomato when getting ingredient with tomato name ignoring case")
+        void returnTomatoByNameIgnoreCase(String name) {
+            assertThat(repository.findByNameIgnoreCase(new Name(name))).isPresent().contains(tomato);
         }
 
         @Test

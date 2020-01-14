@@ -21,6 +21,8 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.experimental.Accessors;
 
+import org.adhuc.cena.menu.common.Name;
+
 /**
  * A recipe creation command.
  *
@@ -33,7 +35,7 @@ import lombok.experimental.Accessors;
 public class CreateRecipe {
 
     private final RecipeId recipeId;
-    private final String recipeName;
+    private final Name recipeName;
     private final String recipeContent;
     private final RecipeAuthor recipeAuthor;
     private final Servings servings;
@@ -47,9 +49,8 @@ public class CreateRecipe {
      * @param recipeAuthor  the recipe author.
      * @param servings      the number of servings.
      */
-    public CreateRecipe(@NonNull RecipeId recipeId, @NonNull String recipeName, @NonNull String recipeContent,
+    public CreateRecipe(@NonNull RecipeId recipeId, @NonNull Name recipeName, @NonNull String recipeContent,
                         @NonNull RecipeAuthor recipeAuthor, @NonNull Servings servings) {
-        hasText(recipeName, "Cannot create recipe creation command with invalid recipe name");
         hasText(recipeContent, "Cannot create recipe creation command with invalid recipe content");
         this.recipeId = recipeId;
         this.recipeName = recipeName;
@@ -66,7 +67,7 @@ public class CreateRecipe {
      * @param recipeContent the recipe content.
      * @param recipeAuthor  the recipe author.
      */
-    public CreateRecipe(@NonNull RecipeId recipeId, @NonNull String recipeName, @NonNull String recipeContent,
+    public CreateRecipe(@NonNull RecipeId recipeId, @NonNull Name recipeName, @NonNull String recipeContent,
                         @NonNull RecipeAuthor recipeAuthor) {
         this(recipeId, recipeName, recipeContent, recipeAuthor, Servings.DEFAULT);
     }

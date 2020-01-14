@@ -39,6 +39,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import org.adhuc.cena.menu.common.ExceptionCode;
+import org.adhuc.cena.menu.common.Name;
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
 import org.adhuc.cena.menu.ingredients.IngredientNameAlreadyUsedException;
 
@@ -105,7 +106,7 @@ class RestAdapterErrorHandlingShould {
                 .requestAttr(ERROR_REQUEST_URI, "/api/ingredients")
                 .requestAttr(ERROR_MESSAGE, "Ingredient name 'Tomato' is already used")
                 .requestAttr(DefaultErrorAttributes.class.getName() + ".ERROR",
-                        new IngredientNameAlreadyUsedException("Tomato")))
+                        new IngredientNameAlreadyUsedException(new Name("Tomato"))))
                 .andExpect(status().isBadRequest()).andExpect(jsonPath("error", is("Ingredient name already used")))
                 .andExpect(jsonPath("timestamp", is(notNullValue()))).andExpect(jsonPath("status", is(400)))
                 .andExpect(jsonPath("path", is(notNullValue())))

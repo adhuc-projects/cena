@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.NonNull;
 import lombok.ToString;
 
+import org.adhuc.cena.menu.common.Name;
 import org.adhuc.cena.menu.recipes.CreateRecipe;
 import org.adhuc.cena.menu.recipes.RecipeAuthor;
 import org.adhuc.cena.menu.recipes.RecipeId;
@@ -54,8 +55,8 @@ class CreateRecipeRequest {
      */
     CreateRecipe toCommand(@NonNull RecipeId id, @NonNull String authorName) {
         return servings != null
-                ? new CreateRecipe(id, name, content, new RecipeAuthor(authorName), new Servings(servings))
-                : new CreateRecipe(id, name, content, new RecipeAuthor(authorName));
+                ? new CreateRecipe(id, new Name(name), content, new RecipeAuthor(authorName), new Servings(servings))
+                : new CreateRecipe(id, new Name(name), content, new RecipeAuthor(authorName));
     }
 
 }

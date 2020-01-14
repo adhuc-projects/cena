@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import org.adhuc.cena.menu.common.CenaException;
 import org.adhuc.cena.menu.common.ExceptionCode;
+import org.adhuc.cena.menu.common.Name;
 
 /**
  * An exception occurring while creating an ingredient with already used name.
@@ -40,7 +41,7 @@ public class IngredientNameAlreadyUsedException extends CenaException {
      *
      * @param ingredientName the already used ingredient name.
      */
-    public IngredientNameAlreadyUsedException(@NonNull String ingredientName) {
+    public IngredientNameAlreadyUsedException(@NonNull Name ingredientName) {
         super(String.format("Ingredient name '%s' already used by an existing ingredient", ingredientName), EXCEPTION_CODE);
     }
 

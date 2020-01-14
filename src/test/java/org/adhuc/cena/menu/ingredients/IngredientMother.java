@@ -20,6 +20,8 @@ import static org.adhuc.cena.menu.ingredients.MeasurementType.WEIGHT;
 
 import java.util.List;
 
+import org.adhuc.cena.menu.common.Name;
+
 /**
  * An object mother to create testing domain elements related to {@link Ingredient}s.
  *
@@ -33,21 +35,21 @@ public class IngredientMother {
     public static final IngredientId TOMATO_ID = new IngredientId("3fa85f64-5717-4562-b3fc-2c963f66afa6");
     public static final IngredientId CUCUMBER_ID = new IngredientId("168c9f6d-dda3-4fde-a0b0-28934fe9eb9b");
 
-    public static final String TOMATO = "Tomato";
-    public static final String CUCUMBER = "Cucumber";
+    public static final Name TOMATO = new Name("Tomato");
+    public static final Name CUCUMBER = new Name("Cucumber");
 
     public static final List<MeasurementType> TOMATO_MEASUREMENT_TYPES = List.of(WEIGHT, COUNT);
     public static final List<MeasurementType> CUCUMBER_MEASUREMENT_TYPES = List.of(COUNT);
 
     public static final IngredientId ID = TOMATO_ID;
-    public static final String NAME = TOMATO;
+    public static final Name NAME = TOMATO;
     public static final List<MeasurementType> MEASUREMENT_TYPES = TOMATO_MEASUREMENT_TYPES;
 
     public static CreateIngredient createCommand() {
         return createCommand(ingredient());
     }
 
-    public static CreateIngredient createCommand(String name) {
+    public static CreateIngredient createCommand(Name name) {
         return createCommand(ingredient(ID, name, List.of()));
     }
 
@@ -67,7 +69,7 @@ public class IngredientMother {
         return ingredient(ID, NAME, MEASUREMENT_TYPES);
     }
 
-    public static Ingredient ingredient(IngredientId id, String name, List<MeasurementType> measurementTypes) {
+    public static Ingredient ingredient(IngredientId id, Name name, List<MeasurementType> measurementTypes) {
         return new Ingredient(id, name, measurementTypes);
     }
 

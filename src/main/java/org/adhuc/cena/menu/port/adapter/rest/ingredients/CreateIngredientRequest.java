@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.NonNull;
 import lombok.ToString;
 
+import org.adhuc.cena.menu.common.Name;
 import org.adhuc.cena.menu.ingredients.CreateIngredient;
 import org.adhuc.cena.menu.ingredients.IngredientId;
 import org.adhuc.cena.menu.ingredients.MeasurementType;
@@ -48,7 +49,7 @@ class CreateIngredientRequest {
      * @return the ingredient creation command.
      */
     CreateIngredient toCommand(@NonNull IngredientId id) {
-        return new CreateIngredient(id, name, measurementTypes != null ? measurementTypes : List.of());
+        return new CreateIngredient(id, new Name(name), measurementTypes != null ? measurementTypes : List.of());
     }
 
 }

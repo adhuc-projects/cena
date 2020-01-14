@@ -43,6 +43,38 @@ Feature: Create an ingredient in the system
     Then an error notifies that ingredient name already exists
     And the ingredient can be found in the list
 
+  @Edge
+  Scenario: Create an ingredient with already used name prefixed with spaces
+    Given an authenticated ingredient manager
+    And an existing "Tomato" ingredient
+    When he creates the ingredient with " Tomato" name
+    Then an error notifies that ingredient name already exists
+    And the ingredient can be found in the list
+
+  @Edge
+  Scenario: Create an ingredient with already used name suffixed with spaces
+    Given an authenticated ingredient manager
+    And an existing "Tomato" ingredient
+    When he creates the ingredient with "Tomato " name
+    Then an error notifies that ingredient name already exists
+    And the ingredient can be found in the list
+
+  @Edge
+  Scenario: Create an ingredient with already used name with different case
+    Given an authenticated ingredient manager
+    And an existing "Tomato" ingredient
+    When he creates the ingredient with "TOMATO" name
+    Then an error notifies that ingredient name already exists
+    And the ingredient can be found in the list
+
+  @Edge
+  Scenario: Create an ingredient with capitalized first letter
+    Given an authenticated ingredient manager
+    And a non-existent "Herbes de Provence" ingredient
+    When he creates the ingredient with "herbes de Provence" name
+    Then the ingredient is created
+    And the ingredient can be found in the list
+
   @Security
   Scenario: Create an ingredient as community user
     Given a community user

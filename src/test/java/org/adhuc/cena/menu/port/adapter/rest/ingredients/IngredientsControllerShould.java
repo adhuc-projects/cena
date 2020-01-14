@@ -42,6 +42,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import org.adhuc.cena.menu.common.Name;
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
 import org.adhuc.cena.menu.ingredients.CreateIngredient;
 import org.adhuc.cena.menu.ingredients.Ingredient;
@@ -215,7 +216,7 @@ class IngredientsControllerShould {
     @WithIngredientManager
     @DisplayName("respond Conflict when ingredient service throws IngredientNameAlreadyUsedException")
     void respond409OnCreationIngredientNameAlreadyUsed() throws Exception {
-        doThrow(new IngredientNameAlreadyUsedException("Tomato")).when(ingredientAppServiceMock).createIngredient(any());
+        doThrow(new IngredientNameAlreadyUsedException(new Name("Tomato"))).when(ingredientAppServiceMock).createIngredient(any());
         mvc.perform(post(INGREDIENTS_API_URL)
                 .contentType(APPLICATION_JSON)
                 .content("{\"name\":\"Tomato\",\"measurementTypes\":[\"WEIGHT\", \"COUNT\"]}")
@@ -342,7 +343,7 @@ class IngredientsControllerShould {
     void assertJsonContainsIngredient(ResultActions resultActions, String jsonPath,
                                       Ingredient ingredient) throws Exception {
         resultActions.andExpect(jsonPath(jsonPath + ".name").exists())
-                .andExpect(jsonPath(jsonPath + ".name", equalTo(ingredient.name())));
+                .andExpect(jsonPath(jsonPath + ".name", equalTo(ingredient.name().value())));
         if (!ingredient.measurementTypes().isEmpty()) {
             resultActions.andExpect(jsonPath(jsonPath + ".measurementTypes").isArray())
                     .andExpect(jsonPath(jsonPath + ".measurementTypes", hasSize(ingredient.measurementTypes().size())));

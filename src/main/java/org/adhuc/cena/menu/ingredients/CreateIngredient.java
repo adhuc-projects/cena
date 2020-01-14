@@ -15,13 +15,13 @@
  */
 package org.adhuc.cena.menu.ingredients;
 
-import static org.adhuc.cena.menu.util.Assert.hasText;
-
 import java.util.List;
 
 import lombok.NonNull;
 import lombok.Value;
 import lombok.experimental.Accessors;
+
+import org.adhuc.cena.menu.common.Name;
 
 /**
  * An ingredient creation command.
@@ -35,7 +35,7 @@ import lombok.experimental.Accessors;
 public class CreateIngredient {
 
     private final IngredientId ingredientId;
-    private final String ingredientName;
+    private final Name ingredientName;
     private final List<MeasurementType> ingredientMeasurementTypes;
 
     /**
@@ -45,9 +45,8 @@ public class CreateIngredient {
      * @param ingredientName the ingredient name.
      * @param ingredientMeasurementTypes the ingredient measurement types.
      */
-    public CreateIngredient(@NonNull IngredientId ingredientId, @NonNull String ingredientName,
+    public CreateIngredient(@NonNull IngredientId ingredientId, @NonNull Name ingredientName,
                             @NonNull List<MeasurementType> ingredientMeasurementTypes) {
-        hasText(ingredientName, "Cannot create ingredient creation command with invalid ingredient name");
         this.ingredientId = ingredientId;
         this.ingredientName = ingredientName;
         this.ingredientMeasurementTypes = List.copyOf(ingredientMeasurementTypes);

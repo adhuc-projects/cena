@@ -21,9 +21,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import org.adhuc.cena.menu.common.EntityNotFoundException;
+import org.adhuc.cena.menu.common.Name;
 import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryIngredientRepository;
 
 /**
@@ -139,10 +144,12 @@ class IngredientAppServiceImplShould {
             assertThat(service.getIngredient(ingredient.id())).isNotNull().isEqualToComparingFieldByField(ingredient);
         }
 
-        @Test
+        @ParameterizedTest
+        @CsvSource({"Tomato", "tomato", "TOMATO"})
         @DisplayName("fail during duplicated tomato creation")
-        void failCreatingDuplicateTomato() {
-            var exception = assertThrows(IngredientNameAlreadyUsedException.class, () -> service.createIngredient(createCommand(tomato)));
+        void failCreatingDuplicateTomato(String name) {
+            var exception = assertThrows(IngredientNameAlreadyUsedException.class,
+                    () -> service.createIngredient(createCommand(ingredient(ID, new Name(name), List.of()))));
             assertThat(exception).hasMessage("Ingredient name 'Tomato' already used by an existing ingredient");
         }
 

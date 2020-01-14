@@ -326,7 +326,7 @@ class RecipesControllerShould {
     void assertJsonContainsRecipe(ResultActions resultActions, String jsonPath,
                                   Recipe recipe) throws Exception {
         resultActions.andExpect(jsonPath(jsonPath + ".name").exists())
-                .andExpect(jsonPath(jsonPath + ".name", equalTo(recipe.name())))
+                .andExpect(jsonPath(jsonPath + ".name", equalTo(recipe.name().value())))
                 .andExpect(jsonPath(jsonPath + ".content").exists())
                 .andExpect(jsonPath(jsonPath + ".content", equalTo(recipe.content())))
                 .andExpect(jsonPath(jsonPath + ".author").exists())

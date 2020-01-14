@@ -53,7 +53,7 @@ public class IngredientModel extends RepresentationModel<IngredientModel> {
 
     IngredientModel(@NonNull Ingredient ingredient) {
         ingredientId = ingredient.id().toString();
-        ingredientName = ingredient.name();
+        ingredientName = ingredient.name().value();
         ingredientMeasurementTypes = ingredient.measurementTypes().stream().map(Enum::toString).collect(toList());
     }
 

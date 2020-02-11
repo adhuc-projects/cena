@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.adhuc.cena.menu.common.security.RolesDefinition.INGREDIENT_MANAGER_ROLE;
 import static org.adhuc.cena.menu.common.security.RolesDefinition.USER_ROLE;
+import static org.adhuc.cena.menu.recipes.QueryRecipes.query;
 import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -135,9 +136,9 @@ class RecipeAppServiceWithSecurityShould {
     @WithSuperAdministrator
     @DisplayName("grant recipes deletion access to super administrator")
     void grantRecipesDeletionAsSuperAdministrator() {
-        assumeThat(service.getRecipes()).isNotEmpty();
+        assumeThat(service.getRecipes(query())).isNotEmpty();
         service.deleteRecipes();
-        assertThat(service.getRecipes()).isEmpty();
+        assertThat(service.getRecipes(query())).isEmpty();
     }
 
     @Test

@@ -19,11 +19,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
+import static org.adhuc.cena.menu.recipes.QueryRecipes.query;
+import static org.adhuc.cena.menu.recipes.RecipeMother.createCommand;
+import static org.adhuc.cena.menu.recipes.RecipeMother.deleteCommand;
 import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
 import org.junit.jupiter.api.*;
 
 import org.adhuc.cena.menu.common.EntityNotFoundException;
+import org.adhuc.cena.menu.common.Name;
+import org.adhuc.cena.menu.ingredients.IngredientId;
+import org.adhuc.cena.menu.ingredients.IngredientRepository;
+import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryIngredientRepository;
 import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryRecipeRepository;
 
 /**
@@ -38,19 +46,35 @@ import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryRecipeReposit
 @DisplayName("Recipe service should")
 class RecipeAppServiceImplShould {
 
+    private static final IngredientId MOZZA_ID = IngredientId.generate();
+    private static final IngredientId FETA_ID = IngredientId.generate();
+
     private RecipeRepository recipeRepository;
+    private IngredientRepository ingredientRepository;
     private RecipeAppServiceImpl service;
 
     @BeforeEach
     void setUp() {
         recipeRepository = new InMemoryRecipeRepository();
-        service = new RecipeAppServiceImpl(recipeRepository);
+        ingredientRepository = new InMemoryIngredientRepository();
+        service = new RecipeAppServiceImpl(recipeRepository, ingredientRepository);
+
+        ingredientRepository.save(ingredient(TOMATO_ID, TOMATO, TOMATO_MEASUREMENT_TYPES));
+        ingredientRepository.save(ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES));
+        ingredientRepository.save(ingredient(MOZZA_ID, new Name("Mozzarella"), MEASUREMENT_TYPES));
+        ingredientRepository.save(ingredient(FETA_ID, new Name("Feta"), MEASUREMENT_TYPES));
     }
 
     @Test
     @DisplayName("return unmodifiable list of recipes")
     void returnUnmodifiableListOfRecipes() {
-        assertThrows(UnsupportedOperationException.class, () -> service.getRecipes().add(recipe()));
+        assertThrows(UnsupportedOperationException.class, () -> service.getRecipes(query()).add(recipe()));
+    }
+
+    @Test
+    @DisplayName("throw EntityNotFoundException when filtering on unknown ingredient identity")
+    void throwEntityNotFoundExceptionRecipeListFilteredOnUnknownIngredientIdentity() {
+        assertThrows(EntityNotFoundException.class, () -> service.getRecipes(query().withIngredientId(IngredientId.generate())));
     }
 
     @Test
@@ -92,9 +116,15 @@ class RecipeAppServiceImplShould {
     class WithNoRecipe {
 
         @Test
-        @DisplayName("return empty list of recipes")
+        @DisplayName("return empty list of recipes when no filtering applies on ingredients")
         void returnEmptyRecipeList() {
-            assertThat(service.getRecipes()).isEmpty();
+            assertThat(service.getRecipes(query())).isEmpty();
+        }
+
+        @Test
+        @DisplayName("return empty list of recipes when filtering on mozzarella")
+        void returnEmptyRecipeListFilteredOnMozza() {
+            assertThat(service.getRecipes(query().withIngredientId(MOZZA_ID))).isEmpty();
         }
 
     }
@@ -112,15 +142,29 @@ class RecipeAppServiceImplShould {
                     .withName(TOMATO_CUCUMBER_MOZZA_SALAD_NAME)
                     .withContent(TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT)
                     .withAuthor(TOMATO_CUCUMBER_MOZZA_SALAD_AUTHOR)
+                    .withIngredients(TOMATO_ID, CUCUMBER_ID, MOZZA_ID)
                     .build();
             recipeRepository.save(tomatoCucumberAndMozzaSalad);
         }
 
         @Test
-        @DisplayName("return list of recipes containing tomato, cucumber and mozzarella salad")
+        @DisplayName("return list of recipes containing tomato, cucumber and mozzarella salad when no filtering applies on ingredients")
         void returnRecipeListWithTomatoCucumberAndMozzaSalad() {
-            assertThat(service.getRecipes()).isNotEmpty().usingFieldByFieldElementComparator()
+            assertThat(service.getRecipes(query())).isNotEmpty().usingFieldByFieldElementComparator()
                     .containsExactly(tomatoCucumberAndMozzaSalad);
+        }
+
+        @Test
+        @DisplayName("return list of recipes containing tomato, cucumber and mozzarella salad when filtering on mozzarella")
+        void returnRecipeListWithTomatoCucumberAndMozzaSaladFilteredOnMozza() {
+            assertThat(service.getRecipes(query().withIngredientId(MOZZA_ID))).isNotEmpty().usingFieldByFieldElementComparator()
+                    .containsExactly(tomatoCucumberAndMozzaSalad);
+        }
+
+        @Test
+        @DisplayName("return empty list of recipes when filtering on feta")
+        void returnEmptyRecipeListFilteredOnFeta() {
+            assertThat(service.getRecipes(query().withIngredientId(FETA_ID))).isEmpty();
         }
 
         @Test
@@ -138,9 +182,9 @@ class RecipeAppServiceImplShould {
         @Test
         @DisplayName("delete tomato, cucumber and mozzarella salad successfully")
         void deleteTomatoCucumberAndMozzaSalad() {
-            assumeThat(service.getRecipe(ID)).isNotNull();
-            service.deleteRecipe(deleteCommand());
-            assertThrows(EntityNotFoundException.class, () -> service.getRecipe(ID));
+            assumeThat(service.getRecipe(RecipeMother.ID)).isNotNull();
+            service.deleteRecipe(RecipeMother.deleteCommand());
+            assertThrows(EntityNotFoundException.class, () -> service.getRecipe(RecipeMother.ID));
         }
 
         @Test
@@ -164,6 +208,7 @@ class RecipeAppServiceImplShould {
                         .withName(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME)
                         .withContent(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT)
                         .withAuthor(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_AUTHOR)
+                        .withIngredients(TOMATO_ID, CUCUMBER_ID, FETA_ID)
                         .build();
                 recipeRepository.save(tomatoCucumberOliveAndFetaSalad);
             }
@@ -171,15 +216,36 @@ class RecipeAppServiceImplShould {
             @Test
             @DisplayName("return list containing all recipes")
             void returnRecipeListWithAllRecipes() {
-                assertThat(service.getRecipes()).isNotEmpty().usingFieldByFieldElementComparator()
+                assertThat(service.getRecipes(query())).isNotEmpty().usingFieldByFieldElementComparator()
                         .containsExactlyInAnyOrder(tomatoCucumberAndMozzaSalad, tomatoCucumberOliveAndFetaSalad);
+            }
+
+            @Test
+            @DisplayName("return list containing all recipes when filtering on tomato")
+            void returnRecipeListWithAllRecipesFilteredOnTomato() {
+                assertThat(service.getRecipes(query().withIngredientId(TOMATO_ID))).isNotEmpty().usingFieldByFieldElementComparator()
+                        .containsExactlyInAnyOrder(tomatoCucumberAndMozzaSalad, tomatoCucumberOliveAndFetaSalad);
+            }
+
+            @Test
+            @DisplayName("return list of recipes containing tomato, cucumber and mozzarella salad when filtering on mozzarella")
+            void returnRecipeListWithTomatoCucumberAndMozzaSaladFilteredOnMozza() {
+                assertThat(service.getRecipes(query().withIngredientId(MOZZA_ID))).isNotEmpty().usingFieldByFieldElementComparator()
+                        .containsExactly(tomatoCucumberAndMozzaSalad);
+            }
+
+            @Test
+            @DisplayName("return list of recipes containing tomato, cucumber, olive and feta when filtering on feta")
+            void returnEmptyRecipeListFilteredOnFeta() {
+                assertThat(service.getRecipes(query().withIngredientId(FETA_ID))).isNotEmpty().usingFieldByFieldElementComparator()
+                        .containsExactlyInAnyOrder(tomatoCucumberOliveAndFetaSalad);
             }
 
             @Test
             @DisplayName("return empty list after deleting all recipes")
             void returnEmptyListAfterDeletion() {
                 service.deleteRecipes();
-                assertThat(service.getRecipes()).isEmpty();
+                assertThat(service.getRecipes(query())).isEmpty();
             }
 
         }

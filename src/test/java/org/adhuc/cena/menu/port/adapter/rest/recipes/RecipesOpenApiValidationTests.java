@@ -19,11 +19,11 @@ import static java.lang.String.format;
 
 import static io.restassured.RestAssured.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import static org.adhuc.cena.menu.common.ExceptionCode.INVALID_REQUEST;
+import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
 import static org.adhuc.cena.menu.port.adapter.rest.assertion.support.ErrorAssert.assertThat;
 
 import io.restassured.RestAssured;
@@ -38,6 +38,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
+import org.adhuc.cena.menu.ingredients.IngredientRepository;
 import org.adhuc.cena.menu.port.adapter.rest.assertion.support.Error;
 
 /**
@@ -60,9 +61,55 @@ class RecipesOpenApiValidationTests {
     @Autowired
     private MenuGenerationProperties properties;
 
+    @Autowired
+    private IngredientRepository ingredientRepository;
+
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+
+        ingredientRepository.save(ingredient(ID, NAME, MEASUREMENT_TYPES));
+    }
+
+    @Test
+    @DisplayName("respond Bad Request with OpenAPI validation error on recipes list retrieval when request defines an ingredient query parameter with invalid value")
+    void respond400OnListInvalidIngredientQueryParam() throws Exception {
+        var error = given()
+                .log().ifValidationFails()
+                .queryParam("filter[ingredient]", "invalid uuid")
+                .when()
+                .get(RECIPES_API_URL)
+                .then()
+                .statusCode(BAD_REQUEST.value())
+                .assertThat()
+                .extract().jsonPath().getObject("", Error.class);
+        assertThat(error)
+                .hasCode(INVALID_REQUEST)
+                .hasMessage("OpenAPI validation error")
+                .detailsContainsExactlyInAnyOrder("Input string \"invalid uuid\" is not a valid UUID");
+    }
+
+    @Test
+    @DisplayName("respond OK on recipes list retrieval when request defines no ingredient query parameter")
+    void respond200OnListNoIngredientQueryParam() throws Exception {
+        given()
+                .log().ifValidationFails()
+                .when()
+                .get(RECIPES_API_URL)
+                .then()
+                .statusCode(OK.value());
+    }
+
+    @Test
+    @DisplayName("respond OK on recipes list retrieval when request defines an ingredient query parameter with valid value")
+    void respond200OnListValidIngredientQueryParam() throws Exception {
+        given()
+                .log().ifValidationFails()
+                .queryParam("filter[ingredient]", ID.id().toString())
+                .when()
+                .get(RECIPES_API_URL)
+                .then()
+                .statusCode(OK.value());
     }
 
     @Test

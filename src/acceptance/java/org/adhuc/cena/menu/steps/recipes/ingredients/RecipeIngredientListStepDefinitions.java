@@ -17,6 +17,10 @@ package org.adhuc.cena.menu.steps.recipes.ingredients;
 
 import static java.util.stream.Collectors.toList;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -25,6 +29,8 @@ import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue;
+import org.adhuc.cena.menu.steps.serenity.recipes.RecipeListServiceClientSteps;
+import org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue;
 import org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientListServiceClientSteps;
 
 /**
@@ -38,7 +44,11 @@ import org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientLi
 public class RecipeIngredientListStepDefinitions {
 
     private static final String NAME_ATTRIBUTE = "name";
+    private static final String RECIPE_ATTRIBUTE = "recipe";
+    private static final String INGREDIENT_ATTRIBUTE = "ingredient";
 
+    @Steps
+    private RecipeListServiceClientSteps recipeListServiceClient;
     @Steps
     private RecipeIngredientListServiceClientSteps recipeIngredientListServiceClient;
 
@@ -55,6 +65,24 @@ public class RecipeIngredientListStepDefinitions {
         var assumedIngredients = recipeIngredientListServiceClient.assumeIngredientsRelatedToRecipe(ingredients,
                 recipeIngredientListServiceClient.storedRecipe());
         recipeIngredientListServiceClient.storeAssumedRecipeIngredients(assumedIngredients);
+    }
+
+    @Given("^the following ingredients in recipes$")
+    public void recipesContainIngredients(DataTable dataTable) {
+        var recipesIngredients = new HashMap<String, List<IngredientValue>>();
+        dataTable.asMaps(String.class, String.class).stream()
+                .forEach(attributes -> {
+                    var recipeName = attributes.get(RECIPE_ATTRIBUTE);
+                    var ingredient = new IngredientValue(attributes.get(INGREDIENT_ATTRIBUTE));
+                    recipesIngredients.putIfAbsent(recipeName, new ArrayList<>());
+                    recipesIngredients.get(recipeName).add(ingredient);
+                });
+        recipesIngredients.entrySet().stream()
+                .forEach(recipeIngredients -> {
+                    var recipe = recipeListServiceClient.getFromRecipesList(new RecipeValue(recipeIngredients.getKey()))
+                            .orElseThrow(() -> new AssertionError(String.format("Recipe %s does not exist", recipeIngredients.getKey())));
+                    recipeIngredientListServiceClient.assumeIngredientsRelatedToRecipe(recipeIngredients.getValue(), recipe);
+                });
     }
 
     @Given("^recipe contains ingredient$")

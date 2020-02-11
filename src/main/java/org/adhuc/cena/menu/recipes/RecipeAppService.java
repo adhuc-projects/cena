@@ -29,9 +29,10 @@ public interface RecipeAppService {
     /**
      * Gets the recipes.
      *
+     * @param query the query on recipes list, containing filters.
      * @return the recipes (not modifiable).
      */
-    List<Recipe> getRecipes();
+    List<Recipe> getRecipes(QueryRecipes query);
 
     /**
      * Gets the recipe corresponding to the specified identity.

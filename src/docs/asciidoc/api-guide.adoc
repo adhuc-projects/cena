@@ -243,6 +243,10 @@ The Recipes resources is used to create and list recipes.
 
 A `GET` request will list all of the recipes. Recipes collection is accessible for every user, either authenticated or not.
 
+==== Request structure
+
+include::{snippets}/recipes-list-example/request-parameters.adoc[]
+
 ==== Response structure
 
 include::{snippets}/recipes-list-example/response-fields.adoc[]

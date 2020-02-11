@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import org.adhuc.cena.menu.common.security.AsAuthenticatedUser;
 import org.adhuc.cena.menu.common.security.AsSuperAdministrator;
+import org.adhuc.cena.menu.ingredients.IngredientRepository;
 
 /**
  * A {@link RecipeAppService} implementation.
@@ -38,16 +39,22 @@ import org.adhuc.cena.menu.common.security.AsSuperAdministrator;
 class RecipeAppServiceImpl implements RecipeAppService {
 
     @NonNull
-    private RecipeRepository repository;
+    private RecipeRepository recipeRepository;
+    @NonNull
+    private IngredientRepository ingredientRepository;
 
     @Override
-    public List<Recipe> getRecipes() {
-        return List.copyOf(repository.findAll());
+    public List<Recipe> getRecipes(QueryRecipes query) {
+        if (query.ingredientId().isPresent()) {
+            var ingredient = ingredientRepository.findNotNullById(query.ingredientId().get());
+            return List.copyOf(recipeRepository.findByIngredient(ingredient.id()));
+        }
+        return List.copyOf(recipeRepository.findAll());
     }
 
     @Override
     public Recipe getRecipe(@NonNull RecipeId recipeId) {
-        return repository.findNotNullById(recipeId);
+        return recipeRepository.findNotNullById(recipeId);
     }
 
     @Override
@@ -56,19 +63,19 @@ class RecipeAppServiceImpl implements RecipeAppService {
         log.info("Create recipe from command {}", command);
         var recipe = new Recipe(command.recipeId(), command.recipeName(), command.recipeContent(), command.recipeAuthor(),
                 command.servings());
-        return repository.save(recipe);
+        return recipeRepository.save(recipe);
     }
 
     @Override
     @AsSuperAdministrator
     public void deleteRecipes() {
-        repository.deleteAll();
+        recipeRepository.deleteAll();
     }
 
     @Override
     @AsRecipeAuthor
     public void deleteRecipe(@NonNull DeleteRecipe command) {
-        repository.delete(repository.findNotNullById(command.recipeId()));
+        recipeRepository.delete(recipeRepository.findNotNullById(command.recipeId()));
     }
 
 }

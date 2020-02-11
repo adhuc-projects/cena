@@ -15,13 +15,15 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.support;
 
+import static java.util.stream.Collectors.toList;
+
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import lombok.NonNull;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import org.adhuc.cena.menu.common.CenaException;
@@ -45,7 +47,7 @@ class InvalidRestRequestException extends CenaException {
     /**
      * Constructs a new {@code InvalidRestRequestException} based on the specified validation errors.
      */
-    public InvalidRestRequestException(@NonNull Errors errors) {
+    InvalidRestRequestException(@NonNull Errors errors) {
         super(EXCEPTION_CODE);
         this.errors = errors;
     }
@@ -56,7 +58,7 @@ class InvalidRestRequestException extends CenaException {
      * @return the validation errors messages.
      */
     public List<String> getErrorMessages() {
-        return errors.getAllErrors().stream().map(e -> e.getDefaultMessage()).collect(Collectors.toList());
+        return errors.getAllErrors().stream().map(ObjectError::getDefaultMessage).collect(toList());
     }
 
 }

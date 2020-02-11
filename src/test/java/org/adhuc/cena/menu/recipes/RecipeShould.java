@@ -220,11 +220,27 @@ class RecipeShould {
     }
 
     @Test
+    @DisplayName("return false when checking if recipe is composed of unknown ingredient")
+    void isNotComposedOfUnknownIngredient() {
+        var recipe = recipe();
+        var unknownIngredientId = IngredientId.generate();
+        assertThat(recipe.isComposedOf(unknownIngredientId)).isFalse();
+    }
+
+    @Test
     @DisplayName("throw EntityNotFoundException when retrieving unknown ingredient")
     void unknownIngredient() {
         var recipe = recipe();
         var unknownIngredientId = IngredientId.generate();
         assertThrows(EntityNotFoundException.class, () -> recipe.ingredient(unknownIngredientId));
+    }
+
+    @Test
+    @DisplayName("return true when checking if recipe is composed of known ingredient")
+    void isComposedOfKnownIngredient() {
+        var recipe = recipe();
+        var ingredient = recipe.ingredient(TOMATO_ID);
+        assertThat(recipe.isComposedOf(TOMATO_ID)).isTrue();
     }
 
     @Test

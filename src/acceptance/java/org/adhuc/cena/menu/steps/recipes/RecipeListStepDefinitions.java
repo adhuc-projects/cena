@@ -17,6 +17,9 @@ package org.adhuc.cena.menu.steps.recipes;
 
 import static java.util.stream.Collectors.toList;
 
+import static org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue.buildUnknownIngredientValue;
+import static org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue.COMPARATOR;
+
 import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -24,6 +27,7 @@ import cucumber.api.java.en.When;
 import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
+import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue;
 import org.adhuc.cena.menu.steps.serenity.recipes.RecipeListServiceClientSteps;
 import org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue;
 
@@ -84,6 +88,18 @@ public class RecipeListStepDefinitions {
         recipeListServiceClient.storeRecipes(recipes);
     }
 
+    @When("^he lists the recipes composed of ingredient \"(.*)\"$")
+    public void listRecipesComposedOfIngredient(String ingredientName) {
+        var recipes = recipeListServiceClient.getRecipesComposedOfIngredient(new IngredientValue(ingredientName));
+        recipeListServiceClient.storeRecipes(recipes);
+    }
+
+    @When("^he lists the recipes composed of unknown ingredient$")
+    public void listRecipesComposedOfUnknownIngredient() {
+        var recipes = recipeListServiceClient.getRecipesComposedOfIngredient(
+                buildUnknownIngredientValue("unknown", recipeListServiceClient.ingredientsResourceUrl()));
+    }
+
     @Then("^the recipes list is empty$")
     public void emptyRecipeList() {
         recipeListServiceClient.assertEmptyRecipesList(recipeListServiceClient.storedRecipes());
@@ -94,6 +110,22 @@ public class RecipeListStepDefinitions {
         recipeListServiceClient.assertInRecipesList(
                 recipeListServiceClient.storedAssumedRecipes(),
                 recipeListServiceClient.storedRecipes());
+    }
+
+    @Then("^the recipes list contains the following recipes$")
+    public void followingRecipesFoundInList(DataTable dataTable) {
+        var recipes = dataTable.asMaps(String.class, String.class).stream()
+                .map(attributes -> new RecipeValue(attributes.get(NAME_ATTRIBUTE)))
+                .collect(toList());
+        recipeListServiceClient.assertInRecipesList(recipes, recipeListServiceClient.storedRecipes(), COMPARATOR);
+    }
+
+    @Then("^the recipes list does not contain the following recipes$")
+    public void followingRecipesNotFoundInList(DataTable dataTable) {
+        var recipes = dataTable.asMaps(String.class, String.class).stream()
+                .map(attributes -> new RecipeValue(attributes.get(NAME_ATTRIBUTE)))
+                .collect(toList());
+        recipeListServiceClient.assertNotInRecipesList(recipes, recipeListServiceClient.storedRecipes());
     }
 
     @Then("^the recipe can be found in the list$")

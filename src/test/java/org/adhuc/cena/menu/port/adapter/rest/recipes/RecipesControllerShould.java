@@ -16,8 +16,8 @@
 package org.adhuc.cena.menu.port.adapter.rest.recipes;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
@@ -31,7 +31,10 @@ import static org.adhuc.cena.menu.recipes.Servings.DEFAULT;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.validation.ConstraintViolationException;
 
+import org.assertj.core.api.SoftAssertions;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -41,7 +44,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.web.util.NestedServletException;
 
+import org.adhuc.cena.menu.ingredients.IngredientMother;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientModelAssembler;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientsController;
 import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
@@ -80,7 +85,7 @@ class RecipesControllerShould {
         @BeforeEach
         void setUp() {
             recipes = new ArrayList<>(recipes());
-            when(recipeAppServiceMock.getRecipes()).thenReturn(recipes);
+            when(recipeAppServiceMock.getRecipes(QueryRecipes.query())).thenReturn(recipes);
         }
 
         @Test
@@ -110,7 +115,7 @@ class RecipesControllerShould {
         void haveSelfOnList() throws Exception {
             var result = mvc.perform(get(RECIPES_API_URL));
             result.andExpect(jsonPath("$._links.self.href",
-                    equalTo(result.andReturn().getRequest().getRequestURL().toString())));
+                    Matchers.equalTo(result.andReturn().getRequest().getRequestURL().toString())));
         }
 
         @Test
@@ -119,10 +124,62 @@ class RecipesControllerShould {
             var result = mvc.perform(get(RECIPES_API_URL))
                     .andExpect(jsonPath("$._embedded.data").isArray())
                     .andExpect(jsonPath("$._embedded.data").isNotEmpty())
-                    .andExpect(jsonPath("$._embedded.data", hasSize(2)));
+                    .andExpect(jsonPath("$._embedded.data", Matchers.hasSize(2)));
             assertJsonContainsRecipe(result, "$._embedded.data[0]", recipes.get(0));
             assertJsonContainsRecipe(result, "$._embedded.data[1]", recipes.get(1));
         }
+    }
+
+    @Test
+    @DisplayName("not apply ingredient filter when not present")
+    void notApplyIngredientFilterWhenNotPresent() throws Exception {
+        var queryCaptor = ArgumentCaptor.forClass(QueryRecipes.class);
+        when(recipeAppServiceMock.getRecipes(any())).thenReturn(new ArrayList<>(recipes()));
+        mvc.perform(get(RECIPES_API_URL)).andExpect(status().isOk());
+        verify(recipeAppServiceMock).getRecipes(queryCaptor.capture());
+        assertThat(queryCaptor.getValue().ingredientId()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("throw ConstraintViolationException when querying recipes list with empty ingredient parameter")
+    void throwConstraintViolationExceptionOnListWithEmptyUuidFilter() throws Exception {
+        var rootException = assertThrows(NestedServletException.class,
+                () -> mvc.perform(get(RECIPES_API_URL).param("filter[ingredient]", "")));
+        assertThat(ConstraintViolationException.class.isAssignableFrom(rootException.getCause().getClass())).isTrue();
+        var exception = (ConstraintViolationException) rootException.getCause();
+        assertThat(exception.getConstraintViolations().size()).isEqualTo(1);
+        var violation = exception.getConstraintViolations().iterator().next();
+        SoftAssertions.assertSoftly(s -> {
+            s.assertThat(violation.getPropertyPath().toString()).isEqualTo("getRecipes.ingredient");
+            s.assertThat(violation.getMessage()).isEqualTo("{common.Uuid.message}");
+            s.assertThat(violation.getInvalidValue()).isEqualTo("");
+        });
+    }
+
+    @Test
+    @DisplayName("throw ConstraintViolationException when querying recipes list with ingredient parameter not being a valid UUID")
+    void throwConstraintViolationExceptionOnListWithNonUuidFilter() throws Exception {
+        var rootException = assertThrows(NestedServletException.class,
+                () -> mvc.perform(get(RECIPES_API_URL).param("filter[ingredient]", "invalid uuid")));
+        assertThat(ConstraintViolationException.class.isAssignableFrom(rootException.getCause().getClass())).isTrue();
+        var exception = (ConstraintViolationException) rootException.getCause();
+        assertThat(exception.getConstraintViolations().size()).isEqualTo(1);
+        var violation = exception.getConstraintViolations().iterator().next();
+        SoftAssertions.assertSoftly(s -> {
+            s.assertThat(violation.getPropertyPath().toString()).isEqualTo("getRecipes.ingredient");
+            s.assertThat(violation.getMessage()).isEqualTo("{common.Uuid.message}");
+            s.assertThat(violation.getInvalidValue()).isEqualTo("invalid uuid");
+        });
+    }
+
+    @Test
+    @DisplayName("apply ingredient filter when filled with valid UUID")
+    void applyIngredientFilterWhenFilled() throws Exception {
+        var queryCaptor = ArgumentCaptor.forClass(QueryRecipes.class);
+        when(recipeAppServiceMock.getRecipes(any())).thenReturn(new ArrayList<>(recipes()));
+        mvc.perform(get(RECIPES_API_URL).param("filter[ingredient]", IngredientMother.ID.toString())).andExpect(status().isOk());
+        verify(recipeAppServiceMock).getRecipes(queryCaptor.capture());
+        assertThat(queryCaptor.getValue().ingredientId()).contains(IngredientMother.ID);
     }
 
     @Nested
@@ -130,7 +187,7 @@ class RecipesControllerShould {
     class WithEmptyList {
         @BeforeEach
         void setUp() {
-            when(recipeAppServiceMock.getRecipes()).thenReturn(List.of());
+            when(recipeAppServiceMock.getRecipes(QueryRecipes.query())).thenReturn(List.of());
         }
 
         @Test
@@ -326,13 +383,13 @@ class RecipesControllerShould {
     void assertJsonContainsRecipe(ResultActions resultActions, String jsonPath,
                                   Recipe recipe) throws Exception {
         resultActions.andExpect(jsonPath(jsonPath + ".name").exists())
-                .andExpect(jsonPath(jsonPath + ".name", equalTo(recipe.name().value())))
+                .andExpect(jsonPath(jsonPath + ".name", Matchers.equalTo(recipe.name().value())))
                 .andExpect(jsonPath(jsonPath + ".content").exists())
-                .andExpect(jsonPath(jsonPath + ".content", equalTo(recipe.content())))
+                .andExpect(jsonPath(jsonPath + ".content", Matchers.equalTo(recipe.content())))
                 .andExpect(jsonPath(jsonPath + ".author").exists())
-                .andExpect(jsonPath(jsonPath + ".author", equalTo(recipe.author().authorName())))
+                .andExpect(jsonPath(jsonPath + ".author", Matchers.equalTo(recipe.author().authorName())))
                 .andExpect(jsonPath(jsonPath + ".servings").exists())
-                .andExpect(jsonPath(jsonPath + ".servings", equalTo(recipe.servings().value())));
+                .andExpect(jsonPath(jsonPath + ".servings", Matchers.equalTo(recipe.servings().value())));
     }
 
 }

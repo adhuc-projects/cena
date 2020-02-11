@@ -22,6 +22,8 @@ import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.li
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import static org.adhuc.cena.menu.recipes.RecipeMother.recipe;
@@ -40,6 +42,7 @@ import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
+import org.adhuc.cena.menu.ingredients.IngredientMother;
 import org.adhuc.cena.menu.port.adapter.rest.ResultHandlerConfiguration;
 import org.adhuc.cena.menu.port.adapter.rest.documentation.support.ConstrainedFields;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientModelAssembler;
@@ -81,10 +84,13 @@ class RecipesDocumentation {
     @Test
     @DisplayName("generates recipes list example")
     void recipesListExample() throws Exception {
-        when(recipeAppServiceMock.getRecipes()).thenReturn(new ArrayList<>(recipes()));
+        when(recipeAppServiceMock.getRecipes(any())).thenReturn(new ArrayList<>(recipes()));
 
-        mvc.perform(get(RECIPES_API_URL)).andExpect(status().isOk())
+        mvc.perform(get(RECIPES_API_URL).param("filter[ingredient]", IngredientMother.ID.toString()))
+                .andExpect(status().isOk())
                 .andDo(documentationHandler.document(
+                        requestParameters(parameterWithName("filter[ingredient]").optional()
+                                .description("The <<resources-ingredient,ingredient>> identity to filter recipes list on, resulting in a list of recipes composed of the specified ingredient _(optional)_")),
                         links(linkWithRel("self").description("This <<resources-recipes,recipes list>>")),
                         responseFields(
                                 subsectionWithPath("_embedded.data")

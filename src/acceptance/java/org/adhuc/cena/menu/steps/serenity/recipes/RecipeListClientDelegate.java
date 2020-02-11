@@ -17,11 +17,14 @@ package org.adhuc.cena.menu.steps.serenity.recipes;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import io.restassured.path.json.JsonPath;
+import io.restassured.specification.RequestSpecification;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue;
 import org.adhuc.cena.menu.steps.serenity.support.RestClientDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
 
@@ -35,6 +38,8 @@ import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
 @RequiredArgsConstructor
 final class RecipeListClientDelegate {
 
+    private static final String INGREDIENT_PARAM = "filter[ingredient]";
+
     private final RestClientDelegate restClientDelegate = new RestClientDelegate();
     private final StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
 
@@ -47,7 +52,37 @@ final class RecipeListClientDelegate {
      * @return the fetched recipes.
      */
     public List<RecipeValue> fetchRecipes() {
-        return getRawRecipeList().getList("_embedded.data", RecipeValue.class);
+        return fetchRecipesFromRawRecipeList(() -> getRawRecipeList(restClientDelegate::rest));
+    }
+
+    /**
+     * Fetches the recipes associated to ingredient from server.
+     *
+     * @param ingredient the ingredient.
+     * @return the fetched recipes.
+     */
+    public List<RecipeValue> fetchRecipesAssociatedToIngredient(@NonNull IngredientValue ingredient) {
+        return fetchRecipesFromRawRecipeList(() -> getRawRecipeList(getRecipeListComposedOfIngredientRequest(ingredient)));
+    }
+
+    /**
+     * Attempts fetching the recipes associated to unknown ingredient from server, resulting in a not found response.
+     *
+     * @param ingredient the unknown ingredient.
+     */
+    public void attemptFetchingRecipesAssociatedToUnknownIngredient(@NonNull IngredientValue ingredient) {
+        getRecipeListComposedOfIngredientRequest(ingredient).get().get(recipesResourceUrl).then();
+    }
+
+    /**
+     * Fetches the recipes from the specified recipes list retrieved from the server. This method factorizes the list
+     * extraction from raw JSON path.
+     *
+     * @param rawRecipeListSupplier the recipes list supplier.
+     * @return the fetched recipes.
+     */
+    private List<RecipeValue> fetchRecipesFromRawRecipeList(Supplier<JsonPath> rawRecipeListSupplier) {
+        return rawRecipeListSupplier.get().getList("_embedded.data", RecipeValue.class);
     }
 
     /**
@@ -59,17 +94,29 @@ final class RecipeListClientDelegate {
      * @return the recipe retrieved from list.
      */
     public Optional<RecipeValue> getFromRecipesList(RecipeValue recipe) {
-        return Optional.ofNullable(getRawRecipeList().param("name", recipe.name())
+        return Optional.ofNullable(getRawRecipeList(restClientDelegate::rest).param("name", recipe.name())
                 .getObject("_embedded.data.find { recipe->recipe.name == name }", RecipeValue.class));
     }
 
     /**
-     * Retrieves recipes list from the server.
+     * Gets a request supplier for recipes composed of ingredient.
      *
+     * @param ingredient the ingredient.
+     * @return the request supplier to use to retrieve recipes composed of ingredient.
+     */
+    private Supplier<RequestSpecification> getRecipeListComposedOfIngredientRequest(@NonNull IngredientValue ingredient) {
+        return () -> restClientDelegate.rest().queryParam(INGREDIENT_PARAM, ingredient.id());
+    }
+
+    /**
+     * Retrieves recipes list based on the supplied request specification. This method factorizes the server call,
+     * response status assertion and JSON path extraction.
+     *
+     * @param requestSpecificationSupplier the request specification.
      * @return the {@link JsonPath} corresponding to the recipes list.
      */
-    private JsonPath getRawRecipeList() {
-        var response = restClientDelegate.rest().get(recipesResourceUrl).then();
+    private JsonPath getRawRecipeList(Supplier<RequestSpecification> requestSpecificationSupplier) {
+        var response = requestSpecificationSupplier.get().get(recipesResourceUrl).then();
         return statusAssertionDelegate.assertOk(response).extract().jsonPath();
     }
 

@@ -21,6 +21,7 @@ import java.util.Optional;
 import lombok.NonNull;
 
 import org.adhuc.cena.menu.common.EntityNotFoundException;
+import org.adhuc.cena.menu.ingredients.IngredientId;
 
 /**
  * A {@link Recipe} repository.
@@ -37,6 +38,14 @@ public interface RecipeRepository {
      * @return all the recipes.
      */
     Collection<Recipe> findAll();
+
+    /**
+     * Finds all the recipes stored in the repository composed of the ingredient corresponding to the specified identity.
+     *
+     * @param ingredientId the ingredient identity to filter on.
+     * @return the recipes composed of the ingredient.
+     */
+    Collection<Recipe> findByIngredient(IngredientId ingredientId);
 
     /**
      * Indicates whether a recipe exists with the specified identity.

@@ -26,11 +26,15 @@ import static org.adhuc.cena.menu.steps.serenity.support.authentication.Authenti
 import static org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType.INGREDIENT_MANAGER;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
 
+import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientListServiceClientSteps;
+import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue;
 import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationProvider;
 import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType;
@@ -51,6 +55,8 @@ public class RecipeListServiceClientSteps {
     @Delegate
     private final RecipeStorageDelegate recipeStorage = new RecipeStorageDelegate();
 
+    @Steps
+    private IngredientListServiceClientSteps ingredientListServiceClient;
     @Steps
     private RecipeCreationServiceClientSteps recipeCreationServiceClient;
     @Steps
@@ -137,7 +143,12 @@ public class RecipeListServiceClientSteps {
 
     @Step("Assert recipes {0} are in recipes list {1}")
     public void assertInRecipesList(Collection<RecipeValue> expected, Collection<RecipeValue> actual) {
-        assertThat(actual).usingElementComparator(NAME_AND_CONTENT_COMPARATOR).containsAll(expected);
+        assertInRecipesList(expected, actual, NAME_AND_CONTENT_COMPARATOR);
+    }
+
+    @Step("Assert recipes {0} are in recipes list {1}")
+    public void assertInRecipesList(Collection<RecipeValue> expected, Collection<RecipeValue> actual, Comparator<RecipeValue> comparator) {
+        assertThat(actual).usingElementComparator(comparator).containsAll(expected);
     }
 
     @Step("Assert recipe {0} is not in recipes list")
@@ -145,9 +156,25 @@ public class RecipeListServiceClientSteps {
         assertThat(getFromRecipesList(recipe)).isNotPresent();
     }
 
+    @Step("Assert recipes {0} are not in recipes list {1}")
+    public void assertNotInRecipesList(Collection<RecipeValue> expected, Collection<RecipeValue> actual) {
+        assertThat(actual).usingElementComparator(COMPARATOR).doesNotContainAnyElementsOf(expected);
+    }
+
     @Step("Get recipes list")
     public Collection<RecipeValue> getRecipes() {
         return fetchRecipes();
+    }
+
+    @Step("Get recipes associated to ingredient {0}")
+    public Collection<RecipeValue> getRecipesComposedOfIngredient(IngredientValue ingredient) {
+        var actualIngredient = ingredientListServiceClient.getFromIngredientsList(ingredient);
+        if (actualIngredient.isPresent()) {
+            return fetchRecipesAssociatedToIngredient(actualIngredient.get());
+        } else {
+            attemptFetchingRecipesAssociatedToUnknownIngredient(ingredient);
+            return Collections.emptyList();
+        }
     }
 
 }

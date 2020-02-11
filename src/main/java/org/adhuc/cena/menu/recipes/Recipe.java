@@ -79,6 +79,17 @@ public class Recipe extends BasicEntity<RecipeId> {
     }
 
     /**
+     * Indicates whether the recipe is composed of the ingredient corresponding to the specified identity.
+     *
+     * @param ingredientId the ingredient identity.
+     * @return {@code true} if the ingredient identity has been add to the recipe composition, {@code false} otherwise.
+     * @see #addIngredient(AddIngredientToRecipe)
+     */
+    public boolean isComposedOf(IngredientId ingredientId) {
+        return ingredients.containsKey(ingredientId);
+    }
+
+    /**
      * Gets the set of ingredients composing this recipe. This set is immutable.
      *
      * @return the ingredients composing the recipe.
@@ -95,7 +106,7 @@ public class Recipe extends BasicEntity<RecipeId> {
      * @throws EntityNotFoundException if the ingredient could not be found from the set of ingredients.
      */
     public RecipeIngredient ingredient(IngredientId ingredientId) {
-        if (ingredients.containsKey(ingredientId)) {
+        if (isComposedOf(ingredientId)) {
             return ingredients.get(ingredientId);
         }
         throw new EntityNotFoundException(Ingredient.class, ingredientId);

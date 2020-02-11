@@ -25,6 +25,8 @@ import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 import org.junit.jupiter.api.*;
 
 import org.adhuc.cena.menu.common.EntityNotFoundException;
+import org.adhuc.cena.menu.ingredients.IngredientId;
+import org.adhuc.cena.menu.ingredients.IngredientMother;
 import org.adhuc.cena.menu.recipes.Recipe;
 
 /**
@@ -38,6 +40,9 @@ import org.adhuc.cena.menu.recipes.Recipe;
 @Tag("inMemoryRepository")
 @DisplayName("In-memory recipe repository should")
 class InMemoryRecipeRepositoryShould {
+
+    private static final IngredientId MOZZA_ID = IngredientId.generate();
+    private static final IngredientId FETA_ID = IngredientId.generate();
 
     private InMemoryRecipeRepository repository;
 
@@ -57,9 +62,15 @@ class InMemoryRecipeRepositoryShould {
     class WithNoEntity {
 
         @Test
-        @DisplayName("return empty collection")
+        @DisplayName("return empty collection when finding all recipes")
         void returnEmptyCollection() {
             assertThat(repository.findAll()).isEmpty();
+        }
+
+        @Test
+        @DisplayName("return empty collection when finding recipes composed of ingredient")
+        void returnEmptyCollectionComposedOfIngredient() {
+            assertThat(repository.findByIngredient(IngredientMother.ID)).isEmpty();
         }
 
     }
@@ -77,6 +88,7 @@ class InMemoryRecipeRepositoryShould {
                     .withName(TOMATO_CUCUMBER_MOZZA_SALAD_NAME)
                     .withContent(TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT)
                     .withAuthor(TOMATO_CUCUMBER_MOZZA_SALAD_AUTHOR)
+                    .withIngredients(TOMATO_ID, CUCUMBER_ID, MOZZA_ID)
                     .build();
             repository.save(tomatoCucumberAndMozzaSalad);
         }
@@ -85,6 +97,18 @@ class InMemoryRecipeRepositoryShould {
         @DisplayName("return a collection containing recipe")
         void returnCollectionContainingRecipe() {
             assertThat(repository.findAll()).usingFieldByFieldElementComparator().containsExactly(tomatoCucumberAndMozzaSalad);
+        }
+
+        @Test
+        @DisplayName("return a collection containing recipe when finding recipes composed of mozzarella")
+        void returnCollectionContainingRecipeComposedOfMozza() {
+            assertThat(repository.findByIngredient(MOZZA_ID)).usingFieldByFieldElementComparator().containsExactly(tomatoCucumberAndMozzaSalad);
+        }
+
+        @Test
+        @DisplayName("return a collection containing recipe when finding recipes composed of feta")
+        void returnEmptyCollectionComposedOfFeta() {
+            assertThat(repository.findByIngredient(FETA_ID)).isEmpty();
         }
 
         @Test
@@ -188,6 +212,7 @@ class InMemoryRecipeRepositoryShould {
                         .withName(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME)
                         .withContent(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT)
                         .withAuthor(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_AUTHOR)
+                        .withIngredients(TOMATO_ID, CUCUMBER_ID, FETA_ID)
                         .build();
                 repository.save(tomatoCucumberOliveAndFetaSalad);
             }
@@ -196,6 +221,24 @@ class InMemoryRecipeRepositoryShould {
             @DisplayName("returns a collection containing both recipes")
             void returnCollectionContainingRecipes() {
                 assertThat(repository.findAll()).containsExactlyInAnyOrder(tomatoCucumberAndMozzaSalad, tomatoCucumberOliveAndFetaSalad);
+            }
+
+            @Test
+            @DisplayName("returns a collection containing both recipes when finding recipes composed of tomato")
+            void returnCollectionContainingRecipesComposedOfTomato() {
+                assertThat(repository.findByIngredient(TOMATO_ID)).containsExactlyInAnyOrder(tomatoCucumberAndMozzaSalad, tomatoCucumberOliveAndFetaSalad);
+            }
+
+            @Test
+            @DisplayName("return a collection containing only one recipe when finding recipes composed of mozzarella")
+            void returnCollectionContainingRecipeComposedOfMozza() {
+                assertThat(repository.findByIngredient(MOZZA_ID)).usingFieldByFieldElementComparator().containsExactly(tomatoCucumberAndMozzaSalad);
+            }
+
+            @Test
+            @DisplayName("return a collection containing only one recipe when finding recipes composed of feta")
+            void returnEmptyCollectionComposedOfFeta() {
+                assertThat(repository.findByIngredient(FETA_ID)).usingFieldByFieldElementComparator().containsExactly(tomatoCucumberOliveAndFetaSalad);
             }
 
             @Test

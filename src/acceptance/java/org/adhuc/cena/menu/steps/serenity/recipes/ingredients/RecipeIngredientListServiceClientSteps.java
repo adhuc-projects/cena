@@ -86,8 +86,7 @@ public class RecipeIngredientListServiceClientSteps {
     @Step("Assume ingredient {0} is in recipe {1} ingredients list")
     public RecipeIngredientValue assumeIngredientRelatedToRecipe(@NonNull IngredientValue ingredient, @NonNull RecipeValue recipe) {
         if (getFromRecipeIngredientsList(ingredient, recipe).isEmpty()) {
-            var recipeIngredient = recipeIngredientAdditionServiceClient.addIngredientToRecipeAsSuperAdministrator(ingredient, recipe);
-            recipeIngredientAdditionServiceClient.storeRecipeIngredient(recipeIngredient);
+            recipeIngredientAdditionServiceClient.addIngredientToRecipeAsSuperAdministrator(ingredient, recipe);
         }
         var recipeIngredient = getFromRecipeIngredientsList(ingredient, recipe);
         assumeThat(recipeIngredient).isPresent();
@@ -97,8 +96,7 @@ public class RecipeIngredientListServiceClientSteps {
     @Step("Assume ingredients {0} are in recipe {1} ingredients list")
     public Collection<RecipeIngredientValue> assumeIngredientsRelatedToRecipe(List<IngredientValue> ingredients, RecipeValue recipe) {
         var existingIngredients = ingredients.stream()
-                .map(i -> ingredientListServiceClientSteps.getFromIngredientsList(i))
-                .map(i -> i.orElseThrow(() -> new AssertionError(String.format("Ingredient %s does not exist", i))))
+                .map(i -> ingredientListServiceClientSteps.getFromIngredientsList(i).orElseThrow(() -> new AssertionError(String.format("Ingredient %s does not exist", i))))
                 .collect(toList());
         return existingIngredients.stream().map(i -> assumeIngredientRelatedToRecipe(i, recipe)).collect(toList());
     }

@@ -32,9 +32,13 @@ import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import org.adhuc.cena.menu.ingredients.IngredientId;
 import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
+import org.adhuc.cena.menu.port.adapter.rest.support.Uuid;
+import org.adhuc.cena.menu.recipes.QueryRecipes;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
 import org.adhuc.cena.menu.recipes.RecipeId;
 
@@ -47,6 +51,7 @@ import org.adhuc.cena.menu.recipes.RecipeId;
  */
 @Slf4j
 @RequiredArgsConstructor
+@Validated
 @RestController
 @ExposesResourceFor(RecipeModel.class)
 @RequestMapping(path = "/api/recipes", produces = {HAL_JSON_VALUE, APPLICATION_JSON_VALUE})
@@ -63,8 +68,12 @@ public class RecipesController {
      */
     @GetMapping
     @ResponseStatus(OK)
-    CollectionModel<RecipeModel> getRecipes() {
-        var recipes = recipeAppService.getRecipes();
+    CollectionModel<RecipeModel> getRecipes(@RequestParam(name = "filter[ingredient]", required = false) @Uuid String ingredient) {
+        var query = QueryRecipes.query();
+        if (ingredient != null) {
+            query = query.withIngredientId(new IngredientId(ingredient));
+        }
+        var recipes = recipeAppService.getRecipes(query);
         return modelAssembler.toCollectionModel(recipes);
     }
 

@@ -15,12 +15,15 @@
  */
 package org.adhuc.cena.menu.port.adapter.persistence.memory;
 
+import static java.util.stream.Collectors.toSet;
+
 import java.util.*;
 
 import lombok.NonNull;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
+import org.adhuc.cena.menu.ingredients.IngredientId;
 import org.adhuc.cena.menu.recipes.Recipe;
 import org.adhuc.cena.menu.recipes.RecipeId;
 import org.adhuc.cena.menu.recipes.RecipeRepository;
@@ -41,6 +44,13 @@ public class InMemoryRecipeRepository implements RecipeRepository {
     @Override
     public Collection<Recipe> findAll() {
         return Collections.unmodifiableCollection(recipes.values());
+    }
+
+    @Override
+    public Collection<Recipe> findByIngredient(IngredientId ingredientId) {
+        return Collections.unmodifiableCollection(
+                recipes.values().stream().filter(r -> r.isComposedOf(ingredientId)).collect(toSet())
+        );
     }
 
     @Override

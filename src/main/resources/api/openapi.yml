@@ -99,6 +99,12 @@ paths:
       operationId: listRecipes
       tags:
         - Recipes
+      parameters:
+        - in: query
+          name: filter[ingredient]
+          schema:
+            $ref: '#/components/schemas/IngredientId'
+          description: The ingredient identity to filter recipes list on, resulting in a list of recipes composed of the specified ingredient
       responses:
         200:
           $ref: '#/components/responses/Recipes'

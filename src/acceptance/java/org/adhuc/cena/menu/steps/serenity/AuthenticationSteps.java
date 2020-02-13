@@ -28,7 +28,7 @@ import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationP
  * @version 0.2.0
  * @since 0.0.1
  */
-public class AuthenticationServiceClientSteps {
+public class AuthenticationSteps {
 
     private final AuthenticationProvider authenticationProvider = AuthenticationProvider.instance();
 

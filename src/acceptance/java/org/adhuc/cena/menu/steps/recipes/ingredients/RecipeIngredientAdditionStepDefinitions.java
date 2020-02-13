@@ -20,7 +20,7 @@ import cucumber.api.java.en.When;
 import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
-import org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientAdditionServiceClientSteps;
+import org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientAdditionSteps;
 
 /**
  * The recipe's ingredients addition steps definitions for rest-services acceptance tests.
@@ -33,49 +33,48 @@ import org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientAd
 public class RecipeIngredientAdditionStepDefinitions {
 
     @Steps
-    private RecipeIngredientAdditionServiceClientSteps recipeIngredientAdditionServiceClient;
+    private RecipeIngredientAdditionSteps recipeIngredientAddition;
 
     @When("^he adds the ingredient to the recipe specifying quantity as (\\d+) \"(.*)\"$")
     public void addIngredientToRecipe(int quantity, String measurementUnit) {
-        var recipeIngredient = recipeIngredientAdditionServiceClient.addIngredientToRecipe(
-                recipeIngredientAdditionServiceClient.storedIngredient(),
-                recipeIngredientAdditionServiceClient.storedRecipe(), quantity, measurementUnit);
-        recipeIngredientAdditionServiceClient.storeRecipeIngredient(recipeIngredient);
+        var recipeIngredient = recipeIngredientAddition.addIngredientToRecipe(
+                recipeIngredientAddition.storedIngredient(),
+                recipeIngredientAddition.storedRecipe(), quantity, measurementUnit);
+        recipeIngredientAddition.storeRecipeIngredient(recipeIngredient);
     }
 
     @When("^he adds the ingredient to the recipe without specifying any quantity$")
     public void addIngredientToRecipeWithoutQuantity() {
-        var recipeIngredient = recipeIngredientAdditionServiceClient.addIngredientToRecipeWithoutQuantity(
-                recipeIngredientAdditionServiceClient.storedIngredient(),
-                recipeIngredientAdditionServiceClient.storedRecipe());
-        recipeIngredientAdditionServiceClient.storeRecipeIngredient(recipeIngredient);
+        var recipeIngredient = recipeIngredientAddition.addIngredientToRecipeWithoutQuantity(
+                recipeIngredientAddition.storedIngredient(),
+                recipeIngredientAddition.storedRecipe());
+        recipeIngredientAddition.storeRecipeIngredient(recipeIngredient);
     }
 
     @When("^he add an ingredient without identity to the recipe$")
     public void addIngredientWithoutIdToRecipe() {
-        recipeIngredientAdditionServiceClient.addIngredientWithoutIdToRecipe(
-                recipeIngredientAdditionServiceClient.storedRecipe());
+        recipeIngredientAddition.addIngredientWithoutIdToRecipe(recipeIngredientAddition.storedRecipe());
     }
 
     @Then("^the ingredient is added to the recipe$")
     public void recipeIngredientCreated() {
-        recipeIngredientAdditionServiceClient.assertIngredientSuccessfullyAddedToRecipe(
-                recipeIngredientAdditionServiceClient.storedIngredient(),
-                recipeIngredientAdditionServiceClient.storedRecipe());
+        recipeIngredientAddition.assertIngredientSuccessfullyAddedToRecipe(
+                recipeIngredientAddition.storedIngredient(),
+                recipeIngredientAddition.storedRecipe());
     }
 
     @Then("^an error notifies that recipe ingredient must have an identity$")
     public void errorOnRecipeIngredientCreationWithoutId() {
-        recipeIngredientAdditionServiceClient.assertInvalidRequest();
+        recipeIngredientAddition.assertInvalidRequest();
         // TODO assert response indicates field in error
     }
 
     @Then("^an error notifies that measurement unit does not correspond to ingredient measurement type$")
     public void errorOnNonCorrespondingMeasurementUnit() {
-        recipeIngredientAdditionServiceClient.assertNonCorrespondingMeasurementUnit(
-                recipeIngredientAdditionServiceClient.storedIngredient(),
-                recipeIngredientAdditionServiceClient.storedRecipe(),
-                recipeIngredientAdditionServiceClient.storedRecipeIngredient());
+        recipeIngredientAddition.assertNonCorrespondingMeasurementUnit(
+                recipeIngredientAddition.storedIngredient(),
+                recipeIngredientAddition.storedRecipe(),
+                recipeIngredientAddition.storedRecipeIngredient());
         // TODO assert response indicates field in error
     }
 

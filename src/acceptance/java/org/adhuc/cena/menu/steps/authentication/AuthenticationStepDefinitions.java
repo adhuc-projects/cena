@@ -20,7 +20,7 @@ import cucumber.api.java.en.Then;
 import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
-import org.adhuc.cena.menu.steps.serenity.AuthenticationServiceClientSteps;
+import org.adhuc.cena.menu.steps.serenity.AuthenticationSteps;
 
 /**
  * The authentication steps definitions for rest-services acceptance tests.
@@ -33,41 +33,41 @@ import org.adhuc.cena.menu.steps.serenity.AuthenticationServiceClientSteps;
 public class AuthenticationStepDefinitions {
 
     @Steps
-    private AuthenticationServiceClientSteps authenticationServiceClient;
+    private AuthenticationSteps authentication;
 
     @Given("^a community user$")
     public void communityUser() {
-        authenticationServiceClient.withCommunityUser();
+        authentication.withCommunityUser();
     }
 
     @Given("^an authenticated user$")
     public void authenticatedUser() {
-        authenticationServiceClient.withAuthenticatedUser();
+        authentication.withAuthenticatedUser();
     }
 
     @Given("^an authenticated ingredient manager$")
     public void authenticatedIngredientManager() {
-        authenticationServiceClient.withIngredientManager();
+        authentication.withIngredientManager();
     }
 
     @Given("^an authenticated actuator manager$")
     public void authenticatedActuatorManager() {
-        authenticationServiceClient.withActuatorManager();
+        authentication.withActuatorManager();
     }
 
     @Given("^an authenticated super administrator$")
     public void authenticatedSuperAdministrator() {
-        authenticationServiceClient.withSuperAdministrator();
+        authentication.withSuperAdministrator();
     }
 
     @Then("^an error notifies that user is not authenticated$")
     public void errorUserNotAuthenticated() {
-        authenticationServiceClient.assertUserNotAuthenticated();
+        authentication.assertUserNotAuthenticated();
     }
 
     @Then("^an error notifies that user is not authorized$")
     public void errorUserNotAuthorized() {
-        authenticationServiceClient.assertUserNotAuthorized();
+        authentication.assertUserNotAuthorized();
     }
 
 }

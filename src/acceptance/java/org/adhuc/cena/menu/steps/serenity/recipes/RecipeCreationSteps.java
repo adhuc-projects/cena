@@ -42,7 +42,7 @@ import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationT
  * @version 0.2.0
  * @since 0.2.0
  */
-public class RecipeCreationServiceClientSteps {
+public class RecipeCreationSteps {
 
     @Delegate
     private final RestClientDelegate restClientDelegate = new RestClientDelegate();
@@ -54,7 +54,7 @@ public class RecipeCreationServiceClientSteps {
     private final RecipeStorageDelegate recipeStorage = new RecipeStorageDelegate();
 
     @Steps
-    private RecipeDetailServiceClientSteps recipeDetailServiceClient;
+    private RecipeDetailSteps recipeDetail;
 
     @Step("Create the recipe {0}")
     public RecipeValue createRecipe(RecipeValue recipe) {
@@ -98,7 +98,7 @@ public class RecipeCreationServiceClientSteps {
     public void assertRecipeSuccessfullyCreated(RecipeValue recipe) {
         var recipeLocation = assertCreated().extract().header(LOCATION);
         assertThat(recipeLocation).isNotBlank();
-        var retrievedRecipe = recipeDetailServiceClient.getRecipeFromUrl(recipeLocation);
+        var retrievedRecipe = recipeDetail.getRecipeFromUrl(recipeLocation);
         retrievedRecipe.assertEqualTo(recipe);
         assertThat(retrievedRecipe.author()).isEqualTo(AuthenticationProvider.instance().currentlyAuthenticatedUser());
     }

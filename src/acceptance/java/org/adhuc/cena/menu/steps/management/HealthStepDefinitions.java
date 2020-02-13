@@ -21,20 +21,20 @@ import cucumber.api.java.en.When;
 import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
-import org.adhuc.cena.menu.steps.serenity.ManagementServiceClientSteps;
+import org.adhuc.cena.menu.steps.serenity.ManagementSteps;
 
 /**
  * The health steps definitions for rest-services acceptance tests.
  *
  * @author Alexandre Carbenay
- * @version 0.0.1
+ * @version 0.2.0
  * @since 0.0.1
  */
 @StepDefAnnotation
 public class HealthStepDefinitions {
 
     @Steps
-    private ManagementServiceClientSteps managementServiceClient;
+    private ManagementSteps management;
 
     @Given("^a running service$")
     public void runningService() {
@@ -43,22 +43,22 @@ public class HealthStepDefinitions {
 
     @When("^I check the service health$")
     public void checkServiceHealth() {
-        managementServiceClient.callHealthCheckService();
+        management.callHealthCheckService();
     }
 
     @Then("^the service health is ok$")
     public void serviceHealthIsOk() {
-        managementServiceClient.assertResponseIsOk();
+        management.assertResponseIsOk();
     }
 
     @Then("^the health detail is not available$")
     public void healthDetailIsNotAvailable() {
-        managementServiceClient.assertDetailIsNotAvailable();
+        management.assertDetailIsNotAvailable();
     }
 
     @Then("^the health detail is available$")
     public void healthDetailIsAvailable() {
-        managementServiceClient.assertDiskUsageIsAvailable();
+        management.assertDiskUsageIsAvailable();
     }
 
 }

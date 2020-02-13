@@ -30,7 +30,7 @@ import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
  * @version 0.2.0
  * @since 0.1.0
  */
-public class IngredientListServiceClientSteps {
+public class IngredientListSteps {
 
     private final ResourceUrlResolverDelegate resourceUrlResolverDelegate = new ResourceUrlResolverDelegate();
     private final IngredientListClientDelegate listClient = new IngredientListClientDelegate(

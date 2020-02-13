@@ -21,7 +21,7 @@ import cucumber.api.java.en.When;
 import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
-import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientCreationServiceClientSteps;
+import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientCreationSteps;
 import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue;
 
 /**
@@ -35,56 +35,54 @@ import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue;
 public class IngredientCreationStepDefinitions {
 
     @Steps
-    private IngredientCreationServiceClientSteps ingredientCreationServiceClient;
+    private IngredientCreationSteps ingredientCreation;
 
     @When("^he creates the ingredient$")
     public void createIngredient() {
-        ingredientCreationServiceClient.createIngredient(ingredientCreationServiceClient.storedIngredient());
+        ingredientCreation.createIngredient(ingredientCreation.storedIngredient());
     }
 
     @When("^he creates the ingredient with \"(.*)\" name$")
     public void createIngredientWithName(String ingredientName) {
-        ingredientCreationServiceClient.createIngredient(new IngredientValue(ingredientName));
+        ingredientCreation.createIngredient(new IngredientValue(ingredientName));
     }
 
     @When("^he creates the ingredient with the following measurement types$")
     public void createIngredientWithMeasurementTypes(DataTable dataTable) {
         var measurementTypes = dataTable.asList(String.class);
-        ingredientCreationServiceClient.createIngredient(
-                ingredientCreationServiceClient.storedIngredient().withMeasurementTypes(measurementTypes));
+        ingredientCreation.createIngredient(ingredientCreation.storedIngredient().withMeasurementTypes(measurementTypes));
     }
 
     @When("^he creates an ingredient without name$")
     public void createIngredientWithoutName() {
-        ingredientCreationServiceClient.createIngredientWithoutName();
+        ingredientCreation.createIngredientWithoutName();
     }
 
     @When("^he creates the ingredient without measurement type$")
     public void createIngredientWithoutMeasurementType() {
-        var ingredient = ingredientCreationServiceClient.storeIngredient(
-                ingredientCreationServiceClient.storedIngredient().withoutMeasurementType());
-        ingredientCreationServiceClient.createIngredient(ingredient);
+        var ingredient = ingredientCreation.storeIngredient(ingredientCreation.storedIngredient().withoutMeasurementType());
+        ingredientCreation.createIngredient(ingredient);
     }
 
     @Then("^the ingredient is created$")
     public void ingredientCreated() {
-        ingredientCreationServiceClient.assertIngredientSuccessfullyCreated(ingredientCreationServiceClient.storedIngredient());
+        ingredientCreation.assertIngredientSuccessfullyCreated(ingredientCreation.storedIngredient());
     }
 
     @Then("^an error notifies that ingredient must have a name$")
     public void errorOnIngredientCreationWithoutName() {
-        ingredientCreationServiceClient.assertInvalidRequest();
+        ingredientCreation.assertInvalidRequest();
         // TODO assert response indicates field in error
     }
 
     @Then("^an error notifies that ingredient name already exists$")
     public void errorOnIngredientCreationDuplicatedName() {
-        ingredientCreationServiceClient.assertIngredientNameAlreadyExists(ingredientCreationServiceClient.storedIngredient().name());
+        ingredientCreation.assertIngredientNameAlreadyExists(ingredientCreation.storedIngredient().name());
     }
 
     @Then("^an error notifies that ingredient cannot be created with unknown measurement type$")
     public void errorOnIngredientCreationWithUnknownMeasurementType() {
-        ingredientCreationServiceClient.assertInvalidRequest();
+        ingredientCreation.assertInvalidRequest();
         // TODO assert response indicates field in error
     }
 

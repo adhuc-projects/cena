@@ -36,7 +36,7 @@ import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
  * @version 0.1.0
  * @since 0.1.0
  */
-public class IngredientDeletionServiceClientSteps {
+public class IngredientDeletionSteps {
 
     @Delegate
     private final RestClientDelegate restClientDelegate = new RestClientDelegate();

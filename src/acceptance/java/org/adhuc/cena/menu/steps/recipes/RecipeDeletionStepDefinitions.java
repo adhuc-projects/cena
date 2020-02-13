@@ -20,7 +20,7 @@ import cucumber.api.java.en.When;
 import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
-import org.adhuc.cena.menu.steps.serenity.recipes.RecipeDeletionServiceClientSteps;
+import org.adhuc.cena.menu.steps.serenity.recipes.RecipeDeletionSteps;
 
 /**
  * The recipe creation steps definitions for rest-services acceptance tests.
@@ -33,21 +33,21 @@ import org.adhuc.cena.menu.steps.serenity.recipes.RecipeDeletionServiceClientSte
 public class RecipeDeletionStepDefinitions {
 
     @Steps
-    private RecipeDeletionServiceClientSteps recipeDeletionServiceClient;
+    private RecipeDeletionSteps recipeDeletion;
 
     @When("^he attempts deleting the recipe$")
     public void tryToDeleteRecipe() {
-        recipeDeletionServiceClient.attemptDeletingRecipe(recipeDeletionServiceClient.storedRecipe());
+        recipeDeletion.attemptDeletingRecipe(recipeDeletion.storedRecipe());
     }
 
     @When("^he deletes the recipe$")
     public void deleteRecipe() {
-        recipeDeletionServiceClient.deleteRecipe(recipeDeletionServiceClient.storedRecipe());
+        recipeDeletion.deleteRecipe(recipeDeletion.storedRecipe());
     }
 
     @Then("^the recipe is deleted$")
     public void recipeDeleted() {
-        recipeDeletionServiceClient.assertRecipeSuccessfullyDeleted(recipeDeletionServiceClient.storedRecipe());
+        recipeDeletion.assertRecipeSuccessfullyDeleted(recipeDeletion.storedRecipe());
     }
 
 }

@@ -20,7 +20,7 @@ import cucumber.api.java.en.When;
 import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
-import org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientRemovalServiceClientSteps;
+import org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientRemovalSteps;
 
 /**
  * The recipe's ingredients removal steps definitions for rest-services acceptance tests.
@@ -33,46 +33,44 @@ import org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientRe
 public class RecipeIngredientRemovalStepDefinitions {
 
     @Steps
-    private RecipeIngredientRemovalServiceClientSteps recipeIngredientRemovalServiceClient;
+    private RecipeIngredientRemovalSteps recipeIngredientRemoval;
 
     @When("^he removes all the ingredients from the recipe$")
     public void removeIngredientsFromRecipe() {
-        recipeIngredientRemovalServiceClient.removeIngredientsFromRecipe(
-                recipeIngredientRemovalServiceClient.storedRecipe());
+        recipeIngredientRemoval.removeIngredientsFromRecipe(recipeIngredientRemoval.storedRecipe());
     }
 
     @When("^he removes the ingredient from the recipe$")
     public void removeIngredientFromRecipe() {
-        recipeIngredientRemovalServiceClient.removeIngredientFromRecipe(
-                recipeIngredientRemovalServiceClient.storedIngredient(),
-                recipeIngredientRemovalServiceClient.storedRecipe());
+        recipeIngredientRemoval.removeIngredientFromRecipe(
+                recipeIngredientRemoval.storedIngredient(),
+                recipeIngredientRemoval.storedRecipe());
     }
 
     @When("^he attempts removing the ingredient from the recipe$")
     public void attemptRemovingIngredientFromRecipe() {
-        recipeIngredientRemovalServiceClient.attemptRemoveIngredientFromRecipe(
-                recipeIngredientRemovalServiceClient.storedIngredient(),
-                recipeIngredientRemovalServiceClient.storedRecipe());
+        recipeIngredientRemoval.attemptRemoveIngredientFromRecipe(
+                recipeIngredientRemoval.storedIngredient(),
+                recipeIngredientRemoval.storedRecipe());
     }
 
     @Then("^the ingredients are removed from the recipe$")
     public void recipeIngredientsRemoved() {
-        recipeIngredientRemovalServiceClient.assertIngredientsSuccessfullyRemovedFromRecipe(
-                recipeIngredientRemovalServiceClient.storedRecipe());
+        recipeIngredientRemoval.assertIngredientsSuccessfullyRemovedFromRecipe(recipeIngredientRemoval.storedRecipe());
     }
 
     @Then("^the ingredient is removed from the recipe$")
     public void recipeIngredientRemoved() {
-        recipeIngredientRemovalServiceClient.assertIngredientSuccessfullyRemovedFromRecipe(
-                recipeIngredientRemovalServiceClient.storedIngredient(),
-                recipeIngredientRemovalServiceClient.storedRecipe());
+        recipeIngredientRemoval.assertIngredientSuccessfullyRemovedFromRecipe(
+                recipeIngredientRemoval.storedIngredient(),
+                recipeIngredientRemoval.storedRecipe());
     }
 
     @Then("^an error notifies that recipe does not contain ingredient$")
     public void errorOnRecipeIngredientDeletionNotFound() {
-        recipeIngredientRemovalServiceClient.assertIngredientNotRemovableFromRecipe(
-                recipeIngredientRemovalServiceClient.storedIngredient(),
-                recipeIngredientRemovalServiceClient.storedRecipe());
+        recipeIngredientRemoval.assertIngredientNotRemovableFromRecipe(
+                recipeIngredientRemoval.storedIngredient(),
+                recipeIngredientRemoval.storedRecipe());
     }
 
 }

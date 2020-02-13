@@ -20,39 +20,39 @@ import cucumber.api.java.en.When;
 import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
-import org.adhuc.cena.menu.steps.serenity.DocumentationServiceClientSteps;
+import org.adhuc.cena.menu.steps.serenity.DocumentationSteps;
 
 /**
  * The documentation steps definitions for rest-services acceptance tests.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.0.1
  */
 @StepDefAnnotation
 public class DocumentationStepDefinitions {
 
     @Steps
-    private DocumentationServiceClientSteps documentationServiceClient;
+    private DocumentationSteps documentation;
 
     @When("^I access to the documentation$")
     public void accessToDocumentation() {
-        documentationServiceClient.getDocumentation();
+        documentation.getDocumentation();
     }
 
     @When("^I access to the OpenAPI specification$")
     public void accessToOpenApiSpecification() {
-        documentationServiceClient.getOpenApiSpecification();
+        documentation.getOpenApiSpecification();
     }
 
     @Then("^the documentation is available$")
     public void documentationIsAvailable() {
-        documentationServiceClient.assertDocumentationIsAvailable();
+        documentation.assertDocumentationIsAvailable();
     }
 
     @Then("^the OpenAPI specification is available$")
     public void openApiSpecificationIsAvailable() {
-        documentationServiceClient.assertOpenApiSpecificationIsAvailable();
+        documentation.assertOpenApiSpecificationIsAvailable();
     }
 
 }

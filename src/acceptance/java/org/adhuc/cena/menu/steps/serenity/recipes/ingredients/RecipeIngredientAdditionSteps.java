@@ -46,7 +46,7 @@ import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
  * @version 0.2.0
  * @since 0.2.0
  */
-public class RecipeIngredientAdditionServiceClientSteps {
+public class RecipeIngredientAdditionSteps {
 
     @Delegate
     private final RestClientDelegate restClientDelegate = new RestClientDelegate();
@@ -60,7 +60,7 @@ public class RecipeIngredientAdditionServiceClientSteps {
     private final RecipeIngredientStorageDelegate recipeIngredientStorageDelegate = new RecipeIngredientStorageDelegate();
 
     @Steps
-    private RecipeIngredientDetailServiceClientSteps recipeIngredientDetailServiceClient;
+    private RecipeIngredientDetailSteps recipeIngredientDetail;
 
     @Step("Add ingredient {0} to recipe {1} with quantity as {2} {3}")
     public RecipeIngredientValue addIngredientToRecipe(IngredientValue ingredient, RecipeValue recipe, int quantity, String measurementUnit) {
@@ -94,7 +94,7 @@ public class RecipeIngredientAdditionServiceClientSteps {
     public void assertIngredientSuccessfullyAddedToRecipe(IngredientValue ingredient, RecipeValue recipe) {
         var recipeIngredientLocation = assertCreated().extract().header(LOCATION);
         assertThat(recipeIngredientLocation).isNotBlank().contains(recipe.id()).endsWith(ingredient.id());
-        var retrievedRecipeIngredient = recipeIngredientDetailServiceClient.getRecipeIngredientFromUrl(recipeIngredientLocation);
+        var retrievedRecipeIngredient = recipeIngredientDetail.getRecipeIngredientFromUrl(recipeIngredientLocation);
         assertSoftly(softAssertions -> {
             softAssertions.assertThat(retrievedRecipeIngredient).usingComparator(RecipeIngredientValue.COMPARATOR)
                     .isEqualTo(new RecipeIngredientValue(ingredient));

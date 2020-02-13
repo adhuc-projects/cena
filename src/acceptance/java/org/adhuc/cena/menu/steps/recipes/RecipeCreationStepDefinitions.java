@@ -20,7 +20,7 @@ import cucumber.api.java.en.When;
 import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
-import org.adhuc.cena.menu.steps.serenity.recipes.RecipeCreationServiceClientSteps;
+import org.adhuc.cena.menu.steps.serenity.recipes.RecipeCreationSteps;
 
 /**
  * The recipe creation steps definitions for rest-services acceptance tests.
@@ -33,43 +33,42 @@ import org.adhuc.cena.menu.steps.serenity.recipes.RecipeCreationServiceClientSte
 public class RecipeCreationStepDefinitions {
 
     @Steps
-    private RecipeCreationServiceClientSteps recipeCreationServiceClient;
+    private RecipeCreationSteps recipeCreation;
 
     @When("^he creates the recipe$")
     public void createRecipe() {
-        recipeCreationServiceClient.createRecipe(recipeCreationServiceClient.storedRecipe());
+        recipeCreation.createRecipe(recipeCreation.storedRecipe());
     }
 
     @When("^he creates the recipe without number of servings$")
     public void createRecipeWithoutServings() {
-        recipeCreationServiceClient.storeRecipe(recipeCreationServiceClient.createRecipeWithoutServings(
-                recipeCreationServiceClient.storedRecipe()));
+        recipeCreation.storeRecipe(recipeCreation.createRecipeWithoutServings(recipeCreation.storedRecipe()));
     }
 
     @When("^he creates a recipe without name$")
     public void createRecipeWithoutName() {
-        recipeCreationServiceClient.storeRecipe(recipeCreationServiceClient.createRecipeWithoutName());
+        recipeCreation.storeRecipe(recipeCreation.createRecipeWithoutName());
     }
 
     @When("^he creates a recipe without content$")
     public void createRecipeWithoutContent() {
-        recipeCreationServiceClient.storeRecipe(recipeCreationServiceClient.createRecipeWithoutContent());
+        recipeCreation.storeRecipe(recipeCreation.createRecipeWithoutContent());
     }
 
     @Then("^the recipe is created$")
     public void ingredientCreated() {
-        recipeCreationServiceClient.assertRecipeSuccessfullyCreated(recipeCreationServiceClient.storedRecipe());
+        recipeCreation.assertRecipeSuccessfullyCreated(recipeCreation.storedRecipe());
     }
 
     @Then("^an error notifies that recipe must have a name$")
     public void errorOnRecipeCreationWithoutName() {
-        recipeCreationServiceClient.assertInvalidRequest();
+        recipeCreation.assertInvalidRequest();
         // TODO assert response indicates field in error
     }
 
     @Then("^an error notifies that recipe must have a content$")
     public void errorOnRecipeCreationWithoutContent() {
-        recipeCreationServiceClient.assertInvalidRequest();
+        recipeCreation.assertInvalidRequest();
         // TODO assert response indicates field in error
     }
 

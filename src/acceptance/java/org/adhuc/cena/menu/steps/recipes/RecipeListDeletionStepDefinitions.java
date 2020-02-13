@@ -20,9 +20,9 @@ import cucumber.api.java.en.When;
 import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
-import org.adhuc.cena.menu.steps.serenity.recipes.RecipeDeletionServiceClientSteps;
+import org.adhuc.cena.menu.steps.serenity.recipes.RecipeDeletionSteps;
 import org.adhuc.cena.menu.steps.serenity.recipes.RecipeListAssertionsSteps;
-import org.adhuc.cena.menu.steps.serenity.recipes.RecipeListServiceClientSteps;
+import org.adhuc.cena.menu.steps.serenity.recipes.RecipeListSteps;
 
 /**
  * The recipes list deletion steps definitions for rest-services acceptance tests.
@@ -35,20 +35,20 @@ import org.adhuc.cena.menu.steps.serenity.recipes.RecipeListServiceClientSteps;
 public class RecipeListDeletionStepDefinitions {
 
     @Steps
-    private RecipeDeletionServiceClientSteps recipeDeletionServiceClient;
+    private RecipeDeletionSteps recipeDeletion;
     @Steps
-    private RecipeListServiceClientSteps recipeListServiceClient;
+    private RecipeListSteps recipeList;
     @Steps
     private RecipeListAssertionsSteps recipeListAssertions;
 
     @When("^he deletes the recipes$")
     public void deleteRecipes() {
-        recipeDeletionServiceClient.deleteRecipes();
+        recipeDeletion.deleteRecipes();
     }
 
     @Then("^the recipes have been deleted$")
     public void recipesDeleted() {
-        recipeDeletionServiceClient.assertNoContent();
+        recipeDeletion.assertNoContent();
     }
 
     @Then("^no recipe is left in the recipes list$")
@@ -58,9 +58,7 @@ public class RecipeListDeletionStepDefinitions {
 
     @Then("^no existing recipe has been deleted$")
     public void noExistingRecipeDeleted() {
-        recipeListAssertions.assertInRecipesList(
-                recipeListServiceClient.storedAssumedRecipes(),
-                recipeListServiceClient.getRecipes());
+        recipeListAssertions.assertInRecipesList(recipeList.storedAssumedRecipes(), recipeList.getRecipes());
     }
 
 }

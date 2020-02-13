@@ -23,7 +23,7 @@ import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
 
-import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientListServiceClientSteps;
+import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientListSteps;
 import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue;
 import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
 
@@ -34,7 +34,7 @@ import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
  * @version 0.2.0
  * @since 0.2.0
  */
-public class RecipeListServiceClientSteps {
+public class RecipeListSteps {
 
     private final ResourceUrlResolverDelegate resourceUrlResolverDelegate = new ResourceUrlResolverDelegate();
     private final RecipeListClientDelegate listClient = new RecipeListClientDelegate(
@@ -43,7 +43,7 @@ public class RecipeListServiceClientSteps {
     private final RecipeStorageDelegate recipeStorage = new RecipeStorageDelegate();
 
     @Steps
-    private IngredientListServiceClientSteps ingredientListServiceClient;
+    private IngredientListSteps ingredientList;
 
     @Step("Get recipes list")
     public Collection<RecipeValue> getRecipes() {
@@ -52,7 +52,7 @@ public class RecipeListServiceClientSteps {
 
     @Step("Get recipes composed of ingredient {0}")
     public Collection<RecipeValue> getRecipesComposedOfIngredient(IngredientValue ingredient) {
-        var actualIngredient = ingredientListServiceClient.getCorrespondingIngredient(ingredient);
+        var actualIngredient = ingredientList.getCorrespondingIngredient(ingredient);
         if (actualIngredient.isPresent()) {
             return listClient.fetchRecipesComposedOfIngredient(actualIngredient.get());
         } else {

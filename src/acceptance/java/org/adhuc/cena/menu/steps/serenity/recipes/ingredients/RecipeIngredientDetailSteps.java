@@ -13,58 +13,38 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.steps.serenity;
+package org.adhuc.cena.menu.steps.serenity.recipes.ingredients;
+
+import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 
-import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.RestClientDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
 
 /**
- * The documentation service client steps.
+ * The recipe detail rest-service client steps definition.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
- * @since 0.0.1
+ * @version 0.2.0
+ * @since 0.2.0
  */
-public class DocumentationServiceClientSteps {
+public class RecipeIngredientDetailSteps {
 
     @Delegate
     private final RestClientDelegate restClientDelegate = new RestClientDelegate();
     @Delegate
-    private final ResourceUrlResolverDelegate resourceUrlResolverDelegate = new ResourceUrlResolverDelegate();
-    @Delegate
     private final StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
 
-    @Step("Get documentation")
-    public void getDocumentation() {
-        var documentationUrl = getDocumentationResourceUrl();
-        rest().get(documentationUrl);
+    @Step("Get recipe ingredient from {0}")
+    public RecipeIngredientValue getRecipeIngredientFromUrl(String recipeIngredientDetailUrl) {
+        fetchRecipeIngredient(recipeIngredientDetailUrl);
+        return assertOk().extract().as(RecipeIngredientValue.class);
     }
 
-    @Step("Get OpenAPI specification")
-    public void getOpenApiSpecification() {
-        var openApiUrl = getOpenApiResourceUrl();
-        rest().get(openApiUrl);
+    private void fetchRecipeIngredient(String recipeIngredientDetailUrl) {
+        rest().accept(HAL_JSON_VALUE).get(recipeIngredientDetailUrl).andReturn();
     }
 
-    @Step("Assert documentation is available")
-    public void assertDocumentationIsAvailable() {
-        assertOk();
-    }
-
-    @Step("Assert OpenAPI specification is available")
-    public void assertOpenApiSpecificationIsAvailable() {
-        assertOk();
-    }
-
-    private String getDocumentationResourceUrl() {
-        return apiClientResource().getDocumentation();
-    }
-
-    private String getOpenApiResourceUrl() {
-        return apiClientResource().getOpenApi();
-    }
 }

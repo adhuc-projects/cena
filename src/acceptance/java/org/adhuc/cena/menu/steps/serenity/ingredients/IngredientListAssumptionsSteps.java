@@ -44,13 +44,13 @@ public class IngredientListAssumptionsSteps {
             resourceUrlResolverDelegate.ingredientsResourceUrl());
 
     @Steps
-    private IngredientCreationServiceClientSteps ingredientCreationServiceClient;
+    private IngredientCreationSteps ingredientCreation;
     @Steps
-    private IngredientDeletionServiceClientSteps ingredientDeletionServiceClient;
+    private IngredientDeletionSteps ingredientDeletion;
 
     @Step("Assume empty ingredients list")
     public void assumeEmptyIngredientsList() {
-        ingredientDeletionServiceClient.deleteIngredientsAsSuperAdministrator();
+        ingredientDeletion.deleteIngredientsAsSuperAdministrator();
         assumeThat(listClient.fetchIngredients()).isEmpty();
     }
 
@@ -67,8 +67,8 @@ public class IngredientListAssumptionsSteps {
                         .noneMatch(existing -> NAME_AND_MEASUREMENT_TYPES_COMPARATOR.compare(existing, ingredient) == 0))
                 .forEach(ingredient -> {
                     var ingredientToDelete = existingIngredients.stream().filter(i -> COMPARATOR.compare(i, ingredient) == 0).findFirst();
-                    ingredientToDelete.ifPresent(i -> ingredientDeletionServiceClient.deleteIngredientAsIngredientManager(i));
-                    ingredientCreationServiceClient.createIngredientAsIngredientManager(ingredient);
+                    ingredientToDelete.ifPresent(i -> ingredientDeletion.deleteIngredientAsIngredientManager(i));
+                    ingredientCreation.createIngredientAsIngredientManager(ingredient);
                 });
         var allIngredients = listClient.fetchIngredients();
         assumeThat(allIngredients).usingElementComparator(NAME_AND_MEASUREMENT_TYPES_COMPARATOR).containsAll(ingredients);
@@ -78,7 +78,7 @@ public class IngredientListAssumptionsSteps {
 
     @Step("Assume ingredient {0} is not in ingredients list")
     public IngredientValue assumeNotInIngredientsList(IngredientValue ingredient) {
-        listClient.getFromIngredientsList(ingredient).ifPresent(i -> ingredientDeletionServiceClient.deleteIngredientAsIngredientManager(i));
+        listClient.getFromIngredientsList(ingredient).ifPresent(i -> ingredientDeletion.deleteIngredientAsIngredientManager(i));
         assumeThat(listClient.fetchIngredients()).usingElementComparator(COMPARATOR).doesNotContain(ingredient);
         return ingredient;
     }

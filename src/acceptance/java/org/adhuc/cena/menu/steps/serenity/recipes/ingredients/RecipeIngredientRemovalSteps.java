@@ -40,7 +40,7 @@ import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
  * @version 0.2.0
  * @since 0.2.0
  */
-public class RecipeIngredientRemovalServiceClientSteps {
+public class RecipeIngredientRemovalSteps {
 
     @Delegate
     private final RestClientDelegate restClientDelegate = new RestClientDelegate();

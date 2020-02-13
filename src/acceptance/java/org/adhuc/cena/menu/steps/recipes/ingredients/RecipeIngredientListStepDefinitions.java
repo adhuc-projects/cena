@@ -29,11 +29,11 @@ import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue;
-import org.adhuc.cena.menu.steps.serenity.recipes.RecipeListServiceClientSteps;
+import org.adhuc.cena.menu.steps.serenity.recipes.RecipeListSteps;
 import org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue;
 import org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientListAssertionsSteps;
 import org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientListAssumptionsSteps;
-import org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientListServiceClientSteps;
+import org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientListSteps;
 
 /**
  * The recipe ingredients list steps definitions for rest-services acceptance tests.
@@ -50,9 +50,9 @@ public class RecipeIngredientListStepDefinitions {
     private static final String INGREDIENT_ATTRIBUTE = "ingredient";
 
     @Steps
-    private RecipeListServiceClientSteps recipeListServiceClient;
+    private RecipeListSteps recipeList;
     @Steps
-    private RecipeIngredientListServiceClientSteps recipeIngredientListServiceClient;
+    private RecipeIngredientListSteps recipeIngredientList;
     @Steps
     private RecipeIngredientListAssumptionsSteps recipeIngredientListAssumptions;
     @Steps
@@ -60,8 +60,7 @@ public class RecipeIngredientListStepDefinitions {
 
     @Given("^the recipe contains no ingredient$")
     public void recipeContainsNoIngredient() {
-        recipeIngredientListAssumptions.assumeRecipeContainsNoIngredient(
-                recipeIngredientListServiceClient.storedRecipe());
+        recipeIngredientListAssumptions.assumeRecipeContainsNoIngredient(recipeIngredientList.storedRecipe());
     }
 
     @Given("^the following ingredients in the recipe$")
@@ -69,8 +68,8 @@ public class RecipeIngredientListStepDefinitions {
         var ingredients = dataTable.asMaps(String.class, String.class).stream()
                 .map(attributes -> new IngredientValue(attributes.get(NAME_ATTRIBUTE))).collect(toList());
         var assumedIngredients = recipeIngredientListAssumptions.assumeIngredientsRelatedToRecipe(ingredients,
-                recipeIngredientListServiceClient.storedRecipe());
-        recipeIngredientListServiceClient.storeAssumedRecipeIngredients(assumedIngredients);
+                recipeIngredientList.storedRecipe());
+        recipeIngredientList.storeAssumedRecipeIngredients(assumedIngredients);
     }
 
     @Given("^the following ingredients in recipes$")
@@ -85,7 +84,7 @@ public class RecipeIngredientListStepDefinitions {
                 });
         recipesIngredients.entrySet().stream()
                 .forEach(recipeIngredients -> {
-                    var recipe = recipeListServiceClient.getCorrespondingRecipe(new RecipeValue(recipeIngredients.getKey()))
+                    var recipe = recipeList.getCorrespondingRecipe(new RecipeValue(recipeIngredients.getKey()))
                             .orElseThrow(() -> new AssertionError(String.format("Recipe %s does not exist", recipeIngredients.getKey())));
                     recipeIngredientListAssumptions.assumeIngredientsRelatedToRecipe(recipeIngredients.getValue(), recipe);
                 });
@@ -94,56 +93,53 @@ public class RecipeIngredientListStepDefinitions {
     @Given("^recipe contains ingredient$")
     public void recipeContainsIngredient() {
         var recipeIngredient = recipeIngredientListAssumptions.assumeIngredientRelatedToRecipe(
-                recipeIngredientListServiceClient.storedIngredient(),
-                recipeIngredientListServiceClient.storedRecipe());
-        recipeIngredientListServiceClient.storeRecipeIngredient(recipeIngredient);
+                recipeIngredientList.storedIngredient(),
+                recipeIngredientList.storedRecipe());
+        recipeIngredientList.storeRecipeIngredient(recipeIngredient);
     }
 
     @Given("^recipe does not contain ingredient$")
     public void recipeDoesNotContainIngredient() {
         recipeIngredientListAssumptions.assumeIngredientNotRelatedToRecipe(
-                recipeIngredientListServiceClient.storedIngredient(),
-                recipeIngredientListServiceClient.storedRecipe());
+                recipeIngredientList.storedIngredient(),
+                recipeIngredientList.storedRecipe());
     }
 
     @When("^he lists the recipe's ingredients$")
     public void listRecipeIngredients() {
-        var ingredients = recipeIngredientListServiceClient.getRecipeIngredients(
-                recipeIngredientListServiceClient.storedRecipe());
-        recipeIngredientListServiceClient.storeRecipeIngredients(ingredients);
+        var ingredients = recipeIngredientList.getRecipeIngredients(recipeIngredientList.storedRecipe());
+        recipeIngredientList.storeRecipeIngredients(ingredients);
     }
 
     @Then("^no ingredient is related to the recipe$")
     public void noIngredientRelatedToRecipe() {
-        recipeIngredientListAssertions.assertEmptyRecipeIngredientList(
-                recipeIngredientListServiceClient.storedRecipe());
+        recipeIngredientListAssertions.assertEmptyRecipeIngredientList(recipeIngredientList.storedRecipe());
     }
 
     @Then("^the recipe's ingredients list is empty$")
     public void emptyRecipeIngredientList() {
-        recipeIngredientListAssertions.assertEmptyRecipeIngredientList(
-                recipeIngredientListServiceClient.storedRecipeIngredients());
+        recipeIngredientListAssertions.assertEmptyRecipeIngredientList(recipeIngredientList.storedRecipeIngredients());
     }
 
     @Then("^the recipe's ingredients list contains the ingredients$")
     public void existingRecipeIngredientsFoundInList() {
         recipeIngredientListAssertions.assertInRecipeIngredientsList(
-                recipeIngredientListServiceClient.storedAssumedRecipeIngredients(),
-                recipeIngredientListServiceClient.storedRecipeIngredients());
+                recipeIngredientList.storedAssumedRecipeIngredients(),
+                recipeIngredientList.storedRecipeIngredients());
     }
 
     @Then("^the ingredient can be found in the recipe's ingredients list$")
     public void ingredientInRecipeIngredientsList() {
         recipeIngredientListAssertions.assertIngredientRelatedToRecipe(
-                recipeIngredientListServiceClient.storedRecipeIngredient(),
-                recipeIngredientListServiceClient.storedRecipe());
+                recipeIngredientList.storedRecipeIngredient(),
+                recipeIngredientList.storedRecipe());
     }
 
     @Then("^the ingredient cannot be found in the recipe's ingredients list$")
     public void ingredientNotInRecipeIngredientsList() {
         recipeIngredientListAssertions.assertIngredientNotRelatedToRecipe(
-                recipeIngredientListServiceClient.storedRecipeIngredient(),
-                recipeIngredientListServiceClient.storedRecipe());
+                recipeIngredientList.storedRecipeIngredient(),
+                recipeIngredientList.storedRecipe());
     }
 
 }

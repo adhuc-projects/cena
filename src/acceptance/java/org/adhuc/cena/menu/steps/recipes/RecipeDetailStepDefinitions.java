@@ -20,7 +20,7 @@ import cucumber.api.java.en.When;
 import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
-import org.adhuc.cena.menu.steps.serenity.recipes.RecipeDetailServiceClientSteps;
+import org.adhuc.cena.menu.steps.serenity.recipes.RecipeDetailSteps;
 
 /**
  * The recipe details steps definitions for rest-services acceptance tests.
@@ -33,26 +33,26 @@ import org.adhuc.cena.menu.steps.serenity.recipes.RecipeDetailServiceClientSteps
 public class RecipeDetailStepDefinitions {
 
     @Steps
-    private RecipeDetailServiceClientSteps recipeDetailServiceClient;
+    private RecipeDetailSteps recipeDetail;
 
     @When("^he retrieves \"(.*)\" recipe$")
     public void retrieveIngredient(String recipeName) {
-        recipeDetailServiceClient.storeRecipe(recipeDetailServiceClient.retrieveRecipe(recipeName));
+        recipeDetail.storeRecipe(recipeDetail.retrieveRecipe(recipeName));
     }
 
     @When("^he attempts retrieving \"(.*)\" recipe$")
     public void tryToRetrieveIngredient(String recipeName) {
-        recipeDetailServiceClient.attemptRetrievingRecipe(recipeName);
+        recipeDetail.attemptRetrievingRecipe(recipeName);
     }
 
     @Then("^the recipe details is accessible$")
     public void accessibleRecipeDetails() {
-        recipeDetailServiceClient.assertRecipeInfoIsAccessible(recipeDetailServiceClient.storedRecipe());
+        recipeDetail.assertRecipeInfoIsAccessible(recipeDetail.storedRecipe());
     }
 
     @Then("^an error notifies that recipe has not been found$")
     public void errorNotFoundRecipe() {
-        recipeDetailServiceClient.assertNotFound();
+        recipeDetail.assertNotFound();
     }
 
 }

@@ -40,7 +40,7 @@ import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
  * @version 0.2.0
  * @since 0.1.0
  */
-public class IngredientCreationServiceClientSteps {
+public class IngredientCreationSteps {
 
     @Delegate
     private final RestClientDelegate restClientDelegate = new RestClientDelegate();
@@ -52,7 +52,7 @@ public class IngredientCreationServiceClientSteps {
     private final IngredientStorageDelegate ingredientStorage = new IngredientStorageDelegate();
 
     @Steps
-    private IngredientDetailServiceClientSteps ingredientDetailServiceClient;
+    private IngredientDetailSteps ingredientDetail;
 
     @Step("Create the ingredient {0}")
     public void createIngredient(IngredientValue ingredient) {
@@ -81,7 +81,7 @@ public class IngredientCreationServiceClientSteps {
     public void assertIngredientSuccessfullyCreated(IngredientValue ingredient) {
         var ingredientLocation = assertCreated().extract().header(LOCATION);
         assertThat(ingredientLocation).isNotBlank();
-        var retrievedIngredient = ingredientDetailServiceClient.getIngredientFromUrl(ingredientLocation);
+        var retrievedIngredient = ingredientDetail.getIngredientFromUrl(ingredientLocation);
         retrievedIngredient.assertEqualTo(ingredient);
     }
 

@@ -20,34 +20,34 @@ import cucumber.api.java.en.When;
 import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
-import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientDeletionServiceClientSteps;
+import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientDeletionSteps;
 
 /**
  * The ingredient creation steps definitions for rest-services acceptance tests.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @StepDefAnnotation
 public class IngredientDeletionStepDefinitions {
 
     @Steps
-    private IngredientDeletionServiceClientSteps ingredientDeletionServiceClient;
+    private IngredientDeletionSteps ingredientDeletion;
 
     @When("^he attempts deleting the ingredient$")
     public void tryToDeleteIngredient() {
-        ingredientDeletionServiceClient.attemptDeletingIngredient(ingredientDeletionServiceClient.storedIngredient());
+        ingredientDeletion.attemptDeletingIngredient(ingredientDeletion.storedIngredient());
     }
 
     @When("^he deletes the ingredient$")
     public void deleteIngredient() {
-        ingredientDeletionServiceClient.deleteIngredient(ingredientDeletionServiceClient.storedIngredient());
+        ingredientDeletion.deleteIngredient(ingredientDeletion.storedIngredient());
     }
 
     @Then("^the ingredient is deleted$")
     public void ingredientDeleted() {
-        ingredientDeletionServiceClient.assertIngredientSuccessfullyDeleted(ingredientDeletionServiceClient.storedIngredient());
+        ingredientDeletion.assertIngredientSuccessfullyDeleted(ingredientDeletion.storedIngredient());
     }
 
 }

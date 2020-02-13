@@ -16,10 +16,8 @@
 package org.adhuc.cena.menu.steps.serenity.recipes;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
-import static org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType.SUPER_ADMINISTRATOR;
-
-import java.util.UUID;
+import static org.assertj.core.api.Assertions.fail;
+import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
@@ -29,13 +27,13 @@ import org.adhuc.cena.menu.steps.serenity.support.RestClientDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
 
 /**
- * The recipe deletion rest-service client steps definition.
+ * The recipe detail rest-service client steps definition.
  *
  * @author Alexandre Carbenay
  * @version 0.2.0
  * @since 0.2.0
  */
-public class RecipeDeletionServiceClientSteps {
+public class RecipeDetailSteps {
 
     @Delegate
     private final RestClientDelegate restClientDelegate = new RestClientDelegate();
@@ -48,41 +46,34 @@ public class RecipeDeletionServiceClientSteps {
     @Delegate
     private final RecipeStorageDelegate recipeStorage = new RecipeStorageDelegate();
 
-    @Step("Delete recipes")
-    public void deleteRecipes() {
-        rest().delete(recipesResourceUrl()).then();
+    @Step("Get recipe from {0}")
+    public RecipeValue getRecipeFromUrl(String recipeDetailUrl) {
+        fetchRecipe(recipeDetailUrl);
+        return assertOk().extract().as(RecipeValue.class);
     }
 
-    @Step("Delete recipes as super administrator")
-    public void deleteRecipesAsSuperAdministrator() {
-        var response = rest(SUPER_ADMINISTRATOR).delete(recipesResourceUrl()).then();
-        assertNoContent(response);
+    @Step("Retrieve recipe with name {0}")
+    public RecipeValue retrieveRecipe(String recipeName) {
+        var recipe = getFromRecipesList(new RecipeValue(recipeName));
+        return recipe.orElseGet(() -> fail("Unable to retrieve recipe with name " + recipeName));
     }
 
-    @Step("Delete recipe {0}")
-    public void deleteRecipe(RecipeValue recipe) {
-        rest().delete(recipe.selfLink());
+    @Step("Attempt retrieving recipe with name {0}")
+    public void attemptRetrievingRecipe(String recipeName) {
+        var original = RecipeValue.buildUnknownRecipeValue(recipeName, recipesResourceUrl());
+        var recipe = getFromRecipesList(original);
+        assertThat(recipe).isNotPresent();
+        fetchRecipe(original.selfLink());
     }
 
-    @Step("Delete recipe {0} as super administrator")
-    public void deleteRecipeAsSuperAdministrator(RecipeValue recipe) {
-        rest(SUPER_ADMINISTRATOR).delete(recipe.selfLink());
+    @Step("Assert recipe {0} is accessible")
+    public void assertRecipeInfoIsAccessible(RecipeValue expected) {
+        var actual = getRecipeFromUrl(expected.selfLink());
+        actual.assertEqualTo(expected);
     }
 
-    @Step("Attempt deleting recipe {0}")
-    public void attemptDeletingRecipe(RecipeValue recipe) {
-        var existingRecipe = getFromRecipesList(new RecipeValue(recipe.name()));
-        assertThat(existingRecipe).isNotPresent();
-        rest().delete(generateNotFoundRecipeUrl());
-    }
-
-    @Step("Assert recipe {0} has been successfully deleted")
-    public void assertRecipeSuccessfullyDeleted(RecipeValue recipe) {
-        assertNoContent();
-    }
-
-    private String generateNotFoundRecipeUrl() {
-        return recipesResourceUrl() + "/" + UUID.randomUUID().toString();
+    private void fetchRecipe(String recipeDetailUrl) {
+        rest().accept(HAL_JSON_VALUE).get(recipeDetailUrl).andReturn();
     }
 
 }

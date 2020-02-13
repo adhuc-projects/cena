@@ -20,9 +20,9 @@ import cucumber.api.java.en.When;
 import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
-import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientDeletionServiceClientSteps;
+import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientDeletionSteps;
 import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientListAssertionsSteps;
-import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientListServiceClientSteps;
+import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientListSteps;
 
 /**
  * The ingredients list deletion steps definitions for rest-services acceptance tests.
@@ -35,20 +35,20 @@ import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientListServiceClien
 public class IngredientListDeletionStepDefinitions {
 
     @Steps
-    private IngredientDeletionServiceClientSteps ingredientDeletionServiceClient;
+    private IngredientDeletionSteps ingredientDeletion;
     @Steps
-    private IngredientListServiceClientSteps ingredientListServiceClient;
+    private IngredientListSteps ingredientList;
     @Steps
     private IngredientListAssertionsSteps ingredientListAssertions;
 
     @When("^he deletes the ingredients$")
     public void deleteIngredients() {
-        ingredientDeletionServiceClient.deleteIngredients();
+        ingredientDeletion.deleteIngredients();
     }
 
     @Then("^the ingredients have been deleted$")
     public void ingredientDeleted() {
-        ingredientDeletionServiceClient.assertNoContent();
+        ingredientDeletion.assertNoContent();
     }
 
     @Then("^no ingredient is left in the ingredients list$")
@@ -58,9 +58,7 @@ public class IngredientListDeletionStepDefinitions {
 
     @Then("^no existing ingredient has been deleted$")
     public void noExistingIngredientDeleted() {
-        ingredientListAssertions.assertInIngredientsList(
-                ingredientListServiceClient.storedAssumedIngredients(),
-                ingredientListServiceClient.getIngredients());
+        ingredientListAssertions.assertInIngredientsList(ingredientList.storedAssumedIngredients(), ingredientList.getIngredients());
     }
 
 }

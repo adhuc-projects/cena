@@ -26,7 +26,7 @@ import lombok.NonNull;
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
 
-import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientListServiceClientSteps;
+import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientListSteps;
 import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue;
 import org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue;
 
@@ -42,22 +42,22 @@ public class RecipeIngredientListAssumptionsSteps {
     private final RecipeIngredientListClientDelegate listClient = new RecipeIngredientListClientDelegate();
 
     @Steps
-    private IngredientListServiceClientSteps ingredientListServiceClientSteps;
+    private IngredientListSteps ingredientListSteps;
     @Steps
-    private RecipeIngredientAdditionServiceClientSteps recipeIngredientAdditionServiceClient;
+    private RecipeIngredientAdditionSteps recipeIngredientAddition;
     @Steps
-    private RecipeIngredientRemovalServiceClientSteps recipeIngredientRemovalServiceClient;
+    private RecipeIngredientRemovalSteps recipeIngredientRemoval;
 
     @Step("Assume recipe {0} contains no ingredient")
     public void assumeRecipeContainsNoIngredient(@NonNull RecipeValue recipe) {
-        recipeIngredientRemovalServiceClient.removeIngredientsFromRecipeAsSuperAdministrator(recipe);
+        recipeIngredientRemoval.removeIngredientsFromRecipeAsSuperAdministrator(recipe);
         assumeThat(listClient.fetchRecipeIngredients(recipe)).isEmpty();
     }
 
     @Step("Assume ingredient {0} is in recipe {1} ingredients list")
     public RecipeIngredientValue assumeIngredientRelatedToRecipe(@NonNull IngredientValue ingredient, @NonNull RecipeValue recipe) {
         if (listClient.getFromRecipeIngredientsList(ingredient, recipe).isEmpty()) {
-            recipeIngredientAdditionServiceClient.addIngredientToRecipeAsSuperAdministrator(ingredient, recipe);
+            recipeIngredientAddition.addIngredientToRecipeAsSuperAdministrator(ingredient, recipe);
         }
         var recipeIngredient = listClient.getFromRecipeIngredientsList(ingredient, recipe);
         assumeThat(recipeIngredient).isPresent();
@@ -67,7 +67,7 @@ public class RecipeIngredientListAssumptionsSteps {
     @Step("Assume ingredients {0} are in recipe {1} ingredients list")
     public Collection<RecipeIngredientValue> assumeIngredientsRelatedToRecipe(List<IngredientValue> ingredients, RecipeValue recipe) {
         var existingIngredients = ingredients.stream()
-                .map(i -> ingredientListServiceClientSteps.getCorrespondingIngredient(i).orElseThrow(() ->
+                .map(i -> ingredientListSteps.getCorrespondingIngredient(i).orElseThrow(() ->
                         new AssertionError(String.format("Ingredient %s does not exist", i))))
                 .collect(toList());
         return existingIngredients.stream().map(i -> assumeIngredientRelatedToRecipe(i, recipe)).collect(toList());
@@ -76,7 +76,7 @@ public class RecipeIngredientListAssumptionsSteps {
     @Step("Assume ingredient {0} is not in recipe {1} ingredients list")
     public void assumeIngredientNotRelatedToRecipe(@NonNull IngredientValue ingredient, @NonNull RecipeValue recipe) {
         listClient.getFromRecipeIngredientsList(ingredient, recipe).ifPresent(
-                i -> recipeIngredientRemovalServiceClient.removeIngredientFromRecipeAsSuperAdministrator(ingredient, recipe));
+                i -> recipeIngredientRemoval.removeIngredientFromRecipeAsSuperAdministrator(ingredient, recipe));
         assumeThat(listClient.getFromRecipeIngredientsList(ingredient, recipe)).isEmpty();
     }
 

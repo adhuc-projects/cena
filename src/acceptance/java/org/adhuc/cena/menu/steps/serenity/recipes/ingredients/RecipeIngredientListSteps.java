@@ -32,7 +32,7 @@ import org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue;
  * @version 0.2.0
  * @since 0.2.0
  */
-public class RecipeIngredientListServiceClientSteps {
+public class RecipeIngredientListSteps {
 
     private final RecipeIngredientListClientDelegate listClient = new RecipeIngredientListClientDelegate();
     @Delegate

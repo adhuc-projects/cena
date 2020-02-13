@@ -35,7 +35,7 @@ import org.adhuc.cena.menu.steps.serenity.support.resource.HateoasClientResource
  * @version 0.1.0
  * @since 0.0.1
  */
-public class ManagementServiceClientSteps {
+public class ManagementSteps {
 
     @Delegate
     private final RestClientDelegate restClientDelegate = new RestClientDelegate();

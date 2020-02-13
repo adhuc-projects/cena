@@ -29,7 +29,6 @@ import java.util.Collection;
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
 
-import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientListServiceClientSteps;
 import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationProvider;
 import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType;
@@ -48,13 +47,13 @@ public class RecipeListAssumptionsSteps {
             resourceUrlResolverDelegate.recipesResourceUrl());
 
     @Steps
-    private RecipeCreationServiceClientSteps recipeCreationServiceClient;
+    private RecipeCreationSteps recipeCreation;
     @Steps
-    private RecipeDeletionServiceClientSteps recipeDeletionServiceClient;
+    private RecipeDeletionSteps recipeDeletion;
 
     @Step("Assume empty recipes list")
     public void assumeEmptyRecipesList() {
-        recipeDeletionServiceClient.deleteRecipesAsSuperAdministrator();
+        recipeDeletion.deleteRecipesAsSuperAdministrator();
         assumeThat(listClient.fetchRecipes()).isEmpty();
     }
 
@@ -68,7 +67,7 @@ public class RecipeListAssumptionsSteps {
 
     private RecipeValue assumeInRecipesList(RecipeValue recipe, AuthenticationType author) {
         if (listClient.getFromRecipesList(recipe).isEmpty()) {
-            recipeCreationServiceClient.createRecipeAs(recipe, author);
+            recipeCreation.createRecipeAs(recipe, author);
         }
         var recipes = listClient.fetchRecipes();
         assumeThat(recipes).usingElementComparator(COMPARATOR).contains(recipe);
@@ -92,7 +91,7 @@ public class RecipeListAssumptionsSteps {
     public RecipeValue assumeInRecipesListAuthoredBy(RecipeValue recipe, AuthenticationType authenticationType) {
         var existingRecipe = listClient.getFromRecipesList(recipe);
         if (existingRecipe.isPresent() && !existingRecipe.get().author().equals(authenticationType.toString())) {
-            recipeDeletionServiceClient.deleteRecipeAsSuperAdministrator(existingRecipe.get());
+            recipeDeletion.deleteRecipeAsSuperAdministrator(existingRecipe.get());
         }
         return assumeInRecipesList(recipe, authenticationType);
     }
@@ -103,7 +102,7 @@ public class RecipeListAssumptionsSteps {
         recipes.stream()
                 .filter(recipe -> existingRecipes.stream()
                         .noneMatch(existing -> NAME_AND_CONTENT_COMPARATOR.compare(existing, recipe) == 0))
-                .forEach(recipe -> recipeCreationServiceClient.createRecipeAsAuthenticatedUser(recipe));
+                .forEach(recipe -> recipeCreation.createRecipeAsAuthenticatedUser(recipe));
         var allRecipes = listClient.fetchRecipes();
         assumeThat(allRecipes).usingElementComparator(NAME_AND_CONTENT_COMPARATOR).containsAll(recipes);
         return allRecipes.stream().filter(r -> recipes.stream().anyMatch(r2 -> NAME_AND_CONTENT_COMPARATOR.compare(r, r2) == 0)).collect(toList());
@@ -111,7 +110,7 @@ public class RecipeListAssumptionsSteps {
 
     @Step("Assume recipe {0} is not in recipes list")
     public RecipeValue assumeNotInRecipesList(RecipeValue recipe) {
-        listClient.getFromRecipesList(recipe).ifPresent(r -> recipeDeletionServiceClient.deleteRecipeAsSuperAdministrator(r));
+        listClient.getFromRecipesList(recipe).ifPresent(r -> recipeDeletion.deleteRecipeAsSuperAdministrator(r));
         assumeThat(listClient.fetchRecipes()).usingElementComparator(COMPARATOR).doesNotContain(recipe);
         return recipe;
     }

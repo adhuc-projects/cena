@@ -24,10 +24,10 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import cucumber.runtime.java.StepDefAnnotation;
+import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Steps;
 
-import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientListServiceClientSteps;
-import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue;
+import org.adhuc.cena.menu.steps.serenity.ingredients.*;
 
 /**
  * The ingredients list steps definitions for rest-services acceptance tests.
@@ -42,12 +42,19 @@ public class IngredientListStepDefinitions {
     private static final String NAME_ATTRIBUTE = "name";
     private static final String MEASUREMENT_TYPE_ATTRIBUTE = "measurementTypes";
 
+    @Delegate
+    private final IngredientStorageDelegate ingredientStorage = new IngredientStorageDelegate();
+
     @Steps
     private IngredientListServiceClientSteps ingredientListServiceClient;
+    @Steps
+    private IngredientListAssumptionsSteps ingredientListAssumptions;
+    @Steps
+    private IngredientListAssertionsSteps ingredientListAssertions;
 
     @Given("^no existing ingredient$")
     public void noExistingIngredient() {
-        ingredientListServiceClient.assumeEmptyIngredientsList();
+        ingredientListAssumptions.assumeEmptyIngredientsList();
     }
 
     @Given("^the following existing ingredients$")
@@ -57,23 +64,23 @@ public class IngredientListStepDefinitions {
                         attributes.get(NAME_ATTRIBUTE),
                         List.of(attributes.get(MEASUREMENT_TYPE_ATTRIBUTE).split(", "))
                 )).collect(toList());
-        ingredientListServiceClient.storeAssumedIngredients(ingredientListServiceClient.assumeInIngredientsList(ingredients));
+        ingredientListServiceClient.storeAssumedIngredients(ingredientListAssumptions.assumeInIngredientsList(ingredients));
     }
 
     @Given("^an existing \"(.*)\" ingredient$")
     public void existingIngredient(String ingredientName) {
-        ingredientListServiceClient.storeIngredient(ingredientListServiceClient.assumeInIngredientsList(new IngredientValue(ingredientName)));
+        ingredientListServiceClient.storeIngredient(ingredientListAssumptions.assumeInIngredientsList(new IngredientValue(ingredientName)));
     }
 
     @Given("^an existing \"(.*)\" ingredient with measurement types \"(.*)\"$")
     public void existingIngredient(String ingredientName, String measurementTypes) {
         var ingredient = new IngredientValue(ingredientName, List.of(measurementTypes.split(", ")));
-        ingredientListServiceClient.storeIngredient(ingredientListServiceClient.assumeInIngredientsList(ingredient));
+        ingredientListServiceClient.storeIngredient(ingredientListAssumptions.assumeInIngredientsList(ingredient));
     }
 
     @Given("^a non-existent \"(.*)\" ingredient$")
     public void nonExistentIngredient(String ingredientName) {
-        ingredientListServiceClient.storeIngredient(ingredientListServiceClient.assumeNotInIngredientsList(
+        ingredientListServiceClient.storeIngredient(ingredientListAssumptions.assumeNotInIngredientsList(
                 IngredientValue.buildUnknownIngredientValue(ingredientName, ingredientListServiceClient.ingredientsResourceUrl())));
     }
 
@@ -85,24 +92,24 @@ public class IngredientListStepDefinitions {
 
     @Then("^the ingredients list is empty$")
     public void emptyIngredientList() {
-        ingredientListServiceClient.assertEmptyIngredientsList(ingredientListServiceClient.storedIngredients());
+        ingredientListAssertions.assertEmptyIngredientsList(ingredientListServiceClient.storedIngredients());
     }
 
     @Then("^the ingredients list contains the existing ingredients$")
     public void existingIngredientsFoundInList() {
-        ingredientListServiceClient.assertInIngredientsList(
+        ingredientListAssertions.assertInIngredientsList(
                 ingredientListServiceClient.storedAssumedIngredients(),
                 ingredientListServiceClient.storedIngredients());
     }
 
     @Then("^the ingredient can be found in the list$")
     public void ingredientFoundInList() {
-        ingredientListServiceClient.assertInIngredientsList(ingredientListServiceClient.storedIngredient());
+        ingredientListAssertions.assertInIngredientsList(ingredientListServiceClient.storedIngredient());
     }
 
     @Then("^the ingredient cannot be found in the list$")
     public void ingredientNotFoundInList() {
-        ingredientListServiceClient.assertNotInIngredientsList(ingredientListServiceClient.storedIngredient());
+        ingredientListAssertions.assertNotInIngredientsList(ingredientListServiceClient.storedIngredient());
     }
 
 }

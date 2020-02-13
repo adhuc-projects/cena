@@ -56,21 +56,21 @@ final class RecipeListClientDelegate {
     }
 
     /**
-     * Fetches the recipes associated to ingredient from server.
+     * Fetches the recipes composed of ingredient from server.
      *
      * @param ingredient the ingredient.
      * @return the fetched recipes.
      */
-    public List<RecipeValue> fetchRecipesAssociatedToIngredient(@NonNull IngredientValue ingredient) {
+    public List<RecipeValue> fetchRecipesComposedOfIngredient(@NonNull IngredientValue ingredient) {
         return fetchRecipesFromRawRecipeList(() -> getRawRecipeList(getRecipeListComposedOfIngredientRequest(ingredient)));
     }
 
     /**
-     * Attempts fetching the recipes associated to unknown ingredient from server, resulting in a not found response.
+     * Attempts fetching the recipes composed of unknown ingredient from server, resulting in a not found response.
      *
      * @param ingredient the unknown ingredient.
      */
-    public void attemptFetchingRecipesAssociatedToUnknownIngredient(@NonNull IngredientValue ingredient) {
+    public void attemptFetchingRecipesComposedOfUnknownIngredient(@NonNull IngredientValue ingredient) {
         getRecipeListComposedOfIngredientRequest(ingredient).get().get(recipesResourceUrl).then();
     }
 

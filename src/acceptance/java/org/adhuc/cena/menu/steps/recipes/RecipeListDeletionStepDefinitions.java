@@ -21,6 +21,7 @@ import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.recipes.RecipeDeletionServiceClientSteps;
+import org.adhuc.cena.menu.steps.serenity.recipes.RecipeListAssertionsSteps;
 import org.adhuc.cena.menu.steps.serenity.recipes.RecipeListServiceClientSteps;
 
 /**
@@ -37,6 +38,8 @@ public class RecipeListDeletionStepDefinitions {
     private RecipeDeletionServiceClientSteps recipeDeletionServiceClient;
     @Steps
     private RecipeListServiceClientSteps recipeListServiceClient;
+    @Steps
+    private RecipeListAssertionsSteps recipeListAssertions;
 
     @When("^he deletes the recipes$")
     public void deleteRecipes() {
@@ -50,14 +53,14 @@ public class RecipeListDeletionStepDefinitions {
 
     @Then("^no recipe is left in the recipes list$")
     public void noRecipesLeftInList() {
-        recipeListServiceClient.assertEmptyRecipesList();
+        recipeListAssertions.assertEmptyRecipesList();
     }
 
     @Then("^no existing recipe has been deleted$")
     public void noExistingRecipeDeleted() {
-        recipeListServiceClient.assertInRecipesList(
+        recipeListAssertions.assertInRecipesList(
                 recipeListServiceClient.storedAssumedRecipes(),
-                recipeListServiceClient.fetchRecipes());
+                recipeListServiceClient.getRecipes());
     }
 
 }

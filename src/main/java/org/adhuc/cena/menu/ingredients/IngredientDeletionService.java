@@ -15,47 +15,40 @@
  */
 package org.adhuc.cena.menu.ingredients;
 
-import java.util.List;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 /**
- * An application service for ingredients.
+ * A domain service dedicated to ingredient deletion. This service ensures that an ingredient can be deleted only if not
+ * related to another object.
  *
  * @author Alexandre Carbenay
  * @version 0.2.0
- * @since 0.1.0
+ * @since 0.2.0
  */
-public interface IngredientAppService {
+@Slf4j
+@Service
+@RequiredArgsConstructor
+class IngredientDeletionService {
 
-    /**
-     * Gets the ingredients.
-     *
-     * @return the ingredients (not modifiable).
-     */
-    List<Ingredient> getIngredients();
-
-    /**
-     * Gets the ingredient corresponding to the specified identity.
-     *
-     * @param ingredientId the ingredient identity.
-     * @return the ingredient.
-     * @throws org.adhuc.cena.menu.common.EntityNotFoundException if no ingredient corresponds to identity.
-     */
-    Ingredient getIngredient(IngredientId ingredientId);
-
-    /**
-     * Creates an ingredient.
-     *
-     * @param command the ingredient creation command.
-     * @throws IngredientNameAlreadyUsedException if the ingredient name specified in creation command is already used
-     *                                            by another ingredient.
-     */
-    Ingredient createIngredient(CreateIngredient command);
+    @NonNull
+    private IngredientRelatedService ingredientRelatedRetriever;
+    @NonNull
+    private IngredientRepository repository;
 
     /**
      * Deletes the ingredients.
+     *
      * @throws IngredientNotDeletableRelatedToObjectException if at least one ingredient is related to another object.
      */
-    void deleteIngredients();
+    void deleteIngredients() {
+        if (ingredientRelatedRetriever.areIngredientsRelated()) {
+            throw new IngredientNotDeletableRelatedToObjectException(ingredientRelatedRetriever.relatedObjectName());
+        }
+        repository.deleteAll();
+    }
 
     /**
      * Deletes an ingredient.
@@ -63,5 +56,12 @@ public interface IngredientAppService {
      * @param command the ingredient deletion command.
      * @throws IngredientNotDeletableRelatedToObjectException if the ingredient is related to another object.
      */
-    void deleteIngredient(DeleteIngredient command);
+    void deleteIngredient(@NonNull DeleteIngredient command) {
+        if (ingredientRelatedRetriever.isIngredientRelated(command.ingredientId())) {
+            throw new IngredientNotDeletableRelatedToObjectException(command.ingredientId(),
+                    ingredientRelatedRetriever.relatedObjectName());
+        }
+        repository.delete(repository.findNotNullById(command.ingredientId()));
+    }
+
 }

@@ -28,6 +28,8 @@ import java.util.List;
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
 
+import org.adhuc.cena.menu.steps.serenity.recipes.RecipeListSteps;
+import org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientRemovalSteps;
 import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
 
 /**
@@ -47,6 +49,10 @@ public class IngredientListAssumptionsSteps {
     private IngredientCreationSteps ingredientCreation;
     @Steps
     private IngredientDeletionSteps ingredientDeletion;
+    @Steps
+    private RecipeListSteps recipeList;
+    @Steps
+    private RecipeIngredientRemovalSteps recipeIngredientRemoval;
 
     @Step("Assume empty ingredients list")
     public void assumeEmptyIngredientsList() {
@@ -62,7 +68,26 @@ public class IngredientListAssumptionsSteps {
     @Step("Assume ingredients {0} are in ingredients list")
     public Collection<IngredientValue> assumeInIngredientsList(Collection<IngredientValue> ingredients) {
         var existingIngredients = listClient.fetchIngredients();
+        dissociateRecipesFromIngredients(existingIngredients);
+        deleteIngredientsWithDifferentDefinitionThanExpected(ingredients, existingIngredients);
+        var allIngredients = listClient.fetchIngredients();
+        assumeThat(allIngredients).usingElementComparator(NAME_AND_MEASUREMENT_TYPES_COMPARATOR).containsAll(ingredients);
+        return allIngredients.stream().filter(i -> ingredients.stream()
+                .anyMatch(i2 -> NAME_AND_MEASUREMENT_TYPES_COMPARATOR.compare(i, i2) == 0)).collect(toList());
+    }
+
+    private void dissociateRecipesFromIngredients(Collection<IngredientValue> ingredients) {
         ingredients.stream()
+                .forEach(ingredient -> {
+                    recipeList.getRecipesComposedOfIngredient(ingredient).stream().forEach(
+                            recipe -> recipeIngredientRemoval.removeIngredientFromRecipeAsSuperAdministrator(ingredient, recipe)
+                    );
+                });
+    }
+
+    private void deleteIngredientsWithDifferentDefinitionThanExpected(Collection<IngredientValue> expectedIngredients,
+                                                                      Collection<IngredientValue> existingIngredients) {
+        expectedIngredients.stream()
                 .filter(ingredient -> existingIngredients.stream()
                         .noneMatch(existing -> NAME_AND_MEASUREMENT_TYPES_COMPARATOR.compare(existing, ingredient) == 0))
                 .forEach(ingredient -> {
@@ -70,15 +95,14 @@ public class IngredientListAssumptionsSteps {
                     ingredientToDelete.ifPresent(i -> ingredientDeletion.deleteIngredientAsIngredientManager(i));
                     ingredientCreation.createIngredientAsIngredientManager(ingredient);
                 });
-        var allIngredients = listClient.fetchIngredients();
-        assumeThat(allIngredients).usingElementComparator(NAME_AND_MEASUREMENT_TYPES_COMPARATOR).containsAll(ingredients);
-        return allIngredients.stream().filter(i -> ingredients.stream()
-                .anyMatch(i2 -> NAME_AND_MEASUREMENT_TYPES_COMPARATOR.compare(i, i2) == 0)).collect(toList());
     }
 
     @Step("Assume ingredient {0} is not in ingredients list")
     public IngredientValue assumeNotInIngredientsList(IngredientValue ingredient) {
-        listClient.getFromIngredientsList(ingredient).ifPresent(i -> ingredientDeletion.deleteIngredientAsIngredientManager(i));
+        listClient.getFromIngredientsList(ingredient).ifPresent(i -> {
+            dissociateRecipesFromIngredients(List.of(i));
+            ingredientDeletion.deleteIngredientAsIngredientManager(i);
+        });
         assumeThat(listClient.fetchIngredients()).usingElementComparator(COMPARATOR).doesNotContain(ingredient);
         return ingredient;
     }

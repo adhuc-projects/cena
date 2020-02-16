@@ -50,4 +50,9 @@ public class IngredientDeletionStepDefinitions {
         ingredientDeletion.assertIngredientSuccessfullyDeleted(ingredientDeletion.storedIngredient());
     }
 
+    @Then("^an error notifies that ingredient used in a recipe cannot be deleted$")
+    public void errorOnIngredientDeletionUsedInRecipe() {
+        ingredientDeletion.assertIngredientNotDeletableUsedInRecipe(ingredientDeletion.storedIngredient());
+    }
+
 }

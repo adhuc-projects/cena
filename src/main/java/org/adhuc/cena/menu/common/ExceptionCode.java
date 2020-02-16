@@ -42,6 +42,7 @@ public enum ExceptionCode {
 
     ENTITY_NOT_FOUND(900000, "Entity not found"),
     INGREDIENT_NAME_ALREADY_USED(900100, "Ingredient name already used"),
+    INGREDIENT_NOT_DELETABLE_RELATED_TO_OBJECT(900101, "Ingredient cannot be deleted as it is related to at least one other object"),
     INGREDIENT_NOT_RELATED_TO_RECIPE(900110, "Ingredient not related to recipe"),
     INVALID_MEASUREMENT_UNIT_FOR_INGREDIENT(900111, "Invalid measurement unit for ingredient");
 

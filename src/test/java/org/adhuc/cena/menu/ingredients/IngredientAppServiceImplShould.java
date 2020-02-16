@@ -18,14 +18,18 @@ package org.adhuc.cena.menu.ingredients;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
 import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
 
 import java.util.List;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.adhuc.cena.menu.common.EntityNotFoundException;
 import org.adhuc.cena.menu.common.Name;
@@ -41,15 +45,19 @@ import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryIngredientRep
 @Tag("unit")
 @Tag("appService")
 @DisplayName("Ingredient service should")
+@ExtendWith(MockitoExtension.class)
 class IngredientAppServiceImplShould {
 
     private IngredientRepository ingredientRepository;
     private IngredientAppServiceImpl service;
+    @Mock
+    private IngredientRelatedService ingredientRelatedService;
 
     @BeforeEach
     void setUp() {
         ingredientRepository = new InMemoryIngredientRepository();
-        service = new IngredientAppServiceImpl(new IngredientCreationService(ingredientRepository), ingredientRepository);
+        service = new IngredientAppServiceImpl(new IngredientCreationService(ingredientRepository),
+                new IngredientDeletionService(ingredientRelatedService, ingredientRepository), ingredientRepository);
     }
 
     @Test
@@ -154,11 +162,22 @@ class IngredientAppServiceImplShould {
         }
 
         @Test
-        @DisplayName("delete tomato successfully")
-        void deleteTomato() {
+        @DisplayName("delete tomato successfully when not used in a recipe")
+        void deleteTomatoNotUsedInRecipe() {
+            when(ingredientRelatedService.isIngredientRelated(ID)).thenReturn(false);
             assumeThat(service.getIngredient(ID)).isNotNull();
             service.deleteIngredient(deleteCommand());
             assertThrows(EntityNotFoundException.class, () -> service.getIngredient(ID));
+        }
+
+        @Test
+        @DisplayName("fail during tomato deletion when used in a recipe")
+        void deleteTomatoUsedInRecipe() {
+            when(ingredientRelatedService.isIngredientRelated(ID)).thenReturn(true);
+            when(ingredientRelatedService.relatedObjectName()).thenReturn("recipe");
+            assumeThat(service.getIngredient(ID)).isNotNull();
+            var exception = assertThrows(IngredientNotDeletableRelatedToObjectException.class, () -> service.deleteIngredient(deleteCommand()));
+            assertThat(exception.getMessage()).isEqualTo("Ingredient '" + ID + "' cannot be deleted as it is related to at least one recipe");
         }
 
         @Test
@@ -188,8 +207,18 @@ class IngredientAppServiceImplShould {
             }
 
             @Test
+            @DisplayName("fail during ingredients deletion when at least one ingredient is used in recipe")
+            void deleteIngredientsUsedInRecipe() {
+                when(ingredientRelatedService.areIngredientsRelated()).thenReturn(true);
+                when(ingredientRelatedService.relatedObjectName()).thenReturn("recipe");
+                var exception = assertThrows(IngredientNotDeletableRelatedToObjectException.class, () -> service.deleteIngredients());
+                assertThat(exception.getMessage()).isEqualTo("Ingredients cannot be deleted as at least one is related to at least one recipe");
+            }
+
+            @Test
             @DisplayName("return empty list after deleting all ingredients")
             void returnEmptyListAfterDeletion() {
+                when(ingredientRelatedService.areIngredientsRelated()).thenReturn(false);
                 service.deleteIngredients();
                 assertThat(service.getIngredients()).isEmpty();
             }

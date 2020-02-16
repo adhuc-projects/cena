@@ -14,7 +14,7 @@ Feature: Add ingredients to recipe
   Scenario: Add an unknown ingredient to an existing recipe
     Given an authenticated user
     And a non-existent "Tomato" ingredient
-    And an existing "Tomato, cucumber and mozzarella salad" recipe
+    And an existing "Tomato, cucumber and mozzarella salad" recipe authored by the authenticated user
     When he adds the ingredient to the recipe specifying quantity as 4 "UNIT"
     Then an error notifies that ingredient has not been found
 

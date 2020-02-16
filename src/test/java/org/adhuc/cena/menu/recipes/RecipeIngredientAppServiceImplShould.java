@@ -58,6 +58,18 @@ class RecipeIngredientAppServiceImplShould {
     }
 
     @Test
+    @DisplayName("return false when indicating if ingredients are related with no recipe")
+    void ingredientsNotRelatedWhenNoRecipe() {
+        assertThat(service.areIngredientsRelated()).isFalse();
+    }
+
+    @Test
+    @DisplayName("return false when indicating if tomato is related with no recipe")
+    void tomatoNotRelatedWhenNoRecipe() {
+        assertThat(service.isIngredientRelated(TOMATO_ID)).isFalse();
+    }
+
+    @Test
     @DisplayName("throw IllegalArgumentException when adding ingredient to recipe from null command")
     void throwIAEAddIngredientToRecipeNullCommand() {
         assertThrows(IllegalArgumentException.class, () -> service.addIngredientToRecipe(null));
@@ -140,6 +152,24 @@ class RecipeIngredientAppServiceImplShould {
             ingredientRepository.save(ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES));
             assumeThat(ingredientRepository.exists(IngredientMother.ID)).isTrue();
             assumeThat(ingredientRepository.exists(CUCUMBER_ID)).isTrue();
+        }
+
+        @Test
+        @DisplayName("return true when indicating if ingredients are related with one recipe related to ingredient")
+        void ingredientsRelatedWhenOneRecipeRelatedToIngredient() {
+            assertThat(service.areIngredientsRelated()).isTrue();
+        }
+
+        @Test
+        @DisplayName("return false when indicating if tomato is related with no recipe related to tomato")
+        void tomatoNotRelated() {
+            assertThat(service.isIngredientRelated(TOMATO_ID)).isFalse();
+        }
+
+        @Test
+        @DisplayName("return true when indicating if cucumber is related with one recipe related to cucumber")
+        void cucumberRelated() {
+            assertThat(service.isIngredientRelated(CUCUMBER_ID)).isTrue();
         }
 
         @Test

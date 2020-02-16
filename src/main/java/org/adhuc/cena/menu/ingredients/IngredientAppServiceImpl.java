@@ -29,7 +29,7 @@ import org.adhuc.cena.menu.common.security.AsSuperAdministrator;
  * An {@link IngredientAppService} implementation.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @Slf4j
@@ -39,6 +39,8 @@ class IngredientAppServiceImpl implements IngredientAppService {
 
     @NonNull
     private IngredientCreationService ingredientCreationService;
+    @NonNull
+    private IngredientDeletionService ingredientDeletionService;
     @NonNull
     private IngredientRepository repository;
 
@@ -62,13 +64,13 @@ class IngredientAppServiceImpl implements IngredientAppService {
     @Override
     @AsSuperAdministrator
     public void deleteIngredients() {
-        repository.deleteAll();
+        ingredientDeletionService.deleteIngredients();
     }
 
     @Override
     @AsIngredientManager
     public void deleteIngredient(@NonNull DeleteIngredient command) {
-        repository.delete(repository.findNotNullById(command.ingredientId()));
+        ingredientDeletionService.deleteIngredient(command);
     }
 
 }

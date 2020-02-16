@@ -20,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import org.adhuc.cena.menu.ingredients.IngredientId;
+
 /**
  * A {@link RecipeIngredientAppService} implementation.
  *
@@ -35,6 +37,17 @@ class RecipeIngredientAppServiceImpl implements RecipeIngredientAppService {
     private final IngredientToRecipeAdditionService ingredientToRecipeAdditionService;
     private final IngredientFromRecipeRemovalService ingredientFromRecipeRemovalService;
     private final RecipeRepository recipeRepository;
+
+    @Override
+    public boolean areIngredientsRelated() {
+        return recipeRepository.findAll().stream().anyMatch(r -> !r.ingredients().isEmpty());
+    }
+
+    @Override
+    public boolean isIngredientRelated(IngredientId ingredientId) {
+        return recipeRepository.findAll().stream().anyMatch(
+                r -> r.ingredients().stream().anyMatch(i -> i.ingredientId().equals(ingredientId)));
+    }
 
     @Override
     @AsRecipeAuthor

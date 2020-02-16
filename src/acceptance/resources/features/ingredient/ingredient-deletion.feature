@@ -9,6 +9,16 @@ Feature: Delete an ingredient from the system
     When he attempts deleting the ingredient
     Then an error notifies that ingredient has not been found
 
+  @Edge
+  Scenario: Delete an ingredient used in a recipe
+    Given an authenticated ingredient manager
+    And an existing "Tomato" ingredient
+    And an existing "Tomato, cucumber and mozzarella salad" recipe
+    And recipe contains ingredient
+    When he deletes the ingredient
+    Then an error notifies that ingredient used in a recipe cannot be deleted
+    And the ingredient can be found in the list
+
   @Smoke @Security
   Scenario: Delete an ingredient successfully
     Given an authenticated ingredient manager

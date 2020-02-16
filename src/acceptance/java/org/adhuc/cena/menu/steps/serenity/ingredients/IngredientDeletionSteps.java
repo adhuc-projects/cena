@@ -24,6 +24,7 @@ import java.util.UUID;
 
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
+import org.assertj.core.api.SoftAssertions;
 
 import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.RestClientDelegate;
@@ -33,7 +34,7 @@ import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
  * The ingredient deletion rest-service client steps definition.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 public class IngredientDeletionSteps {
@@ -82,8 +83,17 @@ public class IngredientDeletionSteps {
         assertNoContent();
     }
 
+    @Step("Assert ingredient {0} cannot be deleted as it is used in recipe")
+    public void assertIngredientNotDeletableUsedInRecipe(IngredientValue ingredient) {
+        var jsonPath = assertConflict().extract().jsonPath();
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(jsonPath.getString("message")).contains(
+                    "Ingredient '" + ingredient.id() + "' cannot be deleted as it is related to at least one recipe");
+            softly.assertThat(jsonPath.getInt("code")).isEqualTo(900101);
+        });
+    }
+
     private String generateNotFoundIngredientUrl() {
         return ingredientsResourceUrl() + "/" + UUID.randomUUID().toString();
     }
-
 }

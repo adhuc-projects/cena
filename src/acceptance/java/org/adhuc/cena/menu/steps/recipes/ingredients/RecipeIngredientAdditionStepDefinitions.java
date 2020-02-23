@@ -21,6 +21,7 @@ import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientAdditionSteps;
+import org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientValue;
 
 /**
  * The recipe's ingredients addition steps definitions for rest-services acceptance tests.
@@ -65,8 +66,7 @@ public class RecipeIngredientAdditionStepDefinitions {
 
     @Then("^an error notifies that recipe ingredient must have an identity$")
     public void errorOnRecipeIngredientCreationWithoutId() {
-        recipeIngredientAddition.assertInvalidRequest();
-        // TODO assert response indicates field in error
+        recipeIngredientAddition.assertInvalidRequestConcerningMissingBodyField(RecipeIngredientValue.ID_FIELD);
     }
 
     @Then("^an error notifies that measurement unit does not correspond to ingredient measurement type$")
@@ -75,7 +75,6 @@ public class RecipeIngredientAdditionStepDefinitions {
                 recipeIngredientAddition.storedIngredient(),
                 recipeIngredientAddition.storedRecipe(),
                 recipeIngredientAddition.storedRecipeIngredient());
-        // TODO assert response indicates field in error
     }
 
 }

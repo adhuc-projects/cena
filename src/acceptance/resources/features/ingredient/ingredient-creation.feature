@@ -25,7 +25,7 @@ Feature: Create an ingredient in the system
       | VOLUME          |
       | AT_CONVENIENCE  |
       | UNKNOWN         |
-    Then an error notifies that ingredient cannot be created with unknown measurement type
+    Then an error notifies that ingredient cannot be created with unknown "UNKNOWN" measurement type
 
   @Smoke @Security
   Scenario: Create an ingredient successfully

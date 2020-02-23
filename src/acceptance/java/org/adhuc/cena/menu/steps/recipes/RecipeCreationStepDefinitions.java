@@ -21,6 +21,7 @@ import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.recipes.RecipeCreationSteps;
+import org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue;
 
 /**
  * The recipe creation steps definitions for rest-services acceptance tests.
@@ -62,14 +63,12 @@ public class RecipeCreationStepDefinitions {
 
     @Then("^an error notifies that recipe must have a name$")
     public void errorOnRecipeCreationWithoutName() {
-        recipeCreation.assertInvalidRequest();
-        // TODO assert response indicates field in error
+        recipeCreation.assertInvalidRequestConcerningMissingBodyField(RecipeValue.NAME_FIELD);
     }
 
     @Then("^an error notifies that recipe must have a content$")
     public void errorOnRecipeCreationWithoutContent() {
-        recipeCreation.assertInvalidRequest();
-        // TODO assert response indicates field in error
+        recipeCreation.assertInvalidRequestConcerningMissingBodyField(RecipeValue.CONTENT_FIELD);
     }
 
 }

@@ -45,6 +45,8 @@ import org.adhuc.cena.menu.steps.serenity.support.resource.HateoasClientResource
 @JsonInclude(NON_EMPTY)
 public class RecipeIngredientValue extends HateoasClientResourceSupport {
 
+    public static final String ID_FIELD = "id";
+
     private static final String RECIPE_LINK = "recipe";
 
     public static final int DEFAULT_QUANTITY = 200;

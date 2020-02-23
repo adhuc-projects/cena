@@ -49,6 +49,9 @@ import org.adhuc.cena.menu.util.ListComparator;
 @JsonInclude(NON_EMPTY)
 public class IngredientValue extends HateoasClientResourceSupport {
 
+    public static final String NAME_FIELD = "name";
+    public static final String MEASUREMENT_TYPES_FIELD = "measurementTypes";
+
     public static final Comparator<IngredientValue> COMPARATOR = Comparator.comparing(IngredientValue::name);
     public static final Comparator<IngredientValue> NAME_AND_MEASUREMENT_TYPES_COMPARATOR = COMPARATOR
             .thenComparing(IngredientValue::measurementTypes, new ListComparator<>());

@@ -23,6 +23,7 @@ import static org.adhuc.cena.menu.steps.serenity.support.authentication.Authenti
 
 import java.util.function.Supplier;
 
+import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
@@ -92,6 +93,19 @@ public class IngredientCreationSteps {
             softly.assertThat(jsonPath.getString("message")).contains("Ingredient name '" + name + "' already used by an existing ingredient");
             softly.assertThat(jsonPath.getInt("code")).isEqualTo(900100);
         });
+    }
+
+    public ValidatableResponse assertInvalidRequestConcerningUnknownMeasurementUnit(int position, String measurementType) {
+        var response = assertBadRequest();
+        var jsonPath = response.extract().jsonPath();
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(jsonPath.getInt("code")).isEqualTo(101000);
+            softly.assertThat(jsonPath.getList("details", String.class)).anyMatch(d ->
+                    d.startsWith(String.format("[Path '/%s/%d'] Instance value (\"%s\") not found in enum",
+                            IngredientValue.MEASUREMENT_TYPES_FIELD, position, measurementType))
+            );
+        });
+        return response;
     }
 
 }

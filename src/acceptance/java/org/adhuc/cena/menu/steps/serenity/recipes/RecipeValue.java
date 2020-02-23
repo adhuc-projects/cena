@@ -46,6 +46,9 @@ import org.adhuc.cena.menu.steps.serenity.support.resource.HateoasClientResource
 @JsonInclude(NON_EMPTY)
 public class RecipeValue extends HateoasClientResourceSupport {
 
+    public static final String NAME_FIELD = "name";
+    public static final String CONTENT_FIELD = "content";
+
     private static final String RECIPE_INGREDIENTS_LINK = "ingredients";
 
     public static final Comparator<RecipeValue> COMPARATOR = Comparator.comparing(RecipeValue::name);

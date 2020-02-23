@@ -72,6 +72,17 @@ public final class StatusAssertionDelegate {
         return response;
     }
 
+    public ValidatableResponse assertInvalidRequestConcerningMissingBodyField(String fieldName) {
+        var response = assertBadRequest();
+        var jsonPath = response.extract().jsonPath();
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(jsonPath.getInt("code")).isEqualTo(101000);
+            softly.assertThat(jsonPath.getList("details", String.class)).anyMatch(d ->
+                    d.startsWith("Object has missing required properties") && d.contains(String.format("\"%s\"", fieldName)));
+        });
+        return response;
+    }
+
     public ValidatableResponse assertUnauthorized() {
         return assertUnauthorized(then());
     }

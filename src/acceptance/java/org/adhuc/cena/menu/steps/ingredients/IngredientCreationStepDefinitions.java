@@ -50,7 +50,8 @@ public class IngredientCreationStepDefinitions {
     @When("^he creates the ingredient with the following measurement types$")
     public void createIngredientWithMeasurementTypes(DataTable dataTable) {
         var measurementTypes = dataTable.asList(String.class);
-        ingredientCreation.createIngredient(ingredientCreation.storedIngredient().withMeasurementTypes(measurementTypes));
+        var ingredient = ingredientCreation.storeIngredient(ingredientCreation.storedIngredient().withMeasurementTypes(measurementTypes));
+        ingredientCreation.createIngredient(ingredient);
     }
 
     @When("^he creates an ingredient without name$")
@@ -71,8 +72,7 @@ public class IngredientCreationStepDefinitions {
 
     @Then("^an error notifies that ingredient must have a name$")
     public void errorOnIngredientCreationWithoutName() {
-        ingredientCreation.assertInvalidRequest();
-        // TODO assert response indicates field in error
+        ingredientCreation.assertInvalidRequestConcerningMissingBodyField(IngredientValue.NAME_FIELD);
     }
 
     @Then("^an error notifies that ingredient name already exists$")
@@ -80,10 +80,10 @@ public class IngredientCreationStepDefinitions {
         ingredientCreation.assertIngredientNameAlreadyExists(ingredientCreation.storedIngredient().name());
     }
 
-    @Then("^an error notifies that ingredient cannot be created with unknown measurement type$")
-    public void errorOnIngredientCreationWithUnknownMeasurementType() {
-        ingredientCreation.assertInvalidRequest();
-        // TODO assert response indicates field in error
+    @Then("^an error notifies that ingredient cannot be created with unknown \"(.*)\" measurement type$")
+    public void errorOnIngredientCreationWithUnknownMeasurementType(String unknownMeasurementType) {
+        int position = ingredientCreation.storedIngredient().measurementTypes().indexOf(unknownMeasurementType);
+        ingredientCreation.assertInvalidRequestConcerningUnknownMeasurementUnit(position, unknownMeasurementType);
     }
 
 }

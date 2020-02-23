@@ -25,7 +25,6 @@ import java.security.Principal;
 import javax.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.EntityLinks;
@@ -36,7 +35,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import org.adhuc.cena.menu.ingredients.IngredientId;
-import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.port.adapter.rest.support.Uuid;
 import org.adhuc.cena.menu.recipes.QueryRecipes;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
@@ -60,15 +58,13 @@ public class RecipesController {
     private final EntityLinks links;
     private final RecipeAppService recipeAppService;
     private final RecipeModelAssembler modelAssembler;
-    @Delegate
-    private final RequestValidatorDelegate requestValidatorDelegate;
 
     /**
      * Gets the recipe information for all recipes.
      */
     @GetMapping
     @ResponseStatus(OK)
-    CollectionModel<RecipeModel> getRecipes(@RequestParam(name = "filter[ingredient]", required = false) @Uuid String ingredient) {
+    CollectionModel<RecipeModel> getRecipes(@RequestParam(name = "filter[ingredient]", required = false) @Uuid(propertyName = "filter[ingredient]") String ingredient) {
         var query = QueryRecipes.query();
         if (ingredient != null) {
             query = query.withIngredientId(new IngredientId(ingredient));
@@ -81,9 +77,8 @@ public class RecipesController {
      * Creates a recipe.
      */
     @PostMapping
-    ResponseEntity<Void> createRecipe(@RequestBody @Valid CreateRecipeRequest request, Principal principal, Errors errors) throws URISyntaxException {
+    ResponseEntity<Void> createRecipe(@RequestBody @Valid CreateRecipeRequest request, Errors errors, Principal principal) throws URISyntaxException {
         var identity = RecipeId.generate();
-        validateRequest(errors);
         recipeAppService.createRecipe(request.toCommand(identity, principal.getName()));
         return ResponseEntity.created(new URI(links.linkToItemResource(RecipeModel.class, identity).getHref())).build();
     }

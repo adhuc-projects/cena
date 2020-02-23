@@ -24,18 +24,17 @@ import java.net.URISyntaxException;
 import javax.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
 import org.adhuc.cena.menu.ingredients.IngredientId;
-import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 
 /**
  * A REST controller exposing /api/ingredients resource.
@@ -46,6 +45,7 @@ import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
  */
 @Slf4j
 @RequiredArgsConstructor
+@Validated
 @RestController
 @ExposesResourceFor(IngredientModel.class)
 @RequestMapping(path = "/api/ingredients", produces = {HAL_JSON_VALUE, APPLICATION_JSON_VALUE})
@@ -54,8 +54,6 @@ public class IngredientsController {
     private final EntityLinks links;
     private final IngredientAppService ingredientAppService;
     private final IngredientModelAssembler modelAssembler;
-    @Delegate
-    private final RequestValidatorDelegate requestValidatorDelegate;
 
     /**
      * Gets the ingredient information for all ingredients.
@@ -73,7 +71,6 @@ public class IngredientsController {
     @PostMapping(consumes = {APPLICATION_JSON_VALUE, HAL_JSON_VALUE})
     ResponseEntity<Void> createIngredient(@RequestBody @Valid CreateIngredientRequest request, Errors errors) throws URISyntaxException {
         var identity = IngredientId.generate();
-        validateRequest(errors);
         ingredientAppService.createIngredient(request.toCommand(identity));
         return ResponseEntity.created(new URI(links.linkToItemResource(IngredientModel.class, identity).getHref())).build();
     }

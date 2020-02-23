@@ -41,7 +41,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
 import org.adhuc.cena.menu.port.adapter.rest.ResultHandlerConfiguration;
-import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.support.WithIngredientManager;
 
 /**
@@ -53,7 +52,7 @@ import org.adhuc.cena.menu.support.WithIngredientManager;
  */
 @Tag("integration")
 @Tag("documentation")
-@WebMvcTest({IngredientsController.class, IngredientController.class, RequestValidatorDelegate.class, IngredientModelAssembler.class})
+@WebMvcTest({IngredientsController.class, IngredientController.class, IngredientModelAssembler.class})
 @ContextConfiguration(classes = ResultHandlerConfiguration.class)
 @AutoConfigureRestDocs("build/generated-snippets")
 @DisplayName("Ingredient resource documentation")

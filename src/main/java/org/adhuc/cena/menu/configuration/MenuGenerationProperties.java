@@ -35,6 +35,7 @@ public class MenuGenerationProperties {
     private Management management = new Management();
     private Security security = new Security();
     private Features features = new Features();
+    private Rest rest = new Rest();
 
     @Data
     public static class Documentation {
@@ -107,6 +108,19 @@ public class MenuGenerationProperties {
          * Enable recipes deletion feature. Default is {@code true}.
          */
         private boolean recipesDeletion = true;
+    }
+
+    @Value
+    public static class Rest {
+        private OpenApiValidation openApiValidation = new OpenApiValidation();
+
+        @Data
+        public static class OpenApiValidation {
+            /**
+             * Enable OpenAPI validation. Default is {@code true}.
+             */
+            private boolean enabled = true;
+        }
     }
 
 }

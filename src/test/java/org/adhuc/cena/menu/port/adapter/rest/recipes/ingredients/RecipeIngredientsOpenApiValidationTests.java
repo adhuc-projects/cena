@@ -79,7 +79,7 @@ class RecipeIngredientsOpenApiValidationTests {
 
     @Test
     @DisplayName("respond Bad Request with OpenAPI validation error on creation when request does not contain id property")
-    void respond400OnCreationWithoutId() throws Exception {
+    void respond400OnCreationWithoutId() {
         var error = given()
                 .log().ifValidationFails()
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
@@ -100,7 +100,7 @@ class RecipeIngredientsOpenApiValidationTests {
 
     @Test
     @DisplayName("respond Bad Request with validation error on creation when request contains quantity but no measurement unit")
-    void respond400OnCreationWithQuantityNoMeasurementUnit() throws Exception {
+    void respond400OnCreationWithQuantityNoMeasurementUnit() {
         var error = given()
                 .log().ifValidationFails()
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
@@ -111,17 +111,18 @@ class RecipeIngredientsOpenApiValidationTests {
                 .post(RECIPE_INGREDIENTS_API_URL, ID.toString())
                 .then()
                 .statusCode(BAD_REQUEST.value())
+                .log().everything()
                 .assertThat()
                 .extract().jsonPath().getObject("", Error.class);
         assertThat(error)
                 .hasCode(INVALID_REQUEST)
                 .hasMessage("Validation error")
-                .detailsContainsExactlyInAnyOrder("Object should have either none or both properties ([\"measurementUnit\",\"quantity\"])");
+                .detailsContainsExactlyInAnyOrder("Invalid request : should have either none or both properties ([\"measurementUnit\",\"quantity\"])");
     }
 
     @Test
     @DisplayName("respond Bad Request with validation error on creation when request contains measurement unit but no quantity")
-    void respond400OnCreationWithMeasurementUnitNoQuantity() throws Exception {
+    void respond400OnCreationWithMeasurementUnitNoQuantity() {
         var error = given()
                 .log().ifValidationFails()
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
@@ -137,13 +138,13 @@ class RecipeIngredientsOpenApiValidationTests {
         assertThat(error)
                 .hasCode(INVALID_REQUEST)
                 .hasMessage("Validation error")
-                .detailsContainsExactlyInAnyOrder("Object should have either none or both properties ([\"measurementUnit\",\"quantity\"])");
+                .detailsContainsExactlyInAnyOrder("Invalid request : should have either none or both properties ([\"measurementUnit\",\"quantity\"])");
     }
 
     @ParameterizedTest
     @ValueSource(ints = {Integer.MIN_VALUE, -1, 0})
     @DisplayName("respond Bad Request with validation error on creation when request contains negative quantity")
-    void respond400OnCreationWithNegativeQuantity(int quantity) throws Exception {
+    void respond400OnCreationWithNegativeQuantity(int quantity) {
         var error = given()
                 .log().ifValidationFails()
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
@@ -164,7 +165,7 @@ class RecipeIngredientsOpenApiValidationTests {
 
     @Test
     @DisplayName("respond Created on creation when request contains additional property")
-    void respond201OnCreationWithAdditionalProperty() throws Exception {
+    void respond201OnCreationWithAdditionalProperty() {
         given()
                 .log().ifValidationFails()
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),

@@ -47,6 +47,8 @@ public @interface Uuid {
 
     Class<? extends Payload>[] payload() default {};
 
+    String propertyName() default "";
+
     class UuidConstraintValidator implements ConstraintValidator<Uuid, String> {
         @Override
         public boolean isValid(String value, ConstraintValidatorContext context) {

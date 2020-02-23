@@ -32,22 +32,24 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.test.context.TestPropertySource;
 
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
 import org.adhuc.cena.menu.port.adapter.rest.assertion.support.Error;
 
 /**
- * The Open API validation test class for ingredients resources.
+ * The validation test class for ingredients resources disabling Open API validation.
  *
  * @author Alexandre Carbenay
  * @version 0.2.0
- * @since 0.1.0
+ * @since 0.2.0
  */
 @Tag("integration")
-@Tag("openApiValidation")
+@Tag("restValidation")
 @SpringBootTest(webEnvironment = RANDOM_PORT)
+@TestPropertySource(properties = {"cena.menu-generation.rest.openApiValidation.enabled=false", "spring.mvc.locale=en_UK"})
 @DisplayName("Ingredients resource should")
-class IngredientsOpenApiValidationTests {
+class IngredientsValidationTests {
 
     private static final String INGREDIENTS_API_URL = "/api/ingredients";
 
@@ -62,24 +64,47 @@ class IngredientsOpenApiValidationTests {
     }
 
     @Test
-    @DisplayName("respond Bad Request with OpenAPI validation error on creation when request does not contain name property")
+    @DisplayName("respond Bad Request with validation error on creation when request does not contain name property")
     void respond400OnCreationWithoutName() {
-        var error = given()
-                .log().ifValidationFails()
-                .auth().preemptive().basic(properties.getSecurity().getIngredientManager().getUsername(),
+        var error =
+                given()
+                        .log().ifValidationFails()
+                        .auth().preemptive().basic(properties.getSecurity().getIngredientManager().getUsername(),
                         properties.getSecurity().getIngredientManager().getPassword())
-                .contentType(APPLICATION_JSON_VALUE)
-                .body("{}")
-                .when()
-                .post(INGREDIENTS_API_URL)
-                .then()
-                .statusCode(BAD_REQUEST.value())
-                .assertThat()
-                .extract().jsonPath().getObject("", Error.class);
+                        .contentType(APPLICATION_JSON_VALUE)
+                        .body("{}")
+                        .when()
+                        .post(INGREDIENTS_API_URL)
+                        .then()
+                        .statusCode(BAD_REQUEST.value())
+                        .assertThat()
+                        .extract().jsonPath().getObject("", Error.class);
         assertThat(error)
                 .hasCode(INVALID_REQUEST)
-                .hasMessage("OpenAPI validation error")
-                .detailsContainsExactlyInAnyOrder("Object has missing required properties ([\"name\"])");
+                .hasMessage("Validation error")
+                .detailsContainsExactlyInAnyOrder("Invalid request body property 'name': must not be blank. Actual value is <null>");
+    }
+
+    @Test
+    @DisplayName("respond Bad Request with validation error on creation when request contains blank name property")
+    void respond400OnCreationWithBlankName() {
+        var error =
+                given()
+                        .log().ifValidationFails()
+                        .auth().preemptive().basic(properties.getSecurity().getIngredientManager().getUsername(),
+                        properties.getSecurity().getIngredientManager().getPassword())
+                        .contentType(APPLICATION_JSON_VALUE)
+                        .body("{\"name\":\"\"}")
+                        .when()
+                        .post(INGREDIENTS_API_URL)
+                        .then()
+                        .statusCode(BAD_REQUEST.value())
+                        .assertThat()
+                        .extract().jsonPath().getObject("", Error.class);
+        assertThat(error)
+                .hasCode(INVALID_REQUEST)
+                .hasMessage("Validation error")
+                .detailsContainsExactlyInAnyOrder("Invalid request body property 'name': must not be blank. Actual value is ''");
     }
 
     @Test
@@ -88,9 +113,9 @@ class IngredientsOpenApiValidationTests {
         given()
                 .log().ifValidationFails()
                 .auth().preemptive().basic(properties.getSecurity().getIngredientManager().getUsername(),
-                        properties.getSecurity().getIngredientManager().getPassword())
+                properties.getSecurity().getIngredientManager().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body("{\"name\":\"Tomato\",\"other\":\"some value\"}")
+                .body("{\"name\":\"Cucumber\",\"other\":\"some value\"}")
                 .when()
                 .post(INGREDIENTS_API_URL)
                 .then()

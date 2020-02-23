@@ -36,23 +36,25 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.test.context.TestPropertySource;
 
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
 import org.adhuc.cena.menu.ingredients.IngredientRepository;
 import org.adhuc.cena.menu.port.adapter.rest.assertion.support.Error;
 
 /**
- * The Open API validation test class for recipes resources.
+ * The validation test class for recipes resources disabling Open API validation.
  *
  * @author Alexandre Carbenay
  * @version 0.2.0
  * @since 0.2.0
  */
 @Tag("integration")
-@Tag("openApiValidation")
+@Tag("restValidation")
 @SpringBootTest(webEnvironment = RANDOM_PORT)
+@TestPropertySource(properties = {"cena.menu-generation.rest.openApiValidation.enabled=false", "spring.mvc.locale=en_UK"})
 @DisplayName("Recipes resource should")
-class RecipesOpenApiValidationTests {
+class RecipesValidationTests {
 
     private static final String RECIPES_API_URL = "/api/recipes";
 
@@ -72,7 +74,7 @@ class RecipesOpenApiValidationTests {
     }
 
     @Test
-    @DisplayName("respond Bad Request with OpenAPI validation error on recipes list retrieval when request defines an ingredient query parameter with invalid value")
+    @DisplayName("respond Bad Request with validation error on recipes list retrieval when request defines an ingredient query parameter with invalid value")
     void respond400OnListInvalidIngredientQueryParam() {
         var error = given()
                 .log().ifValidationFails()
@@ -81,12 +83,13 @@ class RecipesOpenApiValidationTests {
                 .get(RECIPES_API_URL)
                 .then()
                 .statusCode(BAD_REQUEST.value())
+                .log().everything()
                 .assertThat()
                 .extract().jsonPath().getObject("", Error.class);
         assertThat(error)
                 .hasCode(INVALID_REQUEST)
-                .hasMessage("OpenAPI validation error")
-                .detailsContainsExactlyInAnyOrder("Input string \"invalid uuid\" is not a valid UUID");
+                .hasMessage("Validation error")
+                .detailsContainsExactlyInAnyOrder("Invalid query parameter 'filter[ingredient]': must be a valid UUID. Actual value is 'invalid uuid'");
     }
 
     @Test
@@ -113,7 +116,7 @@ class RecipesOpenApiValidationTests {
     }
 
     @Test
-    @DisplayName("respond Bad Request with OpenAPI validation error on creation when request does not contain name nor content properties")
+    @DisplayName("respond Bad Request with validation error on creation when request does not contain name nor content properties")
     void respond400OnCreationWithoutNameNorContent() {
         var error = given()
                 .log().ifValidationFails()
@@ -129,12 +132,39 @@ class RecipesOpenApiValidationTests {
                 .extract().jsonPath().getObject("", Error.class);
         assertThat(error)
                 .hasCode(INVALID_REQUEST)
-                .hasMessage("OpenAPI validation error")
-                .detailsContainsExactlyInAnyOrder("Object has missing required properties ([\"content\",\"name\"])");
+                .hasMessage("Validation error")
+                .detailsContainsExactlyInAnyOrder(
+                        "Invalid request body property 'name': must not be blank. Actual value is <null>",
+                        "Invalid request body property 'content': must not be blank. Actual value is <null>"
+                );
     }
 
     @Test
-    @DisplayName("respond Bad Request with OpenAPI validation error on creation when request does not contain name property")
+    @DisplayName("respond Bad Request with validation error on creation when request does contains blank name and content properties")
+    void respond400OnCreationWithBlankNameAndContent() {
+        var error = given()
+                .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                        properties.getSecurity().getUser().getPassword())
+                .contentType(APPLICATION_JSON_VALUE)
+                .body("{\"name\":\"\",\"content\":\"\"}")
+                .when()
+                .post(RECIPES_API_URL)
+                .then()
+                .statusCode(BAD_REQUEST.value())
+                .assertThat()
+                .extract().jsonPath().getObject("", Error.class);
+        assertThat(error)
+                .hasCode(INVALID_REQUEST)
+                .hasMessage("Validation error")
+                .detailsContainsExactlyInAnyOrder(
+                        "Invalid request body property 'name': must not be blank. Actual value is ''",
+                        "Invalid request body property 'content': must not be blank. Actual value is ''"
+                );
+    }
+
+    @Test
+    @DisplayName("respond Bad Request with validation error on creation when request does not contain name property")
     void respond400OnCreationWithoutName() {
         var error = given()
                 .log().ifValidationFails()
@@ -150,12 +180,12 @@ class RecipesOpenApiValidationTests {
                 .extract().jsonPath().getObject("", Error.class);
         assertThat(error)
                 .hasCode(INVALID_REQUEST)
-                .hasMessage("OpenAPI validation error")
-                .detailsContainsExactlyInAnyOrder("Object has missing required properties ([\"name\"])");
+                .hasMessage("Validation error")
+                .detailsContainsExactlyInAnyOrder("Invalid request body property 'name': must not be blank. Actual value is <null>");
     }
 
     @Test
-    @DisplayName("respond Bad Request with OpenAPI validation error on creation when request does not contain content property")
+    @DisplayName("respond Bad Request with validation error on creation when request does not contain content property")
     void respond400OnCreationWithoutContent() {
         var error = given()
                 .log().ifValidationFails()
@@ -171,8 +201,8 @@ class RecipesOpenApiValidationTests {
                 .extract().jsonPath().getObject("", Error.class);
         assertThat(error)
                 .hasCode(INVALID_REQUEST)
-                .hasMessage("OpenAPI validation error")
-                .detailsContainsExactlyInAnyOrder("Object has missing required properties ([\"content\"])");
+                .hasMessage("Validation error")
+                .detailsContainsExactlyInAnyOrder("Invalid request body property 'content': must not be blank. Actual value is <null>");
     }
 
     @Test
@@ -192,7 +222,7 @@ class RecipesOpenApiValidationTests {
 
     @ParameterizedTest
     @ValueSource(ints = {Integer.MIN_VALUE, -1, 0})
-    @DisplayName("respond Bad Request with OpenAPI validation error on creation when request contains negative or zero servings")
+    @DisplayName("respond Bad Request with validation error on creation when request contains negative or zero servings")
     void respond400OnCreationWithNegativeServings(int value) {
         var error = given()
                 .log().ifValidationFails()
@@ -208,8 +238,8 @@ class RecipesOpenApiValidationTests {
                 .extract().jsonPath().getObject("", Error.class);
         assertThat(error)
                 .hasCode(INVALID_REQUEST)
-                .hasMessage("OpenAPI validation error")
-                .detailsContainsExactlyInAnyOrder(format("[Path '/servings'] Numeric instance is lower than the required minimum (minimum: 1, found: %d)", value));
+                .hasMessage("Validation error")
+                .detailsContainsExactlyInAnyOrder(format("Invalid request body property 'servings': must be greater than 0. Actual value is '%d'", value));
     }
 
     @Test

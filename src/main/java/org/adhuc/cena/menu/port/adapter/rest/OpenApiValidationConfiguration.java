@@ -35,6 +35,7 @@ import com.atlassian.oai.validator.whitelist.rule.WhitelistRule;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
@@ -48,11 +49,12 @@ import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
  * Configures REST API requests and responses validation against its OpenAPI specification.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.2.0
  * @since 0.1.0
  */
 @Slf4j
 @Configuration
+@ConditionalOnProperty(prefix = "cena.menu-generation", name = "rest.openApiValidation.enabled", matchIfMissing = true)
 class OpenApiValidationConfiguration implements WebMvcConfigurer {
 
     private final OpenApiValidationInterceptor validationInterceptor;

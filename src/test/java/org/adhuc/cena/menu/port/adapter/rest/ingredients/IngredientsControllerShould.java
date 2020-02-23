@@ -48,7 +48,6 @@ import org.adhuc.cena.menu.ingredients.CreateIngredient;
 import org.adhuc.cena.menu.ingredients.Ingredient;
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
 import org.adhuc.cena.menu.ingredients.IngredientNameAlreadyUsedException;
-import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 import org.adhuc.cena.menu.support.WithCommunityUser;
 import org.adhuc.cena.menu.support.WithIngredientManager;
@@ -63,7 +62,7 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
  */
 @Tag("integration")
 @Tag("restController")
-@WebMvcTest({IngredientsController.class, IngredientsDeletionController.class, RequestValidatorDelegate.class, IngredientModelAssembler.class})
+@WebMvcTest({IngredientsController.class, IngredientsDeletionController.class, IngredientModelAssembler.class})
 @EnableConfigurationProperties(MenuGenerationProperties.class)
 @DisplayName("Ingredients controller should")
 class IngredientsControllerShould {
@@ -189,7 +188,10 @@ class IngredientsControllerShould {
         mvc.perform(post(INGREDIENTS_API_URL)
                 .contentType(APPLICATION_JSON)
                 .content("{\"measurementTypes\":[\"WEIGHT\", \"COUNT\"]}")
-        ).andExpect(status().isBadRequest());
+        ).andExpect(status().isBadRequest())
+                .andExpect(jsonPath("details").isArray())
+                .andExpect(jsonPath("details", hasSize(1)))
+                .andExpect(jsonPath("details[0]", equalTo("Invalid request body property 'name': must not be blank. Actual value is <null>")));
     }
 
     @Test
@@ -198,8 +200,11 @@ class IngredientsControllerShould {
     void respond400OnCreationWithBlankName() throws Exception {
         mvc.perform(post(INGREDIENTS_API_URL)
                 .contentType(APPLICATION_JSON)
-                .content("{\"name\":\" \t\",\"measurementTypes\":[\"WEIGHT\", \"COUNT\"]}")
-        ).andExpect(status().isBadRequest());
+                .content("{\"name\":\"\",\"measurementTypes\":[\"WEIGHT\", \"COUNT\"]}")
+        ).andExpect(status().isBadRequest())
+                .andExpect(jsonPath("details").isArray())
+                .andExpect(jsonPath("details", hasSize(1)))
+                .andExpect(jsonPath("details[0]", equalTo("Invalid request body property 'name': must not be blank. Actual value is ''")));
     }
 
     @Test

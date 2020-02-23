@@ -50,7 +50,6 @@ import org.adhuc.cena.menu.port.adapter.rest.ingredients.IngredientModelAssemble
 import org.adhuc.cena.menu.port.adapter.rest.ingredients.IngredientsController;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.RecipeModelAssembler;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.RecipesController;
-import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.recipes.*;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 import org.adhuc.cena.menu.support.WithCommunityUser;
@@ -67,7 +66,7 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
 @Tag("integration")
 @Tag("restController")
 @WebMvcTest({RecipeIngredientsController.class, RecipesController.class, IngredientsController.class,
-        RequestValidatorDelegate.class, RecipeIngredientModelAssembler.class, RecipeModelAssembler.class,
+        RecipeIngredientModelAssembler.class, RecipeModelAssembler.class,
         IngredientModelAssembler.class})
 @DisplayName("Recipe ingredients controller should")
 class RecipeIngredientsControllerShould {

@@ -16,7 +16,6 @@
 package org.adhuc.cena.menu.port.adapter.rest.recipes;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
@@ -30,9 +29,7 @@ import static org.adhuc.cena.menu.recipes.Servings.DEFAULT;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.validation.ConstraintViolationException;
 
-import org.assertj.core.api.SoftAssertions;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -43,12 +40,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.web.util.NestedServletException;
 
 import org.adhuc.cena.menu.ingredients.IngredientMother;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientModelAssembler;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientsController;
-import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.recipes.*;
 import org.adhuc.cena.menu.support.*;
 
@@ -62,7 +57,7 @@ import org.adhuc.cena.menu.support.*;
 @Tag("integration")
 @Tag("restController")
 @WebMvcTest({RecipesController.class, RecipesDeletionController.class, RecipeIngredientsController.class,
-        RequestValidatorDelegate.class, RecipeModelAssembler.class, RecipeIngredientModelAssembler.class})
+        RecipeModelAssembler.class, RecipeIngredientModelAssembler.class})
 @DisplayName("Recipes controller should")
 class RecipesControllerShould {
 
@@ -141,35 +136,17 @@ class RecipesControllerShould {
     }
 
     @Test
-    @DisplayName("throw ConstraintViolationException when querying recipes list with empty ingredient parameter")
-    void throwConstraintViolationExceptionOnListWithEmptyUuidFilter() throws Exception {
-        var rootException = assertThrows(NestedServletException.class,
-                () -> mvc.perform(get(RECIPES_API_URL).param("filter[ingredient]", "")));
-        assertThat(ConstraintViolationException.class.isAssignableFrom(rootException.getCause().getClass())).isTrue();
-        var exception = (ConstraintViolationException) rootException.getCause();
-        assertThat(exception.getConstraintViolations().size()).isEqualTo(1);
-        var violation = exception.getConstraintViolations().iterator().next();
-        SoftAssertions.assertSoftly(s -> {
-            s.assertThat(violation.getPropertyPath().toString()).isEqualTo("getRecipes.ingredient");
-            s.assertThat(violation.getMessage()).isEqualTo("{common.Uuid.message}");
-            s.assertThat(violation.getInvalidValue()).isEqualTo("");
-        });
+    @DisplayName("respond Bad Request when querying recipes list with empty ingredient parameter")
+    void respond400OnListWithEmptyUuidFilter() throws Exception {
+        mvc.perform(get(RECIPES_API_URL).param("filter[ingredient]", ""))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    @DisplayName("throw ConstraintViolationException when querying recipes list with ingredient parameter not being a valid UUID")
-    void throwConstraintViolationExceptionOnListWithNonUuidFilter() throws Exception {
-        var rootException = assertThrows(NestedServletException.class,
-                () -> mvc.perform(get(RECIPES_API_URL).param("filter[ingredient]", "invalid uuid")));
-        assertThat(ConstraintViolationException.class.isAssignableFrom(rootException.getCause().getClass())).isTrue();
-        var exception = (ConstraintViolationException) rootException.getCause();
-        assertThat(exception.getConstraintViolations().size()).isEqualTo(1);
-        var violation = exception.getConstraintViolations().iterator().next();
-        SoftAssertions.assertSoftly(s -> {
-            s.assertThat(violation.getPropertyPath().toString()).isEqualTo("getRecipes.ingredient");
-            s.assertThat(violation.getMessage()).isEqualTo("{common.Uuid.message}");
-            s.assertThat(violation.getInvalidValue()).isEqualTo("invalid uuid");
-        });
+    @DisplayName("respond Bad Request when querying recipes list with ingredient parameter not being a valid UUID")
+    void respond400OnListWithNonUuidFilter() throws Exception {
+        mvc.perform(get(RECIPES_API_URL).param("filter[ingredient]", "invalid uuid"))
+                .andExpect(status().isBadRequest());
     }
 
     @Test

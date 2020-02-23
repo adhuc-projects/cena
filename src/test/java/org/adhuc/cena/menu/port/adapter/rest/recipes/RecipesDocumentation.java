@@ -47,7 +47,6 @@ import org.adhuc.cena.menu.port.adapter.rest.ResultHandlerConfiguration;
 import org.adhuc.cena.menu.port.adapter.rest.documentation.support.ConstrainedFields;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientModelAssembler;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientsController;
-import org.adhuc.cena.menu.port.adapter.rest.support.RequestValidatorDelegate;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
 import org.adhuc.cena.menu.recipes.RecipeIngredientAppService;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
@@ -63,7 +62,7 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
 @Tag("integration")
 @Tag("documentation")
 @WebMvcTest({RecipesController.class, RecipesDeletionController.class, RecipeIngredientsController.class,
-        RequestValidatorDelegate.class, RecipeModelAssembler.class, RecipeIngredientModelAssembler.class})
+        RecipeModelAssembler.class, RecipeIngredientModelAssembler.class})
 @ContextConfiguration(classes = ResultHandlerConfiguration.class)
 @AutoConfigureRestDocs("build/generated-snippets")
 @DisplayName("Recipes resource documentation")

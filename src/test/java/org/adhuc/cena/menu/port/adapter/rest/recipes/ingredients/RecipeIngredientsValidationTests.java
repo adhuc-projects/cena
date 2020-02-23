@@ -13,18 +13,21 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.port.adapter.rest.recipes;
+package org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients;
 
 import static java.lang.String.format;
 
 import static io.restassured.RestAssured.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import static org.adhuc.cena.menu.common.ExceptionCode.INVALID_REQUEST;
-import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
+import static org.adhuc.cena.menu.ingredients.IngredientMother.ingredient;
 import static org.adhuc.cena.menu.port.adapter.rest.assertion.support.ErrorAssert.assertThat;
+import static org.adhuc.cena.menu.recipes.RecipeMother.ID;
+import static org.adhuc.cena.menu.recipes.RecipeMother.builder;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,180 +39,130 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.test.context.TestPropertySource;
 
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
+import org.adhuc.cena.menu.ingredients.IngredientMother;
 import org.adhuc.cena.menu.ingredients.IngredientRepository;
 import org.adhuc.cena.menu.port.adapter.rest.assertion.support.Error;
+import org.adhuc.cena.menu.recipes.RecipeRepository;
 
 /**
- * The Open API validation test class for recipes resources.
+ * The validation test class for ingredients resources disabling Open API validation.
  *
  * @author Alexandre Carbenay
  * @version 0.2.0
  * @since 0.2.0
  */
 @Tag("integration")
-@Tag("openApiValidation")
+@Tag("restValidation")
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-@DisplayName("Recipes resource should")
-class RecipesOpenApiValidationTests {
+@TestPropertySource(properties = {"cena.menu-generation.rest.openApiValidation.enabled=false", "spring.mvc.locale=en_UK"})
+@DisplayName("Recipe ingredients resource should")
+class RecipeIngredientsValidationTests {
 
-    private static final String RECIPES_API_URL = "/api/recipes";
+    private static final String RECIPE_INGREDIENTS_API_URL = "/api/recipes/{id}/ingredients";
 
     @LocalServerPort
     private int port;
     @Autowired
     private MenuGenerationProperties properties;
-
+    @Autowired
+    private RecipeRepository recipeRepository;
     @Autowired
     private IngredientRepository ingredientRepository;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-
-        ingredientRepository.save(ingredient(ID, NAME, MEASUREMENT_TYPES));
+        recipeRepository.save(builder().withAuthorName(properties.getSecurity().getUser().getUsername()).build());
+        ingredientRepository.save(ingredient());
     }
 
     @Test
-    @DisplayName("respond Bad Request with OpenAPI validation error on recipes list retrieval when request defines an ingredient query parameter with invalid value")
-    void respond400OnListInvalidIngredientQueryParam() {
-        var error = given()
-                .log().ifValidationFails()
-                .queryParam("filter[ingredient]", "invalid uuid")
-                .when()
-                .get(RECIPES_API_URL)
-                .then()
-                .statusCode(BAD_REQUEST.value())
-                .assertThat()
-                .extract().jsonPath().getObject("", Error.class);
-        assertThat(error)
-                .hasCode(INVALID_REQUEST)
-                .hasMessage("OpenAPI validation error")
-                .detailsContainsExactlyInAnyOrder("Input string \"invalid uuid\" is not a valid UUID");
-    }
-
-    @Test
-    @DisplayName("respond OK on recipes list retrieval when request defines no ingredient query parameter")
-    void respond200OnListNoIngredientQueryParam() {
-        given()
-                .log().ifValidationFails()
-                .when()
-                .get(RECIPES_API_URL)
-                .then()
-                .statusCode(OK.value());
-    }
-
-    @Test
-    @DisplayName("respond OK on recipes list retrieval when request defines an ingredient query parameter with valid value")
-    void respond200OnListValidIngredientQueryParam() {
-        given()
-                .log().ifValidationFails()
-                .queryParam("filter[ingredient]", ID.id().toString())
-                .when()
-                .get(RECIPES_API_URL)
-                .then()
-                .statusCode(OK.value());
-    }
-
-    @Test
-    @DisplayName("respond Bad Request with OpenAPI validation error on creation when request does not contain name nor content properties")
-    void respond400OnCreationWithoutNameNorContent() {
+    @DisplayName("respond Bad Request with validation error on creation when request does not contain id property")
+    void respond400OnCreationWithoutId() {
         var error = given()
                 .log().ifValidationFails()
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                         properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body("{}")
+                .body("{\"quantity\":1, \"measurementUnit\":\"DOZEN\"}")
                 .when()
-                .post(RECIPES_API_URL)
+                .post(RECIPE_INGREDIENTS_API_URL, ID.toString())
                 .then()
                 .statusCode(BAD_REQUEST.value())
                 .assertThat()
                 .extract().jsonPath().getObject("", Error.class);
         assertThat(error)
                 .hasCode(INVALID_REQUEST)
-                .hasMessage("OpenAPI validation error")
-                .detailsContainsExactlyInAnyOrder("Object has missing required properties ([\"content\",\"name\"])");
+                .hasMessage("Validation error")
+                .detailsContainsExactlyInAnyOrder("Invalid request body property 'ingredientId': must not be blank. Actual value is <null>");
     }
 
     @Test
-    @DisplayName("respond Bad Request with OpenAPI validation error on creation when request does not contain name property")
-    void respond400OnCreationWithoutName() {
+    @DisplayName("respond Bad Request with validation error on creation when request contains quantity but no measurement unit")
+    void respond400OnCreationWithQuantityNoMeasurementUnit() {
         var error = given()
                 .log().ifValidationFails()
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                         properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body("{\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":2}")
+                .body("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \"quantity\":1}")
                 .when()
-                .post(RECIPES_API_URL)
+                .post(RECIPE_INGREDIENTS_API_URL, ID.toString())
                 .then()
                 .statusCode(BAD_REQUEST.value())
+                .log().everything()
                 .assertThat()
                 .extract().jsonPath().getObject("", Error.class);
         assertThat(error)
                 .hasCode(INVALID_REQUEST)
-                .hasMessage("OpenAPI validation error")
-                .detailsContainsExactlyInAnyOrder("Object has missing required properties ([\"name\"])");
+                .hasMessage("Validation error")
+                .detailsContainsExactlyInAnyOrder("Invalid request : should have either none or both properties ([\"measurementUnit\",\"quantity\"])");
     }
 
     @Test
-    @DisplayName("respond Bad Request with OpenAPI validation error on creation when request does not contain content property")
-    void respond400OnCreationWithoutContent() {
+    @DisplayName("respond Bad Request with validation error on creation when request contains measurement unit but no quantity")
+    void respond400OnCreationWithMeasurementUnitNoQuantity() {
         var error = given()
                 .log().ifValidationFails()
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                         properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"servings\":2}")
+                .body("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \"measurementUnit\":\"DOZEN\"}")
                 .when()
-                .post(RECIPES_API_URL)
+                .post(RECIPE_INGREDIENTS_API_URL, ID.toString())
                 .then()
                 .statusCode(BAD_REQUEST.value())
                 .assertThat()
                 .extract().jsonPath().getObject("", Error.class);
         assertThat(error)
                 .hasCode(INVALID_REQUEST)
-                .hasMessage("OpenAPI validation error")
-                .detailsContainsExactlyInAnyOrder("Object has missing required properties ([\"content\"])");
-    }
-
-    @Test
-    @DisplayName("respond Created on creation when request does not contain servings property")
-    void respond201OnCreationWithoutServings() {
-        given()
-                .log().ifValidationFails()
-                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
-                properties.getSecurity().getUser().getPassword())
-                .contentType(APPLICATION_JSON_VALUE)
-                .body("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\"}")
-                .when()
-                .post(RECIPES_API_URL)
-                .then()
-                .statusCode(CREATED.value());
+                .hasMessage("Validation error")
+                .detailsContainsExactlyInAnyOrder("Invalid request : should have either none or both properties ([\"measurementUnit\",\"quantity\"])");
     }
 
     @ParameterizedTest
     @ValueSource(ints = {Integer.MIN_VALUE, -1, 0})
-    @DisplayName("respond Bad Request with OpenAPI validation error on creation when request contains negative or zero servings")
-    void respond400OnCreationWithNegativeServings(int value) {
+    @DisplayName("respond Bad Request with validation error on creation when request contains negative quantity")
+    void respond400OnCreationWithNegativeQuantity(int quantity) {
         var error = given()
                 .log().ifValidationFails()
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                         properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body(format("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":%d}", value))
+                .body(format("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \"measurementUnit\":\"DOZEN\", \"quantity\": %d}", quantity))
                 .when()
-                .post(RECIPES_API_URL)
+                .post(RECIPE_INGREDIENTS_API_URL, ID.toString())
                 .then()
                 .statusCode(BAD_REQUEST.value())
                 .assertThat()
                 .extract().jsonPath().getObject("", Error.class);
         assertThat(error)
                 .hasCode(INVALID_REQUEST)
-                .hasMessage("OpenAPI validation error")
-                .detailsContainsExactlyInAnyOrder(format("[Path '/servings'] Numeric instance is lower than the required minimum (minimum: 1, found: %d)", value));
+                .hasMessage("Validation error")
+                .detailsContainsExactlyInAnyOrder(format("Invalid request body property 'quantity': must be greater than 0. Actual value is '%d'", quantity));
     }
 
     @Test
@@ -220,9 +173,9 @@ class RecipesOpenApiValidationTests {
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                 properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":2,\"other\":\"some value\"}")
+                .body(format("{\"id\":\"%s\",\"other\":\"some value\"}", IngredientMother.ID))
                 .when()
-                .post(RECIPES_API_URL)
+                .post(RECIPE_INGREDIENTS_API_URL, ID.toString())
                 .then()
                 .statusCode(CREATED.value());
     }

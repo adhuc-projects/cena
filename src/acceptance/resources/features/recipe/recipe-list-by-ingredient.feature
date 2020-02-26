@@ -6,10 +6,10 @@ Feature: List recipes filtered by ingredient
   Scenario: List recipes filtered by unknown ingredient
     Given a community user
     And the following existing ingredients
-      | name       | measurementTypes       |
-      | Tomato     | WEIGHT, COUNT          |
-      | Cucumber   | WEIGHT, COUNT          |
-      | Mozzarella | WEIGHT, COUNT          |
+      | name       | measurementTypes |
+      | Tomato     | WEIGHT, COUNT    |
+      | Cucumber   | WEIGHT, COUNT    |
+      | Mozzarella | WEIGHT, COUNT    |
     And the following existing recipes
       | name                                   | content                                                                                                                                  | servings |
       | Tomato, cucumber and mozzarella salad  | Cut everything into dices, mix it, dress it                                                                                              | 2        |
@@ -23,10 +23,10 @@ Feature: List recipes filtered by ingredient
   Scenario: Empty recipes list filtered by ingredient
     Given a community user
     And the following existing ingredients
-      | name       | measurementTypes       |
-      | Tomato     | WEIGHT, COUNT          |
-      | Cucumber   | WEIGHT, COUNT          |
-      | Mozzarella | WEIGHT, COUNT          |
+      | name       | measurementTypes |
+      | Tomato     | WEIGHT, COUNT    |
+      | Cucumber   | WEIGHT, COUNT    |
+      | Mozzarella | WEIGHT, COUNT    |
     And no existing recipe
     When he lists the recipes composed of ingredient "Cucumber"
     Then the recipes list is empty
@@ -35,11 +35,11 @@ Feature: List recipes filtered by ingredient
   Scenario: Empty recipes list filtered by non used ingredient
     Given a community user
     And the following existing ingredients
-      | name       | measurementTypes       |
-      | Tomato     | WEIGHT, COUNT          |
-      | Cucumber   | WEIGHT, COUNT          |
-      | Mozzarella | WEIGHT, COUNT          |
-      | Olive oil  | VOLUME                 |
+      | name       | measurementTypes |
+      | Tomato     | WEIGHT, COUNT    |
+      | Cucumber   | WEIGHT, COUNT    |
+      | Mozzarella | WEIGHT, COUNT    |
+      | Olive oil  | VOLUME           |
     And the following existing recipes
       | name                                   | content                                                                                                                                  | servings |
       | Tomato, cucumber and mozzarella salad  | Cut everything into dices, mix it, dress it                                                                                              | 2        |
@@ -61,10 +61,10 @@ Feature: List recipes filtered by ingredient
   Scenario: List recipes filtered by ingredient
     Given a community user
     And the following existing ingredients
-      | name       | measurementTypes       |
-      | Tomato     | WEIGHT, COUNT          |
-      | Cucumber   | WEIGHT, COUNT          |
-      | Mozzarella | WEIGHT, COUNT          |
+      | name       | measurementTypes |
+      | Tomato     | WEIGHT, COUNT    |
+      | Cucumber   | WEIGHT, COUNT    |
+      | Mozzarella | WEIGHT, COUNT    |
     And the following existing recipes
       | name                                   | content                                                                                                                                  | servings |
       | Tomato, cucumber and mozzarella salad  | Cut everything into dices, mix it, dress it                                                                                              | 2        |

@@ -15,10 +15,10 @@ Feature: List recipe's ingredients
     Given a community user
     And an existing "Tomato, cucumber and mozzarella salad" recipe
     And the following existing ingredients
-      | name       | measurementTypes       |
-      | Tomato     | WEIGHT, COUNT          |
-      | Cucumber   | WEIGHT, COUNT          |
-      | Mozzarella | WEIGHT, COUNT          |
+      | name       | measurementTypes |
+      | Tomato     | WEIGHT, COUNT    |
+      | Cucumber   | WEIGHT, COUNT    |
+      | Mozzarella | WEIGHT, COUNT    |
     And the following ingredients in the recipe
       | name       |
       | Tomato     |

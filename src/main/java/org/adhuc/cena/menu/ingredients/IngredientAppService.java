@@ -53,6 +53,7 @@ public interface IngredientAppService {
 
     /**
      * Deletes the ingredients.
+     *
      * @throws IngredientNotDeletableRelatedToObjectException if at least one ingredient is related to another object.
      */
     void deleteIngredients();

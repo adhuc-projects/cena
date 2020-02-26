@@ -41,8 +41,8 @@ public class CreateIngredient {
     /**
      * Creates an ingredient creation command.
      *
-     * @param ingredientId the ingredient identity.
-     * @param ingredientName the ingredient name.
+     * @param ingredientId               the ingredient identity.
+     * @param ingredientName             the ingredient name.
      * @param ingredientMeasurementTypes the ingredient measurement types.
      */
     public CreateIngredient(@NonNull IngredientId ingredientId, @NonNull Name ingredientName,

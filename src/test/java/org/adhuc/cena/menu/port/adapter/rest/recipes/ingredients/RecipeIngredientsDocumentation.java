@@ -128,14 +128,14 @@ class RecipeIngredientsDocumentation {
                 .andExpect(status().isCreated()).andDo(documentationHandler
                 .document(pathParameters(
                         parameterWithName("id").description("The <<resources-recipe,recipe>> identity")
-                ), requestFields(
+                        ), requestFields(
                         fields.withPath("id").description("The recipe ingredient identity. Corresponds to the identity of the related <<resources-ingredient,ingredient>>"),
                         fields.withPath("quantity").description("The quantity of ingredient in the recipe"),
                         fields.withPath("measurementUnit").description("<<measurement-units-list,Unit of measurement>> " +
                                 "for a quantity of ingredient in a recipe. Depends on the <<measurement-types-list,measurement types>> " +
                                 "defined for the ingredient")
-                ),
-                new MeasurementUnitsSnippet()));
+                        ),
+                        new MeasurementUnitsSnippet()));
     }
 
     @Test

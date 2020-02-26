@@ -19,7 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpHeaders.LOCATION;
 
-import static org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue.*;
+import static org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue.DEFAULT_NAME;
+import static org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue.DEFAULT_SERVINGS;
 import static org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType.AUTHENTICATED_USER;
 
 import java.util.function.Supplier;

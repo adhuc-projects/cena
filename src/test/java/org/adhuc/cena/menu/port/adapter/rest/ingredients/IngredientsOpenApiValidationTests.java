@@ -88,7 +88,7 @@ class IngredientsOpenApiValidationTests {
         given()
                 .log().ifValidationFails()
                 .auth().preemptive().basic(properties.getSecurity().getIngredientManager().getUsername(),
-                        properties.getSecurity().getIngredientManager().getPassword())
+                properties.getSecurity().getIngredientManager().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
                 .body("{\"name\":\"Tomato\",\"other\":\"some value\"}")
                 .when()

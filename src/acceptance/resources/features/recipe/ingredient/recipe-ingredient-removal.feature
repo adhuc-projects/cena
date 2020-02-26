@@ -92,10 +92,10 @@ Feature: Remove ingredients from recipe
     Given an authenticated user
     And an existing "Tomato, cucumber and mozzarella salad" recipe authored by the authenticated user
     And the following existing ingredients
-      | name       | measurementTypes       |
-      | Tomato     | WEIGHT, COUNT          |
-      | Cucumber   | WEIGHT, COUNT          |
-      | Mozzarella | WEIGHT, COUNT          |
+      | name       | measurementTypes |
+      | Tomato     | WEIGHT, COUNT    |
+      | Cucumber   | WEIGHT, COUNT    |
+      | Mozzarella | WEIGHT, COUNT    |
     And the recipe contains no ingredient
     When he removes all the ingredients from the recipe
     Then the ingredients are removed from the recipe
@@ -106,10 +106,10 @@ Feature: Remove ingredients from recipe
     Given an authenticated user
     And an existing "Tomato, cucumber and mozzarella salad" recipe authored by the authenticated user
     And the following existing ingredients
-      | name       | measurementTypes       |
-      | Tomato     | WEIGHT, COUNT          |
-      | Cucumber   | WEIGHT, COUNT          |
-      | Mozzarella | WEIGHT, COUNT          |
+      | name       | measurementTypes |
+      | Tomato     | WEIGHT, COUNT    |
+      | Cucumber   | WEIGHT, COUNT    |
+      | Mozzarella | WEIGHT, COUNT    |
     And the following ingredients in the recipe
       | name       |
       | Tomato     |
@@ -124,10 +124,10 @@ Feature: Remove ingredients from recipe
     Given a community user
     And an existing "Tomato, cucumber and mozzarella salad" recipe
     And the following existing ingredients
-      | name       | measurementTypes       |
-      | Tomato     | WEIGHT, COUNT          |
-      | Cucumber   | WEIGHT, COUNT          |
-      | Mozzarella | WEIGHT, COUNT          |
+      | name       | measurementTypes |
+      | Tomato     | WEIGHT, COUNT    |
+      | Cucumber   | WEIGHT, COUNT    |
+      | Mozzarella | WEIGHT, COUNT    |
     And the following ingredients in the recipe
       | name       |
       | Tomato     |
@@ -141,10 +141,10 @@ Feature: Remove ingredients from recipe
     Given an authenticated user
     And an existing "Tomato, cucumber and mozzarella salad" recipe authored by another user
     And the following existing ingredients
-      | name       | measurementTypes       |
-      | Tomato     | WEIGHT, COUNT          |
-      | Cucumber   | WEIGHT, COUNT          |
-      | Mozzarella | WEIGHT, COUNT          |
+      | name       | measurementTypes |
+      | Tomato     | WEIGHT, COUNT    |
+      | Cucumber   | WEIGHT, COUNT    |
+      | Mozzarella | WEIGHT, COUNT    |
     And the following ingredients in the recipe
       | name       |
       | Tomato     |
@@ -158,10 +158,10 @@ Feature: Remove ingredients from recipe
     Given an authenticated ingredient manager
     And an existing "Tomato, cucumber and mozzarella salad" recipe authored by the authenticated user
     And the following existing ingredients
-      | name       | measurementTypes       |
-      | Tomato     | WEIGHT, COUNT          |
-      | Cucumber   | WEIGHT, COUNT          |
-      | Mozzarella | WEIGHT, COUNT          |
+      | name       | measurementTypes |
+      | Tomato     | WEIGHT, COUNT    |
+      | Cucumber   | WEIGHT, COUNT    |
+      | Mozzarella | WEIGHT, COUNT    |
     And the following ingredients in the recipe
       | name       |
       | Tomato     |
@@ -176,10 +176,10 @@ Feature: Remove ingredients from recipe
     Given an authenticated super administrator
     And an existing "Tomato, cucumber and mozzarella salad" recipe authored by the authenticated user
     And the following existing ingredients
-      | name       | measurementTypes       |
-      | Tomato     | WEIGHT, COUNT          |
-      | Cucumber   | WEIGHT, COUNT          |
-      | Mozzarella | WEIGHT, COUNT          |
+      | name       | measurementTypes |
+      | Tomato     | WEIGHT, COUNT    |
+      | Cucumber   | WEIGHT, COUNT    |
+      | Mozzarella | WEIGHT, COUNT    |
     And the following ingredients in the recipe
       | name       |
       | Tomato     |
@@ -194,10 +194,10 @@ Feature: Remove ingredients from recipe
     Given an authenticated super administrator
     And an existing "Tomato, cucumber and mozzarella salad" recipe authored by another user
     And the following existing ingredients
-      | name       | measurementTypes       |
-      | Tomato     | WEIGHT, COUNT          |
-      | Cucumber   | WEIGHT, COUNT          |
-      | Mozzarella | WEIGHT, COUNT          |
+      | name       | measurementTypes |
+      | Tomato     | WEIGHT, COUNT    |
+      | Cucumber   | WEIGHT, COUNT    |
+      | Mozzarella | WEIGHT, COUNT    |
     And the following ingredients in the recipe
       | name       |
       | Tomato     |

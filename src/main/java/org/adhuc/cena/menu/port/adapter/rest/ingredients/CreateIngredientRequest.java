@@ -45,7 +45,7 @@ class CreateIngredientRequest {
     /**
      * Converts this request to a {@code CreateIngredient} command.
      *
-     * @param  id the ingredient identity.
+     * @param id the ingredient identity.
      * @return the ingredient creation command.
      */
     CreateIngredient toCommand(@NonNull IngredientId id) {

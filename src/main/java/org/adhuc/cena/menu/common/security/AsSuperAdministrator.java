@@ -28,7 +28,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
  * @version 0.1.0
  * @since 0.1.0
  */
-@Target({ ElementType.METHOD, ElementType.TYPE })
+@Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented

@@ -73,7 +73,7 @@ class RequestValidationExceptionHandler extends ResponseEntityExceptionHandler {
         var error = new Error(BAD_REQUEST, INVALID_REQUEST)
                 .withMessage("OpenAPI validation error")
                 .withDetails(e.getValidationReport().getMessages().stream()
-                .map(ValidationReport.Message::getMessage).collect(toList()));
+                        .map(ValidationReport.Message::getMessage).collect(toList()));
         return handleExceptionInternal(e, error, new HttpHeaders(), BAD_REQUEST, request);
     }
 

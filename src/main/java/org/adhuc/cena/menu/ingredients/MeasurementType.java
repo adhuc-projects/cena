@@ -27,6 +27,6 @@ public enum MeasurementType {
     WEIGHT,
     VOLUME,
     COUNT,
-    AT_CONVENIENCE;
+    AT_CONVENIENCE
 
 }

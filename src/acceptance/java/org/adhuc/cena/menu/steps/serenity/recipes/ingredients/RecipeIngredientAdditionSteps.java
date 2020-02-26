@@ -79,7 +79,7 @@ public class RecipeIngredientAdditionSteps {
     }
 
     private RecipeIngredientValue addIngredientToRecipe(RecipeIngredientValue recipeIngredient, RecipeValue recipe,
-                                       Supplier<RequestSpecification> specificationSupplier) {
+                                                        Supplier<RequestSpecification> specificationSupplier) {
         specificationSupplier.get().contentType(HAL_JSON_VALUE).body(recipeIngredient)
                 .post(recipe.getIngredients()).andReturn();
         return recipeIngredient;

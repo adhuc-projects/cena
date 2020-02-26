@@ -32,7 +32,9 @@ import org.adhuc.cena.menu.util.Assert;
 @Accessors(fluent = true)
 public class Quantity {
 
-    /** A quantity definition used when no quantity has been explicitly defined for an ingredient in a recipe. */
+    /**
+     * A quantity definition used when no quantity has been explicitly defined for an ingredient in a recipe.
+     */
     public static final Quantity UNDEFINED = new Quantity(1, MeasurementUnit.UNDEFINED);
 
     private final int value;

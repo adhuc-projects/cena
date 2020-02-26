@@ -21,8 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
 import static org.adhuc.cena.menu.recipes.MeasurementUnit.CENTILITER;
-import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 import static org.adhuc.cena.menu.recipes.RecipeMother.ID;
+import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
 import org.junit.jupiter.api.*;
 

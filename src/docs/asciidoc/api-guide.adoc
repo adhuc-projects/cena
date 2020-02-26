@@ -10,7 +10,8 @@ Alexandre Carbenay;
 [[openapi-specification]]
 == Open API Specification
 
-Menu Generation RESTful API also defines an https://swagger.io/specification/[Open API] specification. This specification is part of the incoming requests validation, and should be used by clients to consume the API.
+Menu Generation RESTful API also defines an https://swagger.io/specification/[Open API] specification.
+This specification is part of the incoming requests validation, and should be used by clients to consume the API.
 
 The Open API specification can be found link:openapi.yml[here].
 
@@ -72,8 +73,8 @@ include::{snippets}/headers-example/response-headers.adoc[]
 [[overview-errors]]
 == Errors
 
-Whenever an error response (status code >= 400) is returned, the body will contain a JSON object that describes the
-problem. The error object has the following structure:
+Whenever an error response (status code >= 400) is returned, the body will contain a JSON object that describes the problem.
+The error object has the following structure:
 
 include::{snippets}/error-example/response-fields.adoc[]
 
@@ -92,8 +93,10 @@ include::{snippets}/errors-list/errors.adoc[]
 [[overview-hypermedia]]
 == Hypermedia
 
-Menu Generation RESTful API uses hypermedia and resources include links to other resources in their responses. Responses are in http://stateless.co/hal_specification.html[Hypertext Application Language (HAL)] format.
-Links can be found beneath the `_links` key. Users of the API should not create URIs themselves, instead they should use the above-described links to navigate.
+Menu Generation RESTful API uses hypermedia and resources include links to other resources in their responses.
+Responses are in http://stateless.co/hal_specification.html[Hypertext Application Language (HAL)] format.
+Links can be found beneath the `_links` key.
+Users of the API should not create URIs themselves, instead they should use the above-described links to navigate.
 
 [[resources]]
 = Resources
@@ -129,7 +132,8 @@ The Ingredients resources is used to create and list ingredients.
 [[resources-ingredients-list]]
 === Listing ingredients
 
-A `GET` request will list all of the ingredients. Ingredients collection is accessible for every user, either authenticated or not.
+A `GET` request will list all of the ingredients.
+Ingredients collection is accessible for every user, either authenticated or not.
 
 ==== Response structure
 
@@ -151,7 +155,9 @@ include::{snippets}/ingredients-list-example/links.adoc[]
 [[resources-ingredients-create]]
 === Creating an ingredient
 
-A `POST` request will create an ingredient. The specified ingredient name *must not already be used* by an existing ingredient. Only an ingredient manager can create ingredients.
+A `POST` request will create an ingredient.
+The specified ingredient name *must not already be used* by an existing ingredient.
+Only an ingredient manager can create ingredients.
 
 ==== Request structure
 
@@ -175,7 +181,9 @@ include::{snippets}/ingredients-create-example/measurement-types.adoc[]
 [[resources-ingredients-delete]]
 === Deleting ingredients
 
-A `DELETE` request will delete all of the ingredients. Only a super administrator can delete all ingredients directly. An ingredient manager can delete specific ingredients through the corresponding ingredient resource.
+A `DELETE` request will delete all of the ingredients.
+Only a super administrator can delete all ingredients directly.
+An ingredient manager can delete specific ingredients through the corresponding ingredient resource.
 
 ==== Example request
 
@@ -198,7 +206,8 @@ include::{snippets}/ingredient-detail-example/links.adoc[]
 [[resources-ingredient-retrieve]]
 === Retrieve an ingredient
 
-A `GET` request will retrieve the details of an ingredient.  Ingredient details are accessible for every user, either authenticated or not.
+A `GET` request will retrieve the details of an ingredient.
+Ingredient details are accessible for every user, either authenticated or not.
 
 ==== Path Parameters
 
@@ -219,7 +228,8 @@ include::{snippets}/ingredient-detail-example/http-response.adoc[]
 [[resources-ingredient-delete]]
 === Delete an ingredient
 
-A `DELETE` request will delete the ingredient. Only an ingredient manager or super administrator can delete an ingredient.
+A `DELETE` request will delete the ingredient.
+Only an ingredient manager or super administrator can delete an ingredient.
 
 ==== Path Parameters
 
@@ -241,7 +251,8 @@ The Recipes resources is used to create and list recipes.
 [[resources-recipes-list]]
 === Listing recipes
 
-A `GET` request will list all of the recipes. Recipes collection is accessible for every user, either authenticated or not.
+A `GET` request will list all of the recipes.
+Recipes collection is accessible for every user, either authenticated or not.
 
 ==== Request structure
 
@@ -267,8 +278,9 @@ include::{snippets}/recipes-list-example/links.adoc[]
 [[resources-recipes-create]]
 === Creating a recipe
 
-A `POST` request will create a recipe. Only an authenticated user can create recipes. The user that creates a recipe is
-called a recipe author.
+A `POST` request will create a recipe.
+Only an authenticated user can create recipes.
+The user that creates a recipe is called a recipe author.
 
 ==== Request structure
 
@@ -285,7 +297,8 @@ include::{snippets}/recipes-create-example/http-response.adoc[]
 [[resources-recipes-delete]]
 === Deleting recipes
 
-A `DELETE` request will delete all of the recipes. Only a super administrator can delete all recipes directly.
+A `DELETE` request will delete all of the recipes.
+Only a super administrator can delete all recipes directly.
 
 ==== Example request
 
@@ -308,7 +321,8 @@ include::{snippets}/recipe-detail-example/links.adoc[]
 [[resources-recipe-retrieve]]
 === Retrieve a recipe
 
-A `GET` request will retrieve the details of a recipe. Recipe details are accessible for every user, either authenticated or not.
+A `GET` request will retrieve the details of a recipe.
+Recipe details are accessible for every user, either authenticated or not.
 
 ==== Path Parameters
 
@@ -329,7 +343,8 @@ include::{snippets}/recipe-detail-example/http-response.adoc[]
 [[resources-recipe-delete]]
 === Delete a recipe
 
-A `DELETE` request will delete the recipe. Only the recipe author or a super administrator can delete a recipe.
+A `DELETE` request will delete the recipe.
+Only the recipe author or a super administrator can delete a recipe.
 
 ==== Path Parameters
 
@@ -346,14 +361,14 @@ include::{snippets}/recipe-delete-example/http-response.adoc[]
 [[resources-recipe-ingredients]]
 == Recipe ingredients
 
-The Recipe Ingredients resource is used to create and list recipe ingredients. Recipe ingredients allow to link a recipe
-to the ingredients that compose it.
+The Recipe Ingredients resource is used to create and list recipe ingredients.
+Recipe ingredients allow to link a recipe to the ingredients that compose it.
 
 [[resources-recipe-ingredients-list]]
 === Listing recipe ingredients
 
-A `GET` request will list the recipe's related ingredients. Recipe's ingredients collection is accessible for every
-user, either authenticated or not.
+A `GET` request will list the recipe's related ingredients.
+Recipe's ingredients collection is accessible for every user, either authenticated or not.
 
 ==== Path Parameters
 
@@ -379,8 +394,8 @@ include::{snippets}/recipe-ingredients-list-example/links.adoc[]
 [[resources-recipe-ingredients-create]]
 === Creating a recipe ingredient
 
-A `POST` request will add an ingredient to a recipe's related ingredients collection. Only the recipe author or a super
-administrator can add an ingredient to a recipe.
+A `POST` request will add an ingredient to a recipe's related ingredients collection.
+Only the recipe author or a super administrator can add an ingredient to a recipe.
 
 ==== Path Parameters
 
@@ -402,16 +417,16 @@ include::{snippets}/recipe-ingredients-create-example/http-response.adoc[]
 ==== Measurement units list
 
 Here is the list of all measurement units that can be used to create a recipe ingredient with their associated
-<<measurement-types-list, measurement type>>. Note that a measurement unit won't be accepted during recipe ingredient
-creation if its associated type does not belong to the ingredient's measurement types.
+<<measurement-types-list, measurement type>>.
+Note that a measurement unit won't be accepted during recipe ingredient creation if its associated type does not belong to the ingredient's measurement types.
 
 include::{snippets}/recipe-ingredients-create-example/measurement-units.adoc[]
 
 [[resources-recipe-ingredients-delete]]
 === Deleting recipe ingredients
 
-A `DELETE` request will delete all of the recipe's related ingredients. Only the recipe author or a super administrator
-can delete all recipe's ingredients directly.
+A `DELETE` request will delete all of the recipe's related ingredients.
+Only the recipe author or a super administrator can delete all recipe's ingredients directly.
 
 ==== Example request
 
@@ -434,8 +449,8 @@ include::{snippets}/recipe-ingredient-detail-example/links.adoc[]
 [[resources-recipe-ingredient-retrieve]]
 === Retrieve a recipe's ingredient
 
-A `GET` request will retrieve the details of a recipe's ingredient. Recipe's ingredient details are accessible for every
-user, either authenticated or not.
+A `GET` request will retrieve the details of a recipe's ingredient.
+Recipe's ingredient details are accessible for every user, either authenticated or not.
 
 ==== Path Parameters
 
@@ -456,8 +471,8 @@ include::{snippets}/recipe-ingredient-detail-example/http-response.adoc[]
 [[resources-recipe-ingredient-delete]]
 === Delete a recipe ingredient
 
-A `DELETE` request will delete the recipe ingredient. Only the recipe author or a super administrator can remove
-ingredients from recipes.
+A `DELETE` request will delete the recipe ingredient.
+Only the recipe author or a super administrator can remove ingredients from recipes.
 
 ==== Path Parameters
 

@@ -46,7 +46,7 @@ public class IngredientModelAssembler extends RepresentationModelAssemblerSuppor
     @Override
     public IngredientModel toModel(Ingredient ingredient) {
         return instantiateModel(ingredient)
-            .add(links.linkToItemResource(IngredientModel.class, ingredient.id()).withSelfRel());
+                .add(links.linkToItemResource(IngredientModel.class, ingredient.id()).withSelfRel());
     }
 
     @Override

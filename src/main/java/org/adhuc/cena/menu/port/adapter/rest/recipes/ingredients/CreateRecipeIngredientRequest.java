@@ -66,14 +66,14 @@ class CreateRecipeIngredientRequest {
      */
     AddIngredientToRecipe toCommand(@NonNull RecipeId id) {
         return new AddIngredientToRecipe(new IngredientId(ingredientId), id,
-                quantity != null ? new Quantity(quantity, measurementUnit): Quantity.UNDEFINED);
+                quantity != null ? new Quantity(quantity, measurementUnit) : Quantity.UNDEFINED);
     }
 
     @Documented
     @Target(TYPE)
     @Retention(RUNTIME)
     @Constraint(validatedBy = RequestConstraintValidator.class)
-    static @interface ValidRequest {
+    @interface ValidRequest {
         String message() default "{recipes.ingredients.CreateRecipeIngredient.ValidRequest.message}";
 
         Class<?>[] groups() default {};

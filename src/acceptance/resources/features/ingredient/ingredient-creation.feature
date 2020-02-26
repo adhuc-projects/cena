@@ -22,9 +22,9 @@ Feature: Create an ingredient in the system
     Given an authenticated ingredient manager
     And a non-existent "Tomato" ingredient
     When he creates the ingredient with the following measurement types
-      | VOLUME          |
-      | AT_CONVENIENCE  |
-      | UNKNOWN         |
+      | VOLUME         |
+      | AT_CONVENIENCE |
+      | UNKNOWN        |
     Then an error notifies that ingredient cannot be created with unknown "UNKNOWN" measurement type
 
   @Smoke @Security

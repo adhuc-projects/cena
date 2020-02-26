@@ -43,7 +43,7 @@ final class RecipeIngredientListClientDelegate {
     /**
      * Fetches the recipe's ingredients from server.
      *
-     * @param  recipe the recipe.
+     * @param recipe the recipe.
      * @return the fetched recipe ingredients.
      */
     public List<RecipeIngredientValue> fetchRecipeIngredients(@NonNull RecipeValue recipe) {

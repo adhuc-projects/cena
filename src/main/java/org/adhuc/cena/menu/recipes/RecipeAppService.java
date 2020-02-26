@@ -17,8 +17,6 @@ package org.adhuc.cena.menu.recipes;
 
 import java.util.List;
 
-import org.adhuc.cena.menu.ingredients.IngredientRelatedService;
-
 /**
  * An application service for recipes.
  *

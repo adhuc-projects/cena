@@ -25,7 +25,8 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
+import static org.adhuc.cena.menu.ingredients.IngredientMother.ID;
+import static org.adhuc.cena.menu.ingredients.IngredientMother.ingredient;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;

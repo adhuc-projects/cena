@@ -15,7 +15,8 @@
  */
 package org.adhuc.cena.menu.common.security;
 
-import static org.adhuc.cena.menu.common.security.RolesDefinition.*;
+import static org.adhuc.cena.menu.common.security.RolesDefinition.INGREDIENT_MANAGER_ROLE;
+import static org.adhuc.cena.menu.common.security.RolesDefinition.SUPER_ADMINISTRATOR_ROLE;
 
 import java.lang.annotation.*;
 
@@ -28,7 +29,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
  * @version 0.1.0
  * @since 0.1.0
  */
-@Target({ ElementType.METHOD, ElementType.TYPE })
+@Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented

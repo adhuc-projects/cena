@@ -105,8 +105,8 @@ class IngredientsDocumentation {
                 .document(requestFields(
                         fields.withPath("name").description("The name of the ingredient, unique in the system"),
                         fields.withPath("measurementTypes").description("The <<measurement-types-list, types of measurement>> of the ingredient")
-                ),
-                new MeasurementTypesSnippet()));
+                        ),
+                        new MeasurementTypesSnippet()));
     }
 
     @Test

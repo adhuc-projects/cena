@@ -350,7 +350,7 @@ class RecipeIngredientsControllerShould {
     }
 
     void assertJsonContainsRecipeIngredient(ResultActions resultActions, String jsonPath,
-                                  RecipeIngredient recipeIngredient) throws Exception {
+                                            RecipeIngredient recipeIngredient) throws Exception {
         resultActions.andExpect(jsonPath(jsonPath + ".id").exists())
                 .andExpect(jsonPath(jsonPath + ".id", equalTo(recipeIngredient.ingredientId().toString())));
         if (UNDEFINED.equals(recipeIngredient.quantity())) {

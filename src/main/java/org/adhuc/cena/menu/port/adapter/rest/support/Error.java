@@ -41,6 +41,13 @@ import org.adhuc.cena.menu.common.ExceptionCode;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 class Error {
 
+    private final LocalDateTime timestamp = LocalDateTime.now();
+    private final int status;
+    private final String error;
+    private final String message;
+    private final int code;
+    private final List<String> details;
+
     Error(HttpStatus httpStatus, ExceptionCode exceptionCode) {
         this.status = httpStatus.value();
         this.error = exceptionCode.description();
@@ -48,12 +55,5 @@ class Error {
         this.code = exceptionCode.code();
         this.details = Collections.emptyList();
     }
-
-    private final LocalDateTime timestamp = LocalDateTime.now();
-    private final int status;
-    private final String error;
-    private final String message;
-    private final int code;
-    private final List<String> details;
 
 }

@@ -52,10 +52,11 @@ class RestControllerErrorAttributes extends DefaultErrorAttributes {
 
     private void addRootExceptionCode(Map<String, Object> errorAttributes, Throwable error) {
         if (error != null) {
+            var cause = error;
             while (ServletException.class.isAssignableFrom(error.getClass()) && error.getCause() != null) {
-                error = error.getCause();
+                cause = error.getCause();
             }
-            addExceptionCode(errorAttributes, error);
+            addExceptionCode(errorAttributes, cause);
         }
     }
 

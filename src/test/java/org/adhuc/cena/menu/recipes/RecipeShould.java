@@ -239,7 +239,7 @@ class RecipeShould {
     @DisplayName("return true when checking if recipe is composed of known ingredient")
     void isComposedOfKnownIngredient() {
         var recipe = recipe();
-        var ingredient = recipe.ingredient(TOMATO_ID);
+        recipe.ingredient(TOMATO_ID);
         assertThat(recipe.isComposedOf(TOMATO_ID)).isTrue();
     }
 

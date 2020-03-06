@@ -4,32 +4,30 @@
 
 This project contains all the sources for the cena's menu generation.
 
-## [TL;DR]
+## \[TL;DR\]
 
 Considering you have installed the [prerequesite tools](#general-prerequisites) `Make`, `Docker` and `Java` follow these steps to get started:
 
-- To build the project, from the root folder, run:
-`make`
+  - To build the project, from the root folder, run `make`
 
-- To start up the application and its dependencies, run:
-`make up`
+  - To start up the application and its dependencies, run `make up`
 
-- You can access the API documentation page at the following address: [`http://localhost:8080/api/docs/api-guide.html`](http://localhost:8080/api/docs/api-guide.html)
+  - You can access the API documentation page at the following address: [`http://localhost:8080/api/docs/api-guide.html`](http://localhost:8080/api/docs/api-guide.html)
 
-- To stop the application and its dependencies, run: `make down`
+  - To stop the application and its dependencies, run `make down`
 
 ## Project resources
 
-- [Github](https://github.com/adhuc-projects/cena)
-- [Travis CI](https://travis-ci.com/adhuc-projects/cena/)
+  - [Github](https://github.com/adhuc-projects/cena)
+  - [Travis CI](https://travis-ci.com/adhuc-projects/cena/)
 
 ## General prerequisites
 
 ### Tools installation
 
-- [Git](http://help.github.com/set-up-git-redirect)
-- [Open JDK 11](https://openjdk.java.net/install/)
-- [Docker](https://www.docker.com/) and [docker-compose](https://docs.docker.com/compose/install/)
+  - [Git](http://help.github.com/set-up-git-redirect)
+  - [Open JDK 11](https://openjdk.java.net/install/)
+  - [Docker](https://www.docker.com/) and [docker-compose](https://docs.docker.com/compose/install/)
 
 ### Makefile
 
@@ -57,7 +55,7 @@ See [Running jar](#running-jar) section to know how to run directly from JAR fil
 
 The project contains a `Makefile` to execute different targets for build and execution. Execution targets enable configuring local environment. To override default values, create a `.env` file in the project root folder, then complete the file with the following (with default values) and adapt :
 
-```
+```properties
 PORT=8080
 ```
 

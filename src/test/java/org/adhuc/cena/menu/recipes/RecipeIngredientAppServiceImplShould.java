@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
 import static org.adhuc.cena.menu.recipes.MeasurementUnit.CENTILITER;
-import static org.adhuc.cena.menu.recipes.RecipeMother.ID;
 import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
 import org.junit.jupiter.api.*;
@@ -179,8 +178,8 @@ class RecipeIngredientAppServiceImplShould {
             var exception = assertThrows(InvalidMeasurementUnitForIngredientException.class,
                     () -> service.addIngredientToRecipe(command));
             assertThat(exception.getMessage()).isEqualTo("Unable to add ingredient '" + IngredientMother.ID +
-                    "' to recipe '" + ID + "': measurement unit " + CENTILITER + " does not correspond to ingredient's " +
-                    "measurement types " + MEASUREMENT_TYPES);
+                    "' to recipe '" + RecipeMother.ID + "': measurement unit " + CENTILITER +
+                    " does not correspond to ingredient's measurement types " + MEASUREMENT_TYPES);
         }
 
         @Test

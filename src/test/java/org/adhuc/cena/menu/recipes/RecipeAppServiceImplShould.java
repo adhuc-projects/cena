@@ -183,7 +183,7 @@ class RecipeAppServiceImplShould {
         @DisplayName("delete tomato, cucumber and mozzarella salad successfully")
         void deleteTomatoCucumberAndMozzaSalad() {
             assumeThat(service.getRecipe(RecipeMother.ID)).isNotNull();
-            service.deleteRecipe(RecipeMother.deleteCommand());
+            service.deleteRecipe(deleteCommand());
             assertThrows(EntityNotFoundException.class, () -> service.getRecipe(RecipeMother.ID));
         }
 

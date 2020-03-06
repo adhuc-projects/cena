@@ -30,7 +30,6 @@ import io.restassured.specification.RequestSpecification;
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
-import org.assertj.core.api.SoftAssertions;
 
 import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientStorageDelegate;
 import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue;
@@ -106,7 +105,7 @@ public class RecipeIngredientAdditionSteps {
     public void assertNonCorrespondingMeasurementUnit(IngredientValue ingredient, RecipeValue recipe,
                                                       RecipeIngredientValue recipeIngredient) {
         var jsonPath = assertBadRequest().extract().jsonPath();
-        SoftAssertions.assertSoftly(softly -> {
+        assertSoftly(softly -> {
             softly.assertThat(jsonPath.getString("message")).contains("Unable to add ingredient '" + ingredient.id() +
                     "' to recipe '" + recipe.id() + "': measurement unit " + recipeIngredient.measurementUnit() +
                     " does not correspond to ingredient's measurement types " + ingredient.measurementTypes());

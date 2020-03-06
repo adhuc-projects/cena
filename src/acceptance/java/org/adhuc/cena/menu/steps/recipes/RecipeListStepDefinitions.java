@@ -106,7 +106,7 @@ public class RecipeListStepDefinitions {
 
     @When("^he lists the recipes composed of unknown ingredient$")
     public void listRecipesComposedOfUnknownIngredient() {
-        var recipes = recipeList.getRecipesComposedOfIngredient(
+        recipeList.getRecipesComposedOfIngredient(
                 buildUnknownIngredientValue("unknown", ingredientList.ingredientsResourceUrl()));
     }
 

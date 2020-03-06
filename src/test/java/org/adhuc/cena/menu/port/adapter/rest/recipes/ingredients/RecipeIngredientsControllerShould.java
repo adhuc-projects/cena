@@ -93,7 +93,7 @@ class RecipeIngredientsControllerShould {
 
     @Nested
     @DisplayName("with 2 ingredients")
-    class with2Ingredients {
+    class With2Ingredients {
 
         private List<RecipeIngredient> ingredients;
 

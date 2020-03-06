@@ -76,7 +76,7 @@ class IngredientsControllerShould {
 
     @Nested
     @DisplayName("with 2 ingredients")
-    class with2Ingredients {
+    class With2Ingredients {
 
         private List<Ingredient> ingredients;
 
@@ -266,7 +266,7 @@ class IngredientsControllerShould {
 
         mvc.perform(post(INGREDIENTS_API_URL)
                 .contentType(HAL_JSON)
-                .content(String.format("{\"name\":\"%s\",\"measurementTypes\":[\"WEIGHT\", \"COUNT\"]}", NAME))
+                .content(format("{\"name\":\"%s\",\"measurementTypes\":[\"WEIGHT\", \"COUNT\"]}", NAME))
         ).andExpect(status().isCreated());
 
         verify(ingredientAppServiceMock).createIngredient(commandCaptor.capture());

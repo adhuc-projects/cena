@@ -4,7 +4,7 @@ buildscript {
 	}
 	configurations.maybeCreate("pitest")
 	dependencies {
-		classpath('net.serenity-bdd:serenity-gradle-plugin:2.0.81')
+		classpath('net.serenity-bdd:serenity-gradle-plugin:2.1.8')
 		classpath('info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.5')
 		pitest('org.pitest:pitest-junit5-plugin:0.8')
 	}
@@ -13,11 +13,11 @@ buildscript {
 plugins {
 	id 'java'
 	id 'eclipse'
-	id 'org.springframework.boot' version '2.2.0.RELEASE'
-	id 'com.palantir.docker' version '0.22.1'
-	id 'com.avast.gradle.docker-compose' version '0.9.5'
+	id 'org.springframework.boot' version '2.2.5.RELEASE'
+	id 'com.palantir.docker' version '0.25.0'
+	id 'com.avast.gradle.docker-compose' version '0.10.9'
 	id 'org.asciidoctor.convert' version '1.5.9.2'
-	id 'io.franzbecker.gradle-lombok' version '3.2.0'
+	id 'io.franzbecker.gradle-lombok' version '3.3.0'
 	id 'jacoco'
 	id 'info.solidsoft.pitest' version '1.4.5'
 	id 'com.github.hierynomus.license' version '0.15.0'
@@ -49,15 +49,16 @@ configurations {
 }
 
 def moduleName = 'org.adhuc.cena.menu'
-def springBootVersion = '2.2.0.RELEASE'
+def springBootVersion = '2.2.5.RELEASE'
 def springRestDocsVersion = '2.0.4.RELEASE'
-def lombokVersion = '1.18.10'
-def swaggerVersion = '1.5.24'
-def swaggerValidatorVersion = '2.8.0'
-def archUnitVersion = '0.11.0'
-def restAssuredVersion = '4.1.2'
-def serenityVersion = '2.0.81'
-def serenityCucumberVersion = '1.9.45'
+def lombokVersion = '1.18.12'
+def commonsIoVersion = '2.6'
+def swaggerVersion = '1.6.0'
+def swaggerValidatorVersion = '2.9.0'
+def archUnitVersion = '0.13.1'
+def restAssuredVersion = '4.2.0'
+def serenityVersion = '2.1.8'
+def serenityCucumberVersion = '1.9.51'
 def snippetsDir = file('build/generated-snippets')
 
 dependencies {
@@ -66,7 +67,7 @@ dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-hateoas')
 	implementation('org.springframework.boot:spring-boot-starter-web')
 	implementation('org.springframework.boot:spring-boot-starter-security')
-	implementation("commons-io:commons-io:2.6")
+	implementation("commons-io:commons-io:${commonsIoVersion}")
 	implementation("io.swagger:swagger-core:${swaggerVersion}")
 	implementation("com.atlassian.oai:swagger-request-validator-springmvc:${swaggerValidatorVersion}")
 	runtimeOnly('org.springframework.boot:spring-boot-devtools')

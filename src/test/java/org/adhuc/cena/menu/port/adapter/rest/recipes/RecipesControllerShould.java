@@ -201,7 +201,7 @@ class RecipesControllerShould {
     void respond400OnCreationWithBlankName() throws Exception {
         mvc.perform(post(RECIPES_API_URL)
                 .contentType(APPLICATION_JSON)
-                .content("{\"name\":\" \t\",\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":2}")
+                .content("{\"name\":\" \",\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":2}")
         ).andExpect(status().isBadRequest());
     }
 
@@ -221,7 +221,7 @@ class RecipesControllerShould {
     void respond400OnCreationWithBlankContent() throws Exception {
         mvc.perform(post(RECIPES_API_URL)
                 .contentType(APPLICATION_JSON)
-                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\" \t\",\"servings\":2}")
+                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\" \",\"servings\":2}")
         ).andExpect(status().isBadRequest());
     }
 
@@ -232,7 +232,7 @@ class RecipesControllerShould {
     void respond400OnCreationWithNegativeServings(int value) throws Exception {
         mvc.perform(post(RECIPES_API_URL)
                 .contentType(APPLICATION_JSON)
-                .content(String.format("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\" \t\",\"servings\":%d}", value))
+                .content(String.format("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":%d}", value))
         ).andExpect(status().isBadRequest());
     }
 

@@ -1,5 +1,6 @@
 # Cena - Menu generation
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8775049744f6498193c249408d837ed7)](https://app.codacy.com/gh/adhuc-projects/cena?utm_source=github.com&utm_medium=referral&utm_content=adhuc-projects/cena&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.com/adhuc-projects/cena.svg?branch=master)](https://travis-ci.com/adhuc-projects/cena)
 
 This project contains all the sources for the cena's menu generation.

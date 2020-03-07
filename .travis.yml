@@ -18,7 +18,7 @@ jobs:
         # Build execution (unit & integration tests, application packaging, ...)
         - make build
         # Code quality update
-        # TODO find a codacy alternative
+        - bash <(curl -Ls https://coverage.codacy.com/get.sh)
         # Docker registry release
         - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
         - docker tag menu-generation:latest $DOCKER_USERNAME/menu-generation:$TRAVIS_BUILD_NUMBER

@@ -1,6 +1,8 @@
 # Cena - Menu generation
 
 [![Build Status](https://travis-ci.com/adhuc-projects/cena.svg?branch=master)](https://travis-ci.com/adhuc-projects/cena)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/87350047feed4820a98dd040b26ea690)](https://www.codacy.com/gh/adhuc-projects/cena?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=adhuc-projects/cena&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/87350047feed4820a98dd040b26ea690)](https://www.codacy.com/gh/adhuc-projects/cena?utm_source=github.com&utm_medium=referral&utm_content=adhuc-projects/cena&utm_campaign=Badge_Coverage)
 
 This project contains all the sources for the cena's menu generation.
 
@@ -8,26 +10,27 @@ This project contains all the sources for the cena's menu generation.
 
 Considering you have installed the [prerequesite tools](#general-prerequisites) `Make`, `Docker` and `Java` follow these steps to get started:
 
-  - To build the project, from the root folder, run `make`
+- To build the project, from the root folder, run `make`
 
-  - To start up the application and its dependencies, run `make up`
+- To start up the application and its dependencies, run `make up`
 
-  - You can access the API documentation page at the following address: [`http://localhost:8080/api/docs/api-guide.html`](http://localhost:8080/api/docs/api-guide.html)
+- You can access the API documentation page at the following address: [`http://localhost:8080/api/docs/api-guide.html`](http://localhost:8080/api/docs/api-guide.html)
 
-  - To stop the application and its dependencies, run `make down`
+- To stop the application and its dependencies, run `make down`
 
 ## Project resources
 
-  - [Github](https://github.com/adhuc-projects/cena)
-  - [Travis CI](https://travis-ci.com/adhuc-projects/cena/)
+- [Github](https://github.com/adhuc-projects/cena)
+- [Travis CI](https://travis-ci.com/adhuc-projects/cena/)
+- [Codacy](https://app.codacy.com/gh/adhuc-projects/cena/dashboard)
 
 ## General prerequisites
 
 ### Tools installation
 
-  - [Git](http://help.github.com/set-up-git-redirect)
-  - [Open JDK 11](https://openjdk.java.net/install/)
-  - [Docker](https://www.docker.com/) and [docker-compose](https://docs.docker.com/compose/install/)
+- [Git](http://help.github.com/set-up-git-redirect)
+- [Open JDK 11](https://openjdk.java.net/install/)
+- [Docker](https://www.docker.com/) and [docker-compose](https://docs.docker.com/compose/install/)
 
 ### Makefile
 

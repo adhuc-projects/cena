@@ -721,10 +721,11 @@ components:
                   type: string
                   example: 'https://cena.adhuc.org/api/recipes/d71e2fc7-09e3-4241-97a5-dc3383d35e98'
     RecipeIngredient:
-      description: A recipe ingredient detail, containing its identity
+      description: A recipe ingredient detail, containing its identity and attributes
       type: object
       required:
         - id
+        - mainIngredient
         - '_links'
       properties:
         id:
@@ -733,6 +734,8 @@ components:
           format: uuid
           readOnly: true
           example: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+        mainIngredient:
+          type: boolean
         quantity:
           $ref: '#/components/schemas/Quantity'
         measurementUnit:
@@ -780,6 +783,9 @@ components:
       properties:
         id:
           $ref: '#/components/schemas/RecipeIngredientId'
+        mainIngredient:
+          type: boolean
+          default: false
         quantity:
           $ref: '#/components/schemas/Quantity'
         measurementUnit:

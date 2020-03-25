@@ -38,7 +38,7 @@ import org.adhuc.cena.menu.ingredients.IngredientId;
  * A recipe definition.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Accessors(fluent = true)
@@ -122,7 +122,8 @@ public class Recipe extends BasicEntity<RecipeId> {
         isTrue(id().equals(command.recipeId()),
                 () -> String.format("Wrong command recipe identity %s to add ingredient to recipe with identity %s",
                         command.recipeId(), id()));
-        ingredients.put(command.ingredientId(), new RecipeIngredient(id(), command.ingredientId(), command.quantity()));
+        ingredients.put(command.ingredientId(), new RecipeIngredient(id(), command.ingredientId(),
+                command.isMainIngredient(), command.quantity()));
     }
 
     /**

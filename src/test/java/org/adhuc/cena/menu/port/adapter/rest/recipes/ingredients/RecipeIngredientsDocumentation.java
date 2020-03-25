@@ -68,7 +68,7 @@ import org.adhuc.cena.menu.support.WithAuthenticatedUser;
  * The recipe ingredients related rest-services documentation.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Tag("integration")
@@ -124,12 +124,13 @@ class RecipeIngredientsDocumentation {
     void recipeIngredientsCreateExample() throws Exception {
         var fields = new ConstrainedFields(CreateRecipeIngredientRequest.class, new FieldAlias("id", "ingredientId"));
         mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID).contentType(APPLICATION_JSON)
-                .content(String.format("{\"id\":\"%s\",\"quantity\":10,\"measurementUnit\":\"UNIT\"}", IngredientMother.ID)))
+                .content(String.format("{\"id\":\"%s\",\"mainIngredient\":true,\"quantity\":10,\"measurementUnit\":\"UNIT\"}", IngredientMother.ID)))
                 .andExpect(status().isCreated()).andDo(documentationHandler
                 .document(pathParameters(
                         parameterWithName("id").description("The <<resources-recipe,recipe>> identity")
                         ), requestFields(
                         fields.withPath("id").description("The recipe ingredient identity. Corresponds to the identity of the related <<resources-ingredient,ingredient>>"),
+                        fields.withPath("mainIngredient").description("Indicates whether the ingredient is a main ingredient for the recipe"),
                         fields.withPath("quantity").description("The quantity of ingredient in the recipe"),
                         fields.withPath("measurementUnit").description("<<measurement-units-list,Unit of measurement>> " +
                                 "for a quantity of ingredient in a recipe. Depends on the <<measurement-types-list,measurement types>> " +

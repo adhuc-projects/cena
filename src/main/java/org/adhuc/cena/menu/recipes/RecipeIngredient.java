@@ -25,7 +25,7 @@ import org.adhuc.cena.menu.ingredients.IngredientId;
  * A recipe ingredient definition.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Value
@@ -36,6 +36,7 @@ public class RecipeIngredient {
     private RecipeId recipeId;
     @NonNull
     private IngredientId ingredientId;
+    private boolean isMainIngredient;
     @NonNull
     private Quantity quantity;
 

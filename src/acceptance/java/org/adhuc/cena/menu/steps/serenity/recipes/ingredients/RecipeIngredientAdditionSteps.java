@@ -42,7 +42,7 @@ import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
  * The recipe's ingredients addition rest-service client steps definition.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 public class RecipeIngredientAdditionSteps {
@@ -63,7 +63,23 @@ public class RecipeIngredientAdditionSteps {
 
     @Step("Add ingredient {0} to recipe {1} with quantity as {2} {3}")
     public RecipeIngredientValue addIngredientToRecipe(IngredientValue ingredient, RecipeValue recipe, int quantity, String measurementUnit) {
-        return addIngredientToRecipe(new RecipeIngredientValue(ingredient, quantity, measurementUnit), recipe, this::rest);
+        return addIngredientToRecipe(ingredient, recipe, false, quantity, measurementUnit);
+    }
+
+    @Step("Add main ingredient {0} to recipe {1} with quantity as {2} {3}")
+    public RecipeIngredientValue addMainIngredientToRecipe(IngredientValue ingredient, RecipeValue recipe, int quantity, String measurementUnit) {
+        return addIngredientToRecipe(ingredient, recipe, true, quantity, measurementUnit);
+    }
+
+    private RecipeIngredientValue addIngredientToRecipe(IngredientValue ingredient, RecipeValue recipe,
+                                                        boolean mainIngredient, int quantity, String measurementUnit) {
+        return addIngredientToRecipe(new RecipeIngredientValue(ingredient, mainIngredient, quantity, measurementUnit), recipe, this::rest);
+    }
+
+    @Step("Add ingredient {0} to recipe {1} without specifying whether ingredient is a main ingredient")
+    public RecipeIngredientValue addIngredientToRecipeWithoutMain(IngredientValue ingredient, RecipeValue recipe) {
+        return addIngredientToRecipe(new RecipeIngredientValue(ingredient, null, DEFAULT_QUANTITY, DEFAULT_MEASUREMENT_UNIT),
+                recipe, this::rest);
     }
 
     @Step("Add ingredient {0} to recipe {1}")
@@ -73,7 +89,7 @@ public class RecipeIngredientAdditionSteps {
 
     @Step("Add ingredient {0} to recipe {1} as super administrator")
     public RecipeIngredientValue addIngredientToRecipeAsSuperAdministrator(IngredientValue ingredient, RecipeValue recipe) {
-        return addIngredientToRecipe(new RecipeIngredientValue(ingredient, DEFAULT_QUANTITY, DEFAULT_MEASUREMENT_UNIT),
+        return addIngredientToRecipe(new RecipeIngredientValue(ingredient, false, DEFAULT_QUANTITY, DEFAULT_MEASUREMENT_UNIT),
                 recipe, () -> rest(SUPER_ADMINISTRATOR));
     }
 
@@ -90,7 +106,7 @@ public class RecipeIngredientAdditionSteps {
     }
 
     @Step("Assert ingredient {0} has been successfully added to recipe {1}")
-    public void assertIngredientSuccessfullyAddedToRecipe(IngredientValue ingredient, RecipeValue recipe) {
+    public RecipeIngredientValue assertIngredientSuccessfullyAddedToRecipe(IngredientValue ingredient, RecipeValue recipe) {
         var recipeIngredientLocation = assertCreated().extract().header(LOCATION);
         assertThat(recipeIngredientLocation).isNotBlank().contains(recipe.id()).endsWith(ingredient.id());
         var retrievedRecipeIngredient = recipeIngredientDetail.getRecipeIngredientFromUrl(recipeIngredientLocation);
@@ -99,6 +115,7 @@ public class RecipeIngredientAdditionSteps {
                     .isEqualTo(new RecipeIngredientValue(ingredient));
             softAssertions.assertThat(retrievedRecipeIngredient.getRecipe()).isEqualTo(recipe.selfLink());
         });
+        return retrievedRecipeIngredient;
     }
 
     @Step("Assert ingredient name {0} already exists")

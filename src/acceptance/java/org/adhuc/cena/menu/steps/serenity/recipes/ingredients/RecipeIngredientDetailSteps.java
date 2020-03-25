@@ -27,7 +27,7 @@ import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
  * The recipe detail rest-service client steps definition.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 public class RecipeIngredientDetailSteps {
@@ -36,6 +36,13 @@ public class RecipeIngredientDetailSteps {
     private final RestClientDelegate restClientDelegate = new RestClientDelegate();
     @Delegate
     private final StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
+    @Delegate
+    private final RecipeIngredientStorageDelegate recipeIngredientStorageDelegate = new RecipeIngredientStorageDelegate();
+
+    @Step("Get recipe ingredient {0}")
+    public RecipeIngredientValue getRecipeIngredient(RecipeIngredientValue recipeIngredient) {
+        return getRecipeIngredientFromUrl(recipeIngredient.selfLink());
+    }
 
     @Step("Get recipe ingredient from {0}")
     public RecipeIngredientValue getRecipeIngredientFromUrl(String recipeIngredientDetailUrl) {
@@ -46,5 +53,4 @@ public class RecipeIngredientDetailSteps {
     private void fetchRecipeIngredient(String recipeIngredientDetailUrl) {
         rest().accept(HAL_JSON_VALUE).get(recipeIngredientDetailUrl).andReturn();
     }
-
 }

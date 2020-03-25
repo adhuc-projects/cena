@@ -27,7 +27,7 @@ import org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientVa
  * The recipe's ingredients addition steps definitions for rest-services acceptance tests.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @StepDefAnnotation
@@ -41,6 +41,22 @@ public class RecipeIngredientAdditionStepDefinitions {
         var recipeIngredient = recipeIngredientAddition.addIngredientToRecipe(
                 recipeIngredientAddition.storedIngredient(),
                 recipeIngredientAddition.storedRecipe(), quantity, measurementUnit);
+        recipeIngredientAddition.storeRecipeIngredient(recipeIngredient);
+    }
+
+    @When("^he adds the ingredient as main ingredient to the recipe specifying quantity as (\\d+) \"(.*)\"$")
+    public void addMainIngredientToRecipe(int quantity, String measurementUnit) {
+        var recipeIngredient = recipeIngredientAddition.addMainIngredientToRecipe(
+                recipeIngredientAddition.storedIngredient(),
+                recipeIngredientAddition.storedRecipe(), quantity, measurementUnit);
+        recipeIngredientAddition.storeRecipeIngredient(recipeIngredient);
+    }
+
+    @When("^he adds the ingredient to the recipe without specifying whether ingredient is a main ingredient$")
+    public void addIngredientToRecipeWithoutMain() {
+        var recipeIngredient = recipeIngredientAddition.addIngredientToRecipeWithoutMain(
+                recipeIngredientAddition.storedIngredient(),
+                recipeIngredientAddition.storedRecipe());
         recipeIngredientAddition.storeRecipeIngredient(recipeIngredient);
     }
 
@@ -59,9 +75,10 @@ public class RecipeIngredientAdditionStepDefinitions {
 
     @Then("^the ingredient is added to the recipe$")
     public void recipeIngredientCreated() {
-        recipeIngredientAddition.assertIngredientSuccessfullyAddedToRecipe(
+        var recipeIngredient = recipeIngredientAddition.assertIngredientSuccessfullyAddedToRecipe(
                 recipeIngredientAddition.storedIngredient(),
                 recipeIngredientAddition.storedRecipe());
+        recipeIngredientAddition.storeRecipeIngredient(recipeIngredient);
     }
 
     @Then("^an error notifies that recipe ingredient must have an identity$")

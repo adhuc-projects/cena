@@ -38,7 +38,7 @@ import org.adhuc.cena.menu.ingredients.IngredientMother;
  * The {@link RecipeIngredient} test class.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Tag("unit")
@@ -49,25 +49,26 @@ class RecipeIngredientShould {
     @ParameterizedTest
     @MethodSource("invalidCreationParameters")
     @DisplayName("not be creatable with invalid parameters")
-    void notBeCreatableWithInvalidParameters(RecipeId recipeId, IngredientId ingredientId, Quantity quantity) {
-        assertThrows(IllegalArgumentException.class, () -> new RecipeIngredient(recipeId, ingredientId, quantity));
+    void notBeCreatableWithInvalidParameters(RecipeId recipeId, IngredientId ingredientId, boolean isMainIngredient, Quantity quantity) {
+        assertThrows(IllegalArgumentException.class, () -> new RecipeIngredient(recipeId, ingredientId, isMainIngredient, quantity));
     }
 
     private static Stream<Arguments> invalidCreationParameters() {
         return Stream.of(
-                Arguments.of(null, IngredientMother.ID, QUANTITY),
-                Arguments.of(ID, null, QUANTITY),
-                Arguments.of(ID, IngredientMother.ID, null)
+                Arguments.of(null, IngredientMother.ID, MAIN_INGREDIENT, QUANTITY),
+                Arguments.of(ID, null, MAIN_INGREDIENT, QUANTITY),
+                Arguments.of(ID, IngredientMother.ID, MAIN_INGREDIENT, null)
         );
     }
 
     @Test
     @DisplayName("contain recipe and ingredient identities and quantity used during construction")
     void containCreationValue() {
-        var recipeIngredient = new RecipeIngredient(ID, IngredientMother.ID, QUANTITY);
+        var recipeIngredient = new RecipeIngredient(ID, IngredientMother.ID, MAIN_INGREDIENT, QUANTITY);
         assertSoftly(softAssertions -> {
             softAssertions.assertThat(recipeIngredient.recipeId()).isEqualTo(ID);
             softAssertions.assertThat(recipeIngredient.ingredientId()).isEqualTo(IngredientMother.ID);
+            softAssertions.assertThat(recipeIngredient.isMainIngredient()).isEqualTo(MAIN_INGREDIENT);
             softAssertions.assertThat(recipeIngredient.quantity()).isEqualTo(QUANTITY);
         });
     }
@@ -87,13 +88,14 @@ class RecipeIngredientShould {
     }
 
     private static Stream<Arguments> equalitySource() {
-        var recipeIngredient = new RecipeIngredient(TOMATO_CUCUMBER_MOZZA_SALAD_ID, IngredientMother.TOMATO_ID, QUANTITY);
+        var recipeIngredient = new RecipeIngredient(TOMATO_CUCUMBER_MOZZA_SALAD_ID, IngredientMother.TOMATO_ID, MAIN_INGREDIENT, QUANTITY);
         return Stream.of(
                 Arguments.of(recipeIngredient, recipeIngredient, true),
-                Arguments.of(recipeIngredient, new RecipeIngredient(TOMATO_CUCUMBER_MOZZA_SALAD_ID, IngredientMother.TOMATO_ID, QUANTITY), true),
-                Arguments.of(recipeIngredient, new RecipeIngredient(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID, IngredientMother.TOMATO_ID, QUANTITY), false),
-                Arguments.of(recipeIngredient, new RecipeIngredient(TOMATO_CUCUMBER_MOZZA_SALAD_ID, IngredientMother.CUCUMBER_ID, QUANTITY), false),
-                Arguments.of(recipeIngredient, new RecipeIngredient(TOMATO_CUCUMBER_MOZZA_SALAD_ID, IngredientMother.TOMATO_ID, new Quantity(11, UNIT)), false)
+                Arguments.of(recipeIngredient, new RecipeIngredient(TOMATO_CUCUMBER_MOZZA_SALAD_ID, IngredientMother.TOMATO_ID, MAIN_INGREDIENT, QUANTITY), true),
+                Arguments.of(recipeIngredient, new RecipeIngredient(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID, IngredientMother.TOMATO_ID, MAIN_INGREDIENT, QUANTITY), false),
+                Arguments.of(recipeIngredient, new RecipeIngredient(TOMATO_CUCUMBER_MOZZA_SALAD_ID, IngredientMother.CUCUMBER_ID, MAIN_INGREDIENT, QUANTITY), false),
+                Arguments.of(recipeIngredient, new RecipeIngredient(TOMATO_CUCUMBER_MOZZA_SALAD_ID, IngredientMother.TOMATO_ID, !MAIN_INGREDIENT, QUANTITY), false),
+                Arguments.of(recipeIngredient, new RecipeIngredient(TOMATO_CUCUMBER_MOZZA_SALAD_ID, IngredientMother.TOMATO_ID, MAIN_INGREDIENT, new Quantity(11, UNIT)), false)
         );
     }
 

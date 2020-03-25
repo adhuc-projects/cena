@@ -51,7 +51,7 @@ import org.adhuc.cena.menu.recipes.RecipeRepository;
  * The validation test class for ingredients resources disabling Open API validation.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Tag("integration")
@@ -87,7 +87,7 @@ class RecipeIngredientsValidationTests {
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                         properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body("{\"quantity\":1, \"measurementUnit\":\"DOZEN\"}")
+                .body("{\"mainIngredient\":true, \"quantity\":1, \"measurementUnit\":\"DOZEN\"}")
                 .when()
                 .post(RECIPE_INGREDIENTS_API_URL, ID.toString())
                 .then()
@@ -108,7 +108,7 @@ class RecipeIngredientsValidationTests {
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                         properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \"quantity\":1}")
+                .body("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \"mainIngredient\":true, \"quantity\":1}")
                 .when()
                 .post(RECIPE_INGREDIENTS_API_URL, ID.toString())
                 .then()
@@ -130,7 +130,7 @@ class RecipeIngredientsValidationTests {
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                         properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \"measurementUnit\":\"DOZEN\"}")
+                .body("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \"mainIngredient\":true, \"measurementUnit\":\"DOZEN\"}")
                 .when()
                 .post(RECIPE_INGREDIENTS_API_URL, ID.toString())
                 .then()
@@ -152,7 +152,7 @@ class RecipeIngredientsValidationTests {
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                         properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body(format("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \"measurementUnit\":\"DOZEN\", \"quantity\": %d}", quantity))
+                .body(format("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \"mainIngredient\":true, \"measurementUnit\":\"DOZEN\", \"quantity\": %d}", quantity))
                 .when()
                 .post(RECIPE_INGREDIENTS_API_URL, ID.toString())
                 .then()
@@ -166,6 +166,36 @@ class RecipeIngredientsValidationTests {
     }
 
     @Test
+    @DisplayName("respond Created on creation when request does not contain main ingredient information")
+    void respond400OnCreationWithoutMainIngredient() {
+        given()
+                .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                properties.getSecurity().getUser().getPassword())
+                .contentType(APPLICATION_JSON_VALUE)
+                .body(format("{\"id\":\"%s\", \"quantity\":1, \"measurementUnit\":\"DOZEN\"}", IngredientMother.ID))
+                .when()
+                .post(RECIPE_INGREDIENTS_API_URL, ID.toString())
+                .then()
+                .statusCode(CREATED.value());
+    }
+
+    @Test
+    @DisplayName("respond Created on creation when request does not contain quantity information")
+    void respond400OnCreationWithoutQuantity() {
+        given()
+                .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                properties.getSecurity().getUser().getPassword())
+                .contentType(APPLICATION_JSON_VALUE)
+                .body(format("{\"id\":\"%s\", \"mainIngredient\":true}", IngredientMother.ID))
+                .when()
+                .post(RECIPE_INGREDIENTS_API_URL, ID.toString())
+                .then()
+                .statusCode(CREATED.value());
+    }
+
+    @Test
     @DisplayName("respond Created on creation when request contains additional property")
     void respond201OnCreationWithAdditionalProperty() {
         given()
@@ -173,7 +203,7 @@ class RecipeIngredientsValidationTests {
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                 properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body(format("{\"id\":\"%s\",\"other\":\"some value\"}", IngredientMother.ID))
+                .body(format("{\"id\":\"%s\", \"mainIngredient\":true, \"quantity\":1, \"measurementUnit\":\"DOZEN\", \"other\":\"some value\"}", IngredientMother.ID))
                 .when()
                 .post(RECIPE_INGREDIENTS_API_URL, ID.toString())
                 .then()

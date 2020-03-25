@@ -43,7 +43,7 @@ import org.adhuc.cena.menu.ingredients.IngredientMother;
  * The {@link Recipe} test class.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Tag("unit")
@@ -93,7 +93,7 @@ class RecipeShould {
     @DisplayName("throw IllegalArgumentException when adding ingredient to recipe with wrong id")
     void addIngredientWrongRecipeId() {
         var exception = assertThrows(IllegalArgumentException.class, () -> recipe().addIngredient(
-                addIngredientCommand(IngredientMother.ID, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID, QUANTITY)));
+                addIngredientCommand(IngredientMother.ID, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID, MAIN_INGREDIENT, QUANTITY)));
         assertThat(exception.getMessage()).isEqualTo("Wrong command recipe identity " +
                 TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID + " to add ingredient to recipe with identity " + ID);
     }
@@ -108,8 +108,8 @@ class RecipeShould {
     @ParameterizedTest
     @MethodSource("addIngredientToRecipeParameters")
     @DisplayName("be related to ingredient after adding ingredient to recipe")
-    void addIngredientToRecipe(IngredientId ingredientId, Quantity quantity) {
-        var recipeIngredient = recipeIngredient(ingredientId, quantity);
+    void addIngredientToRecipe(IngredientId ingredientId, boolean isMainIngredient, Quantity quantity) {
+        var recipeIngredient = recipeIngredient(ingredientId, isMainIngredient, quantity);
         var recipe = builder().build();
         assumeThat(recipe.ingredients()).isEmpty();
 
@@ -119,16 +119,17 @@ class RecipeShould {
 
     private static Stream<Arguments> addIngredientToRecipeParameters() {
         return Stream.of(
-                Arguments.of(TOMATO_ID, QUANTITY),
-                Arguments.of(TOMATO_ID, new Quantity(1, KILOGRAM)),
-                Arguments.of(CUCUMBER_ID, new Quantity(3, UNIT))
+                Arguments.of(TOMATO_ID, MAIN_INGREDIENT, QUANTITY),
+                Arguments.of(TOMATO_ID, false, QUANTITY),
+                Arguments.of(TOMATO_ID, MAIN_INGREDIENT, new Quantity(1, KILOGRAM)),
+                Arguments.of(CUCUMBER_ID, MAIN_INGREDIENT, new Quantity(3, UNIT))
         );
     }
 
     @Test
     @DisplayName("be related to ingredient after adding ingredient to recipe twice")
     void addIngredientToRecipeTwice() {
-        var recipeIngredient = recipeIngredient(TOMATO_ID, QUANTITY);
+        var recipeIngredient = recipeIngredient(TOMATO_ID, MAIN_INGREDIENT, QUANTITY);
         var recipe = builder().withIngredients(TOMATO_ID).build();
         assumeThat(recipe.ingredients()).contains(recipeIngredient);
 
@@ -139,7 +140,7 @@ class RecipeShould {
     @Test
     @DisplayName("be related to multiple ingredients after adding ingredient to recipe already related to ingredients")
     void addIngredientToRecipeMultiple() {
-        var recipeIngredient = recipeIngredient(IngredientId.generate(), new Quantity(5, CENTILITER));
+        var recipeIngredient = recipeIngredient(IngredientId.generate(), true, new Quantity(5, CENTILITER));
         var recipe = builder().withIngredients(TOMATO_ID, CUCUMBER_ID).build();
         assumeThat(recipe.ingredients()).isNotEmpty().doesNotContain(recipeIngredient);
         var existingIngredients = recipe.ingredients();
@@ -175,7 +176,7 @@ class RecipeShould {
     @Test
     @DisplayName("not be related to ingredient after removing ingredient from recipe")
     void removeIngredientFromRecipe() {
-        var recipeIngredient = recipeIngredient(TOMATO_ID, QUANTITY);
+        var recipeIngredient = recipeIngredient(TOMATO_ID, MAIN_INGREDIENT, QUANTITY);
         var recipe = recipe();
         assumeThat(recipe.ingredients()).contains(recipeIngredient);
 
@@ -186,12 +187,12 @@ class RecipeShould {
     @Test
     @DisplayName("be related to non removed ingredients after removing ingredient from recipe")
     void removeIngredientFromRecipeOthersStillRelated() {
-        var recipeIngredient = recipeIngredient(TOMATO_ID, QUANTITY);
+        var recipeIngredient = recipeIngredient(TOMATO_ID, MAIN_INGREDIENT, QUANTITY);
         var recipe = builder().withIngredients(TOMATO_ID, CUCUMBER_ID).build();
         assumeThat(recipe.ingredients()).contains(recipeIngredient);
 
         recipe.removeIngredient(removeIngredientCommand(recipeIngredient));
-        assertThat(recipe.ingredients()).doesNotContain(recipeIngredient).contains(recipeIngredient(CUCUMBER_ID, QUANTITY));
+        assertThat(recipe.ingredients()).doesNotContain(recipeIngredient).contains(recipeIngredient(CUCUMBER_ID, MAIN_INGREDIENT, QUANTITY));
     }
 
     @Test
@@ -248,7 +249,7 @@ class RecipeShould {
     void knownIngredient() {
         var recipe = recipe();
         var ingredient = recipe.ingredient(TOMATO_ID);
-        assertThat(ingredient).isNotNull().isEqualTo(recipeIngredient(TOMATO_ID, QUANTITY));
+        assertThat(ingredient).isNotNull().isEqualTo(recipeIngredient(TOMATO_ID, MAIN_INGREDIENT, QUANTITY));
     }
 
     @ParameterizedTest

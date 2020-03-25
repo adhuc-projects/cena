@@ -16,6 +16,7 @@
 package org.adhuc.cena.menu.steps.serenity.recipes.ingredients;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Comparator;
 
@@ -33,7 +34,7 @@ import org.adhuc.cena.menu.steps.serenity.support.resource.HateoasClientResource
  * A recipe ingredient value on the client side.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Data
@@ -58,6 +59,7 @@ public class RecipeIngredientValue extends HateoasClientResourceSupport {
             .thenComparing(RecipeIngredientValue::measurementUnit, Comparator.nullsLast(String::compareTo));
 
     private final String id;
+    private final Boolean mainIngredient;
     private final Integer quantity;
     private final String measurementUnit;
 
@@ -68,11 +70,12 @@ public class RecipeIngredientValue extends HateoasClientResourceSupport {
     }
 
     public RecipeIngredientValue(IngredientValue ingredient) {
-        this(ingredient, null, null);
+        this(ingredient, null, null, null);
     }
 
-    public RecipeIngredientValue(IngredientValue ingredient, Integer quantity, String measurementUnit) {
+    public RecipeIngredientValue(IngredientValue ingredient, Boolean mainIngredient, Integer quantity, String measurementUnit) {
         this.id = ingredient != null ? ingredient.id() : null;
+        this.mainIngredient = mainIngredient;
         this.quantity = quantity;
         this.measurementUnit = measurementUnit;
     }
@@ -80,6 +83,10 @@ public class RecipeIngredientValue extends HateoasClientResourceSupport {
     @JsonIgnore
     public String getRecipe() {
         return link(RECIPE_LINK);
+    }
+
+    public void assertMainIngredient(boolean isMainIngredient) {
+        assertThat(mainIngredient).isNotNull().isEqualTo(isMainIngredient);
     }
 
 }

@@ -25,7 +25,7 @@ import org.adhuc.cena.menu.ingredients.IngredientId;
  * An ingredient to recipe addition command.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Value
@@ -36,6 +36,7 @@ public class AddIngredientToRecipe {
     private final IngredientId ingredientId;
     @NonNull
     private final RecipeId recipeId;
+    private final boolean isMainIngredient;
     @NonNull
     private final Quantity quantity;
 

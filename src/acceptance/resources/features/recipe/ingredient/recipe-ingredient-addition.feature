@@ -43,8 +43,31 @@ Feature: Add ingredients to recipe
     When he adds the ingredient to the recipe specifying quantity as 4 "UNIT"
     Then the ingredient is added to the recipe
     And the ingredient can be found in the recipe's ingredients list
+    And the ingredient is not a main ingredient for the recipe
 
-  @Smoke @Security
+  @Smoke
+  Scenario: Add an existing ingredient to an existing recipe as main ingredient
+    Given an authenticated user
+    And an existing "Tomato" ingredient
+    And an existing "Tomato, cucumber and mozzarella salad" recipe authored by the authenticated user
+    And recipe does not contain ingredient
+    When he adds the ingredient as main ingredient to the recipe specifying quantity as 4 "UNIT"
+    Then the ingredient is added to the recipe
+    And the ingredient can be found in the recipe's ingredients list
+    And the ingredient is a main ingredient for the recipe
+
+  @Edge
+  Scenario: Add an ingredient to a recipe without specifying whether ingredient is a main ingredient
+    Given an authenticated user
+    And an existing "Tomato" ingredient
+    And an existing "Tomato, cucumber and mozzarella salad" recipe authored by the authenticated user
+    And recipe does not contain ingredient
+    When he adds the ingredient to the recipe without specifying whether ingredient is a main ingredient
+    Then the ingredient is added to the recipe
+    And the ingredient can be found in the recipe's ingredients list
+    And the ingredient is not a main ingredient for the recipe
+
+  @Edge
   Scenario: Add an ingredient to a recipe without quantity
     Given an authenticated user
     And an existing "Tomato" ingredient

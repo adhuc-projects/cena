@@ -52,7 +52,7 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
  * The {@link RecipeIngredientController} test class.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Tag("integration")
@@ -178,7 +178,10 @@ class RecipeIngredientControllerShould {
         @DisplayName("contain recipe ingredient data")
         void getRecipeIngredientFoundContainsData() throws Exception {
             mvc.perform(get(RECIPE_INGREDIENT_API_URL, ID, IngredientMother.ID))
-                    .andExpect(jsonPath("$.id").value(IngredientMother.ID.toString()));
+                    .andExpect(jsonPath("$.id").value(IngredientMother.ID.toString()))
+                    .andExpect(jsonPath("$.mainIngredient").value(MAIN_INGREDIENT))
+                    .andExpect(jsonPath("$.quantity").value(QUANTITY.value()))
+                    .andExpect(jsonPath("$.measurementUnit").value(QUANTITY.unit().name()));
         }
 
         @Test

@@ -43,7 +43,7 @@ import org.adhuc.cena.menu.recipes.RecipeId;
  * A request to create a recipe ingredient.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Getter
@@ -54,6 +54,8 @@ class CreateRecipeIngredientRequest {
     @NotBlank
     @JsonProperty("id")
     private String ingredientId;
+    @JsonProperty("mainIngredient")
+    private boolean isMainIngredient;
     @Positive
     private Integer quantity;
     private MeasurementUnit measurementUnit;
@@ -65,7 +67,7 @@ class CreateRecipeIngredientRequest {
      * @return the ingredient to recipe addition command..
      */
     AddIngredientToRecipe toCommand(@NonNull RecipeId id) {
-        return new AddIngredientToRecipe(new IngredientId(ingredientId), id,
+        return new AddIngredientToRecipe(new IngredientId(ingredientId), id, isMainIngredient,
                 quantity != null ? new Quantity(quantity, measurementUnit) : Quantity.UNDEFINED);
     }
 

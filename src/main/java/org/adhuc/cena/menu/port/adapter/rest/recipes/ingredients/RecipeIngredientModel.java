@@ -32,7 +32,7 @@ import org.adhuc.cena.menu.recipes.RecipeIngredient;
  * A REST resource encapsulating recipe ingredient information.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @ToString(callSuper = true)
@@ -44,11 +44,14 @@ public class RecipeIngredientModel extends RepresentationModel<RecipeIngredientM
     @NonNull
     @JsonProperty("id")
     private final String ingredientId;
+    @JsonProperty("mainIngredient")
+    private final boolean isMainIngredient;
     private final Integer quantity;
     private final String measurementUnit;
 
     RecipeIngredientModel(@NonNull RecipeIngredient recipeIngredient) {
         this.ingredientId = recipeIngredient.ingredientId().toString();
+        this.isMainIngredient = recipeIngredient.isMainIngredient();
         var quantity = recipeIngredient.quantity();
         this.quantity = Quantity.UNDEFINED.equals(quantity) ? null : quantity.value();
         this.measurementUnit = Quantity.UNDEFINED.equals(quantity) ? null : quantity.unit().name();

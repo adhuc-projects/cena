@@ -54,7 +54,7 @@ import org.adhuc.cena.menu.support.WithAuthenticatedUser;
  * The recipe ingredient related rest-services documentation.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Tag("integration")
@@ -99,6 +99,7 @@ class RecipeIngredientDocumentation {
                         ),
                         responseFields(
                                 fieldWithPath("id").description("The recipe's ingredient identity"),
+                                fieldWithPath("mainIngredient").description("Indicates whether the ingredient is a main ingredient for the recipe"),
                                 fieldWithPath("quantity").description("The quantity of ingredient in the recipe"),
                                 fieldWithPath("measurementUnit").description("The unit of measurement for the quantity of ingredient in the recipe"),
                                 subsectionWithPath("_links").description("<<resources-recipe-ingredient-links,Links>> to other resources")

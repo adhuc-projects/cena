@@ -35,7 +35,7 @@ import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryRecipeReposit
  * The {@link RecipeIngredientAppServiceImpl} test class.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Tag("unit")
@@ -143,14 +143,15 @@ class RecipeIngredientAppServiceImplShould {
     class WithIngredientAndRecipe {
         @BeforeEach
         void setUp() {
-            recipeRepository.save(builder().withIngredients(CUCUMBER_ID).build());
-            assumeThat(recipeRepository.exists(RecipeMother.ID)).isTrue();
-            assumeThat(recipeRepository.findNotNullById(RecipeMother.ID).ingredients())
-                    .containsExactly(recipeIngredient(CUCUMBER_ID, QUANTITY));
             ingredientRepository.save(ingredient());
             ingredientRepository.save(ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES));
             assumeThat(ingredientRepository.exists(IngredientMother.ID)).isTrue();
             assumeThat(ingredientRepository.exists(CUCUMBER_ID)).isTrue();
+
+            recipeRepository.save(builder().withIngredient(CUCUMBER_ID, false).build());
+            assumeThat(recipeRepository.exists(RecipeMother.ID)).isTrue();
+            assumeThat(recipeRepository.findNotNullById(RecipeMother.ID).ingredients())
+                    .containsExactly(recipeIngredient(CUCUMBER_ID, false, QUANTITY));
         }
 
         @Test
@@ -174,7 +175,7 @@ class RecipeIngredientAppServiceImplShould {
         @Test
         @DisplayName("add ingredient to recipe with measurement unit not corresponding to ingredient's measurement type")
         void addIngredientToRecipeMeasurementUnitNotCorrespondingToMeasurementType() {
-            var command = addIngredientCommand(IngredientMother.ID, RecipeMother.ID, new Quantity(200, CENTILITER));
+            var command = addIngredientCommand(IngredientMother.ID, RecipeMother.ID, MAIN_INGREDIENT, new Quantity(200, CENTILITER));
             var exception = assertThrows(InvalidMeasurementUnitForIngredientException.class,
                     () -> service.addIngredientToRecipe(command));
             assertThat(exception.getMessage()).isEqualTo("Unable to add ingredient '" + IngredientMother.ID +
@@ -185,7 +186,7 @@ class RecipeIngredientAppServiceImplShould {
         @Test
         @DisplayName("add ingredient to recipe successfully")
         void addIngredientToRecipe() {
-            service.addIngredientToRecipe(addIngredientCommand(IngredientMother.ID));
+            service.addIngredientToRecipe(addIngredientCommand(IngredientMother.ID, MAIN_INGREDIENT));
             assertThat(recipeRepository.findNotNullById(RecipeMother.ID).ingredients()).contains(recipeIngredient());
         }
 
@@ -193,7 +194,8 @@ class RecipeIngredientAppServiceImplShould {
         @DisplayName("remove ingredient from recipe successfully")
         void removeIngredientFromRecipe() {
             service.removeIngredientFromRecipe(removeIngredientCommand(CUCUMBER_ID));
-            assertThat(recipeRepository.findNotNullById(RecipeMother.ID).ingredients()).doesNotContain(recipeIngredient(CUCUMBER_ID, QUANTITY));
+            assertThat(recipeRepository.findNotNullById(RecipeMother.ID).ingredients())
+                    .doesNotContain(recipeIngredient(CUCUMBER_ID, MAIN_INGREDIENT, QUANTITY));
         }
 
         @Nested

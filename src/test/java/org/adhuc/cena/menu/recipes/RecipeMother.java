@@ -42,7 +42,7 @@ import org.adhuc.cena.menu.ingredients.IngredientMother;
  * An object mother to create testing domain elements related to {@link Recipe}s.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @see https://www.martinfowler.com/bliki/ObjectMother.html
  * @since 0.2.0
  */
@@ -65,6 +65,8 @@ public class RecipeMother {
     public static final String CONTENT = TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT;
     public static final RecipeAuthor AUTHOR = TOMATO_CUCUMBER_MOZZA_SALAD_AUTHOR;
     public static final Servings SERVINGS = TOMATO_CUCUMBER_MOZZA_SALAD_SERVINGS;
+
+    public static final boolean MAIN_INGREDIENT = true;
 
     public static final Quantity QUANTITY = new Quantity(1, DOZEN);
 
@@ -89,17 +91,23 @@ public class RecipeMother {
     }
 
     public static AddIngredientToRecipe addIngredientCommand(@NonNull RecipeIngredient recipeIngredient) {
-        return addIngredientCommand(recipeIngredient.ingredientId(), recipeIngredient.recipeId(), recipeIngredient.quantity());
+        return addIngredientCommand(recipeIngredient.ingredientId(), recipeIngredient.recipeId(),
+                recipeIngredient.isMainIngredient(), recipeIngredient.quantity());
     }
 
     public static AddIngredientToRecipe addIngredientCommand(@NonNull IngredientId ingredientId) {
-        return addIngredientCommand(ingredientId, ID, QUANTITY);
+        return addIngredientCommand(ingredientId, ID, false, QUANTITY);
+    }
+
+    public static AddIngredientToRecipe addIngredientCommand(@NonNull IngredientId ingredientId, boolean isMainIngredient) {
+        return addIngredientCommand(ingredientId, ID, isMainIngredient, QUANTITY);
     }
 
     public static AddIngredientToRecipe addIngredientCommand(@NonNull IngredientId ingredientId,
                                                              @NonNull RecipeId recipeId,
+                                                             boolean isMainIngredient,
                                                              @NonNull Quantity quantity) {
-        return new AddIngredientToRecipe(ingredientId, recipeId, quantity);
+        return new AddIngredientToRecipe(ingredientId, recipeId, isMainIngredient, quantity);
     }
 
     public static RemoveIngredientFromRecipe removeIngredientCommand() {
@@ -123,7 +131,8 @@ public class RecipeMother {
     }
 
     public static Recipe recipe() {
-        return builder().withIngredient(TOMATO_ID, QUANTITY).andIngredient(CUCUMBER_ID, new Quantity(3, UNIT)).build();
+        return builder().withIngredient(TOMATO_ID, MAIN_INGREDIENT, QUANTITY)
+                .andIngredient(CUCUMBER_ID, false, new Quantity(3, UNIT)).build();
     }
 
     public static Collection<Recipe> recipes() {
@@ -139,17 +148,20 @@ public class RecipeMother {
     }
 
     public static RecipeIngredient recipeIngredient() {
-        return recipeIngredient(IngredientMother.ID, QUANTITY);
+        return recipeIngredient(IngredientMother.ID, MAIN_INGREDIENT, QUANTITY);
     }
 
-    public static RecipeIngredient recipeIngredient(@NonNull IngredientId ingredientId, @NonNull Quantity quantity) {
-        return recipeIngredient(ID, ingredientId, quantity);
+    public static RecipeIngredient recipeIngredient(@NonNull IngredientId ingredientId,
+                                                    boolean isMainIngredient,
+                                                    @NonNull Quantity quantity) {
+        return recipeIngredient(ID, ingredientId, isMainIngredient, quantity);
     }
 
     public static RecipeIngredient recipeIngredient(@NonNull RecipeId recipeId,
                                                     @NonNull IngredientId ingredientId,
+                                                    boolean isMainIngredient,
                                                     @NonNull Quantity quantity) {
-        return new RecipeIngredient(recipeId, ingredientId, quantity);
+        return new RecipeIngredient(recipeId, ingredientId, isMainIngredient, quantity);
     }
 
     public static Builder builder() {
@@ -173,7 +185,8 @@ public class RecipeMother {
         public Builder withId(@NonNull RecipeId recipeId) {
             return new Builder(recipeId, name, content, author, servings,
                     ingredients.stream()
-                            .map(ingredient -> new RecipeIngredient(recipeId, ingredient.ingredientId(), ingredient.quantity()))
+                            .map(ingredient -> new RecipeIngredient(recipeId, ingredient.ingredientId(),
+                                    ingredient.isMainIngredient(), ingredient.quantity()))
                             .collect(toList()));
         }
 
@@ -184,17 +197,21 @@ public class RecipeMother {
         public Builder withIngredients(@NonNull IngredientId... ingredientIds) {
             return new Builder(id, name, content, author, servings,
                     Arrays.stream(ingredientIds)
-                            .map(ingredientId -> new RecipeIngredient(id, ingredientId, QUANTITY))
+                            .map(ingredientId -> new RecipeIngredient(id, ingredientId, MAIN_INGREDIENT, QUANTITY))
                             .collect(toList()));
         }
 
-        public Builder withIngredient(@NonNull IngredientId ingredientId, @NonNull Quantity quantity) {
-            return new Builder(id, name, content, author, servings, List.of(new RecipeIngredient(id, ingredientId, quantity)));
+        public Builder withIngredient(@NonNull IngredientId ingredientId, boolean isMainIngredient) {
+            return new Builder(id, name, content, author, servings, List.of(new RecipeIngredient(id, ingredientId, isMainIngredient, QUANTITY)));
         }
 
-        public Builder andIngredient(@NonNull IngredientId ingredientId, @NonNull Quantity quantity) {
+        public Builder withIngredient(@NonNull IngredientId ingredientId, boolean isMainIngredient, @NonNull Quantity quantity) {
+            return new Builder(id, name, content, author, servings, List.of(new RecipeIngredient(id, ingredientId, isMainIngredient, quantity)));
+        }
+
+        public Builder andIngredient(@NonNull IngredientId ingredientId, boolean isMainIngredient, @NonNull Quantity quantity) {
             var ingredients = new HashSet<>(this.ingredients);
-            ingredients.add(new RecipeIngredient(id, ingredientId, quantity));
+            ingredients.add(new RecipeIngredient(id, ingredientId, isMainIngredient, quantity));
             return new Builder(id, name, content, author, servings, List.copyOf(ingredients));
         }
 

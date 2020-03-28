@@ -50,6 +50,7 @@ public class RecipeIngredientValue extends HateoasClientResourceSupport {
 
     private static final String RECIPE_LINK = "recipe";
 
+    public static final boolean DEFAULT_MAIN_INGREDIENT = false;
     public static final int DEFAULT_QUANTITY = 200;
     public static final String DEFAULT_MEASUREMENT_UNIT = "GRAM";
 
@@ -59,6 +60,10 @@ public class RecipeIngredientValue extends HateoasClientResourceSupport {
             .thenComparing(RecipeIngredientValue::measurementUnit, Comparator.nullsLast(String::compareTo));
 
     private final String id;
+    // Ingredient name is only used to be able to retrieve the ingredient ID from a list of ingredients
+    // It is not serialized to call API, nor deserialized from the API response
+    @JsonIgnore
+    private final String ingredientName;
     private final Boolean mainIngredient;
     private final Integer quantity;
     private final String measurementUnit;
@@ -75,6 +80,7 @@ public class RecipeIngredientValue extends HateoasClientResourceSupport {
 
     public RecipeIngredientValue(IngredientValue ingredient, Boolean mainIngredient, Integer quantity, String measurementUnit) {
         this.id = ingredient != null ? ingredient.id() : null;
+        this.ingredientName = ingredient != null ? ingredient.name() : null;
         this.mainIngredient = mainIngredient;
         this.quantity = quantity;
         this.measurementUnit = measurementUnit;

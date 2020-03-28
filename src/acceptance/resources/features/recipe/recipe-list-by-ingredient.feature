@@ -47,13 +47,13 @@ Feature: List recipes filtered by ingredient
       | Tomato and cantal pie                  | Spread the shortcrust in a pie plate, wrap it with mustard, tomato slices and cantal slices in this order, and bake it during 20 minutes | 4        |
       | Quiche lorraine                        | Spread the shortcrust in a pie plate, beat the eggs with milk, add lardons, pour on the pastry and bake it during 30 minutes             | 4        |
     And the following ingredients in recipes
-      | recipe                                 | ingredient |
-      | Tomato, cucumber and mozzarella salad  | Tomato     |
-      | Tomato, cucumber and mozzarella salad  | Cucumber   |
-      | Tomato, cucumber and mozzarella salad  | Mozzarella |
-      | Tomato, cucumber, olive and feta salad | Tomato     |
-      | Tomato, cucumber, olive and feta salad | Cucumber   |
-      | Tomato and cantal pie                  | Tomato     |
+      | recipe                                 | ingredient | isMainIngredient | quantity | measurementUnit |
+      | Tomato, cucumber and mozzarella salad  | Tomato     | true             | 3        | UNIT            |
+      | Tomato, cucumber and mozzarella salad  | Cucumber   | true             | 1        | UNIT            |
+      | Tomato, cucumber and mozzarella salad  | Mozzarella | true             | 200      | GRAM            |
+      | Tomato, cucumber, olive and feta salad | Tomato     | true             | 10       | UNIT            |
+      | Tomato, cucumber, olive and feta salad | Cucumber   | true             | 3        | UNIT            |
+      | Tomato and cantal pie                  | Tomato     | true             | 3        | UNIT            |
     When he lists the recipes composed of ingredient "Olive oil"
     Then the recipes list is empty
 
@@ -72,13 +72,13 @@ Feature: List recipes filtered by ingredient
       | Tomato and cantal pie                  | Spread the shortcrust in a pie plate, wrap it with mustard, tomato slices and cantal slices in this order, and bake it during 20 minutes | 4        |
       | Quiche lorraine                        | Spread the shortcrust in a pie plate, beat the eggs with milk, add lardons, pour on the pastry and bake it during 30 minutes             | 4        |
     And the following ingredients in recipes
-      | recipe                                 | ingredient |
-      | Tomato, cucumber and mozzarella salad  | Tomato     |
-      | Tomato, cucumber and mozzarella salad  | Cucumber   |
-      | Tomato, cucumber and mozzarella salad  | Mozzarella |
-      | Tomato, cucumber, olive and feta salad | Tomato     |
-      | Tomato, cucumber, olive and feta salad | Cucumber   |
-      | Tomato and cantal pie                  | Tomato     |
+      | recipe                                 | ingredient | isMainIngredient | quantity | measurementUnit |
+      | Tomato, cucumber and mozzarella salad  | Tomato     | true             | 3        | UNIT            |
+      | Tomato, cucumber and mozzarella salad  | Cucumber   | true             | 1        | UNIT            |
+      | Tomato, cucumber and mozzarella salad  | Mozzarella | true             | 200      | GRAM            |
+      | Tomato, cucumber, olive and feta salad | Tomato     | true             | 10       | UNIT            |
+      | Tomato, cucumber, olive and feta salad | Cucumber   | true             | 3        | UNIT            |
+      | Tomato and cantal pie                  | Tomato     | true             | 3        | UNIT            |
     When he lists the recipes composed of ingredient "Cucumber"
     Then the recipes list contains the following recipes
       | name                                   |

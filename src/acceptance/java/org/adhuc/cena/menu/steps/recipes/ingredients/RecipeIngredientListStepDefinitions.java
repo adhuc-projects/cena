@@ -34,12 +34,13 @@ import org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue;
 import org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientListAssertionsSteps;
 import org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientListAssumptionsSteps;
 import org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientListSteps;
+import org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientValue;
 
 /**
  * The recipe ingredients list steps definitions for rest-services acceptance tests.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @StepDefAnnotation
@@ -48,6 +49,9 @@ public class RecipeIngredientListStepDefinitions {
     private static final String NAME_ATTRIBUTE = "name";
     private static final String RECIPE_ATTRIBUTE = "recipe";
     private static final String INGREDIENT_ATTRIBUTE = "ingredient";
+    private static final String MAIN_INGREDIENT_ATTRIBUTE = "isMainIngredient";
+    private static final String QUANTITY_ATTRIBUTE = "quantity";
+    private static final String MEASUREMENT_UNIT_ATTRIBUTE = "measurementUnit";
 
     @Steps
     private RecipeListSteps recipeList;
@@ -66,7 +70,12 @@ public class RecipeIngredientListStepDefinitions {
     @Given("^the following ingredients in the recipe$")
     public void recipeContainsIngredients(DataTable dataTable) {
         var ingredients = dataTable.asMaps(String.class, String.class).stream()
-                .map(attributes -> new IngredientValue(attributes.get(NAME_ATTRIBUTE))).collect(toList());
+                .map(attributes -> new RecipeIngredientValue(
+                        new IngredientValue(attributes.get(NAME_ATTRIBUTE)),
+                        Boolean.parseBoolean(attributes.get(MAIN_INGREDIENT_ATTRIBUTE)),
+                        Integer.parseInt(attributes.get(QUANTITY_ATTRIBUTE)),
+                        attributes.get(MEASUREMENT_UNIT_ATTRIBUTE))
+                ).collect(toList());
         var assumedIngredients = recipeIngredientListAssumptions.assumeIngredientsRelatedToRecipe(ingredients,
                 recipeIngredientList.storedRecipe());
         recipeIngredientList.storeAssumedRecipeIngredients(assumedIngredients);
@@ -74,11 +83,16 @@ public class RecipeIngredientListStepDefinitions {
 
     @Given("^the following ingredients in recipes$")
     public void recipesContainIngredients(DataTable dataTable) {
-        var recipesIngredients = new HashMap<String, List<IngredientValue>>();
+        var recipesIngredients = new HashMap<String, List<RecipeIngredientValue>>();
         dataTable.asMaps(String.class, String.class).stream()
                 .forEach(attributes -> {
                     var recipeName = attributes.get(RECIPE_ATTRIBUTE);
-                    var ingredient = new IngredientValue(attributes.get(INGREDIENT_ATTRIBUTE));
+                    var ingredient = new RecipeIngredientValue(
+                            new IngredientValue(attributes.get(INGREDIENT_ATTRIBUTE)),
+                            Boolean.parseBoolean(attributes.get(MAIN_INGREDIENT_ATTRIBUTE)),
+                            Integer.parseInt(attributes.get(QUANTITY_ATTRIBUTE)),
+                            attributes.get(MEASUREMENT_UNIT_ATTRIBUTE)
+                    );
                     recipesIngredients.putIfAbsent(recipeName, new ArrayList<>());
                     recipesIngredients.get(recipeName).add(ingredient);
                 });

@@ -19,6 +19,8 @@ import static java.util.stream.Collectors.toList;
 
 import static org.assertj.core.api.Assumptions.assumeThat;
 
+import static org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientValue.*;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -34,7 +36,7 @@ import org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue;
  * The recipe's ingredients list rest-service client steps definition dedicated to assumptions.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 public class RecipeIngredientListAssumptionsSteps {
@@ -56,6 +58,12 @@ public class RecipeIngredientListAssumptionsSteps {
 
     @Step("Assume ingredient {0} is in recipe {1} ingredients list")
     public RecipeIngredientValue assumeIngredientRelatedToRecipe(@NonNull IngredientValue ingredient, @NonNull RecipeValue recipe) {
+        return assumeIngredientRelatedToRecipe(new RecipeIngredientValue(ingredient, DEFAULT_MAIN_INGREDIENT,
+                DEFAULT_QUANTITY, DEFAULT_MEASUREMENT_UNIT), recipe);
+    }
+
+    @Step("Assume ingredient {0} is in recipe {1} ingredients list")
+    public RecipeIngredientValue assumeIngredientRelatedToRecipe(@NonNull RecipeIngredientValue ingredient, @NonNull RecipeValue recipe) {
         if (listClient.getFromRecipeIngredientsList(ingredient, recipe).isEmpty()) {
             recipeIngredientAddition.addIngredientToRecipeAsSuperAdministrator(ingredient, recipe);
         }
@@ -65,10 +73,14 @@ public class RecipeIngredientListAssumptionsSteps {
     }
 
     @Step("Assume ingredients {0} are in recipe {1} ingredients list")
-    public Collection<RecipeIngredientValue> assumeIngredientsRelatedToRecipe(List<IngredientValue> ingredients, RecipeValue recipe) {
+    public Collection<RecipeIngredientValue> assumeIngredientsRelatedToRecipe(
+            List<RecipeIngredientValue> ingredients, RecipeValue recipe) {
         var existingIngredients = ingredients.stream()
-                .map(i -> ingredientListSteps.getCorrespondingIngredient(i).orElseThrow(() ->
-                        new AssertionError(String.format("Ingredient %s does not exist", i))))
+                .map(i -> {
+                    var existingIngredient = ingredientListSteps.getCorrespondingIngredient(new IngredientValue(i.ingredientName()))
+                            .orElseThrow(() -> new AssertionError(String.format("Ingredient %s does not exist", i)));
+                    return new RecipeIngredientValue(existingIngredient, i.mainIngredient(), i.quantity(), i.measurementUnit());
+                })
                 .collect(toList());
         return existingIngredients.stream().map(i -> assumeIngredientRelatedToRecipe(i, recipe)).collect(toList());
     }

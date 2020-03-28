@@ -110,11 +110,13 @@ Feature: Remove ingredients from recipe
       | Tomato     | WEIGHT, COUNT    |
       | Cucumber   | WEIGHT, COUNT    |
       | Mozzarella | WEIGHT, COUNT    |
+      | Chives     | AT_CONVENIENCE   |
     And the following ingredients in the recipe
-      | name       |
-      | Tomato     |
-      | Cucumber   |
-      | Mozzarella |
+      | name       | isMainIngredient | quantity | measurementUnit |
+      | Tomato     | true             | 3        | UNIT            |
+      | Cucumber   | true             | 1        | UNIT            |
+      | Mozzarella | true             | 200      | GRAM            |
+      | Chives     | false            | 1        | PINCH           |
     When he removes all the ingredients from the recipe
     Then the ingredients are removed from the recipe
     And no ingredient is related to the recipe
@@ -128,11 +130,13 @@ Feature: Remove ingredients from recipe
       | Tomato     | WEIGHT, COUNT    |
       | Cucumber   | WEIGHT, COUNT    |
       | Mozzarella | WEIGHT, COUNT    |
+      | Chives     | AT_CONVENIENCE   |
     And the following ingredients in the recipe
-      | name       |
-      | Tomato     |
-      | Cucumber   |
-      | Mozzarella |
+      | name       | isMainIngredient | quantity | measurementUnit |
+      | Tomato     | true             | 3        | UNIT            |
+      | Cucumber   | true             | 1        | UNIT            |
+      | Mozzarella | true             | 200      | GRAM            |
+      | Chives     | false            | 1        | PINCH           |
     When he removes all the ingredients from the recipe
     Then an error notifies that user is not authenticated
 
@@ -145,11 +149,13 @@ Feature: Remove ingredients from recipe
       | Tomato     | WEIGHT, COUNT    |
       | Cucumber   | WEIGHT, COUNT    |
       | Mozzarella | WEIGHT, COUNT    |
+      | Chives     | AT_CONVENIENCE   |
     And the following ingredients in the recipe
-      | name       |
-      | Tomato     |
-      | Cucumber   |
-      | Mozzarella |
+      | name       | isMainIngredient | quantity | measurementUnit |
+      | Tomato     | true             | 3        | UNIT            |
+      | Cucumber   | true             | 1        | UNIT            |
+      | Mozzarella | true             | 200      | GRAM            |
+      | Chives     | false            | 1        | PINCH           |
     When he removes all the ingredients from the recipe
     Then an error notifies that user is not authorized
 
@@ -162,11 +168,13 @@ Feature: Remove ingredients from recipe
       | Tomato     | WEIGHT, COUNT    |
       | Cucumber   | WEIGHT, COUNT    |
       | Mozzarella | WEIGHT, COUNT    |
+      | Chives     | AT_CONVENIENCE   |
     And the following ingredients in the recipe
-      | name       |
-      | Tomato     |
-      | Cucumber   |
-      | Mozzarella |
+      | name       | isMainIngredient | quantity | measurementUnit |
+      | Tomato     | true             | 3        | UNIT            |
+      | Cucumber   | true             | 1        | UNIT            |
+      | Mozzarella | true             | 200      | GRAM            |
+      | Chives     | false            | 1        | PINCH           |
     When he removes all the ingredients from the recipe
     Then the ingredients are removed from the recipe
     And no ingredient is related to the recipe
@@ -180,11 +188,13 @@ Feature: Remove ingredients from recipe
       | Tomato     | WEIGHT, COUNT    |
       | Cucumber   | WEIGHT, COUNT    |
       | Mozzarella | WEIGHT, COUNT    |
+      | Chives     | AT_CONVENIENCE   |
     And the following ingredients in the recipe
-      | name       |
-      | Tomato     |
-      | Cucumber   |
-      | Mozzarella |
+      | name       | isMainIngredient | quantity | measurementUnit |
+      | Tomato     | true             | 3        | UNIT            |
+      | Cucumber   | true             | 1        | UNIT            |
+      | Mozzarella | true             | 200      | GRAM            |
+      | Chives     | false            | 1        | PINCH           |
     When he removes all the ingredients from the recipe
     Then the ingredients are removed from the recipe
     And no ingredient is related to the recipe
@@ -198,11 +208,13 @@ Feature: Remove ingredients from recipe
       | Tomato     | WEIGHT, COUNT    |
       | Cucumber   | WEIGHT, COUNT    |
       | Mozzarella | WEIGHT, COUNT    |
+      | Chives     | AT_CONVENIENCE   |
     And the following ingredients in the recipe
-      | name       |
-      | Tomato     |
-      | Cucumber   |
-      | Mozzarella |
+      | name       | isMainIngredient | quantity | measurementUnit |
+      | Tomato     | true             | 3        | UNIT            |
+      | Cucumber   | true             | 1        | UNIT            |
+      | Mozzarella | true             | 200      | GRAM            |
+      | Chives     | false            | 1        | PINCH           |
     When he removes all the ingredients from the recipe
     Then the ingredients are removed from the recipe
     And no ingredient is related to the recipe

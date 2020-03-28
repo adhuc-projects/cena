@@ -88,9 +88,8 @@ public class RecipeIngredientAdditionSteps {
     }
 
     @Step("Add ingredient {0} to recipe {1} as super administrator")
-    public RecipeIngredientValue addIngredientToRecipeAsSuperAdministrator(IngredientValue ingredient, RecipeValue recipe) {
-        return addIngredientToRecipe(new RecipeIngredientValue(ingredient, false, DEFAULT_QUANTITY, DEFAULT_MEASUREMENT_UNIT),
-                recipe, () -> rest(SUPER_ADMINISTRATOR));
+    public RecipeIngredientValue addIngredientToRecipeAsSuperAdministrator(RecipeIngredientValue recipeIngredient, RecipeValue recipe) {
+        return addIngredientToRecipe(recipeIngredient, recipe, () -> rest(SUPER_ADMINISTRATOR));
     }
 
     private RecipeIngredientValue addIngredientToRecipe(RecipeIngredientValue recipeIngredient, RecipeValue recipe,

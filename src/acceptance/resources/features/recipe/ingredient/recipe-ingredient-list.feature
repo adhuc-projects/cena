@@ -19,10 +19,12 @@ Feature: List recipe's ingredients
       | Tomato     | WEIGHT, COUNT    |
       | Cucumber   | WEIGHT, COUNT    |
       | Mozzarella | WEIGHT, COUNT    |
+      | Chives     | AT_CONVENIENCE   |
     And the following ingredients in the recipe
-      | name       |
-      | Tomato     |
-      | Cucumber   |
-      | Mozzarella |
+      | name       | isMainIngredient | quantity | measurementUnit |
+      | Tomato     | true             | 3        | UNIT            |
+      | Cucumber   | true             | 1        | UNIT            |
+      | Mozzarella | true             | 200      | GRAM            |
+      | Chives     | false            | 1        | PINCH           |
     When he lists the recipe's ingredients
     Then the recipe's ingredients list contains the ingredients

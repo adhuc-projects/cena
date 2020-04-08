@@ -34,6 +34,7 @@ import lombok.NonNull;
 import lombok.ToString;
 
 import org.adhuc.cena.menu.ingredients.IngredientId;
+import org.adhuc.cena.menu.port.adapter.rest.support.Uuid;
 import org.adhuc.cena.menu.recipes.AddIngredientToRecipe;
 import org.adhuc.cena.menu.recipes.MeasurementUnit;
 import org.adhuc.cena.menu.recipes.Quantity;
@@ -52,10 +53,10 @@ import org.adhuc.cena.menu.recipes.RecipeId;
 class CreateRecipeIngredientRequest {
 
     @NotBlank
-    @JsonProperty("id")
-    private String ingredientId;
+    @Uuid
+    private String id;
     @JsonProperty("mainIngredient")
-    private boolean isMainIngredient;
+    private boolean mainIngredient;
     @Positive
     private Integer quantity;
     private MeasurementUnit measurementUnit;
@@ -63,11 +64,11 @@ class CreateRecipeIngredientRequest {
     /**
      * Converts this request to a {@code AddIngredientToRecipe} command.
      *
-     * @param id the recipe identity.
+     * @param recipeId the recipe identity.
      * @return the ingredient to recipe addition command..
      */
-    AddIngredientToRecipe toCommand(@NonNull RecipeId id) {
-        return new AddIngredientToRecipe(new IngredientId(ingredientId), id, isMainIngredient,
+    AddIngredientToRecipe toCommand(@NonNull RecipeId recipeId) {
+        return new AddIngredientToRecipe(new IngredientId(id), recipeId, mainIngredient,
                 quantity != null ? new Quantity(quantity, measurementUnit) : Quantity.UNDEFINED);
     }
 

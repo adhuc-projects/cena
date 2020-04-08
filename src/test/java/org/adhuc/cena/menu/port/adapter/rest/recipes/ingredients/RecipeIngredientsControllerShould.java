@@ -183,6 +183,16 @@ class RecipeIngredientsControllerShould {
 
     @Test
     @WithAuthenticatedUser
+    @DisplayName("respond Not Found when creating recipe ingredient for invalid recipe")
+    void respond404CreateInvalidRecipe() throws Exception {
+        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, "invalid")
+                .contentType(APPLICATION_JSON)
+                .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \"mainIngredient\":true, \"quantity\":1, \"measurementUnit\":\"DOZEN\"}")
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Not Found when creating recipe ingredient for unknown recipe")
     void respond404CreateUnknownRecipe() throws Exception {
         doThrow(new EntityNotFoundException(Recipe.class, RecipeMother.ID))
@@ -200,6 +210,19 @@ class RecipeIngredientsControllerShould {
         mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID)
                 .contentType(APPLICATION_JSON)
                 .content("{}")
+        ).andExpect(status().isBadRequest())
+                .andExpect(jsonPath("details").isArray())
+                .andExpect(jsonPath("details", hasSize(1)))
+                .andExpect(jsonPath("details[0]", equalTo("Invalid request body property 'id': must not be blank. Actual value is <null>")));
+    }
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("respond Bad Request when creating recipe ingredient without invalid id")
+    void respond400OnCreationWithInvalidId() throws Exception {
+        mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID)
+                .contentType(APPLICATION_JSON)
+                .content("{\"id\":\"invalid\"}")
         ).andExpect(status().isBadRequest());
     }
 

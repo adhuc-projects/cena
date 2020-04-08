@@ -75,7 +75,7 @@ public class RecipeIngredientsController {
                                                 Errors errors) throws URISyntaxException {
         recipeIngredientAppService.addIngredientToRecipe(request.toCommand(new RecipeId(recipeId)));
         return ResponseEntity.created(new URI(links.linkFor(RecipeIngredientModel.class, recipeId)
-                .slash(request.getIngredientId()).withSelfRel().getHref())).build();
+                .slash(request.getId()).withSelfRel().getHref())).build();
     }
 
     /**

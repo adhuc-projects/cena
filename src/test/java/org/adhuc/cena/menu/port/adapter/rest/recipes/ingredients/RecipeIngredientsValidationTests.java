@@ -97,7 +97,7 @@ class RecipeIngredientsValidationTests {
         assertThat(error)
                 .hasCode(INVALID_REQUEST)
                 .hasMessage("Validation error")
-                .detailsContainsExactlyInAnyOrder("Invalid request body property 'ingredientId': must not be blank. Actual value is <null>");
+                .detailsContainsExactlyInAnyOrder("Invalid request body property 'id': must not be blank. Actual value is <null>");
     }
 
     @Test

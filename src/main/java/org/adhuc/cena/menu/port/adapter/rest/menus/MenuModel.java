@@ -13,39 +13,17 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.steps.serenity.support.resource;
+package org.adhuc.cena.menu.port.adapter.rest.menus;
+
+import org.springframework.hateoas.RepresentationModel;
 
 /**
- * A REST resource encapsulating API information on the client side.
+ * A REST resource encapsulating menu information.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
- * @since 0.0.1
+ * @since 0.3.0
  */
-public class ApiClientResource extends HateoasClientResourceSupport {
-
-    public String getManagement() {
-        return link("management");
-    }
-
-    public String getDocumentation() {
-        return link("documentation");
-    }
-
-    public String getOpenApi() {
-        return link("openapi");
-    }
-
-    public String getIngredients() {
-        return link("ingredients");
-    }
-
-    public String getRecipes() {
-        return link("recipes");
-    }
-
-    public String getMenus() {
-        return link("menus");
-    }
+class MenuModel extends RepresentationModel<MenuModel> {
 
 }

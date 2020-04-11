@@ -86,7 +86,8 @@ class ApiDocumentation {
                 linkWithRel("openapi").description("OpenAPI specification for this API"),
                 linkWithRel("management").description("The https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-endpoints[Spring Boot Actuator] endpoints"),
                 linkWithRel("ingredients").description("The ingredients list"),
-                linkWithRel("recipes").description("The recipes list")),
+                linkWithRel("recipes").description("The recipes list"),
+                linkWithRel("menus").description("The menus list")),
                 responseFields(subsectionWithPath("_links").description("<<resources-index-links,Links>> to other resources"))));
     }
 

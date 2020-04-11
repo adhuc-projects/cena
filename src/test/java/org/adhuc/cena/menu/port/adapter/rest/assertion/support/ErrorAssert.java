@@ -26,7 +26,7 @@ import org.adhuc.cena.menu.common.ExceptionCode;
  * Custom assertion definition for {@link Error}s.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.3.0
  * @since 0.1.0
  */
 public class ErrorAssert extends AbstractAssert<ErrorAssert, Error> {
@@ -60,6 +60,12 @@ public class ErrorAssert extends AbstractAssert<ErrorAssert, Error> {
         if (!Objects.equals(message, actual.getMessage())) {
             failWithMessage("Expected error's message to be <%s> but was <%s>", message, actual.getMessage());
         }
+        return this;
+    }
+
+    public ErrorAssert detailsContainsExactly(String details) {
+        isNotNull();
+        Assertions.assertThat(actual.getDetails()).containsExactly(details);
         return this;
     }
 

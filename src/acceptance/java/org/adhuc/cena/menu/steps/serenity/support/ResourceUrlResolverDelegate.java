@@ -26,7 +26,7 @@ import org.adhuc.cena.menu.steps.serenity.support.resource.ApiClientResource;
  * A delegate providing convenient methods for resolving resource URLs.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.0.1
  */
 @Slf4j
@@ -55,6 +55,10 @@ public final class ResourceUrlResolverDelegate {
 
     public String recipesResourceUrl() {
         return apiClientResource().getRecipes();
+    }
+
+    public String menusResourceUrl() {
+        return apiClientResource().getMenus();
     }
 
     public <T> T getResource(String url, Class<T> resourceClass) {

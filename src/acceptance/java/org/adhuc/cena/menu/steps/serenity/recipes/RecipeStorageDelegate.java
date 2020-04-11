@@ -100,7 +100,7 @@ public final class RecipeStorageDelegate {
     }
 
     /**
-     * Stores the ingredient.
+     * Stores the recipe.
      *
      * @param recipe the recipe to store.
      * @return the recipe.

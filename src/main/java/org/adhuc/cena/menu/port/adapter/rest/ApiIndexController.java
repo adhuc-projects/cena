@@ -28,13 +28,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
 import org.adhuc.cena.menu.port.adapter.rest.ingredients.IngredientsController;
+import org.adhuc.cena.menu.port.adapter.rest.menus.MenusController;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.RecipesController;
 
 /**
  * A REST controller providing links to all general resources.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.0.1
  */
 @RestController
@@ -49,7 +50,7 @@ class ApiIndexController {
 
     @GetMapping
     @ResponseStatus(OK)
-    RepresentationModel index() {
+    RepresentationModel<?> index() {
         final var index = new RepresentationModel<>();
         if (documentation.isEnabled()) {
             index.add(linkTo(ApiIndexController.class).slash("docs").slash("openapi.yml").withRel("openapi"));
@@ -58,6 +59,7 @@ class ApiIndexController {
         index.add(linkTo(ApiIndexController.class).slash("management").withRel("management"));
         index.add(linkTo(IngredientsController.class).withRel("ingredients"));
         index.add(linkTo(RecipesController.class).withRel("recipes"));
+        index.add(linkTo(MenusController.class).withRel("menus"));
         return index;
     }
 

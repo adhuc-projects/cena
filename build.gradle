@@ -67,6 +67,7 @@ dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-hateoas')
 	implementation('org.springframework.boot:spring-boot-starter-web')
 	implementation('org.springframework.boot:spring-boot-starter-security')
+	implementation('com.fasterxml.jackson.datatype:jackson-datatype-jsr310')
 	implementation("commons-io:commons-io:${commonsIoVersion}")
 	implementation("io.swagger:swagger-core:${swaggerVersion}")
 	implementation("com.atlassian.oai:swagger-request-validator-springmvc:${swaggerValidatorVersion}")

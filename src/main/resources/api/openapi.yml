@@ -253,6 +253,23 @@ paths:
           $ref: '#/components/responses/403-Forbidden'
         404:
           $ref: '#/components/responses/404-NotFound'
+  /menus:
+    post:
+      summary: Create a menu in menus collection for the currently authenticated user
+      operationId: createMenu
+      tags:
+        - Menus
+      security:
+        - basicAuth:[]
+      requestBody:
+        $ref: '#/components/requestBodies/CreateMenu'
+      responses:
+        201:
+          $ref: '#/components/responses/MenuCreated'
+        400:
+          $ref: '#/components/responses/400-BadRequest'
+        401:
+          $ref: '#/components/responses/401-Unauthorized'
 components:
   securitySchemes:
     basicAuth:
@@ -308,6 +325,16 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/AddIngredientToRecipe'
+    CreateMenu:
+      required: true
+      description: Menu creation request
+      content:
+        application/hal+json:
+          schema:
+            $ref: '#/components/schemas/Menu'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Menu'
   responses:
     Index:
       description: Retrieve links to main API resources
@@ -396,6 +423,14 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/RecipeIngredient'
+    MenuCreated:
+      description: Successful menu creation response
+      headers:
+        Location:
+          description: Link to the created menu. Can be used to retrieve, update or delete the created menu
+          schema:
+            type: string
+            example: 'https://cena.adhuc.org/api/menus/07549d0c-b8ef-40a0-af3b-5b6107706175'
     400-BadRequest:
       description: Bad syntax or incorrect request
       content:
@@ -445,6 +480,7 @@ components:
           required:
             - openapi
             - ingredients
+            - recipes
           properties:
             documentation:
               description: Link to access to the API documentation
@@ -482,6 +518,26 @@ components:
                 href:
                   type: string
                   example: 'https://cena.adhuc.org/api/ingredients'
+            recipes:
+              description: Link to access to the recipes collection resource
+              type: object
+              required:
+                - href
+              properties:
+                href:
+                  type: string
+                  example: 'https://cena.adhuc.org/api/recipes'
+            menus:
+              description: >
+                Link to access to the menus collection resource for the currently authenticated user.
+                This link is present only for authenticated users.
+              type: object
+              required:
+                - href
+              properties:
+                href:
+                  type: string
+                  example: 'https://cena.adhuc.org/api/menus'
     Ingredients:
       description: A collection of ingredients, containing ingredients detail for each ingredient
       type: object
@@ -805,6 +861,66 @@ components:
       description: Unit of measurement for a quantity of ingredient in a recipe. Depends on the measurement types defined for the ingredient
       type: string
       enum: ['LITER', 'CENTILITER', 'MILLILITER', 'TABLESPOON', 'TEASPOON', 'GRAM', 'KILOGRAM', 'POUND', 'UNIT', 'TEN', 'DOZEN', 'PINCH']
+    Menu:
+      description: A menu detail
+      type: object
+      required:
+        - date
+        - mealType
+        - covers
+        - mainCourseRecipes
+        - '_links'
+      properties:
+        date:
+          description: Menu date
+          type: string
+          format: date
+          example: '2020-01-01'
+        mealType:
+          $ref: '#/components/schemas/MealType'
+        covers:
+          description: Number of covers of a menu
+          type: integer
+          example: 2
+          minimum: 1
+        mainCourseRecipes:
+          description: List of recipe identities related to menu's main course. Main course must consist of at least one recipe
+          type: array
+          items:
+            $ref: '#/components/schemas/RecipeId'
+          minItems: 1
+        '_links':
+          type: object
+          readOnly: true
+          required:
+            - self
+            - mainCourseRecipes
+          properties:
+            self:
+              description: Link to this menu detail. Can be used to update or delete the menu
+              type: object
+              required:
+                - href
+              properties:
+                href:
+                  type: string
+                  example: 'https://cena.adhuc.org/api/menus/2020-01-01_LUNCH'
+            mainCourseRecipes:
+              description: Links to this menu's main course recipes
+              type: array
+              items:
+                type: object
+                required:
+                  - href
+                properties:
+                  href:
+                    type: string
+                    example: 'https://cena.adhuc.org/api/recipes/d71e2fc7-09e3-4241-97a5-dc3383d35e98'
+      additionalProperties: true
+    MealType:
+      description: Meal type for a menu
+      type: string
+      enum: ['LUNCH', 'DINER']
     Error:
       description: General error structure
       type: object

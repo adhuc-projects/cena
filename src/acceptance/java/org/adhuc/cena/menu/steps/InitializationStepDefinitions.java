@@ -15,8 +15,13 @@
  */
 package org.adhuc.cena.menu.steps;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import cucumber.api.java.Before;
 import cucumber.runtime.java.StepDefAnnotation;
+import io.restassured.RestAssured;
+import io.restassured.config.ObjectMapperConfig;
+import io.restassured.config.RestAssuredConfig;
 import net.serenitybdd.core.Serenity;
 import net.serenitybdd.rest.SerenityRest;
 
@@ -26,7 +31,7 @@ import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationP
  * An initialization step definitions, configuring rest-assured properties.
  *
  * @author Alexandre Carbenay
- * @version 0.0.1
+ * @version 0.3.0
  * @since 0.0.1
  */
 @StepDefAnnotation
@@ -35,9 +40,20 @@ public class InitializationStepDefinitions {
     @Before
     public void init() {
         Serenity.initializeTestSession();
-        SerenityRest.reset();
+        initializeRestClient();
 
         AuthenticationProvider.instance().clean();
+    }
+
+    private void initializeRestClient() {
+        SerenityRest.reset();
+        RestAssured.config = RestAssuredConfig.config().objectMapperConfig(new ObjectMapperConfig().jackson2ObjectMapperFactory(
+                (type, s) -> {
+                    ObjectMapper om = new ObjectMapper().findAndRegisterModules();
+                    om.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+                    return om;
+                }
+        ));
     }
 
 }

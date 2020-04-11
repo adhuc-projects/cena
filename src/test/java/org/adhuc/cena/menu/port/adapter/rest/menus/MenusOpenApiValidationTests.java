@@ -35,9 +35,11 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
+import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
 import org.adhuc.cena.menu.port.adapter.rest.assertion.support.Error;
 import org.adhuc.cena.menu.recipes.RecipeMother;
 
@@ -58,6 +60,8 @@ class MenusOpenApiValidationTests {
 
     @LocalServerPort
     private int port;
+    @Autowired
+    private MenuGenerationProperties properties;
 
     @BeforeEach
     void setUp() {
@@ -69,6 +73,8 @@ class MenusOpenApiValidationTests {
     void respond400OnCreationWithoutDate() {
         var error = given()
                 .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                        properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
                 .body(String.format("{\"mealType\":\"LUNCH\",\"covers\":2,\"mainCourseRecipes\":[\"%s\"]}", RecipeMother.ID))
                 .when()
@@ -89,6 +95,8 @@ class MenusOpenApiValidationTests {
         var date = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
         var error = given()
                 .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                        properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
                 .body(String.format("{\"date\":\"%s\", \"mealType\":\"LUNCH\",\"covers\":2,\"mainCourseRecipes\":[\"%s\"]}",
                         date, RecipeMother.ID))
@@ -109,6 +117,8 @@ class MenusOpenApiValidationTests {
     void respond400OnCreationWithoutMealType() {
         var error = given()
                 .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                        properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
                 .body(String.format("{\"date\":\"%s\",\"covers\":2,\"mainCourseRecipes\":[\"%s\"]}", LocalDate.now(), RecipeMother.ID))
                 .when()
@@ -128,6 +138,8 @@ class MenusOpenApiValidationTests {
     void respond400OnCreationWithUnknownMealType() {
         var error = given()
                 .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                        properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
                 .body(String.format("{\"date\":\"%s\",\"mealType\":\"UNKNOWN\",\"covers\":2,\"mainCourseRecipes\":[\"%s\"]}",
                         LocalDate.now(), RecipeMother.ID))
@@ -148,6 +160,8 @@ class MenusOpenApiValidationTests {
     void respond400OnCreationWithoutCovers() {
         var error = given()
                 .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                        properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
                 .body(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"mainCourseRecipes\":[\"%s\"]}", LocalDate.now(), RecipeMother.ID))
                 .when()
@@ -168,6 +182,8 @@ class MenusOpenApiValidationTests {
     void respond400OnCreationWithNegativeCovers(int covers) {
         var error = given()
                 .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                        properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
                 .body(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"covers\":%d,\"mainCourseRecipes\":[\"%s\"]}",
                         LocalDate.now(), covers, RecipeMother.ID))
@@ -188,6 +204,8 @@ class MenusOpenApiValidationTests {
     void respond400OnCreationWithoutMainCourseRecipes() {
         var error = given()
                 .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                        properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
                 .body(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"covers\":2}", LocalDate.now()))
                 .when()
@@ -207,6 +225,8 @@ class MenusOpenApiValidationTests {
     void respond400OnCreationWithInvalidMainCourseRecipes() {
         var error = given()
                 .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                        properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
                 .body(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"covers\":2,\"mainCourseRecipes\":[\"invalid\"]}", LocalDate.now()))
                 .when()
@@ -226,6 +246,8 @@ class MenusOpenApiValidationTests {
     void respond201OnCreationWithAdditionalProperty() {
         given()
                 .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
                 .body(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"covers\":2,\"mainCourseRecipes\":[\"%s\"],\"other\":\"some value\"}",
                         LocalDate.now(), RecipeMother.ID))

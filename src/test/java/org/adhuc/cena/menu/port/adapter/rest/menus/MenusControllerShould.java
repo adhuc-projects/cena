@@ -38,6 +38,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import org.adhuc.cena.menu.recipes.RecipeMother;
+import org.adhuc.cena.menu.support.WithAuthenticatedUser;
+import org.adhuc.cena.menu.support.WithCommunityUser;
+import org.adhuc.cena.menu.support.WithIngredientManager;
+import org.adhuc.cena.menu.support.WithSuperAdministrator;
 
 /**
  * The {@link MenusController} test class.
@@ -58,6 +62,18 @@ class MenusControllerShould {
     private MockMvc mvc;
 
     @Test
+    @WithCommunityUser
+    @DisplayName("respond Unauthorized when creating menu as a community user")
+    void respond401OnCreationAsCommunityUser() throws Exception {
+        mvc.perform(post(MENUS_API_URL)
+                .contentType(HAL_JSON)
+                .content(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"covers\":2,\"mainCourseRecipes\":[\"%s\"]}",
+                        LocalDate.now(), RecipeMother.ID))
+        ).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Unsupported Media Type when creating menu with XML content")
     void respond415OnCreationXML() throws Exception {
         mvc.perform(post(MENUS_API_URL)
@@ -74,6 +90,7 @@ class MenusControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Bad Request when creating menu without date")
     void respond400OnCreationWithoutDate() throws Exception {
         mvc.perform(post(MENUS_API_URL)
@@ -86,6 +103,7 @@ class MenusControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Bad Request when creating menu with wrong date format")
     void respond400OnCreationWrongDateFormat() throws Exception {
         mvc.perform(post(MENUS_API_URL)
@@ -96,6 +114,7 @@ class MenusControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Bad Request when creating menu without meal type")
     void respond400OnCreationWithoutMealType() throws Exception {
         mvc.perform(post(MENUS_API_URL)
@@ -108,6 +127,7 @@ class MenusControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Bad Request when creating menu with unknown meal type")
     void respond400OnCreationWithUnknownMealType() throws Exception {
         mvc.perform(post(MENUS_API_URL)
@@ -118,6 +138,7 @@ class MenusControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Bad Request when creating menu without covers")
     void respond400OnCreationWithoutCovers() throws Exception {
         mvc.perform(post(MENUS_API_URL)
@@ -132,6 +153,7 @@ class MenusControllerShould {
 
     @ParameterizedTest
     @ValueSource(ints = {Integer.MIN_VALUE, -1, 0})
+    @WithAuthenticatedUser
     @DisplayName("respond Bad Request when creating menu with negative covers")
     void respond400OnCreationWithNegativeCovers(int covers) throws Exception {
         mvc.perform(post(MENUS_API_URL)
@@ -146,6 +168,7 @@ class MenusControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Bad Request when creating menu without main course recipes")
     void respond400OnCreationWithoutMainCourseRecipes() throws Exception {
         mvc.perform(post(MENUS_API_URL)
@@ -158,6 +181,7 @@ class MenusControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Bad Request when creating menu with empty main course recipes")
     void respond400OnCreationWithEmptyMainCourseRecipes() throws Exception {
         mvc.perform(post(MENUS_API_URL)
@@ -170,6 +194,7 @@ class MenusControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Bad Request when creating menu with invalid main course recipes")
     void respond400OnCreationWithInvalidMainCourseRecipes() throws Exception {
         mvc.perform(post(MENUS_API_URL)
@@ -179,6 +204,7 @@ class MenusControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Created when creating menu with JSON content")
     void respond201OnCreationJson() throws Exception {
         mvc.perform(post(MENUS_API_URL)
@@ -189,6 +215,7 @@ class MenusControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Created when creating menu with HAL content")
     void respond201OnCreationHal() throws Exception {
         mvc.perform(post(MENUS_API_URL)
@@ -199,6 +226,7 @@ class MenusControllerShould {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("respond with a Location header when creating menu successfully")
     void respondWithLocationAfterCreationSuccess() throws Exception {
         mvc.perform(post(MENUS_API_URL)
@@ -207,6 +235,28 @@ class MenusControllerShould {
                         LocalDate.now(), RecipeMother.ID))
         ).andExpect(header().exists(LOCATION))
                 .andExpect(header().string(LOCATION, String.format("http://localhost/api/menus/%s-LUNCH", LocalDate.now())));
+    }
+
+    @Test
+    @WithIngredientManager
+    @DisplayName("respond Created when creating menu as ingredient manager")
+    void respond201OnCreationAsIngredientManager() throws Exception {
+        mvc.perform(post(MENUS_API_URL)
+                .contentType(HAL_JSON)
+                .content(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"covers\":2,\"mainCourseRecipes\":[\"%s\"]}",
+                        LocalDate.now(), RecipeMother.ID))
+        ).andExpect(status().isCreated());
+    }
+
+    @Test
+    @WithSuperAdministrator
+    @DisplayName("respond Created when creating menu as super administrator")
+    void respond201OnCreationAsSuperAdministrator() throws Exception {
+        mvc.perform(post(MENUS_API_URL)
+                .contentType(HAL_JSON)
+                .content(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"covers\":2,\"mainCourseRecipes\":[\"%s\"]}",
+                        LocalDate.now(), RecipeMother.ID))
+        ).andExpect(status().isCreated());
     }
 
 }

@@ -24,6 +24,8 @@ package org.adhuc.cena.menu.steps.serenity.support.resource;
  */
 public class ApiClientResource extends HateoasClientResourceSupport {
 
+    public static final String MENUS_LINK = "menus";
+
     public String getManagement() {
         return link("management");
     }
@@ -45,7 +47,7 @@ public class ApiClientResource extends HateoasClientResourceSupport {
     }
 
     public String getMenus() {
-        return link("menus");
+        return link(MENUS_LINK);
     }
 
 }

@@ -15,7 +15,10 @@
  */
 package org.adhuc.cena.menu.steps.serenity.support;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.OK;
+
+import static org.adhuc.cena.menu.steps.serenity.support.resource.ApiClientResource.MENUS_LINK;
 
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.core.Serenity;
@@ -59,6 +62,11 @@ public final class ResourceUrlResolverDelegate {
 
     public String menusResourceUrl() {
         return apiClientResource().getMenus();
+    }
+
+    public String notAccessibleMenusResourceUrl() {
+        assertThat(apiClientResource().maybeLink(MENUS_LINK)).isEmpty();
+        return String.format("%s/%s", getApiIndexUrl(), MENUS_LINK);
     }
 
     public <T> T getResource(String url, Class<T> resourceClass) {

@@ -28,11 +28,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import org.adhuc.cena.menu.support.WithAuthenticatedUser;
+import org.adhuc.cena.menu.support.WithCommunityUser;
+import org.adhuc.cena.menu.support.WithIngredientManager;
+import org.adhuc.cena.menu.support.WithSuperAdministrator;
+
 /**
  * The {@link ApiIndexController} test class.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.0.1
  */
 @Tag("integration")
@@ -48,14 +53,55 @@ class ApiIndexControllerShould {
     private MockMvc mvc;
 
     @Test
-    @DisplayName("return accessible links while getting index")
-    void returnAccessibleLinks() throws Exception {
+    @WithCommunityUser
+    @DisplayName("return accessible links while getting index as community user")
+    void returnAccessibleLinksCommunityUser() throws Exception {
         mvc.perform(get(API_URL))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("_links.documentation").exists())
                 .andExpect(jsonPath("_links.management").exists())
                 .andExpect(jsonPath("_links.ingredients").exists())
-                .andExpect(jsonPath("_links.recipes").exists());
+                .andExpect(jsonPath("_links.recipes").exists())
+                .andExpect(jsonPath("_links.menus").doesNotExist());
+    }
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("return accessible links while getting index as authenticated user")
+    void returnAccessibleLinksAuthenticatedUser() throws Exception {
+        mvc.perform(get(API_URL))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("_links.documentation").exists())
+                .andExpect(jsonPath("_links.management").exists())
+                .andExpect(jsonPath("_links.ingredients").exists())
+                .andExpect(jsonPath("_links.recipes").exists())
+                .andExpect(jsonPath("_links.menus").exists());
+    }
+
+    @Test
+    @WithIngredientManager
+    @DisplayName("return accessible links while getting index as ingredient manager")
+    void returnAccessibleLinksIngredientManager() throws Exception {
+        mvc.perform(get(API_URL))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("_links.documentation").exists())
+                .andExpect(jsonPath("_links.management").exists())
+                .andExpect(jsonPath("_links.ingredients").exists())
+                .andExpect(jsonPath("_links.recipes").exists())
+                .andExpect(jsonPath("_links.menus").exists());
+    }
+
+    @Test
+    @WithSuperAdministrator
+    @DisplayName("return accessible links while getting index as super administrator")
+    void returnAccessibleLinksSuperAdministrator() throws Exception {
+        mvc.perform(get(API_URL))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("_links.documentation").exists())
+                .andExpect(jsonPath("_links.management").exists())
+                .andExpect(jsonPath("_links.ingredients").exists())
+                .andExpect(jsonPath("_links.recipes").exists())
+                .andExpect(jsonPath("_links.menus").exists());
     }
 
 }

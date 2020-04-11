@@ -50,6 +50,11 @@ public class MenuCreationSteps {
         return menu;
     }
 
+    @Step("Try to create the menu {0}")
+    public void tryToCreateMenu(MenuValue menu) {
+        rest().contentType(HAL_JSON_VALUE).body(menu).post(notAccessibleMenusResourceUrl()).andReturn();
+    }
+
     public void assertMenuSuccessfullyCreated(MenuValue menu) {
         var menuLocation = assertCreated().extract().header(LOCATION);
         assertThat(menuLocation).isNotBlank();

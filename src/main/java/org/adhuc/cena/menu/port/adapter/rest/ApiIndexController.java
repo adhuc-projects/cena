@@ -21,6 +21,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 import lombok.NonNull;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -50,7 +51,7 @@ class ApiIndexController {
 
     @GetMapping
     @ResponseStatus(OK)
-    RepresentationModel<?> index() {
+    RepresentationModel<?> index(Authentication authentication) {
         final var index = new RepresentationModel<>();
         if (documentation.isEnabled()) {
             index.add(linkTo(ApiIndexController.class).slash("docs").slash("openapi.yml").withRel("openapi"));
@@ -59,7 +60,9 @@ class ApiIndexController {
         index.add(linkTo(ApiIndexController.class).slash("management").withRel("management"));
         index.add(linkTo(IngredientsController.class).withRel("ingredients"));
         index.add(linkTo(RecipesController.class).withRel("recipes"));
-        index.add(linkTo(MenusController.class).withRel("menus"));
+        if (authentication != null && authentication.isAuthenticated()) {
+            index.add(linkTo(MenusController.class).withRel("menus"));
+        }
         return index;
     }
 

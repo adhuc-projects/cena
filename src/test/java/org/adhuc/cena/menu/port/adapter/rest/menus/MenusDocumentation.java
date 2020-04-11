@@ -41,6 +41,7 @@ import org.adhuc.cena.menu.menus.MealType;
 import org.adhuc.cena.menu.port.adapter.rest.ResultHandlerConfiguration;
 import org.adhuc.cena.menu.port.adapter.rest.documentation.support.ConstrainedFields;
 import org.adhuc.cena.menu.recipes.RecipeMother;
+import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 
 /**
  * The menus related rest-services documentation.
@@ -65,6 +66,7 @@ class MenusDocumentation {
     private RestDocumentationResultHandler documentationHandler;
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("generates menu creation example")
     void menusCreateExample() throws Exception {
         var fields = new ConstrainedFields(CreateMenuRequest.class);

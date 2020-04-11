@@ -47,9 +47,15 @@ public class MenuCreationStepDefinitions {
                 menuCreation.createMenu(new MenuValue(LocalDate.now(), mealType, covers, recipeList.storedRecipe())));
     }
 
+    @When("^he tries to create a menu from the recipe for 2 covers for today's lunch$")
+    public void tryToCreateMenu() {
+        menuCreation.tryToCreateMenu(new MenuValue(LocalDate.now(), "lunch", 2, recipeList.storedRecipe()));
+    }
+
     @Then("^the menu is created$")
     public void menuCreated() {
         menuCreation.assertMenuSuccessfullyCreated(menuCreation.storedMenu());
+        // TODO get menu details from Location URL
     }
 
 }

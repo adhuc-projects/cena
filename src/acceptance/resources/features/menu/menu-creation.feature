@@ -9,3 +9,10 @@ Feature: Create a menu for a meal
     When he creates a menu from the recipe for 2 covers for today's lunch
     Then the menu is created
     And the menu can be found in the menus list starting from today
+
+  @Security
+  Scenario: Create a menu as community user
+    Given a community user
+    And an existing "Tomato, cucumber and mozzarella salad" recipe
+    When he tries to create a menu from the recipe for 2 covers for today's lunch
+    Then an error notifies that user is not authenticated

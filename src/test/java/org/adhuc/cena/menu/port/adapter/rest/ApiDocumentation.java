@@ -46,6 +46,7 @@ import org.adhuc.cena.menu.common.ExceptionCode;
 import org.adhuc.cena.menu.common.Name;
 import org.adhuc.cena.menu.ingredients.IngredientNameAlreadyUsedException;
 import org.adhuc.cena.menu.port.adapter.rest.documentation.support.ErrorsSnippet;
+import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 
 /**
  * The general API documentation.
@@ -79,6 +80,7 @@ class ApiDocumentation {
     }
 
     @Test
+    @WithAuthenticatedUser
     @DisplayName("generates index example")
     void indexExample() throws Exception {
         mvc.perform(get(API_URL)).andExpect(status().isOk()).andDo(documentationHandler.document(links(
@@ -87,7 +89,7 @@ class ApiDocumentation {
                 linkWithRel("management").description("The https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-endpoints[Spring Boot Actuator] endpoints"),
                 linkWithRel("ingredients").description("The ingredients list"),
                 linkWithRel("recipes").description("The recipes list"),
-                linkWithRel("menus").description("The menus list")),
+                linkWithRel("menus").description("The menus list, accessible only for authenticated users")),
                 responseFields(subsectionWithPath("_links").description("<<resources-index-links,Links>> to other resources"))));
     }
 

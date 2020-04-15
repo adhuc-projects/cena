@@ -15,6 +15,8 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.menus;
 
+import static java.util.stream.Collectors.toList;
+
 import java.time.LocalDate;
 import java.util.List;
 import javax.validation.constraints.NotEmpty;
@@ -23,10 +25,15 @@ import javax.validation.constraints.Positive;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.ToString;
 
+import org.adhuc.cena.menu.menus.Covers;
+import org.adhuc.cena.menu.menus.CreateMenu;
 import org.adhuc.cena.menu.menus.MealType;
+import org.adhuc.cena.menu.menus.MenuOwner;
 import org.adhuc.cena.menu.port.adapter.rest.support.Uuids;
+import org.adhuc.cena.menu.recipes.RecipeId;
 
 /**
  * A request to create a menu.
@@ -50,5 +57,16 @@ class CreateMenuRequest {
     @NotEmpty
     @Uuids
     private List<String> mainCourseRecipes;
+
+    /**
+     * Converts this request to a {@code CreateMenu} command.
+     *
+     * @param ownerName the menu owner name.
+     * @return the menu creation command.
+     */
+    CreateMenu toCommand(@NonNull String ownerName) {
+        return new CreateMenu(new MenuOwner(ownerName), date, mealType, new Covers(covers),
+                mainCourseRecipes.stream().map(RecipeId::new).collect(toList()));
+    }
 
 }

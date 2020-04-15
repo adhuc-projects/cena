@@ -17,21 +17,21 @@ package org.adhuc.cena.menu.common;
 
 import static java.lang.String.format;
 
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.CONFLICT;
 
 import lombok.Getter;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
- * An exception occurring while requesting a resource that cannot be found.
+ * An exception occurring while creating an already existing entity (based on its identity).
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
- * @since 0.1.0
+ * @since 0.3.0
  */
 @Getter
-@ResponseStatus(NOT_FOUND)
-public class EntityNotFoundException extends CenaException {
+@ResponseStatus(CONFLICT)
+public class AlreadyExistingEntityException extends CenaException {
 
     private static final ExceptionCode EXCEPTION_CODE = ExceptionCode.ENTITY_NOT_FOUND;
 
@@ -39,23 +39,23 @@ public class EntityNotFoundException extends CenaException {
     private final String identity;
 
     /**
-     * Constructs a new {@code EntityNotFoundException} with the specified entity type and identity.
+     * Constructs a new {@code AlreadyExistingEntityException} with the specified entity type and identity.
      *
      * @param entityType the entity type.
      * @param identity   the identity.
      */
-    public <I extends Identity> EntityNotFoundException(Class<? extends Entity<I>> entityType, I identity) {
+    public AlreadyExistingEntityException(Class<? extends Entity<?>> entityType, Identity identity) {
         this(entityType, identity.toString());
     }
 
     /**
-     * Constructs a new {@code EntityNotFoundException} with the specified entity type and identity.
+     * Constructs a new {@code AlreadyExistingEntityException} with the specified entity type and identity.
      *
      * @param entityType the entity type.
      * @param identity   the identity value.
      */
-    public EntityNotFoundException(Class<? extends Entity<?>> entityType, String identity) {
-        super(format("Cannot find entity of type %s with identity %s", entityType.getSimpleName(), identity), EXCEPTION_CODE);
+    public AlreadyExistingEntityException(Class<? extends Entity<?>> entityType, String identity) {
+        super(format("Entity of type %s with identity '%s' already exists", entityType.getSimpleName(), identity), EXCEPTION_CODE);
         this.entityType = entityType;
         this.identity = identity;
     }

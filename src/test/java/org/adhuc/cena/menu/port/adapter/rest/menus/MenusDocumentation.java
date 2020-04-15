@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.operation.Operation;
 import org.springframework.restdocs.snippet.TemplatedSnippet;
@@ -38,6 +39,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 import org.adhuc.cena.menu.menus.MealType;
+import org.adhuc.cena.menu.menus.MenuAppService;
 import org.adhuc.cena.menu.port.adapter.rest.ResultHandlerConfiguration;
 import org.adhuc.cena.menu.port.adapter.rest.documentation.support.ConstrainedFields;
 import org.adhuc.cena.menu.recipes.RecipeMother;
@@ -64,6 +66,9 @@ class MenusDocumentation {
     private MockMvc mvc;
     @Autowired
     private RestDocumentationResultHandler documentationHandler;
+
+    @MockBean
+    private MenuAppService menuAppServiceMock;
 
     @Test
     @WithAuthenticatedUser

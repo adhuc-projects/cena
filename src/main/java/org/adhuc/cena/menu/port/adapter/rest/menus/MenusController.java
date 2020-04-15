@@ -20,7 +20,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-
+import java.security.Principal;
 import javax.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
@@ -34,6 +34,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import org.adhuc.cena.menu.menus.MenuAppService;
 
 /**
  * A REST controller exposing /api/menus resource.
@@ -51,12 +53,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class MenusController {
 
     private final EntityLinks links;
+    private final MenuAppService menuAppService;
 
     /**
      * Creates a menu.
      */
     @PostMapping(consumes = {APPLICATION_JSON_VALUE, HAL_JSON_VALUE})
-    ResponseEntity<Void> createIngredient(@RequestBody @Valid CreateMenuRequest request, Errors errors) throws URISyntaxException {
+    ResponseEntity<Void> createIngredient(@RequestBody @Valid CreateMenuRequest request, Errors errors, Principal principal) throws URISyntaxException {
+        menuAppService.createMenu(request.toCommand(principal.getName()));
         return ResponseEntity.created(new URI(links.linkToItemResource(MenuModel.class,
                 String.format("%s-%s", request.getDate(), request.getMealType())).getHref())).build();
     }

@@ -267,23 +267,17 @@ class RecipeShould {
     }
 
     private static Stream<Arguments> equalitySource() {
-        var builder = builder()
-                .withId(TOMATO_CUCUMBER_MOZZA_SALAD_ID)
-                .withName(TOMATO_CUCUMBER_MOZZA_SALAD_NAME)
-                .withContent(TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT)
-                .withAuthor(TOMATO_CUCUMBER_MOZZA_SALAD_AUTHOR)
-                .withServings(TOMATO_CUCUMBER_MOZZA_SALAD_SERVINGS)
-                .withIngredients(TOMATO_ID, CUCUMBER_ID);
+        var builder = builder();
         var tomatoCucumberMozzaSalad = builder.build();
         return Stream.of(
                 Arguments.of(tomatoCucumberMozzaSalad, tomatoCucumberMozzaSalad, true),
                 Arguments.of(tomatoCucumberMozzaSalad, builder.build(), true),
-                Arguments.of(tomatoCucumberMozzaSalad, builder.withName(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME).build(), true),
-                Arguments.of(tomatoCucumberMozzaSalad, builder.withContent(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT).build(), true),
-                Arguments.of(tomatoCucumberMozzaSalad, builder.withAuthor(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_AUTHOR).build(), true),
-                Arguments.of(tomatoCucumberMozzaSalad, builder.withServings(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_SERVINGS).build(), true),
-                Arguments.of(tomatoCucumberMozzaSalad, builder.withIngredients().build(), true),
-                Arguments.of(tomatoCucumberMozzaSalad, builder.withId(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID).build(), false)
+                Arguments.of(tomatoCucumberMozzaSalad, builder().withName(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME).build(), true),
+                Arguments.of(tomatoCucumberMozzaSalad, builder().withContent(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT).build(), true),
+                Arguments.of(tomatoCucumberMozzaSalad, builder().withAuthor(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_AUTHOR).build(), true),
+                Arguments.of(tomatoCucumberMozzaSalad, builder().withServings(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_SERVINGS).build(), true),
+                Arguments.of(tomatoCucumberMozzaSalad, builder().withIngredients().build(), true),
+                Arguments.of(tomatoCucumberMozzaSalad, builder().withId(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID).build(), false)
         );
     }
 

@@ -29,7 +29,7 @@ import lombok.experimental.Accessors;
  * </ul>
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.1.0
  */
 @Getter
@@ -41,6 +41,7 @@ public enum ExceptionCode {
     INVALID_REQUEST(101000, "Invalid request"),
 
     ENTITY_NOT_FOUND(900000, "Entity not found"),
+    ALREADY_EXISTING_ENTITY(900001, "Already existing entity"),
     INGREDIENT_NAME_ALREADY_USED(900100, "Ingredient name already used"),
     INGREDIENT_NOT_DELETABLE_RELATED_TO_OBJECT(900101, "Ingredient cannot be deleted as it is related to at least one other object"),
     INGREDIENT_NOT_RELATED_TO_RECIPE(900110, "Ingredient not related to recipe"),

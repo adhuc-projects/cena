@@ -15,14 +15,21 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.menus;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_XML;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import static org.adhuc.cena.menu.menus.MenuMother.builder;
+import static org.adhuc.cena.menu.menus.MenuMother.createCommand;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -33,15 +40,19 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import org.adhuc.cena.menu.common.AlreadyExistingEntityException;
+import org.adhuc.cena.menu.menus.CreateMenu;
+import org.adhuc.cena.menu.menus.Menu;
+import org.adhuc.cena.menu.menus.MenuAppService;
+import org.adhuc.cena.menu.menus.MenuMother;
 import org.adhuc.cena.menu.recipes.RecipeMother;
-import org.adhuc.cena.menu.support.WithAuthenticatedUser;
-import org.adhuc.cena.menu.support.WithCommunityUser;
-import org.adhuc.cena.menu.support.WithIngredientManager;
-import org.adhuc.cena.menu.support.WithSuperAdministrator;
+import org.adhuc.cena.menu.support.*;
 
 /**
  * The {@link MenusController} test class.
@@ -60,6 +71,8 @@ class MenusControllerShould {
 
     @Autowired
     private MockMvc mvc;
+    @MockBean
+    private MenuAppService menuAppServiceMock;
 
     @Test
     @WithCommunityUser
@@ -205,6 +218,18 @@ class MenusControllerShould {
 
     @Test
     @WithAuthenticatedUser
+    @DisplayName("respond Conflict when menu service throws AlreadyExistingEntityException")
+    void respond409OnCreationAlreadyExistingEntityException() throws Exception {
+        doThrow(new AlreadyExistingEntityException(Menu.class, MenuMother.ID)).when(menuAppServiceMock).createMenu(any());
+        mvc.perform(post(MENUS_API_URL)
+                .contentType(APPLICATION_JSON)
+                .content(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"covers\":2,\"mainCourseRecipes\":[\"%s\"]}",
+                        LocalDate.now(), RecipeMother.ID))
+        ).andExpect(status().isConflict());
+    }
+
+    @Test
+    @WithAuthenticatedUser
     @DisplayName("respond Created when creating menu with JSON content")
     void respond201OnCreationJson() throws Exception {
         mvc.perform(post(MENUS_API_URL)
@@ -235,6 +260,23 @@ class MenusControllerShould {
                         LocalDate.now(), RecipeMother.ID))
         ).andExpect(header().exists(LOCATION))
                 .andExpect(header().string(LOCATION, String.format("http://localhost/api/menus/%s-LUNCH", LocalDate.now())));
+    }
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("call application service when creating menu")
+    void callServiceOnCreation() throws Exception {
+        var commandCaptor = ArgumentCaptor.forClass(CreateMenu.class);
+        var expectedCommand = createCommand(builder().withOwnerName(UserProvider.AUTHENTICATED_USER).build());
+
+        mvc.perform(post(MENUS_API_URL)
+                .contentType(HAL_JSON)
+                .content(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"covers\":2,\"mainCourseRecipes\":[\"%s\"]}",
+                        LocalDate.now(), RecipeMother.ID))
+        ).andExpect(status().isCreated());
+
+        verify(menuAppServiceMock).createMenu(commandCaptor.capture());
+        assertThat(commandCaptor.getValue()).isEqualTo(expectedCommand);
     }
 
     @Test

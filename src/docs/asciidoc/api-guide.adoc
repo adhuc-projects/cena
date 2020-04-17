@@ -514,3 +514,35 @@ include::{snippets}/menus-create-example/http-response.adoc[]
 Here is the list of all meal types that can be used to create a menu.
 
 include::{snippets}/menus-create-example/meal-types.adoc[]
+
+[[resources-menu]]
+== Menu
+
+The Menu resource is used to retrieve, update, and delete individual menus.
+
+[[resources-menu-links]]
+=== Links
+
+include::{snippets}/menu-detail-example/links.adoc[]
+
+[[resources-menu-retrieve]]
+=== Retrieve a menu
+
+A `GET` request will retrieve the details of a menu.
+Menu details are accessible only to its owner.
+
+==== Path Parameters
+
+include::{snippets}/menu-detail-example/path-parameters.adoc[]
+
+==== Response structure
+
+include::{snippets}/menu-detail-example/response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/menu-detail-example/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/menu-detail-example/http-response.adoc[]

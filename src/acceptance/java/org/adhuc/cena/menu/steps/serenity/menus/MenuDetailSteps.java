@@ -15,54 +15,32 @@
  */
 package org.adhuc.cena.menu.steps.serenity.menus;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
-import static org.springframework.http.HttpHeaders.LOCATION;
 
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
-import net.thucydides.core.annotations.Steps;
 
-import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.RestClientDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
 
 /**
- * The menu creation rest-service client steps definition.
+ * The menu detail rest-service client steps definition.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
  * @since 0.3.0
  */
-public class MenuCreationSteps {
+public class MenuDetailSteps {
 
     @Delegate
     private final RestClientDelegate restClientDelegate = new RestClientDelegate();
     @Delegate
-    private final ResourceUrlResolverDelegate resourceUrlResolverDelegate = new ResourceUrlResolverDelegate();
-    @Delegate
     private final StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
-    @Delegate
-    private final MenuStorageDelegate menuStorage = new MenuStorageDelegate();
 
-    @Steps
-    private MenuDetailSteps menuDetail;
-
-    @Step("Create the menu {0}")
-    public MenuValue createMenu(MenuValue menu) {
-        rest().contentType(HAL_JSON_VALUE).body(menu).post(menusResourceUrl()).andReturn();
-        return menu;
+    @Step("Get menu from {0}")
+    public MenuValue getMenuFromUrl(String menuDetailUrl) {
+        rest().accept(HAL_JSON_VALUE).get(menuDetailUrl).andReturn();
+        return assertOk().extract().as(MenuValue.class);
     }
 
-    @Step("Try to create the menu {0}")
-    public void tryToCreateMenu(MenuValue menu) {
-        rest().contentType(HAL_JSON_VALUE).body(menu).post(notAccessibleMenusResourceUrl()).andReturn();
-    }
-
-    public void assertMenuSuccessfullyCreated(MenuValue menu) {
-        var menuLocation = assertCreated().extract().header(LOCATION);
-        assertThat(menuLocation).isNotBlank();
-        var retrievedMenu = menuDetail.getMenuFromUrl(menuLocation);
-        retrievedMenu.assertEqualTo(menu);
-    }
 }

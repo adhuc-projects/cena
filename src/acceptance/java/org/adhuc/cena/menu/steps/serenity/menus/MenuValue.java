@@ -27,6 +27,7 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 import org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue;
+import org.adhuc.cena.menu.steps.serenity.support.resource.HateoasClientResourceSupport;
 
 /**
  * A menu value on the client side.
@@ -36,14 +37,14 @@ import org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue;
  * @since 0.3.0
  */
 @Data
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @ToString(includeFieldNames = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @RequiredArgsConstructor
 @Accessors(fluent = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(NON_EMPTY)
-public class MenuValue {
+public class MenuValue extends HateoasClientResourceSupport {
 
     private final LocalDate date;
     private final String mealType;

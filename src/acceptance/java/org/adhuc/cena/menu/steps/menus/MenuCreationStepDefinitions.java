@@ -55,7 +55,6 @@ public class MenuCreationStepDefinitions {
     @Then("^the menu is created$")
     public void menuCreated() {
         menuCreation.assertMenuSuccessfullyCreated(menuCreation.storedMenu());
-        // TODO get menu details from Location URL
     }
 
 }

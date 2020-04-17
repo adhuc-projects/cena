@@ -15,7 +15,21 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.menus;
 
+import static java.util.stream.Collectors.toList;
+
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import lombok.ToString;
+import lombok.experimental.Accessors;
 import org.springframework.hateoas.RepresentationModel;
+
+import org.adhuc.cena.menu.menus.Covers;
+import org.adhuc.cena.menu.menus.MealType;
+import org.adhuc.cena.menu.menus.Menu;
+import org.adhuc.cena.menu.recipes.RecipeId;
 
 /**
  * A REST resource encapsulating menu information.
@@ -24,6 +38,25 @@ import org.springframework.hateoas.RepresentationModel;
  * @version 0.3.0
  * @since 0.3.0
  */
+@ToString(callSuper = true)
+@Accessors(fluent = true)
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 class MenuModel extends RepresentationModel<MenuModel> {
+
+    private final String date;
+    private final String mealType;
+    private final int covers;
+    private final List<String> mainCourseRecipes;
+
+    MenuModel(Menu original) {
+        this(original.date(), original.mealType(), original.covers(), original.mainCourseRecipes());
+    }
+
+    MenuModel(LocalDate date, MealType mealType, Covers covers, Collection<RecipeId> mainCourseRecipes) {
+        this.date = date.toString();
+        this.mealType = mealType.name();
+        this.covers = covers.value();
+        this.mainCourseRecipes = mainCourseRecipes.stream().map(RecipeId::toString).collect(toList());
+    }
 
 }

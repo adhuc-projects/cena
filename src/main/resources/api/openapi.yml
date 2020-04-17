@@ -270,6 +270,23 @@ paths:
           $ref: '#/components/responses/400-BadRequest'
         401:
           $ref: '#/components/responses/401-Unauthorized'
+  /menus/{menuId}:
+    get:
+      summary: >
+        Get a menu detail. Menu detail depends on the authenticated user. The same menu identity for 2 different authenticated
+        users will provide 2 different resources, exclusive for the authenticated user
+      operationId: retrieveMenu
+      tags:
+        - Menus
+      security:
+        - basicAuth:[]
+      parameters:
+        - $ref: '#/components/parameters/menuId'
+      responses:
+        200:
+          $ref: '#/components/responses/Menu'
+        404:
+          $ref: '#/components/responses/404-NotFound'
 components:
   securitySchemes:
     basicAuth:
@@ -282,18 +299,21 @@ components:
       description: Ingredient identity
       required: true
       schema:
-        type: string
-        format: uuid
-        example: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+        $ref: '#/components/schemas/IngredientId'
     recipeId:
       name: recipeId
       in: path
       description: Recipe identity
       required: true
       schema:
-        type: string
-        format: uuid
-        example: 'd71e2fc7-09e3-4241-97a5-dc3383d35e98'
+        $ref: '#/components/schemas/RecipeId'
+    menuId:
+      name: menuId
+      in: path
+      description: Menu identity
+      required: true
+      schema:
+        $ref: '#/components/schemas/MenuId'
   requestBodies:
     CreateIngredient:
       required: true
@@ -431,6 +451,15 @@ components:
           schema:
             type: string
             example: 'https://cena.adhuc.org/api/menus/07549d0c-b8ef-40a0-af3b-5b6107706175'
+    Menu:
+      description: Menu detail
+      content:
+        application/hal+json:
+          schema:
+            $ref: '#/components/schemas/Menu'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Menu'
     400-BadRequest:
       description: Bad syntax or incorrect request
       content:
@@ -663,7 +692,11 @@ components:
         - '_links'
       properties:
         id:
-          $ref: '#/components/schemas/RecipeId'
+          description: Recipe identity
+          type: string
+          format: uuid
+          readOnly: true
+          example: 'd71e2fc7-09e3-4241-97a5-dc3383d35e98'
         name:
           $ref: '#/components/schemas/RecipeName'
         content:
@@ -711,7 +744,6 @@ components:
       description: Recipe identity
       type: string
       format: uuid
-      readOnly: true
       example: 'd71e2fc7-09e3-4241-97a5-dc3383d35e98'
     RecipeName:
       description: Recipe name
@@ -917,6 +949,10 @@ components:
                     type: string
                     example: 'https://cena.adhuc.org/api/recipes/d71e2fc7-09e3-4241-97a5-dc3383d35e98'
       additionalProperties: true
+    MenuId:
+      description: Menu identity
+      type: string
+      example: '2020-01-01-LUNCH'
     MealType:
       description: Meal type for a menu
       type: string

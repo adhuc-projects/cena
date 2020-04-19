@@ -19,9 +19,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpHeaders.LOCATION;
 
+import io.restassured.response.ValidatableResponse;
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
+import org.assertj.core.api.SoftAssertions;
 
 import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.RestClientDelegate;
@@ -65,4 +67,31 @@ public class MenuCreationSteps {
         var retrievedMenu = menuDetail.getMenuFromUrl(menuLocation);
         retrievedMenu.assertEqualTo(menu);
     }
+
+    public ValidatableResponse assertInvalidRequestConcerningUnknownMealUnit(String mealType) {
+        var response = assertBadRequest();
+        var jsonPath = response.extract().jsonPath();
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(jsonPath.getInt("code")).isEqualTo(101000);
+            softly.assertThat(jsonPath.getList("details", String.class)).anyMatch(d ->
+                    d.startsWith(String.format("[Path '/%s'] Instance value (\"%s\") not found in enum",
+                            MenuValue.MEAL_TYPE_FIELD, mealType))
+            );
+        });
+        return response;
+    }
+
+    public ValidatableResponse assertInvalidRequestConcerningInvalidCovers(int covers) {
+        var response = assertBadRequest();
+        var jsonPath = response.extract().jsonPath();
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(jsonPath.getInt("code")).isEqualTo(101000);
+            softly.assertThat(jsonPath.getList("details", String.class)).anyMatch(d ->
+                    d.startsWith(String.format("[Path '/%s'] Numeric instance is lower than the required minimum (minimum: 1, found: %d)",
+                            MenuValue.COVERS_FIELD, covers))
+            );
+        });
+        return response;
+    }
+
 }

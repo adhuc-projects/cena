@@ -57,7 +57,7 @@ public class RecipeCreationStepDefinitions {
     }
 
     @Then("^the recipe is created$")
-    public void ingredientCreated() {
+    public void recipeCreated() {
         recipeCreation.assertRecipeSuccessfullyCreated(recipeCreation.storedRecipe());
     }
 

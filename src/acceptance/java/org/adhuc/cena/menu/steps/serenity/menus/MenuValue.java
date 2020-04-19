@@ -15,10 +15,15 @@
  */
 package org.adhuc.cena.menu.steps.serenity.menus;
 
+import static java.util.stream.Collectors.toList;
+
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
+import static lombok.AccessLevel.PRIVATE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -40,22 +45,58 @@ import org.adhuc.cena.menu.steps.serenity.support.resource.HateoasClientResource
 @EqualsAndHashCode(callSuper = false)
 @ToString(includeFieldNames = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = PRIVATE)
 @Accessors(fluent = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(NON_EMPTY)
 public class MenuValue extends HateoasClientResourceSupport {
 
+    public static final String DATE_FIELD = "date";
+    public static final String MEAL_TYPE_FIELD = "mealType";
+    public static final String COVERS_FIELD = "covers";
+    public static final String MAIN_COURSE_RECIPES_FIELD = "mainCourseRecipes";
+
     private final LocalDate date;
     private final String mealType;
-    private final int covers;
+    private final Integer covers;
     private final List<String> mainCourseRecipes;
-
-    public MenuValue(LocalDate date, String mealType, int covers, RecipeValue recipe) {
-        this(date, mealType.toUpperCase(), covers, List.of(recipe.id()));
-    }
 
     void assertEqualTo(MenuValue expected) {
         assertThat(this).isEqualTo(expected);
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    @NoArgsConstructor(access = PRIVATE)
+    @AllArgsConstructor(access = PRIVATE)
+    public static class Builder {
+        @With
+        private LocalDate date = LocalDate.now();
+        private String mealType = "LUNCH";
+        @With
+        private Integer covers = 2;
+        private List<String> mainCourseRecipes = Collections.emptyList();
+
+        public Builder withMealType(String mealType) {
+            return new Builder(date, mealType != null ? mealType.toUpperCase() : null, covers, mainCourseRecipes);
+        }
+
+        public Builder withNoMainCourseRecipes() {
+            return new Builder(date, mealType, covers, null);
+        }
+
+        public Builder withMainCourseRecipes(@NonNull RecipeValue... recipes) {
+            return new Builder(date, mealType, covers, Arrays.stream(recipes).map(RecipeValue::id).collect(toList()));
+        }
+
+        public Builder withMainCourseRecipes(@NonNull String... recipeIds) {
+            return new Builder(date, mealType, covers, Arrays.asList(recipeIds));
+        }
+
+        public MenuValue build() {
+            return new MenuValue(date, mealType, covers, mainCourseRecipes);
+        }
     }
 }

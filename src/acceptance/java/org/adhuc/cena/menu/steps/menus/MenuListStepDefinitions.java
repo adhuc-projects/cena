@@ -42,4 +42,9 @@ public class MenuListStepDefinitions {
         menuListAssertions.assertInMenusList(menuList.storedMenu());
     }
 
+    @Then("^the menu cannot be found in the menus list starting from today$")
+    public void menuNotFoundInList() {
+        menuListAssertions.assertNotInMenusList(menuList.storedMenu());
+    }
+
 }

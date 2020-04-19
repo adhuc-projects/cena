@@ -39,4 +39,9 @@ public class MenuListAssertionsSteps {
         assertThat(listClient.getFromMenusList(menu)).isPresent().get().isEqualTo(menu);
     }
 
+    @Step("Assert menu {0} is not in menus list")
+    public void assertNotInMenusList(MenuValue menu) {
+        assertThat(listClient.getFromMenusList(menu)).isNotPresent();
+    }
+
 }

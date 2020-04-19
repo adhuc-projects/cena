@@ -41,20 +41,80 @@ public class MenuCreationStepDefinitions {
     @Steps
     private MenuCreationSteps menuCreation;
 
-    @When("^he creates a menu from the recipe for (\\d+) covers for today's (\\w+)$")
+    @When("^he creates a menu from the recipe for (-?\\d+) covers for today's (\\w+)$")
     public void createMenu(int covers, String mealType) {
         menuCreation.storeMenu(
-                menuCreation.createMenu(new MenuValue(LocalDate.now(), mealType, covers, recipeList.storedRecipe())));
+                menuCreation.createMenu(MenuValue.builder().withDate(LocalDate.now()).withMealType(mealType)
+                        .withCovers(covers).withMainCourseRecipes(recipeList.storedRecipe()).build()));
+    }
+
+    @When("^he creates a menu from the recipe without date$")
+    public void createMenuWithoutDate() {
+        menuCreation.storeMenu(menuCreation.createMenu(MenuValue.builder().withDate(null)
+                .withMainCourseRecipes(recipeList.storedRecipe()).build()));
+    }
+
+    @When("^he creates a menu from the recipe without meal type$")
+    public void createMenuWithoutMealType() {
+        menuCreation.storeMenu(menuCreation.createMenu(MenuValue.builder().withMealType(null)
+                .withMainCourseRecipes(recipeList.storedRecipe()).build()));
+    }
+
+    @When("^he creates a menu from the recipe with unknown \"(.*)\" meal type$")
+    public void createMenuWithInvalidMealType(String mealType) {
+        menuCreation.storeMenu(menuCreation.createMenu(MenuValue.builder().withMealType(mealType)
+                .withMainCourseRecipes(recipeList.storedRecipe()).build()));
+    }
+
+    @When("^he creates a menu from the recipe without covers$")
+    public void createMenuWithoutCovers() {
+        menuCreation.storeMenu(menuCreation.createMenu(MenuValue.builder().withCovers(null)
+                .withMainCourseRecipes(recipeList.storedRecipe()).build()));
+    }
+
+    @When("^he creates a menu without main course recipe$")
+    public void createMenuWithoutMainCourseRecipes() {
+        menuCreation.storeMenu(menuCreation.createMenu(MenuValue.builder().withNoMainCourseRecipes().build()));
     }
 
     @When("^he tries to create a menu from the recipe for 2 covers for today's lunch$")
     public void tryToCreateMenu() {
-        menuCreation.tryToCreateMenu(new MenuValue(LocalDate.now(), "lunch", 2, recipeList.storedRecipe()));
+        menuCreation.tryToCreateMenu(MenuValue.builder().withMainCourseRecipes(recipeList.storedRecipe()).build());
     }
 
     @Then("^the menu is created$")
     public void menuCreated() {
         menuCreation.assertMenuSuccessfullyCreated(menuCreation.storedMenu());
+    }
+
+    @Then("^an error notifies that menu must have a date$")
+    public void errorOnMenuCreationWithoutDate() {
+        menuCreation.assertInvalidRequestConcerningMissingBodyField(MenuValue.DATE_FIELD);
+    }
+
+    @Then("^an error notifies that menu must have a meal type$")
+    public void errorOnMenuCreationWithoutMealType() {
+        menuCreation.assertInvalidRequestConcerningMissingBodyField(MenuValue.MEAL_TYPE_FIELD);
+    }
+
+    @Then("^an error notifies that menu cannot be created with unknown \"(.*)\" meal type$")
+    public void errorOnIngredientCreationWithUnknownMeasurementType(String mealType) {
+        menuCreation.assertInvalidRequestConcerningUnknownMealUnit(mealType);
+    }
+
+    @Then("^an error notifies that menu must have covers$")
+    public void errorOnMenuCreationWithoutCovers() {
+        menuCreation.assertInvalidRequestConcerningMissingBodyField(MenuValue.COVERS_FIELD);
+    }
+
+    @Then("^an error notifies that menu cannot be created with invalid (-?\\d+) covers$")
+    public void errorOnIngredientCreationWithInvalidCovers(int covers) {
+        menuCreation.assertInvalidRequestConcerningInvalidCovers(covers);
+    }
+
+    @Then("^an error notifies that menu must have main course recipes$")
+    public void errorOnMenuCreationWithoutMainCourseRecipes() {
+        menuCreation.assertInvalidRequestConcerningMissingBodyField(MenuValue.MAIN_COURSE_RECIPES_FIELD);
     }
 
 }

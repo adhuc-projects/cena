@@ -51,7 +51,9 @@ final class MenuListClientDelegate {
      * @return the menu retrieved from list.
      */
     public Optional<MenuValue> getFromMenusList(MenuValue menu) {
-        return Optional.ofNullable(getRawMenuList(restClientDelegate::rest).param("date", menu.date().toString()).param("mealType", menu.mealType())
+        return Optional.ofNullable(getRawMenuList(restClientDelegate::rest)
+                .param("date", menu.date() != null ? menu.date().toString() : null)
+                .param("mealType", menu.mealType())
                 .getObject("_embedded.data.find { menu->menu.date == date && menu.mealType == mealType }", MenuValue.class));
     }
 

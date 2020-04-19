@@ -15,6 +15,7 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.menus;
 
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
@@ -48,6 +49,12 @@ class MenuModelAssembler extends RepresentationModelAssemblerSupport<Menu, MenuM
     public MenuModel toModel(Menu menu) {
         return instantiateModel(menu)
                 .add(links.linkToItemResource(MenuModel.class, menuIdConverter.convert(menu)).withSelfRel());
+    }
+
+    @Override
+    public CollectionModel<MenuModel> toCollectionModel(Iterable<? extends Menu> entities) {
+        return super.toCollectionModel(entities)
+                .add(links.linkToCollectionResource(MenuModel.class).withSelfRel());
     }
 
     @Override

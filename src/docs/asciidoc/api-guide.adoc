@@ -491,6 +491,28 @@ include::{snippets}/recipe-ingredient-delete-example/http-response.adoc[]
 
 The Menus resources is used to create and list menus.
 
+[[resources-menus-list]]
+=== Listing menus
+
+A `GET` request will list all of the menus for the authenticated user.
+
+==== Response structure
+
+include::{snippets}/menus-list-example/response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/menus-list-example/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/menus-list-example/http-response.adoc[]
+
+[[resources-menus-links]]
+==== Links
+
+include::{snippets}/menus-list-example/links.adoc[]
+
 [[resources-menus-create]]
 === Creating a menu
 

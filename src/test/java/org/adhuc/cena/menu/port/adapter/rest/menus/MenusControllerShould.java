@@ -15,29 +15,31 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.menus;
 
+import static java.util.stream.Collectors.toList;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_XML;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import static org.adhuc.cena.menu.menus.MenuMother.builder;
-import static org.adhuc.cena.menu.menus.MenuMother.createCommand;
+import static org.adhuc.cena.menu.menus.MenuMother.*;
+import static org.adhuc.cena.menu.support.UserProvider.AUTHENTICATED_USER;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
@@ -45,12 +47,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import org.adhuc.cena.menu.common.AlreadyExistingEntityException;
-import org.adhuc.cena.menu.menus.CreateMenu;
-import org.adhuc.cena.menu.menus.Menu;
-import org.adhuc.cena.menu.menus.MenuAppService;
-import org.adhuc.cena.menu.menus.MenuMother;
+import org.adhuc.cena.menu.menus.*;
+import org.adhuc.cena.menu.recipes.RecipeId;
 import org.adhuc.cena.menu.recipes.RecipeMother;
 import org.adhuc.cena.menu.support.*;
 
@@ -63,16 +64,107 @@ import org.adhuc.cena.menu.support.*;
  */
 @Tag("integration")
 @Tag("restController")
-@WebMvcTest({MenusController.class})
+@WebMvcTest({MenusController.class, MenuModelAssembler.class, MenuIdConverter.class})
 @DisplayName("Menus controller should")
 class MenusControllerShould {
 
     private static final String MENUS_API_URL = "/api/menus";
+    private static final String MENU_OWNER_NAME = AUTHENTICATED_USER;
+    private static final MenuOwner MENU_OWNER = new MenuOwner(MENU_OWNER_NAME);
 
     @Autowired
     private MockMvc mvc;
     @MockBean
     private MenuAppService menuAppServiceMock;
+
+    @Test
+    @WithCommunityUser
+    @DisplayName("respond Unauthorized when retrieving menus as a community user")
+    void respond401OnListAsCommunityUser() throws Exception {
+        mvc.perform(get(MENUS_API_URL))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Nested
+    @DisplayName("with 2 menus")
+    class With2Menus {
+
+        private List<Menu> menus;
+
+        @BeforeEach
+        void setUp() {
+            menus = List.of(
+                    builder().withOwnerName(MENU_OWNER_NAME).withDate(TODAY_LUNCH_DATE).withMealType(TODAY_LUNCH_MEAL_TYPE)
+                            .withCovers(TODAY_LUNCH_COVERS).withMainCourseRecipes(TODAY_LUNCH_MAIN_COURSE_RECIPES).build(),
+                    builder().withOwnerName(MENU_OWNER_NAME).withDate(TOMORROW_DINNER_DATE).withMealType(TOMORROW_DINNER_MEAL_TYPE)
+                    .withCovers(TOMORROW_DINNER_COVERS).withMainCourseRecipes(TOMORROW_DINNER_MAIN_COURSE_RECIPES).build());
+            when(menuAppServiceMock.getMenus(MENU_OWNER)).thenReturn(menus);
+        }
+
+        @Test
+        @WithAuthenticatedUser
+        @DisplayName("respond OK when retrieving menus")
+        void respond200OnList() throws Exception {
+            mvc.perform(get(MENUS_API_URL))
+                    .andExpect(status().isOk());
+        }
+
+        @Test
+        @WithAuthenticatedUser
+        @DisplayName("respond with HAL content when retrieving menus with no specific requested content")
+        void respondHalOnList() throws Exception {
+            mvc.perform(get(MENUS_API_URL))
+                    .andExpect(content().contentTypeCompatibleWith(HAL_JSON));
+        }
+
+        @Test
+        @WithAuthenticatedUser
+        @DisplayName("respond with JSON content when requested while retrieving menus")
+        void respondJSONOnList() throws Exception {
+            mvc.perform(get(MENUS_API_URL)
+                    .accept(APPLICATION_JSON)
+            ).andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON));
+        }
+
+        @Test
+        @WithAuthenticatedUser
+        @DisplayName("have self link with correct value when retrieving menus")
+        void haveSelfOnList() throws Exception {
+            mvc.perform(get(MENUS_API_URL))
+                    .andExpect(jsonPath("$._links.self.href", Matchers.endsWith(MENUS_API_URL)));
+        }
+
+        @Test
+        @WithAuthenticatedUser
+        @DisplayName("have embedded data with 2 menus when retrieving menus")
+        void haveDataWith2Menus() throws Exception {
+            var result = mvc.perform(get(MENUS_API_URL))
+                    .andExpect(jsonPath("$._embedded.data").isArray())
+                    .andExpect(jsonPath("$._embedded.data").isNotEmpty())
+                    .andExpect(jsonPath("$._embedded.data", hasSize(2)))
+                    .andDo(print());
+            assertJsonContainsMenu(result, "$._embedded.data[0]", menus.get(0));
+            assertJsonContainsMenu(result, "$._embedded.data[1]", menus.get(1));
+        }
+    }
+
+    @Nested
+    @DisplayName("with empty list")
+    class WithEmptyList {
+        @BeforeEach
+        void setUp() {
+            when(menuAppServiceMock.getMenus(MENU_OWNER)).thenReturn(List.of());
+        }
+
+        @Test
+        @WithAuthenticatedUser
+        @DisplayName("have empty embedded data when retrieving menus")
+        void haveEmptyDataOnEmptyList() throws Exception {
+            mvc.perform(get(MENUS_API_URL))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$._embedded").doesNotExist());
+        }
+    }
 
     @Test
     @WithCommunityUser
@@ -299,6 +391,19 @@ class MenusControllerShould {
                 .content(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"covers\":2,\"mainCourseRecipes\":[\"%s\"]}",
                         LocalDate.now(), RecipeMother.ID))
         ).andExpect(status().isCreated());
+    }
+
+    void assertJsonContainsMenu(ResultActions resultActions, String jsonPath, Menu menu) throws Exception {
+        resultActions.andExpect(jsonPath(jsonPath + ".date").exists())
+                .andExpect(jsonPath(jsonPath + ".date", equalTo(menu.date().toString())))
+                .andExpect(jsonPath(jsonPath + ".mealType").exists())
+                .andExpect(jsonPath(jsonPath + ".mealType", equalTo(menu.mealType().name())))
+                .andExpect(jsonPath(jsonPath + ".covers").exists())
+                .andExpect(jsonPath(jsonPath + ".covers", equalTo(menu.covers().value())))
+                .andExpect(jsonPath(jsonPath + ".mainCourseRecipes").exists())
+                .andExpect(jsonPath(jsonPath + ".mainCourseRecipes").isArray())
+                .andExpect(jsonPath(jsonPath + ".mainCourseRecipes").value(containsInAnyOrder(
+                        menu.mainCourseRecipes().stream().map(RecipeId::toString).collect(toList()).toArray())));
     }
 
 }

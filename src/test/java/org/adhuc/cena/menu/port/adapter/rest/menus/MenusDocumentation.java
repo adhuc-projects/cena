@@ -15,10 +15,17 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.menus;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import static org.adhuc.cena.menu.menus.MenuMother.*;
+import static org.adhuc.cena.menu.support.UserProvider.AUTHENTICATED_USER;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -40,6 +47,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import org.adhuc.cena.menu.menus.MealType;
 import org.adhuc.cena.menu.menus.MenuAppService;
+import org.adhuc.cena.menu.menus.MenuOwner;
 import org.adhuc.cena.menu.port.adapter.rest.ResultHandlerConfiguration;
 import org.adhuc.cena.menu.port.adapter.rest.documentation.support.ConstrainedFields;
 import org.adhuc.cena.menu.recipes.RecipeMother;
@@ -54,13 +62,15 @@ import org.adhuc.cena.menu.support.WithAuthenticatedUser;
  */
 @Tag("integration")
 @Tag("documentation")
-@WebMvcTest({MenusController.class})
+@WebMvcTest({MenusController.class, MenuModelAssembler.class, MenuIdConverter.class})
 @ContextConfiguration(classes = ResultHandlerConfiguration.class)
 @AutoConfigureRestDocs("build/generated-snippets")
 @DisplayName("Menus resource documentation")
 class MenusDocumentation {
 
     private static final String MENUS_API_URL = "/api/menus";
+    private static final String MENU_OWNER_NAME = AUTHENTICATED_USER;
+    private static final MenuOwner MENU_OWNER = new MenuOwner(MENU_OWNER_NAME);
 
     @Autowired
     private MockMvc mvc;
@@ -69,6 +79,26 @@ class MenusDocumentation {
 
     @MockBean
     private MenuAppService menuAppServiceMock;
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("generates menus list example")
+    void menusListExample() throws Exception {
+        when(menuAppServiceMock.getMenus(MENU_OWNER)).thenReturn(List.of(
+                builder().withOwnerName(MENU_OWNER_NAME).withDate(TODAY_LUNCH_DATE).withMealType(TODAY_LUNCH_MEAL_TYPE)
+                        .withCovers(TODAY_LUNCH_COVERS).withMainCourseRecipes(TODAY_LUNCH_MAIN_COURSE_RECIPES).build(),
+                builder().withOwnerName(MENU_OWNER_NAME).withDate(TOMORROW_DINNER_DATE).withMealType(TOMORROW_DINNER_MEAL_TYPE)
+                        .withCovers(TOMORROW_DINNER_COVERS).withMainCourseRecipes(TOMORROW_DINNER_MAIN_COURSE_RECIPES).build()));
+
+        mvc.perform(get(MENUS_API_URL)).andExpect(status().isOk())
+                .andDo(documentationHandler.document(
+                        links(linkWithRel("self").description("This <<resources-menus,menus list>>")),
+                        responseFields(
+                                subsectionWithPath("_embedded.data")
+                                        .description("An array of <<resources-menu, Menu resources>>"),
+                                subsectionWithPath("_links")
+                                        .description("<<resources-menus-links,Links>> to other resources"))));
+    }
 
     @Test
     @WithAuthenticatedUser

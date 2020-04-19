@@ -254,6 +254,16 @@ paths:
         404:
           $ref: '#/components/responses/404-NotFound'
   /menus:
+    get:
+      summary: Get the menus collection for the currently authenticated user
+      operationId: listMenus
+      tags:
+        - Menus
+      security:
+        - basicAuth:[]
+      responses:
+        200:
+          $ref: '#/components/responses/Menus'
     post:
       summary: Create a menu in menus collection for the currently authenticated user
       operationId: createMenu
@@ -443,6 +453,15 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/RecipeIngredient'
+    Menus:
+      description: Collection containing all the menus for the currently authenticated user. For now, this collection is not sortable nor pageable, but those behaviors may be implemented in the future.
+      content:
+        application/hal+json:
+          schema:
+            $ref: '#/components/schemas/Menus'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Menus'
     MenuCreated:
       description: Successful menu creation response
       headers:
@@ -893,6 +912,38 @@ components:
       description: Unit of measurement for a quantity of ingredient in a recipe. Depends on the measurement types defined for the ingredient
       type: string
       enum: ['LITER', 'CENTILITER', 'MILLILITER', 'TABLESPOON', 'TEASPOON', 'GRAM', 'KILOGRAM', 'POUND', 'UNIT', 'TEN', 'DOZEN', 'PINCH']
+    Menus:
+      description: A collection of menus, containing menu detail for each menu
+      type: object
+      required:
+        - '_links'
+      properties:
+        '_embedded':
+          type: object
+          readOnly: true
+          required:
+            - data
+          properties:
+            data:
+              description: The menus collection data, containing menu detail for each menu
+              type: array
+              items:
+                $ref: '#/components/schemas/Menu'
+        '_links':
+          type: object
+          readOnly: true
+          required:
+            - self
+          properties:
+            self:
+              description: Link to this menus collection. Can be used to create new menus in the collection
+              type: object
+              required:
+                - href
+              properties:
+                href:
+                  type: string
+                  example: 'https://cena.adhuc.org/api/menus'
     Menu:
       description: A menu detail
       type: object

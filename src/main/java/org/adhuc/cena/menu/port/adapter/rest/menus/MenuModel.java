@@ -23,8 +23,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.ToString;
-import lombok.experimental.Accessors;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.core.Relation;
 
 import org.adhuc.cena.menu.menus.Covers;
 import org.adhuc.cena.menu.menus.MealType;
@@ -39,7 +39,7 @@ import org.adhuc.cena.menu.recipes.RecipeId;
  * @since 0.3.0
  */
 @ToString(callSuper = true)
-@Accessors(fluent = true)
+@Relation(collectionRelation = "data")
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 class MenuModel extends RepresentationModel<MenuModel> {
 

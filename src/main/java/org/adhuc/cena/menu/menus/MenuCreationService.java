@@ -47,7 +47,8 @@ class MenuCreationService {
      */
     Menu createMenu(CreateMenu command) {
         if (repository.exists(command.menuId())) {
-            throw new AlreadyExistingEntityException(Menu.class, command.menuId());
+            throw new AlreadyExistingEntityException("Menu is already scheduled at " + command.menuId().date() + "'s " +
+                    command.menuId().mealType().toString().toLowerCase());
         }
         return repository.save(new Menu(command));
     }

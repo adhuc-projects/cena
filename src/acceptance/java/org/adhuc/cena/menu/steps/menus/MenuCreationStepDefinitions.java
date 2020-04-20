@@ -117,4 +117,9 @@ public class MenuCreationStepDefinitions {
         menuCreation.assertInvalidRequestConcerningMissingBodyField(MenuValue.MAIN_COURSE_RECIPES_FIELD);
     }
 
+    @Then("^an error notifies that menu already exists$")
+    public void errorOnMenuCreationAlreadyExisting() {
+        menuCreation.assertMenuAlreadyExists(menuCreation.storedMenu());
+    }
+
 }

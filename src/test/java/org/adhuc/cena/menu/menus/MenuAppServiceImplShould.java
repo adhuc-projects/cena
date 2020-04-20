@@ -169,7 +169,7 @@ class MenuAppServiceImplShould {
                 var exception = assertThrows(AlreadyExistingEntityException.class,
                         () -> service.createMenu(createCommand(builder().withCovers(covers)
                                 .withMainCourseRecipes(mainCourseRecipes).build())));
-                assertThat(exception).hasMessage(String.format("Entity of type Menu with identity 'owner=some owner, date=%s, mealType=LUNCH' already exists", TODAY_LUNCH_DATE));
+                assertThat(exception).hasMessage(String.format("Menu is already scheduled at %s's lunch", TODAY_LUNCH_DATE));
             }
 
             private Stream<Arguments> createDuplicateSource() {

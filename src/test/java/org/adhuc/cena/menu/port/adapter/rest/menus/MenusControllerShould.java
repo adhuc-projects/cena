@@ -141,8 +141,7 @@ class MenusControllerShould {
             var result = mvc.perform(get(MENUS_API_URL))
                     .andExpect(jsonPath("$._embedded.data").isArray())
                     .andExpect(jsonPath("$._embedded.data").isNotEmpty())
-                    .andExpect(jsonPath("$._embedded.data", hasSize(2)))
-                    .andDo(print());
+                    .andExpect(jsonPath("$._embedded.data", hasSize(2)));
             assertJsonContainsMenu(result, "$._embedded.data[0]", menus.get(0));
             assertJsonContainsMenu(result, "$._embedded.data[1]", menus.get(1));
         }

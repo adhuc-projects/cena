@@ -57,6 +57,14 @@ Feature: Create a menu for a meal
     Then an error notifies that menu must have main course recipes
     And the menu cannot be found in the menus list starting from today
 
+  @Edge
+  Scenario: Create an already existing menu
+    Given an authenticated user
+    And an existing "Tomato, cucumber and mozzarella salad" recipe
+    And an existing menu from the recipe for today's lunch
+    When he creates a menu from the recipe for 2 covers for today's lunch
+    Then an error notifies that menu already exists
+
   @Smoke @Security
   Scenario: Create a menu successfully
     Given an authenticated user

@@ -94,4 +94,13 @@ public class MenuCreationSteps {
         return response;
     }
 
+    public void assertMenuAlreadyExists(MenuValue storedMenu) {
+        var jsonPath = assertConflict().extract().jsonPath();
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(jsonPath.getString("message")).contains("Menu is already scheduled at " +
+                    storedMenu.date() + "'s " + storedMenu.mealType().toLowerCase());
+            softly.assertThat(jsonPath.getInt("code")).isEqualTo(900001);
+        });
+    }
+
 }

@@ -65,6 +65,10 @@ public class MenuValue extends HateoasClientResourceSupport {
         assertThat(this).isEqualTo(expected);
     }
 
+    boolean hasSameScheduleAs(MenuValue menu) {
+        return isScheduledAt(menu.date, menu.mealType);
+    }
+
     boolean isScheduledAt(LocalDate date, String mealType) {
         return this.date.equals(date) && this.mealType.equalsIgnoreCase(mealType);
     }

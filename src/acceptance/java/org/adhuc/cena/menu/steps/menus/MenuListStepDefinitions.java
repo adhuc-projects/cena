@@ -25,6 +25,8 @@ import net.thucydides.core.annotations.Steps;
 import org.adhuc.cena.menu.steps.serenity.menus.MenuListAssertionsSteps;
 import org.adhuc.cena.menu.steps.serenity.menus.MenuListAssumptionsSteps;
 import org.adhuc.cena.menu.steps.serenity.menus.MenuListSteps;
+import org.adhuc.cena.menu.steps.serenity.menus.MenuValue;
+import org.adhuc.cena.menu.steps.serenity.recipes.RecipeListSteps;
 
 /**
  * The menus list steps definitions for rest-services acceptance tests.
@@ -42,6 +44,14 @@ public class MenuListStepDefinitions {
     private MenuListAssumptionsSteps menuListAssumptions;
     @Steps
     private MenuListAssertionsSteps menuListAssertions;
+    @Steps
+    private RecipeListSteps recipeList;
+
+    @Given("^an existing menu from the recipe for today's (.*)$")
+    public void existingRecipe(String mealType) {
+        menuListAssumptions.assumeInMenusList(MenuValue.builder().withDate(LocalDate.now()).withMealType(mealType)
+                .withMainCourseRecipes(recipeList.storedRecipe()).build());
+    }
 
     @Given("^no existing menu for today's (.*)$")
     public void noExistingMenu(String mealType) {

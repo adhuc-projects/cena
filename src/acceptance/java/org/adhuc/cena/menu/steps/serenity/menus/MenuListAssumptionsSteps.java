@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assumptions.assumeThat;
 
 import java.time.LocalDate;
 
+import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
@@ -37,8 +38,19 @@ public class MenuListAssumptionsSteps {
             resourceUrlResolverDelegate.menusResourceUrl());
 
     @Steps
+    private MenuCreationSteps menuCreation;
+    @Steps
     private MenuDeletionSteps menuDeletion;
 
+    @Step("Assume menu {0} is in menus list")
+    public void assumeInMenusList(MenuValue menu) {
+        if (listClient.getFromMenusList(menu).isEmpty()) {
+            menuCreation.createMenu(menu);
+        }
+        assumeThat(listClient.fetchMenus()).anyMatch(m -> m.hasSameScheduleAs(menu));
+    }
+
+    @Step("Assume menu is not in menus list for date {0} and meal type {1}")
     public void assumeNotInMenusList(LocalDate date, String mealType) {
         listClient.getFromMenusList(date, mealType).ifPresent(m -> {
             menuDeletion.deleteMenu(m);

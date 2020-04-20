@@ -15,8 +15,6 @@
  */
 package org.adhuc.cena.menu.common;
 
-import static java.lang.String.format;
-
 import static org.springframework.http.HttpStatus.CONFLICT;
 
 import lombok.Getter;
@@ -33,10 +31,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(CONFLICT)
 public class AlreadyExistingEntityException extends CenaException {
 
-    private static final ExceptionCode EXCEPTION_CODE = ExceptionCode.ENTITY_NOT_FOUND;
-
-    private final Class<? extends Entity<?>> entityType;
-    private final String identity;
+    private static final ExceptionCode EXCEPTION_CODE = ExceptionCode.ALREADY_EXISTING_ENTITY;
 
     /**
      * Constructs a new {@code AlreadyExistingEntityException} with the specified entity type and identity.
@@ -55,9 +50,16 @@ public class AlreadyExistingEntityException extends CenaException {
      * @param identity   the identity value.
      */
     public AlreadyExistingEntityException(Class<? extends Entity<?>> entityType, String identity) {
-        super(format("Entity of type %s with identity '%s' already exists", entityType.getSimpleName(), identity), EXCEPTION_CODE);
-        this.entityType = entityType;
-        this.identity = identity;
+        this("Entity of type " + entityType.getSimpleName() + " with identity '" + identity + "' already exists");
+    }
+
+    /**
+     * Constructs a new {@code AlreadyExistingEntityException} with the specified message.
+     *
+     * @param message the error message.
+     */
+    public AlreadyExistingEntityException(String message) {
+        super(message, EXCEPTION_CODE);
     }
 
 }

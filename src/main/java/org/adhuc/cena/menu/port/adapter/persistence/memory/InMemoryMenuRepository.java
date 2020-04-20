@@ -70,4 +70,9 @@ public class InMemoryMenuRepository implements MenuRepository {
         menus.clear();
     }
 
+    @Override
+    public void delete(@NonNull Menu menu) {
+        menus.remove(menu.id());
+    }
+
 }

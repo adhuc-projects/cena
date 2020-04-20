@@ -83,4 +83,11 @@ public interface MenuRepository {
      */
     void deleteAll();
 
+    /**
+     * Deletes the specified menu.
+     *
+     * @param menu the menu to delete.
+     */
+    void delete(Menu menu);
+
 }

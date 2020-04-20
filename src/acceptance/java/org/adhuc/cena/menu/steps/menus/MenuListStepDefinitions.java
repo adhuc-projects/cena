@@ -15,11 +15,15 @@
  */
 package org.adhuc.cena.menu.steps.menus;
 
+import java.time.LocalDate;
+
+import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.menus.MenuListAssertionsSteps;
+import org.adhuc.cena.menu.steps.serenity.menus.MenuListAssumptionsSteps;
 import org.adhuc.cena.menu.steps.serenity.menus.MenuListSteps;
 
 /**
@@ -35,7 +39,14 @@ public class MenuListStepDefinitions {
     @Steps
     private MenuListSteps menuList;
     @Steps
+    private MenuListAssumptionsSteps menuListAssumptions;
+    @Steps
     private MenuListAssertionsSteps menuListAssertions;
+
+    @Given("^no existing menu for today's (.*)$")
+    public void noExistingMenu(String mealType) {
+        menuListAssumptions.assumeNotInMenusList(LocalDate.now(), mealType);
+    }
 
     @Then("^the menu can be found in the menus list starting from today$")
     public void menuFoundInList() {

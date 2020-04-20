@@ -359,7 +359,7 @@ class MenusControllerShould {
     @DisplayName("call application service when creating menu")
     void callServiceOnCreation() throws Exception {
         var commandCaptor = ArgumentCaptor.forClass(CreateMenu.class);
-        var expectedCommand = createCommand(builder().withOwnerName(UserProvider.AUTHENTICATED_USER).build());
+        var expectedCommand = createCommand(builder().withOwnerName(MENU_OWNER_NAME).build());
 
         mvc.perform(post(MENUS_API_URL)
                 .contentType(HAL_JSON)

@@ -66,13 +66,13 @@ public class MenuCreationStepDefinitions {
                 .withMainCourseRecipes(recipeList.storedRecipe()).build()));
     }
 
-    @When("^he creates a menu from the recipe without covers$")
+    @When("^he creates a menu from the recipe without covers for today's lunch$")
     public void createMenuWithoutCovers() {
         menuCreation.storeMenu(menuCreation.createMenu(MenuValue.builder().withCovers(null)
                 .withMainCourseRecipes(recipeList.storedRecipe()).build()));
     }
 
-    @When("^he creates a menu without main course recipe$")
+    @When("^he creates a menu without main course recipe for today's lunch$")
     public void createMenuWithoutMainCourseRecipes() {
         menuCreation.storeMenu(menuCreation.createMenu(MenuValue.builder().withNoMainCourseRecipes().build()));
     }

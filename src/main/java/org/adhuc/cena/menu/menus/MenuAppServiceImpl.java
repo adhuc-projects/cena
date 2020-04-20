@@ -60,4 +60,9 @@ class MenuAppServiceImpl implements MenuAppService {
         return menuCreationService.createMenu(command);
     }
 
+    @Override
+    public void deleteMenu(@NonNull DeleteMenu command) {
+        repository.delete(repository.findNotNullById(command.menuId()));
+    }
+
 }

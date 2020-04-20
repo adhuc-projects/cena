@@ -69,6 +69,12 @@ class InMemoryMenuRepositoryShould {
         assertThrows(IllegalArgumentException.class, () -> repository.save(null));
     }
 
+    @Test
+    @DisplayName("throw IllegalArgumentException when deleting null menu")
+    void throwIAEDeletingNullMenu() {
+        assertThrows(IllegalArgumentException.class, () -> repository.delete(null));
+    }
+
     @Nested
     @DisplayName("with no menu for owner")
     class WithNoMenuForOwner {
@@ -140,6 +146,41 @@ class InMemoryMenuRepositoryShould {
             @DisplayName("return today's lunch when finding not null menu with known id")
             void returnMenuNotNull() {
                 assertThat(repository.findNotNullById(TODAY_LUNCH_ID)).isEqualToComparingFieldByField(todayLunch);
+            }
+
+            @Test
+            @DisplayName("delete today's lunch successfully")
+            void deleteRecipe() {
+                repository.delete(todayLunch);
+                assertThat(repository.findByOwner(OWNER)).doesNotContain(todayLunch);
+            }
+
+            @Test
+            @DisplayName("delete menu with today's lunch identity and other covers and main course recipes")
+            void deleteWithIdAndDifferentCoversAndMainCourseRecipes() {
+                var menu = builder()
+                        .withOwner(TODAY_LUNCH_OWNER)
+                        .withDate(TODAY_LUNCH_DATE)
+                        .withMealType(TODAY_LUNCH_MEAL_TYPE)
+                        .withCovers(TOMORROW_DINNER_COVERS)
+                        .withMainCourseRecipes(TOMORROW_DINNER_MAIN_COURSE_RECIPES)
+                        .build();
+                repository.delete(menu);
+                assertThat(repository.findByOwner(OWNER)).doesNotContain(todayLunch);
+            }
+
+            @Test
+            @DisplayName("do nothing when deleting unknown menu")
+            void deleteUnknownMenu() {
+                var recipe = builder()
+                        .withOwner(TOMORROW_DINNER_OWNER)
+                        .withDate(TOMORROW_DINNER_DATE)
+                        .withMealType(TOMORROW_DINNER_MEAL_TYPE)
+                        .withCovers(TOMORROW_DINNER_COVERS)
+                        .withMainCourseRecipes(TOMORROW_DINNER_MAIN_COURSE_RECIPES)
+                        .build();
+                repository.delete(recipe);
+                assertThat(repository.findByOwner(OWNER)).containsOnly(todayLunch);
             }
 
             @Nested

@@ -16,6 +16,7 @@
 package org.adhuc.cena.menu.menus;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
@@ -77,6 +78,12 @@ class MenuAppServiceImplShould {
     @DisplayName("throw IllegalArgumentException when creating menu from null command")
     void throwIAECreateMenuNullCommand() {
         assertThrows(IllegalArgumentException.class, () -> service.createMenu(null));
+    }
+
+    @Test
+    @DisplayName("throw IllegalArgumentException when deleting menu from null command")
+    void throwIAEDeleteMenuNullCommand() {
+        assertThrows(IllegalArgumentException.class, () -> service.deleteMenu(null));
     }
 
     @Nested
@@ -172,6 +179,22 @@ class MenuAppServiceImplShould {
                         Arguments.of(TODAY_LUNCH_COVERS, TOMORROW_DINNER_MAIN_COURSE_RECIPES),
                         Arguments.of(TOMORROW_DINNER_COVERS, TOMORROW_DINNER_MAIN_COURSE_RECIPES)
                 );
+            }
+
+            @Test
+            @DisplayName("delete today's lunch successfully")
+            void deleteTodayLunch() {
+                assumeThat(service.getMenu(ID)).isNotNull();
+                service.deleteMenu(deleteCommand());
+                assertThrows(EntityNotFoundException.class, () -> service.getMenu(ID));
+            }
+
+            @Test
+            @DisplayName("throw EntityNotFoundException when deleting unknown menu")
+            void throwEntityNotFoundDeleteUnknownMenu() {
+                var exception = assertThrows(EntityNotFoundException.class,
+                        () -> service.deleteMenu(deleteCommand(TOMORROW_DINNER_ID)));
+                assertThat(exception.getIdentity()).isEqualTo(TOMORROW_DINNER_ID.toString());
             }
 
             @Nested

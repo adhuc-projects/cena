@@ -75,6 +75,14 @@ public class MenuMother {
         return new CreateMenu(menu.owner(), menu.date(), menu.mealType(), menu.covers(), menu.mainCourseRecipes());
     }
 
+    public static DeleteMenu deleteCommand() {
+        return deleteCommand(TODAY_LUNCH_ID);
+    }
+
+    public static DeleteMenu deleteCommand(@NonNull MenuId menuId) {
+        return new DeleteMenu(menuId);
+    }
+
     public static Menu menu() {
         return builder().build();
     }

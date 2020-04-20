@@ -65,6 +65,10 @@ public class MenuValue extends HateoasClientResourceSupport {
         assertThat(this).isEqualTo(expected);
     }
 
+    boolean isScheduledAt(LocalDate date, String mealType) {
+        return this.date.equals(date) && this.mealType.equalsIgnoreCase(mealType);
+    }
+
     public static Builder builder() {
         return new Builder();
     }

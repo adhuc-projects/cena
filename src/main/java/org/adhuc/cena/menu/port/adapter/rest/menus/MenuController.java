@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import org.adhuc.cena.menu.menus.DeleteMenu;
 import org.adhuc.cena.menu.menus.MenuAppService;
 import org.adhuc.cena.menu.menus.MenuOwner;
 
@@ -55,6 +56,13 @@ class MenuController {
         var id = menuIdConverter.parse(menuId, new MenuOwner(principal.getName()));
         var menu = menuAppService.getMenu(id);
         return modelAssembler.toModel(menu);
+    }
+
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteMenu(@PathVariable String menuId, Principal principal) {
+        var id = menuIdConverter.parse(menuId, new MenuOwner(principal.getName()));
+        menuAppService.deleteMenu(new DeleteMenu(id));
     }
 
 }

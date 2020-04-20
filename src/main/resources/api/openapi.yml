@@ -297,6 +297,24 @@ paths:
           $ref: '#/components/responses/Menu'
         404:
           $ref: '#/components/responses/404-NotFound'
+    delete:
+      summary: Delete a menu from the system. Only the menu owner or a super administrator can delete a menu
+      operationId: deleteMenu
+      tags:
+        - Menus
+      security:
+        - basicAuth:[]
+      parameters:
+        - $ref: '#/components/parameters/menuId'
+      responses:
+        204:
+          description: The menu has been deleted from the system
+        401:
+          $ref: '#/components/responses/401-Unauthorized'
+        403:
+          $ref: '#/components/responses/403-Forbidden'
+        404:
+          $ref: '#/components/responses/404-NotFound'
 components:
   securitySchemes:
     basicAuth:

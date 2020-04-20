@@ -30,7 +30,8 @@ Feature: Create a menu for a meal
   Scenario: Create a menu without covers
     Given an authenticated user
     And an existing "Tomato, cucumber and mozzarella salad" recipe
-    When he creates a menu from the recipe without covers
+    And no existing menu for today's lunch
+    When he creates a menu from the recipe without covers for today's lunch
     Then an error notifies that menu must have covers
     And the menu cannot be found in the menus list starting from today
 
@@ -38,6 +39,7 @@ Feature: Create a menu for a meal
   Scenario Outline: Create a menu with invalid <covers> covers
     Given an authenticated user
     And an existing "Tomato, cucumber and mozzarella salad" recipe
+    And no existing menu for today's lunch
     When he creates a menu from the recipe for <covers> covers for today's lunch
     Then an error notifies that menu cannot be created with invalid <covers> covers
     And the menu cannot be found in the menus list starting from today
@@ -50,7 +52,8 @@ Feature: Create a menu for a meal
   @Edge
   Scenario: Create a menu without main course recipe
     Given an authenticated user
-    When he creates a menu without main course recipe
+    And no existing menu for today's lunch
+    When he creates a menu without main course recipe for today's lunch
     Then an error notifies that menu must have main course recipes
     And the menu cannot be found in the menus list starting from today
 
@@ -58,6 +61,7 @@ Feature: Create a menu for a meal
   Scenario: Create a menu successfully
     Given an authenticated user
     And an existing "Tomato, cucumber and mozzarella salad" recipe
+    And no existing menu for today's lunch
     When he creates a menu from the recipe for 2 covers for today's lunch
     Then the menu is created
     And the menu can be found in the menus list starting from today

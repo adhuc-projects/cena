@@ -52,4 +52,10 @@ public interface MenuAppService {
      */
     Menu createMenu(CreateMenu command);
 
+    /**
+     * Deletes a menu.
+     *
+     * @param command the menu deletion command.
+     */
+    void deleteMenu(DeleteMenu command);
 }

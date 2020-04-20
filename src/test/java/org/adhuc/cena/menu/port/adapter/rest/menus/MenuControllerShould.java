@@ -17,7 +17,7 @@ package org.adhuc.cena.menu.port.adapter.rest.menus;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -81,8 +81,8 @@ class MenuControllerShould {
     @Test
     @WithCommunityUser
     @DisplayName("respond Unauthorized when retrieving menu as an anonymous user")
-    void respond401OnDeletionAsAnonymous() throws Exception {
-        mvc.perform(delete(MENU_API_URL, ID_PARAM)).andExpect(status().isUnauthorized());
+    void respond401OnGetAsAnonymous() throws Exception {
+        mvc.perform(get(MENU_API_URL, ID_PARAM)).andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -91,6 +91,37 @@ class MenuControllerShould {
     void respond404GetUnknownMenu() throws Exception {
         when(menuAppServiceMock.getMenu(ID)).thenThrow(new EntityNotFoundException(Menu.class, ID));
         mvc.perform(get(MENU_API_URL, ID_PARAM)).andExpect(status().isNotFound());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"invalid", "01-01-2020-LUNCH", "LUNCH-2020-01-01", "2020-01-01-INVALID", "2020/01/01-LUNCH", "2020-01-01_LUNCH", "32-01-2020-LUNCH"})
+    @WithAuthenticatedUser
+    @DisplayName("respond Not Found when deleting menu with id in invalid format")
+    void respond404DeleteMenuInvalidIdFormat(String menuId) throws Exception {
+        mvc.perform(delete(MENU_API_URL, menuId)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithCommunityUser
+    @DisplayName("respond Unauthorized when deleting menu as an anonymous user")
+    void respond401OnDeletionAsAnonymous() throws Exception {
+        mvc.perform(delete(MENU_API_URL, ID_PARAM)).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("respond No Content when deleting recipe successfully as an authenticated user")
+    void respond204OnDeletionAsAuthenticatedUser() throws Exception {
+        mvc.perform(delete(MENU_API_URL, ID_PARAM)).andExpect(status().isNoContent());
+        verify(menuAppServiceMock).deleteMenu(deleteCommand(ID));
+    }
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("respond Not Found when deleting unknown menu")
+    void respond404DeleteUnknownMenu() throws Exception {
+        doThrow(new EntityNotFoundException(Menu.class, ID)).when(menuAppServiceMock).deleteMenu(deleteCommand(ID));
+        mvc.perform(delete(MENU_API_URL, ID_PARAM)).andExpect(status().isNotFound());
     }
 
     @Nested

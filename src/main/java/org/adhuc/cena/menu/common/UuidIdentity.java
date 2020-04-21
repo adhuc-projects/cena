@@ -26,13 +26,13 @@ import lombok.experimental.Accessors;
  * An {@link Identity} implementation, based on UUID.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.3.0
  * @since 0.1.0
  */
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode
 @Accessors(fluent = true)
-public abstract class UuidIdentity implements Identity {
+public abstract class UuidIdentity implements Identity, Comparable<UuidIdentity> {
 
     @Getter
     @NonNull
@@ -57,6 +57,11 @@ public abstract class UuidIdentity implements Identity {
         } catch (final IllegalArgumentException e) {
             throw new EntityNotFoundException(entityType, value);
         }
+    }
+
+    @Override
+    public int compareTo(UuidIdentity other) {
+        return id.compareTo(other.id);
     }
 
 }

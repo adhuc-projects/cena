@@ -47,4 +47,8 @@ public class MenuId implements Identity {
         return "owner=" + owner + ", date=" + date + ", mealType=" + mealType;
     }
 
+    public String toScheduleString() {
+        return date + "'s " + mealType.toString().toLowerCase();
+    }
+
 }

@@ -33,7 +33,7 @@ import org.adhuc.cena.menu.steps.serenity.support.resource.HateoasClientResource
  * A recipe value on the client side.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Data
@@ -65,6 +65,10 @@ public class RecipeValue extends HateoasClientResourceSupport {
     private final String content;
     private final String author;
     private final Integer servings;
+
+    public static RecipeValue buildUnknownRecipeValue(String recipesResourceUrl) {
+        return buildUnknownRecipeValue(DEFAULT_NAME, recipesResourceUrl);
+    }
 
     public static RecipeValue buildUnknownRecipeValue(String name, String recipesResourceUrl) {
         var recipe = new RecipeValue(UUID.randomUUID().toString(), name, DEFAULT_CONTENT, null, DEFAULT_SERVINGS);

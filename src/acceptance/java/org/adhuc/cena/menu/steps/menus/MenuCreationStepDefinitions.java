@@ -25,6 +25,7 @@ import net.thucydides.core.annotations.Steps;
 import org.adhuc.cena.menu.steps.serenity.menus.MenuCreationSteps;
 import org.adhuc.cena.menu.steps.serenity.menus.MenuValue;
 import org.adhuc.cena.menu.steps.serenity.recipes.RecipeListSteps;
+import org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue;
 
 /**
  * The menu creation steps definitions for rest-services acceptance tests.
@@ -77,6 +78,12 @@ public class MenuCreationStepDefinitions {
         menuCreation.storeMenu(menuCreation.createMenu(MenuValue.builder().withNoMainCourseRecipes().build()));
     }
 
+    @When("^he creates a menu from unknown recipe for today's lunch$")
+    public void createMenuWithUnknownMainCourseRecipe() {
+        var recipe = recipeList.storeRecipe(RecipeValue.buildUnknownRecipeValue(recipeList.recipesResourceUrl()));
+        menuCreation.storeMenu(menuCreation.createMenu(MenuValue.builder().withMainCourseRecipes(recipe).build()));
+    }
+
     @When("^he tries to create a menu from the recipe for 2 covers for today's lunch$")
     public void tryToCreateMenu() {
         menuCreation.tryToCreateMenu(MenuValue.builder().withMainCourseRecipes(recipeList.storedRecipe()).build());
@@ -115,6 +122,11 @@ public class MenuCreationStepDefinitions {
     @Then("^an error notifies that menu must have main course recipes$")
     public void errorOnMenuCreationWithoutMainCourseRecipes() {
         menuCreation.assertInvalidRequestConcerningMissingBodyField(MenuValue.MAIN_COURSE_RECIPES_FIELD);
+    }
+
+    @Then("^an error notifies that menu cannot be linked to unknown recipe$")
+    public void errorOnMenuCreationWithUnknownRecipe() {
+        menuCreation.assertMenuCannotBeCreatedWithUnknownRecipe(menuCreation.storedMenu(), recipeList.storedRecipe());
     }
 
     @Then("^an error notifies that menu already exists$")

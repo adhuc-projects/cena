@@ -47,7 +47,10 @@ public enum ExceptionCode {
     INGREDIENT_NAME_ALREADY_USED(900000, "Ingredient name already used"),
     INVALID_MEASUREMENT_UNIT_FOR_INGREDIENT(900001, "Invalid measurement unit for ingredient"),
     INGREDIENT_NOT_DELETABLE_RELATED_TO_OBJECT(900100, "Ingredient cannot be deleted as it is related to at least one other object"),
-    INGREDIENT_NOT_RELATED_TO_RECIPE(900101, "Ingredient not related to recipe");
+    INGREDIENT_NOT_RELATED_TO_RECIPE(900101, "Ingredient not related to recipe"),
+
+    // Menu generation errors
+    MENU_NOT_CREATABLE_WITH_UNKNOWN_RECIPE(901100, "Menu cannot be created linked to an unknown recipe");
 
     private final int code;
     private final String description;

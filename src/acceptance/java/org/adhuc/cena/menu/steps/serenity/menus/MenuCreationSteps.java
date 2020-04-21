@@ -19,12 +19,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpHeaders.LOCATION;
 
-import io.restassured.response.ValidatableResponse;
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
 import org.assertj.core.api.SoftAssertions;
 
+import org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue;
 import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.RestClientDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
@@ -68,7 +68,7 @@ public class MenuCreationSteps {
         retrievedMenu.assertEqualTo(menu);
     }
 
-    public ValidatableResponse assertInvalidRequestConcerningUnknownMealUnit(String mealType) {
+    public void assertInvalidRequestConcerningUnknownMealUnit(String mealType) {
         var response = assertBadRequest();
         var jsonPath = response.extract().jsonPath();
         SoftAssertions.assertSoftly(softly -> {
@@ -78,10 +78,9 @@ public class MenuCreationSteps {
                             MenuValue.MEAL_TYPE_FIELD, mealType))
             );
         });
-        return response;
     }
 
-    public ValidatableResponse assertInvalidRequestConcerningInvalidCovers(int covers) {
+    public void assertInvalidRequestConcerningInvalidCovers(int covers) {
         var response = assertBadRequest();
         var jsonPath = response.extract().jsonPath();
         SoftAssertions.assertSoftly(softly -> {
@@ -91,16 +90,25 @@ public class MenuCreationSteps {
                             MenuValue.COVERS_FIELD, covers))
             );
         });
-        return response;
     }
 
-    public void assertMenuAlreadyExists(MenuValue storedMenu) {
+    public void assertMenuAlreadyExists(MenuValue menu) {
         var jsonPath = assertConflict().extract().jsonPath();
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(jsonPath.getString("message")).contains("Menu is already scheduled at " +
-                    storedMenu.date() + "'s " + storedMenu.mealType().toLowerCase());
+                    menu.date() + "'s " + menu.mealType().toLowerCase());
             softly.assertThat(jsonPath.getInt("code")).isEqualTo(102001);
         });
     }
 
+    public void assertMenuCannotBeCreatedWithUnknownRecipe(MenuValue menu, RecipeValue recipe) {
+        var response = assertBadRequest();
+        var jsonPath = response.extract().jsonPath();
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(jsonPath.getString("message")).contains(
+                    "Menu scheduled at " + menu.date() + "'s " + menu.mealType().toLowerCase() +
+                            " cannot be created with unknown recipes [" + recipe.id() + "]");
+            softly.assertThat(jsonPath.getInt("code")).isEqualTo(901100);
+        });
+    }
 }

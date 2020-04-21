@@ -58,6 +58,14 @@ Feature: Create a menu for a meal
     And the menu cannot be found in the menus list starting from today
 
   @Edge
+  Scenario: Create a menu with unknown main course recipe
+    Given an authenticated user
+    And no existing menu for today's lunch
+    When he creates a menu from unknown recipe for today's lunch
+    Then an error notifies that menu cannot be linked to unknown recipe
+    And the menu cannot be found in the menus list starting from today
+
+  @Edge
   Scenario: Create an already existing menu
     Given an authenticated user
     And an existing "Tomato, cucumber and mozzarella salad" recipe

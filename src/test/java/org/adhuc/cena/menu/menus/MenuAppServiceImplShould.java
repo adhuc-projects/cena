@@ -21,6 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 import static org.adhuc.cena.menu.menus.MenuMother.*;
+import static org.adhuc.cena.menu.recipes.RecipeMother.TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID;
+import static org.adhuc.cena.menu.recipes.RecipeMother.recipe;
 
 import java.util.Collection;
 import java.util.stream.Stream;
@@ -33,7 +35,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.adhuc.cena.menu.common.AlreadyExistingEntityException;
 import org.adhuc.cena.menu.common.EntityNotFoundException;
 import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryMenuRepository;
+import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryRecipeRepository;
 import org.adhuc.cena.menu.recipes.RecipeId;
+import org.adhuc.cena.menu.recipes.RecipeMother;
+import org.adhuc.cena.menu.recipes.RecipeRepository;
 
 /**
  * The {@link MenuAppServiceImpl} test class.
@@ -48,12 +53,16 @@ import org.adhuc.cena.menu.recipes.RecipeId;
 class MenuAppServiceImplShould {
 
     private MenuRepository menuRepository;
+    private RecipeRepository recipeRepository;
     private MenuAppServiceImpl service;
 
     @BeforeEach
     void setUp() {
         menuRepository = new InMemoryMenuRepository();
-        service = new MenuAppServiceImpl(new MenuCreationService(menuRepository), menuRepository);
+        recipeRepository = new InMemoryRecipeRepository();
+        service = new MenuAppServiceImpl(new MenuCreationService(menuRepository, recipeRepository), menuRepository);
+
+        recipeRepository.save(recipe());
     }
 
     @Test
@@ -105,6 +114,25 @@ class MenuAppServiceImplShould {
         }
 
         @Test
+        @DisplayName("create menu with unknown main course recipe")
+        void failCreatingMenuWithUnknownMainCourseRecipe() {
+            var exception = assertThrows(MenuNotCreatableWithUnknownRecipeException.class,
+                    () -> service.createMenu(createCommand(builder().withMainCourseRecipes(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID).build())));
+            assertThat(exception).hasMessage(String.format("Menu scheduled at %s's lunch cannot be created with unknown recipes [%s]",
+                    TODAY_LUNCH_DATE, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID));
+        }
+
+        @Test
+        @DisplayName("create menu with unknown main course recipes")
+        void failCreatingMenuWithUnknownMainCourseRecipes() {
+            var anotherRecipeId = new RecipeId("2211b1fc-a5f3-42c1-b591-fb979e0449d1");
+            var exception = assertThrows(MenuNotCreatableWithUnknownRecipeException.class,
+                    () -> service.createMenu(createCommand(builder().withMainCourseRecipes(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID, anotherRecipeId).build())));
+            assertThat(exception).hasMessage(String.format("Menu scheduled at %s's lunch cannot be created with unknown recipes [%s, %s]",
+                    TODAY_LUNCH_DATE, anotherRecipeId, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID));
+        }
+
+        @Test
         @DisplayName("create menu successfully")
         void createMenu() {
             var menu = menu();
@@ -131,6 +159,8 @@ class MenuAppServiceImplShould {
             void setUp() {
                 todayLunch = menu();
                 menuRepository.save(todayLunch);
+
+                recipeRepository.save(RecipeMother.builder().withId(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID).build());
             }
 
             @Test

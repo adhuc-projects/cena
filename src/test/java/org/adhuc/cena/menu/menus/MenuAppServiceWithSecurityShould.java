@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.adhuc.cena.menu.menus.MenuMother.*;
+import static org.adhuc.cena.menu.recipes.RecipeMother.recipe;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -66,13 +67,16 @@ class MenuAppServiceWithSecurityShould {
     @Autowired
     private MenuAppService service;
     @Autowired
-    private MenuRepository repository;
+    private MenuRepository menuRepository;
+    @Autowired
+    private RecipeRepository recipeRepository;
 
     @BeforeEach
     void setUp() {
         menu = builder().withOwnerName(MENU_OWNER_NAME).build();
-        repository.deleteAll();
-        repository.save(menu);
+        menuRepository.deleteAll();
+        menuRepository.save(menu);
+        recipeRepository.save(recipe());
     }
 
     @Test

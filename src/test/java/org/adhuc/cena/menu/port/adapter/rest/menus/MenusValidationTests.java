@@ -22,7 +22,10 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import static org.adhuc.cena.menu.common.ExceptionCode.INVALID_REQUEST;
+import static org.adhuc.cena.menu.common.ExceptionCode.MENU_NOT_CREATABLE_WITH_UNKNOWN_RECIPE;
 import static org.adhuc.cena.menu.port.adapter.rest.assertion.support.ErrorAssert.assertThat;
+import static org.adhuc.cena.menu.recipes.RecipeMother.TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID;
+import static org.adhuc.cena.menu.recipes.RecipeMother.recipe;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -41,8 +44,11 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.TestPropertySource;
 
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
+import org.adhuc.cena.menu.menus.MenuRepository;
 import org.adhuc.cena.menu.port.adapter.rest.assertion.support.Error;
+import org.adhuc.cena.menu.recipes.RecipeId;
 import org.adhuc.cena.menu.recipes.RecipeMother;
+import org.adhuc.cena.menu.recipes.RecipeRepository;
 
 /**
  * The validation test class for menus resources disabling Open API validation.
@@ -64,10 +70,16 @@ class MenusValidationTests {
     private int port;
     @Autowired
     private MenuGenerationProperties properties;
+    @Autowired
+    private MenuRepository menuRepository;
+    @Autowired
+    private RecipeRepository recipeRepository;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        menuRepository.deleteAll();
+        recipeRepository.save(recipe());
     }
 
     @Test
@@ -207,6 +219,29 @@ class MenusValidationTests {
                 .hasCode(INVALID_REQUEST)
                 .hasMessage("Validation error")
                 .detailsContainsExactly("Invalid request body property 'mainCourseRecipes': must not be empty. Actual value is <null>");
+    }
+
+    @Test
+    @DisplayName("respond Bad Request with OpenAPI validation error on creation when request contains unknown mainCourseRecipes")
+    void respond400OnCreationWithUnknownMainCourseRecipes() {
+        var anotherRecipeId = new RecipeId("2211b1fc-a5f3-42c1-b591-fb979e0449d1");
+        var error = given()
+                .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                        properties.getSecurity().getUser().getPassword())
+                .contentType(APPLICATION_JSON_VALUE)
+                .body(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"covers\":2,\"mainCourseRecipes\":[\"%s\",\"%s\"]}",
+                        LocalDate.now(), TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID, anotherRecipeId))
+                .when()
+                .post(MENUS_API_URL)
+                .then()
+                .statusCode(BAD_REQUEST.value())
+                .assertThat()
+                .extract().jsonPath().getObject("", Error.class);
+        assertThat(error)
+                .hasCode(MENU_NOT_CREATABLE_WITH_UNKNOWN_RECIPE)
+                .hasMessage(String.format("Menu scheduled at %s's lunch cannot be created with unknown recipes [%s, %s]",
+                        LocalDate.now(), anotherRecipeId, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID));
     }
 
     @Test

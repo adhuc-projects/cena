@@ -15,12 +15,15 @@
  */
 package org.adhuc.cena.menu.menus;
 
+import static java.util.stream.Collectors.toList;
+
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import org.adhuc.cena.menu.common.AlreadyExistingEntityException;
+import org.adhuc.cena.menu.recipes.RecipeRepository;
 
 /**
  * An domain service dedicated to menu creation. This service ensures that a menu can be created only if its identity is
@@ -36,7 +39,9 @@ import org.adhuc.cena.menu.common.AlreadyExistingEntityException;
 class MenuCreationService {
 
     @NonNull
-    private MenuRepository repository;
+    private MenuRepository menuRepository;
+    @NonNull
+    private RecipeRepository recipeRepository;
 
     /**
      * Creates a menu, ensuring the identity is not already used.
@@ -46,11 +51,25 @@ class MenuCreationService {
      * @throws AlreadyExistingEntityException if a menu already exists with the identity specified in creation command.
      */
     Menu createMenu(CreateMenu command) {
-        if (repository.exists(command.menuId())) {
-            throw new AlreadyExistingEntityException("Menu is already scheduled at " + command.menuId().date() + "'s " +
-                    command.menuId().mealType().toString().toLowerCase());
+        ensureMenuDontExist(command);
+        ensureRecipesExist(command);
+        return menuRepository.save(new Menu(command));
+    }
+
+    private void ensureMenuDontExist(CreateMenu command) {
+        if (menuRepository.exists(command.menuId())) {
+            throw new AlreadyExistingEntityException("Menu is already scheduled at " + command.menuId().toScheduleString());
         }
-        return repository.save(new Menu(command));
+    }
+
+    private void ensureRecipesExist(CreateMenu command) {
+        var unknownRecipes = command.mainCourseRecipes().stream()
+                .filter(recipeId -> !recipeRepository.exists(recipeId))
+                .sorted()
+                .collect(toList());
+        if (!unknownRecipes.isEmpty()) {
+            throw new MenuNotCreatableWithUnknownRecipeException(unknownRecipes, command.menuId());
+        }
     }
 
 }

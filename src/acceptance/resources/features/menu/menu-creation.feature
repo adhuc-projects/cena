@@ -82,6 +82,18 @@ Feature: Create a menu for a meal
     Then the menu is created
     And the menu can be found in the menus list starting from today
 
+  @Edge
+  Scenario: Create a menu with many main course recipes
+    Given an authenticated user
+    And the following existing recipes
+      | name                                   | content                                                   | servings |
+      | Tomato, cucumber and mozzarella salad  | Cut everything into dices, mix it, dress it               | 2        |
+      | Tomato, cucumber, olive and feta salad | Stone olives, cut everything into dices, mix it, dress it | 6        |
+    And no existing menu for today's lunch
+    When he creates a menu from the recipes for 2 covers for today's lunch
+    Then the menu is created
+    And the menu can be found in the menus list starting from today
+
   @Security
   Scenario: Create a menu as community user
     Given a community user

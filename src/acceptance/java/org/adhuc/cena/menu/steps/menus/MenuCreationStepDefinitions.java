@@ -49,6 +49,13 @@ public class MenuCreationStepDefinitions {
                         .withCovers(covers).withMainCourseRecipes(recipeList.storedRecipe()).build()));
     }
 
+    @When("^he creates a menu from the recipes for (-?\\d+) covers for today's (\\w+)$")
+    public void createMenuMultipleRecipes(int covers, String mealType) {
+        menuCreation.storeMenu(
+                menuCreation.createMenu(MenuValue.builder().withDate(LocalDate.now()).withMealType(mealType)
+                        .withCovers(covers).withMainCourseRecipes(recipeList.storedAssumedRecipes()).build()));
+    }
+
     @When("^he creates a menu from the recipe without date$")
     public void createMenuWithoutDate() {
         menuCreation.storeMenu(menuCreation.createMenu(MenuValue.builder().withDate(null)

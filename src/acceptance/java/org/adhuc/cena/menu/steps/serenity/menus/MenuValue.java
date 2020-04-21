@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -97,6 +98,10 @@ public class MenuValue extends HateoasClientResourceSupport {
 
         public Builder withMainCourseRecipes(@NonNull RecipeValue... recipes) {
             return new Builder(date, mealType, covers, Arrays.stream(recipes).map(RecipeValue::id).collect(toList()));
+        }
+
+        public Builder withMainCourseRecipes(Collection<RecipeValue> recipes) {
+            return new Builder(date, mealType, covers, recipes.stream().map(RecipeValue::id).collect(toList()));
         }
 
         public Builder withMainCourseRecipes(@NonNull String... recipeIds) {

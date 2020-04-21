@@ -25,7 +25,8 @@ import lombok.experimental.Accessors;
  * <ul>
  * <li>[100000-109999] - General errors</li>
  * <li>...</li>
- * <li>[900000-909999] - Business errors</li>
+ * <li>[900000-900999] - Recipe catalog business errors</li>
+ * <li>[901000-901999] - Menu generation business errors</li>
  * </ul>
  *
  * @author Alexandre Carbenay
@@ -39,13 +40,14 @@ public enum ExceptionCode {
     // General errors
     INTERNAL_ERROR(100000, "Internal error"),
     INVALID_REQUEST(101000, "Invalid request"),
+    ENTITY_NOT_FOUND(102000, "Entity not found"),
+    ALREADY_EXISTING_ENTITY(102001, "Already existing entity"),
 
-    ENTITY_NOT_FOUND(900000, "Entity not found"),
-    ALREADY_EXISTING_ENTITY(900001, "Already existing entity"),
-    INGREDIENT_NAME_ALREADY_USED(900100, "Ingredient name already used"),
-    INGREDIENT_NOT_DELETABLE_RELATED_TO_OBJECT(900101, "Ingredient cannot be deleted as it is related to at least one other object"),
-    INGREDIENT_NOT_RELATED_TO_RECIPE(900110, "Ingredient not related to recipe"),
-    INVALID_MEASUREMENT_UNIT_FOR_INGREDIENT(900111, "Invalid measurement unit for ingredient");
+    // Recipe catalog errors
+    INGREDIENT_NAME_ALREADY_USED(900000, "Ingredient name already used"),
+    INVALID_MEASUREMENT_UNIT_FOR_INGREDIENT(900001, "Invalid measurement unit for ingredient"),
+    INGREDIENT_NOT_DELETABLE_RELATED_TO_OBJECT(900100, "Ingredient cannot be deleted as it is related to at least one other object"),
+    INGREDIENT_NOT_RELATED_TO_RECIPE(900101, "Ingredient not related to recipe");
 
     private final int code;
     private final String description;

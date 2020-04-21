@@ -99,7 +99,7 @@ public class MenuCreationSteps {
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(jsonPath.getString("message")).contains("Menu is already scheduled at " +
                     storedMenu.date() + "'s " + storedMenu.mealType().toLowerCase());
-            softly.assertThat(jsonPath.getInt("code")).isEqualTo(900001);
+            softly.assertThat(jsonPath.getInt("code")).isEqualTo(102001);
         });
     }
 

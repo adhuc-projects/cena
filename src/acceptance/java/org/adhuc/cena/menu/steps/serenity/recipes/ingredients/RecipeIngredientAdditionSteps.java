@@ -125,7 +125,7 @@ public class RecipeIngredientAdditionSteps {
             softly.assertThat(jsonPath.getString("message")).contains("Unable to add ingredient '" + ingredient.id() +
                     "' to recipe '" + recipe.id() + "': measurement unit " + recipeIngredient.measurementUnit() +
                     " does not correspond to ingredient's measurement types " + ingredient.measurementTypes());
-            softly.assertThat(jsonPath.getInt("code")).isEqualTo(900111);
+            softly.assertThat(jsonPath.getInt("code")).isEqualTo(900001);
         });
     }
 

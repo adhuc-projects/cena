@@ -102,7 +102,7 @@ public class RecipeIngredientRemovalSteps {
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(jsonPath.getString("message")).contains("Ingredient '" + ingredient.id() +
                     "' is not related to recipe '" + recipe.id() + "'");
-            softly.assertThat(jsonPath.getInt("code")).isEqualTo(900110);
+            softly.assertThat(jsonPath.getInt("code")).isEqualTo(900101);
         });
     }
 

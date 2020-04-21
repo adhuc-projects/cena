@@ -89,7 +89,7 @@ public class IngredientDeletionSteps {
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(jsonPath.getString("message")).contains(
                     "Ingredient '" + ingredient.id() + "' cannot be deleted as it is related to at least one recipe");
-            softly.assertThat(jsonPath.getInt("code")).isEqualTo(900101);
+            softly.assertThat(jsonPath.getInt("code")).isEqualTo(900100);
         });
     }
 

@@ -17,6 +17,8 @@ package org.adhuc.cena.menu.steps.serenity.menus;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import static org.adhuc.cena.menu.steps.serenity.menus.MenuValue.COMPARATOR;
+
 import net.thucydides.core.annotations.Step;
 
 import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
@@ -36,7 +38,7 @@ public class MenuListAssertionsSteps {
 
     @Step("Assert menu {0} is in menus list")
     public void assertInMenusList(MenuValue menu) {
-        assertThat(listClient.getFromMenusList(menu)).isPresent().get().isEqualTo(menu);
+        assertThat(listClient.getFromMenusList(menu)).isPresent().get().usingComparator(COMPARATOR).isEqualTo(menu);
     }
 
     @Step("Assert menu {0} is not in menus list")

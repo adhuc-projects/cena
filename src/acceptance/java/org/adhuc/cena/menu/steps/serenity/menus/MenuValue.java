@@ -19,13 +19,9 @@ import static java.util.stream.Collectors.toList;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import static lombok.AccessLevel.PRIVATE;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -34,6 +30,7 @@ import lombok.experimental.Accessors;
 
 import org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue;
 import org.adhuc.cena.menu.steps.serenity.support.resource.HateoasClientResourceSupport;
+import org.adhuc.cena.menu.util.ListComparator;
 
 /**
  * A menu value on the client side.
@@ -42,11 +39,9 @@ import org.adhuc.cena.menu.steps.serenity.support.resource.HateoasClientResource
  * @version 0.3.0
  * @since 0.3.0
  */
-@Data
-@EqualsAndHashCode(callSuper = false)
-@ToString(includeFieldNames = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @RequiredArgsConstructor(access = PRIVATE)
+@Getter
 @Accessors(fluent = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(NON_EMPTY)
@@ -57,21 +52,22 @@ public class MenuValue extends HateoasClientResourceSupport {
     public static final String COVERS_FIELD = "covers";
     public static final String MAIN_COURSE_RECIPES_FIELD = "mainCourseRecipes";
 
+    public static final Comparator<MenuValue> COMPARATOR = Comparator.comparing(MenuValue::date)
+            .thenComparing(MenuValue::mealType)
+            .thenComparing(MenuValue::covers)
+            .thenComparing(MenuValue::mainCourseRecipes, new ListComparator<>());
+
     private final LocalDate date;
     private final String mealType;
     private final Integer covers;
     private final List<String> mainCourseRecipes;
 
-    void assertEqualTo(MenuValue expected) {
-        assertThat(this).isEqualTo(expected);
+    boolean hasSameScheduleAs(@NonNull MenuValue menu) {
+        return menu.date != null && menu.mealType != null && isScheduledAt(menu.date, menu.mealType);
     }
 
-    boolean hasSameScheduleAs(MenuValue menu) {
-        return isScheduledAt(menu.date, menu.mealType);
-    }
-
-    boolean isScheduledAt(LocalDate date, String mealType) {
-        return this.date.equals(date) && this.mealType.equalsIgnoreCase(mealType);
+    boolean isScheduledAt(@NonNull LocalDate date, @NonNull String mealType) {
+        return date.equals(this.date) && mealType.equalsIgnoreCase(this.mealType);
     }
 
     public static Builder builder() {

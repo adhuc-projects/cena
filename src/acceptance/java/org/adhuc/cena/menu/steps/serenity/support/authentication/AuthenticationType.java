@@ -19,6 +19,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 import java.util.function.Supplier;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -26,10 +27,9 @@ import lombok.Getter;
  * The authentication types.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.1.0
  */
-@Getter
 @AllArgsConstructor(access = PRIVATE)
 public enum AuthenticationType {
 
@@ -39,9 +39,10 @@ public enum AuthenticationType {
     INGREDIENT_MANAGER(new BasicAuthentication("ingredient-manager", "ingredient-manager")),
     SUPER_ADMINISTRATOR(new BasicAuthentication("super-admin", "super-admin"));
 
+    @Getter(AccessLevel.PACKAGE)
     private Authentication authentication;
 
-    public Supplier<Authentication> getAuthenticationSupplier() {
+    Supplier<Authentication> getAuthenticationSupplier() {
         return () -> authentication;
     }
 

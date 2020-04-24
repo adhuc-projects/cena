@@ -23,6 +23,7 @@ import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
+import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType;
 
 /**
  * The menus list rest-service client steps definition dedicated to assumptions.
@@ -48,6 +49,14 @@ public class MenuListAssumptionsSteps {
             menuCreation.createMenu(menu);
         }
         assumeThat(listClient.fetchMenus()).anyMatch(m -> m.hasSameScheduleAs(menu));
+    }
+
+    @Step("Assume menu {0} is in menus list owned by {1}")
+    public void assumeInMenusListOwnedBy(MenuValue menu, AuthenticationType owner) {
+        if (listClient.getFromMenusList(owner, menu).isEmpty()) {
+            menuCreation.createMenuOwnedBy(menu, owner);
+        }
+        assumeThat(listClient.fetchMenus(owner)).anyMatch(m -> m.hasSameScheduleAs(menu));
     }
 
     @Step("Assume menu is not in menus list for date {0} and meal type {1}")

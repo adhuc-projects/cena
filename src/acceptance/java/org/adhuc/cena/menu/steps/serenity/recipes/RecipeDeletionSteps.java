@@ -32,7 +32,7 @@ import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
  * The recipe deletion rest-service client steps definition.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 public class RecipeDeletionSteps {
@@ -71,7 +71,7 @@ public class RecipeDeletionSteps {
 
     @Step("Attempt deleting recipe {0}")
     public void attemptDeletingRecipe(RecipeValue recipe) {
-        var existingRecipe = getFromRecipesList(new RecipeValue(recipe.name()));
+        var existingRecipe = getFirstFromRecipesList(new RecipeValue(recipe.name()));
         assertThat(existingRecipe).isNotPresent();
         rest().delete(generateNotFoundRecipeUrl());
     }

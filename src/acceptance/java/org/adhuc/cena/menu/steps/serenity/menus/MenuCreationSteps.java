@@ -19,6 +19,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpHeaders.LOCATION;
 
+import static org.adhuc.cena.menu.steps.serenity.menus.MenuValue.COMPARATOR;
+
+import java.util.function.Supplier;
+
+import io.restassured.specification.RequestSpecification;
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
@@ -28,6 +33,7 @@ import org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue;
 import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.RestClientDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
+import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType;
 
 /**
  * The menu creation rest-service client steps definition.
@@ -52,7 +58,16 @@ public class MenuCreationSteps {
 
     @Step("Create the menu {0}")
     public MenuValue createMenu(MenuValue menu) {
-        rest().contentType(HAL_JSON_VALUE).body(menu).post(menusResourceUrl()).andReturn();
+        return createMenu(menu, this::rest);
+    }
+
+    @Step("Create the menu {0} owned by {1}")
+    public MenuValue createMenuOwnedBy(MenuValue menu, AuthenticationType owner) {
+        return createMenu(menu, () -> rest(owner));
+    }
+
+    private MenuValue createMenu(MenuValue menu, Supplier<RequestSpecification> requestSpecificationSupplier) {
+        requestSpecificationSupplier.get().contentType(HAL_JSON_VALUE).body(menu).post(menusResourceUrl()).andReturn();
         return menu;
     }
 
@@ -65,7 +80,7 @@ public class MenuCreationSteps {
         var menuLocation = assertCreated().extract().header(LOCATION);
         assertThat(menuLocation).isNotBlank();
         var retrievedMenu = menuDetail.getMenuFromUrl(menuLocation);
-        retrievedMenu.assertEqualTo(menu);
+        assertThat(menu).usingComparator(COMPARATOR).isEqualTo(retrievedMenu);
     }
 
     public void assertInvalidRequestConcerningUnknownMealUnit(String mealType) {

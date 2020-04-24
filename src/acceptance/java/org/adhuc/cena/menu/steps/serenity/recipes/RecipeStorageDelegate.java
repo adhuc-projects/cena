@@ -25,7 +25,7 @@ import net.serenitybdd.core.Serenity;
  * A recipe storage manager.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 public final class RecipeStorageDelegate {
@@ -84,6 +84,19 @@ public final class RecipeStorageDelegate {
      */
     public Collection<RecipeValue> storedAssumedRecipes() {
         return storedRecipes(ASSUMED_RECIPES_SESSION_KEY);
+    }
+
+    /**
+     * Gets the stored assumed recipe corresponding to the specified name, or fails if none was not previously stored.
+     *
+     * @param recipeName the recipe name.
+     * @return the stored assumed recipe corresponding to name.
+     * @throws AssertionError if recipes were not previously stored.
+     */
+    public RecipeValue storedAssumedRecipe(String recipeName) {
+        return storedAssumedRecipes().stream()
+                .filter(r -> r.name().equals(recipeName)).findFirst()
+                .orElseThrow(() -> new AssertionError("Recipe with name " + recipeName + " does not exist"));
     }
 
     /**

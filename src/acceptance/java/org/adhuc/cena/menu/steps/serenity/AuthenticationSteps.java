@@ -15,17 +15,20 @@
  */
 package org.adhuc.cena.menu.steps.serenity;
 
+import static org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType.*;
+
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 
 import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationProvider;
+import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType;
 
 /**
  * The authentication rest-service client steps definition.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.0.1
  */
 public class AuthenticationSteps {
@@ -37,27 +40,12 @@ public class AuthenticationSteps {
 
     @Step("Defines a community user")
     public void withCommunityUser() {
-        authenticationProvider.withCommunityUser();
+        authenticationProvider.withAuthentication(COMMUNITY_USER);
     }
 
-    @Step("Authenticate as authenticated user")
-    public void withAuthenticatedUser() {
-        authenticationProvider.withAuthenticatedUser();
-    }
-
-    @Step("Authenticate as ingredient manager")
-    public void withIngredientManager() {
-        authenticationProvider.withIngredientManager();
-    }
-
-    @Step("Authenticate as actuator manager")
-    public void withActuatorManager() {
-        authenticationProvider.withActuatorManager();
-    }
-
-    @Step("Authenticate as super administrator")
-    public void withSuperAdministrator() {
-        authenticationProvider.withSuperAdministrator();
+    @Step("Authenticate as {}")
+    public void withAuthentication(AuthenticationType authenticationType) {
+        authenticationProvider.withAuthentication(authenticationType);
     }
 
     @Step("Assert user is not authenticated")

@@ -82,6 +82,21 @@ Feature: Create a menu for a meal
     Then the menu is created
     And the menu can be found in the menus list starting from today
 
+  @Smoke @Security
+  Scenario: Create a different menu than another user on same date and meal type
+    Given an authenticated user
+    And the following existing recipes
+      | name                                   | content                                                   | servings |
+      | Tomato, cucumber and mozzarella salad  | Cut everything into dices, mix it, dress it               | 2        |
+      | Tomato, cucumber, olive and feta salad | Stone olives, cut everything into dices, mix it, dress it | 6        |
+    And the following existing menus
+      | owner              | date  | mealType | covers | mainCourseRecipes                      |
+      | ingredient manager | today | lunch    | 4      | Tomato, cucumber, olive and feta salad |
+    And no existing menu for today's lunch
+    When he creates a menu from "Tomato, cucumber and mozzarella salad" recipe for 2 covers for today's lunch
+    Then the menu is created
+    And the menu can be found in the menus list starting from today
+
   @Edge
   Scenario: Create a menu with many main course recipes
     Given an authenticated user
@@ -100,3 +115,21 @@ Feature: Create a menu for a meal
     And an existing "Tomato, cucumber and mozzarella salad" recipe
     When he tries to create a menu from the recipe for 2 covers for today's lunch
     Then an error notifies that user is not authenticated
+
+  @Security
+  Scenario: Create a menu as ingredient manager
+    Given an authenticated ingredient manager
+    And an existing "Tomato, cucumber and mozzarella salad" recipe
+    And no existing menu for today's lunch
+    When he creates a menu from the recipe for 2 covers for today's lunch
+    Then the menu is created
+    And the menu can be found in the menus list starting from today
+
+  @Security
+  Scenario: Create a menu as super administrator
+    Given an authenticated super administrator
+    And an existing "Tomato, cucumber and mozzarella salad" recipe
+    And no existing menu for today's lunch
+    When he creates a menu from the recipe for 2 covers for today's lunch
+    Then the menu is created
+    And the menu can be found in the menus list starting from today

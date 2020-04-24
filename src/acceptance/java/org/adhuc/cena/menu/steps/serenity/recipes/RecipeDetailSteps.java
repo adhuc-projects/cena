@@ -30,7 +30,7 @@ import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
  * The recipe detail rest-service client steps definition.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 public class RecipeDetailSteps {
@@ -54,14 +54,14 @@ public class RecipeDetailSteps {
 
     @Step("Retrieve recipe with name {0}")
     public RecipeValue retrieveRecipe(String recipeName) {
-        var recipe = getFromRecipesList(new RecipeValue(recipeName));
+        var recipe = getFirstFromRecipesList(new RecipeValue(recipeName));
         return recipe.orElseGet(() -> fail("Unable to retrieve recipe with name " + recipeName));
     }
 
     @Step("Attempt retrieving recipe with name {0}")
     public void attemptRetrievingRecipe(String recipeName) {
         var original = RecipeValue.buildUnknownRecipeValue(recipeName, recipesResourceUrl());
-        var recipe = getFromRecipesList(original);
+        var recipe = getFirstFromRecipesList(original);
         assertThat(recipe).isNotPresent();
         fetchRecipe(original.selfLink());
     }

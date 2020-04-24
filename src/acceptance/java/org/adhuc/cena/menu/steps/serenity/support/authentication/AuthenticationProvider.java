@@ -18,6 +18,7 @@ package org.adhuc.cena.menu.steps.serenity.support.authentication;
 import static org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType.*;
 
 import io.restassured.specification.RequestSpecification;
+import lombok.NonNull;
 import net.serenitybdd.rest.SerenityRest;
 
 /**
@@ -35,7 +36,7 @@ import net.serenitybdd.rest.SerenityRest;
  * Must be used as a singleton, using {@link #instance()} to ensure that it is shared between all steps.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.0.1
  */
 public class AuthenticationProvider {
@@ -65,9 +66,7 @@ public class AuthenticationProvider {
      * authentication type.
      *
      * @return the {@link RequestSpecification} to execute request.
-     * @see #withCommunityUser()
-     * @see #withActuatorManager()
-     * @see #withIngredientManager()
+     * @see #withAuthentication(AuthenticationType)
      */
     public RequestSpecification rest() {
         return authentication.authenticate(SerenityRest.rest());
@@ -93,8 +92,7 @@ public class AuthenticationProvider {
     }
 
     /**
-     * Gets the current authentication, as set through {@link #withAuthenticatedUser()},
-     * {@link #withIngredientManager()}, {@link #withActuatorManager()} or {@link #withSuperAdministrator()}.
+     * Gets the current authentication, as set through {@link #withAuthentication(AuthenticationType)}.
      *
      * @return the current authentication.
      */
@@ -105,46 +103,19 @@ public class AuthenticationProvider {
     /**
      * Gets the currently authenticated user, or {@code null} if none is authenticated.
      *
-     * @return the currently authenticated user, set using one of {@link #withAuthenticatedUser()},
-     * {@link #withIngredientManager()}, {@link #withActuatorManager()} or {@link #withSuperAdministrator()}.
+     * @return the currently authenticated user, set using {@link #withAuthentication(AuthenticationType)}.
      */
     public String currentlyAuthenticatedUser() {
         return authentication.getUser();
     }
 
     /**
-     * Authenticates with community user.
+     * Authenticates with the specified authentication type.
+     *
+     * @param authenticationType the authentication type.
      */
-    public void withCommunityUser() {
-        clean();
-    }
-
-    /**
-     * Authenticates with authenticated user.
-     */
-    public void withAuthenticatedUser() {
-        authenticate(AUTHENTICATED_USER);
-    }
-
-    /**
-     * Authenticates with ingredient manager.
-     */
-    public void withIngredientManager() {
-        authenticate(INGREDIENT_MANAGER);
-    }
-
-    /**
-     * Authenticates with actuator manager.
-     */
-    public void withActuatorManager() {
-        authenticate(ACTUATOR_MANAGER);
-    }
-
-    /**
-     * Authenticates with super administrator.
-     */
-    public void withSuperAdministrator() {
-        authenticate(SUPER_ADMINISTRATOR);
+    public void withAuthentication(@NonNull AuthenticationType authenticationType) {
+        authenticate(authenticationType);
     }
 
     private void authenticate(AuthenticationType authenticationType) {

@@ -32,7 +32,7 @@ import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
  * A client used to retrieve recipes from the server.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @RequiredArgsConstructor
@@ -86,16 +86,29 @@ final class RecipeListClientDelegate {
     }
 
     /**
-     * Gets the recipe corresponding to the specified one from the recipes list if existing, based on its name.
+     * Gets the first recipe corresponding to the specified one from the recipes list if existing, based on its name.
      * The recipes list is retrieved from the server. If recipe is retrieved from server, it should be populated
      * with all attributes, especially its identity and links.
      *
      * @param recipe the recipe to retrieve in the list.
-     * @return the recipe retrieved from list.
+     * @return the first recipe retrieved from list.
      */
-    public Optional<RecipeValue> getFromRecipesList(RecipeValue recipe) {
+    public Optional<RecipeValue> getFirstFromRecipesList(RecipeValue recipe) {
         return Optional.ofNullable(getRawRecipeList(restClientDelegate::rest).param("name", recipe.name())
                 .getObject("_embedded.data.find { recipe->recipe.name == name }", RecipeValue.class));
+    }
+
+    /**
+     * Gets all the recipes corresponding to the specified one from the recipes list if existing, based on its name.
+     * The recipes list is retrieved from the server. If recipes are retrieved from server, they should be populated
+     * with all attributes, especially identity and links.
+     *
+     * @param recipe the recipe to retrieve in the list.
+     * @return the recipes retrieved from list.
+     */
+    public List<RecipeValue> getAllFromRecipesList(RecipeValue recipe) {
+        return getRawRecipeList(restClientDelegate::rest).param("name", recipe.name())
+                .getList("_embedded.data.findAll { recipe->recipe.name == name }", RecipeValue.class);
     }
 
     /**

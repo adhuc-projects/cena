@@ -31,7 +31,7 @@ import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
  * The recipes list rest-service client steps definition dedicated to assertions.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 public class RecipeListAssertionsSteps {
@@ -52,7 +52,7 @@ public class RecipeListAssertionsSteps {
 
     @Step("Assert recipe {0} is in recipes list")
     public void assertInRecipesList(RecipeValue recipe) {
-        assertThat(listClient.getFromRecipesList(recipe)).isPresent().get().usingComparator(NAME_AND_CONTENT_COMPARATOR).isEqualTo(recipe);
+        assertThat(listClient.getFirstFromRecipesList(recipe)).isPresent().get().usingComparator(NAME_AND_CONTENT_COMPARATOR).isEqualTo(recipe);
     }
 
     @Step("Assert recipes {0} are in recipes list {1}")
@@ -67,7 +67,7 @@ public class RecipeListAssertionsSteps {
 
     @Step("Assert recipe {0} is not in recipes list")
     public void assertNotInRecipesList(RecipeValue recipe) {
-        assertThat(listClient.getFromRecipesList(recipe)).isNotPresent();
+        assertThat(listClient.getFirstFromRecipesList(recipe)).isNotPresent();
     }
 
     @Step("Assert recipes {0} are not in recipes list {1}")

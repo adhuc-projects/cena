@@ -37,7 +37,7 @@ import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationT
  * The recipes list rest-service client steps definition dedicated to assumptions.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 public class RecipeListAssumptionsSteps {
@@ -66,7 +66,7 @@ public class RecipeListAssumptionsSteps {
     }
 
     private RecipeValue assumeInRecipesList(RecipeValue recipe, AuthenticationType author) {
-        if (listClient.getFromRecipesList(recipe).isEmpty()) {
+        if (listClient.getFirstFromRecipesList(recipe).isEmpty()) {
             recipeCreation.createRecipeAs(recipe, author);
         }
         var recipes = listClient.fetchRecipes();
@@ -89,7 +89,7 @@ public class RecipeListAssumptionsSteps {
 
     @Step("Assume recipe {0} is in recipes list and has been authored by {1}")
     public RecipeValue assumeInRecipesListAuthoredBy(RecipeValue recipe, AuthenticationType authenticationType) {
-        var existingRecipe = listClient.getFromRecipesList(recipe);
+        var existingRecipe = listClient.getFirstFromRecipesList(recipe);
         if (existingRecipe.isPresent() && !existingRecipe.get().author().equals(authenticationType.toString())) {
             recipeDeletion.deleteRecipeAsSuperAdministrator(existingRecipe.get());
         }
@@ -110,7 +110,7 @@ public class RecipeListAssumptionsSteps {
 
     @Step("Assume recipe {0} is not in recipes list")
     public RecipeValue assumeNotInRecipesList(RecipeValue recipe) {
-        listClient.getFromRecipesList(recipe).ifPresent(r -> recipeDeletion.deleteRecipeAsSuperAdministrator(r));
+        listClient.getAllFromRecipesList(recipe).forEach(r -> recipeDeletion.deleteRecipeAsSuperAdministrator(r));
         assumeThat(listClient.fetchRecipes()).usingElementComparator(COMPARATOR).doesNotContain(recipe);
         return recipe;
     }

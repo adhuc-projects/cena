@@ -15,18 +15,20 @@
  */
 package org.adhuc.cena.menu.steps.authentication;
 
+import cucumber.api.Transform;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.AuthenticationSteps;
+import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType;
 
 /**
  * The authentication steps definitions for rest-services acceptance tests.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.0.1
  */
 @StepDefAnnotation
@@ -40,24 +42,9 @@ public class AuthenticationStepDefinitions {
         authentication.withCommunityUser();
     }
 
-    @Given("^an authenticated user$")
-    public void authenticatedUser() {
-        authentication.withAuthenticatedUser();
-    }
-
-    @Given("^an authenticated ingredient manager$")
-    public void authenticatedIngredientManager() {
-        authentication.withIngredientManager();
-    }
-
-    @Given("^an authenticated actuator manager$")
-    public void authenticatedActuatorManager() {
-        authentication.withActuatorManager();
-    }
-
-    @Given("^an authenticated super administrator$")
-    public void authenticatedSuperAdministrator() {
-        authentication.withSuperAdministrator();
+    @Given("^an authenticated (.*)$")
+    public void authenticated(@Transform(AuthenticationTypeTransformer.class) AuthenticationType authenticationType) {
+        authentication.withAuthentication(authenticationType);
     }
 
     @Then("^an error notifies that user is not authenticated$")

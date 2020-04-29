@@ -8,7 +8,7 @@ Feature: Create a menu for a meal
     And an existing "Tomato, cucumber and mozzarella salad" recipe
     When he creates a menu from the recipe without date
     Then an error notifies that menu must have a date
-    And the menu cannot be found in the menus list starting from today
+    And the menu cannot be found in the menus list
 
   @Edge
   Scenario: Create a menu without meal type
@@ -16,7 +16,7 @@ Feature: Create a menu for a meal
     And an existing "Tomato, cucumber and mozzarella salad" recipe
     When he creates a menu from the recipe without meal type
     Then an error notifies that menu must have a meal type
-    And the menu cannot be found in the menus list starting from today
+    And the menu cannot be found in the menus list
 
   @Edge
   Scenario: Create a menu with invalid meal type
@@ -24,7 +24,7 @@ Feature: Create a menu for a meal
     And an existing "Tomato, cucumber and mozzarella salad" recipe
     When he creates a menu from the recipe with unknown "UNKNOWN" meal type
     Then an error notifies that menu cannot be created with unknown "UNKNOWN" meal type
-    And the menu cannot be found in the menus list starting from today
+    And the menu cannot be found in the menus list
 
   @Edge
   Scenario: Create a menu without covers
@@ -33,7 +33,7 @@ Feature: Create a menu for a meal
     And no existing menu for today's lunch
     When he creates a menu from the recipe without covers for today's lunch
     Then an error notifies that menu must have covers
-    And the menu cannot be found in the menus list starting from today
+    And the menu cannot be found in the menus list
 
   @Edge
   Scenario Outline: Create a menu with invalid <covers> covers
@@ -42,7 +42,7 @@ Feature: Create a menu for a meal
     And no existing menu for today's lunch
     When he creates a menu from the recipe for <covers> covers for today's lunch
     Then an error notifies that menu cannot be created with invalid <covers> covers
-    And the menu cannot be found in the menus list starting from today
+    And the menu cannot be found in the menus list
 
     Examples:
       | covers |
@@ -55,7 +55,7 @@ Feature: Create a menu for a meal
     And no existing menu for today's lunch
     When he creates a menu without main course recipe for today's lunch
     Then an error notifies that menu must have main course recipes
-    And the menu cannot be found in the menus list starting from today
+    And the menu cannot be found in the menus list
 
   @Edge
   Scenario: Create a menu with unknown main course recipe
@@ -63,7 +63,7 @@ Feature: Create a menu for a meal
     And no existing menu for today's lunch
     When he creates a menu from unknown recipe for today's lunch
     Then an error notifies that menu cannot be linked to unknown recipe
-    And the menu cannot be found in the menus list starting from today
+    And the menu cannot be found in the menus list
 
   @Edge
   Scenario: Create an already existing menu
@@ -80,7 +80,7 @@ Feature: Create a menu for a meal
     And no existing menu for today's lunch
     When he creates a menu from the recipe for 2 covers for today's lunch
     Then the menu is created
-    And the menu can be found in the menus list starting from today
+    And the menu can be found in the menus list
 
   @Smoke @Security
   Scenario: Create a different menu than another user on same date and meal type
@@ -95,7 +95,7 @@ Feature: Create a menu for a meal
     And no existing menu for today's lunch
     When he creates a menu from "Tomato, cucumber and mozzarella salad" recipe for 2 covers for today's lunch
     Then the menu is created
-    And the menu can be found in the menus list starting from today
+    And the menu can be found in the menus list
 
   @Edge
   Scenario: Create a menu with many main course recipes
@@ -107,7 +107,25 @@ Feature: Create a menu for a meal
     And no existing menu for today's lunch
     When he creates a menu from the recipes for 2 covers for today's lunch
     Then the menu is created
-    And the menu can be found in the menus list starting from today
+    And the menu can be found in the menus list
+
+  @Edge
+  Scenario: Create a menu in the past
+    Given an authenticated user
+    And an existing "Tomato, cucumber and mozzarella salad" recipe
+    And no existing menu for yesterday's lunch
+    When he creates a menu from the recipe for 2 covers for yesterday's lunch
+    Then the menu is created
+    And the menu can be found in the menus list
+
+  @Edge
+  Scenario: Create a menu in the future
+    Given an authenticated user
+    And an existing "Tomato, cucumber and mozzarella salad" recipe
+    And no existing menu for day after tomorrow's dinner
+    When he creates a menu from the recipe for 2 covers for day after tomorrow's dinner
+    Then the menu is created
+    And the menu can be found in the menus list
 
   @Security
   Scenario: Create a menu as community user
@@ -123,7 +141,7 @@ Feature: Create a menu for a meal
     And no existing menu for today's lunch
     When he creates a menu from the recipe for 2 covers for today's lunch
     Then the menu is created
-    And the menu can be found in the menus list starting from today
+    And the menu can be found in the menus list
 
   @Security
   Scenario: Create a menu as super administrator
@@ -132,4 +150,4 @@ Feature: Create a menu for a meal
     And no existing menu for today's lunch
     When he creates a menu from the recipe for 2 covers for today's lunch
     Then the menu is created
-    And the menu can be found in the menus list starting from today
+    And the menu can be found in the menus list

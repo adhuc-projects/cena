@@ -76,7 +76,7 @@ public class MenuListAssumptionsSteps {
         var since = menus.stream().map(MenuValue::date).min(LocalDate::compareTo).get();
         var until = menus.stream().map(MenuValue::date).max(LocalDate::compareTo).get();
 
-        var existingMenus = listClient.fetchMenus(owner);
+        var existingMenus = listClient.fetchMenus(owner, since, until);
         menus.stream().filter(menu -> !existingMenus.contains(menu))
                 .forEach(menu -> {
                     existingMenus.stream().filter(menu::hasSameScheduleAs).findFirst()

@@ -17,6 +17,7 @@ package org.adhuc.cena.menu.steps.menus;
 
 import java.time.LocalDate;
 
+import cucumber.api.Transform;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import cucumber.runtime.java.StepDefAnnotation;
@@ -42,25 +43,25 @@ public class MenuCreationStepDefinitions {
     @Steps
     private MenuCreationSteps menuCreation;
 
-    @When("^he creates a menu from the recipe for (-?\\d+) covers for today's (\\w+)$")
-    public void createMenu(int covers, String mealType) {
+    @When("^he creates a menu from the recipe for (-?\\d+) covers for (.*)'s (\\w+)$")
+    public void createMenu(int covers, @Transform(MenuDateTransformer.class) LocalDate date, String mealType) {
         menuCreation.storeMenu(
-                menuCreation.createMenu(MenuValue.builder().withDate(LocalDate.now()).withMealType(mealType)
+                menuCreation.createMenu(MenuValue.builder().withDate(date).withMealType(mealType)
                         .withCovers(covers).withMainCourseRecipes(recipeList.storedRecipe()).build()));
     }
 
-    @When("^he creates a menu from \"(.*)\" recipe for (-?\\d+) covers for today's (\\w+)$")
-    public void createMenu(String recipeName, int covers, String mealType) {
+    @When("^he creates a menu from \"(.*)\" recipe for (-?\\d+) covers for (.*)'s (\\w+)$")
+    public void createMenu(String recipeName, int covers, @Transform(MenuDateTransformer.class) LocalDate date, String mealType) {
         menuCreation.storeMenu(
-                menuCreation.createMenu(MenuValue.builder().withDate(LocalDate.now()).withMealType(mealType)
+                menuCreation.createMenu(MenuValue.builder().withDate(date).withMealType(mealType)
                         .withCovers(covers).withMainCourseRecipes(recipeList.storedAssumedRecipe(recipeName))
                         .build()));
     }
 
-    @When("^he creates a menu from the recipes for (-?\\d+) covers for today's (\\w+)$")
-    public void createMenuMultipleRecipes(int covers, String mealType) {
+    @When("^he creates a menu from the recipes for (-?\\d+) covers for (.*)'s (\\w+)$")
+    public void createMenuMultipleRecipes(int covers, @Transform(MenuDateTransformer.class) LocalDate date, String mealType) {
         menuCreation.storeMenu(
-                menuCreation.createMenu(MenuValue.builder().withDate(LocalDate.now()).withMealType(mealType)
+                menuCreation.createMenu(MenuValue.builder().withDate(date).withMealType(mealType)
                         .withCovers(covers).withMainCourseRecipes(recipeList.storedAssumedRecipes()).build()));
     }
 

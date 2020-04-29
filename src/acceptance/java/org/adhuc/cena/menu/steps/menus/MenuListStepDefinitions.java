@@ -84,9 +84,9 @@ public class MenuListStepDefinitions {
         menusByOwner.forEach((key, value) -> menuListAssumptions.assumeInMenusListOwnedBy(value, key));
     }
 
-    @Given("^an existing menu from the recipe for today's (.*)$")
-    public void existingMenu(String mealType) {
-        menuListAssumptions.assumeInMenusList(builder().withDate(LocalDate.now()).withMealType(mealType)
+    @Given("^an existing menu from the recipe for (.*)'s (.*)$")
+    public void existingMenu(@Transform(MenuDateTransformer.class) LocalDate date, String mealType) {
+        menuListAssumptions.assumeInMenusList(builder().withDate(date).withMealType(mealType)
                 .withMainCourseRecipes(recipeList.storedRecipe()).build());
     }
 
@@ -101,9 +101,9 @@ public class MenuListStepDefinitions {
         menuListAssumptions.assumeEmptyMenusList(since, until);
     }
 
-    @Given("^no existing menu for today's (.*)$")
-    public void noExistingMenu(String mealType) {
-        menuListAssumptions.assumeNotInMenusList(LocalDate.now(), mealType);
+    @Given("^no existing menu for (.*)'s (.*)$")
+    public void noExistingMenu(@Transform(MenuDateTransformer.class) LocalDate date, String mealType) {
+        menuListAssumptions.assumeNotInMenusList(date, mealType);
     }
 
     @When("^he lists the menus$")
@@ -136,12 +136,12 @@ public class MenuListStepDefinitions {
         menuListAssertions.assertNotInMenusList(menus, menuList.storedMenus(), COMPARATOR);
     }
 
-    @Then("^the menu can be found in the menus list starting from today$")
+    @Then("^the menu can be found in the menus list$")
     public void menuFoundInList() {
         menuListAssertions.assertInMenusList(menuList.storedMenu());
     }
 
-    @Then("^the menu cannot be found in the menus list starting from today$")
+    @Then("^the menu cannot be found in the menus list$")
     public void menuNotFoundInList() {
         menuListAssertions.assertNotInMenusList(menuList.storedMenu());
     }

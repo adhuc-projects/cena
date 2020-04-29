@@ -119,7 +119,8 @@ final class MenuListClientDelegate {
      * @return the menu retrieved from list.
      */
     public Optional<MenuValue> getFromMenusList(LocalDate date, String mealType) {
-        return Optional.ofNullable(getRawMenuList(() -> restClientDelegate.rest())
+        var rawMenuList = date != null ? getRawMenuList(restClientDelegate::rest, date) : getRawMenuList(restClientDelegate::rest);
+        return Optional.ofNullable(rawMenuList
                 .param("date", date != null ? date.toString() : null)
                 .param("mealType", mealType != null ? mealType.toUpperCase() : null)
                 .getObject("_embedded.data.find { menu->menu.date == date && menu.mealType == mealType }", MenuValue.class));
@@ -173,8 +174,23 @@ final class MenuListClientDelegate {
      * path extraction.
      *
      * @param requestSpecificationSupplier the request specification supplier, to call API with specific authenticated user.
-     * @param since the date range lower bound.
-     * @param until the date range upper bound.
+     * @param since                        the date range lower bound.
+     * @return the {@link JsonPath} corresponding to the menus list.
+     */
+    private JsonPath getRawMenuList(Supplier<RequestSpecification> requestSpecificationSupplier, LocalDate since) {
+        var response = requestSpecificationSupplier.get()
+                .param("filter[date][since]", since.toString())
+                .get(menusResourceUrl).then();
+        return statusAssertionDelegate.assertOk(response).extract().jsonPath();
+    }
+
+    /**
+     * Retrieves menus list for a date range. This method factorizes the server call, response status assertion and JSON
+     * path extraction.
+     *
+     * @param requestSpecificationSupplier the request specification supplier, to call API with specific authenticated user.
+     * @param since                        the date range lower bound.
+     * @param until                        the date range upper bound.
      * @return the {@link JsonPath} corresponding to the menus list.
      */
     private JsonPath getRawMenuList(Supplier<RequestSpecification> requestSpecificationSupplier, LocalDate since, LocalDate until) {

@@ -496,6 +496,10 @@ The Menus resources is used to create and list menus.
 
 A `GET` request will list all of the menus for the authenticated user.
 
+==== Request structure
+
+include::{snippets}/menus-list-example/request-parameters.adoc[]
+
 ==== Response structure
 
 include::{snippets}/menus-list-example/response-fields.adoc[]

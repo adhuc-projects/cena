@@ -22,6 +22,8 @@ import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.li
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import static org.adhuc.cena.menu.menus.MenuMother.*;
@@ -84,14 +86,21 @@ class MenusDocumentation {
     @WithAuthenticatedUser
     @DisplayName("generates menus list example")
     void menusListExample() throws Exception {
-        when(menuAppServiceMock.getMenus(MENU_OWNER)).thenReturn(List.of(
+        when(menuAppServiceMock.getMenus(listQuery(MENU_OWNER))).thenReturn(List.of(
                 builder().withOwnerName(MENU_OWNER_NAME).withDate(TODAY_LUNCH_DATE).withMealType(TODAY_LUNCH_MEAL_TYPE)
                         .withCovers(TODAY_LUNCH_COVERS).withMainCourseRecipes(TODAY_LUNCH_MAIN_COURSE_RECIPES).build(),
                 builder().withOwnerName(MENU_OWNER_NAME).withDate(TOMORROW_DINNER_DATE).withMealType(TOMORROW_DINNER_MEAL_TYPE)
                         .withCovers(TOMORROW_DINNER_COVERS).withMainCourseRecipes(TOMORROW_DINNER_MAIN_COURSE_RECIPES).build()));
 
-        mvc.perform(get(MENUS_API_URL)).andExpect(status().isOk())
+        mvc.perform(get(MENUS_API_URL)
+                .queryParam("filter[date][since]", LocalDate.now().toString())
+                .queryParam("filter[date][until]", LocalDate.now().plusDays(6).toString()))
+                .andExpect(status().isOk())
                 .andDo(documentationHandler.document(
+                        requestParameters(parameterWithName("filter[date][since]").optional()
+                                        .description("The inclusive lower bound date to filter menus on. This date defaults to today _(optional)_"),
+                                parameterWithName("filter[date][until]").optional()
+                                        .description("The inclusive upper bound date to filter menus on. This date defaults to lower bound + 6 days _(optional)_")),
                         links(linkWithRel("self").description("This <<resources-menus,menus list>>")),
                         responseFields(
                                 subsectionWithPath("_embedded.data")

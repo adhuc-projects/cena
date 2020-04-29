@@ -15,14 +15,26 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.menus;
 
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+import static org.adhuc.cena.menu.menus.DateRange.builder;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
-import javax.validation.Valid;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import javax.validation.*;
+import javax.validation.constraintvalidation.SupportedValidationTarget;
+import javax.validation.constraintvalidation.ValidationTarget;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,8 +46,10 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import org.adhuc.cena.menu.menus.ListMenus;
 import org.adhuc.cena.menu.menus.MenuAppService;
 import org.adhuc.cena.menu.menus.MenuOwner;
+import org.adhuc.cena.menu.port.adapter.rest.support.Date;
 
 /**
  * A REST controller exposing /api/menus resource.
@@ -52,6 +66,11 @@ import org.adhuc.cena.menu.menus.MenuOwner;
 @RequestMapping(path = "/api/menus", produces = {HAL_JSON_VALUE, APPLICATION_JSON_VALUE})
 public class MenusController {
 
+    private static final String SINCE_PARAM = "filter[date][since]";
+    private static final String UNTIL_PARAM = "filter[date][until]";
+    private static final int SINCE_PARAM_INDEX = 0;
+    private static final int UNTIL_PARAM_INDEX = 1;
+
     private final EntityLinks links;
     private final MenuAppService menuAppService;
     private final MenuModelAssembler modelAssembler;
@@ -61,8 +80,11 @@ public class MenusController {
      */
     @GetMapping
     @ResponseStatus(OK)
-    CollectionModel<MenuModel> getMenus(Principal principal) {
-        var menus = menuAppService.getMenus(new MenuOwner(principal.getName()));
+    @DateRange
+    CollectionModel<MenuModel> getMenus(@RequestParam(name = SINCE_PARAM, required = false) @Date(propertyName = SINCE_PARAM) String since,
+                                        @RequestParam(name = UNTIL_PARAM, required = false) @Date(propertyName = UNTIL_PARAM) String until,
+                                        Principal principal) {
+        var menus = menuAppService.getMenus(new ListMenus(new MenuOwner(principal.getName()), parseDateRange(since, until)));
         return modelAssembler.toCollectionModel(menus);
     }
 
@@ -74,6 +96,56 @@ public class MenusController {
         menuAppService.createMenu(request.toCommand(principal.getName()));
         return ResponseEntity.created(new URI(links.linkToItemResource(MenuModel.class,
                 String.format("%s-%s", request.getDate(), request.getMealType())).getHref())).build();
+    }
+
+    private static org.adhuc.cena.menu.menus.DateRange parseDateRange(String since, String until) {
+        return parseDateRange(
+                since != null ? LocalDate.parse(since) : null,
+                until != null ? LocalDate.parse(until) : null);
+    }
+
+    private static org.adhuc.cena.menu.menus.DateRange parseDateRange(LocalDate since, LocalDate until) {
+        var builder = builder();
+        if (since != null) builder = builder.withSince(since);
+        if (until != null) builder = builder.withUntil(until);
+        return builder.build();
+    }
+
+    @Documented
+    @Target({METHOD})
+    @Retention(RUNTIME)
+    @Constraint(validatedBy = DateRange.DateRangeConstraintValidator.class)
+    @interface DateRange {
+
+        String message() default "{menus.ListMenus.DateRange.message}";
+
+        Class<?>[] groups() default {};
+
+        Class<? extends Payload>[] payload() default {};
+
+        @SupportedValidationTarget(ValidationTarget.PARAMETERS)
+        class DateRangeConstraintValidator implements ConstraintValidator<DateRange, Object[]> {
+            @Override
+            public boolean isValid(Object[] parameters, ConstraintValidatorContext context) {
+                var since = parseDate(parameters[SINCE_PARAM_INDEX]);
+                var until = parseDate(parameters[UNTIL_PARAM_INDEX]);
+                try {
+                    parseDateRange(since, until);
+                    return true;
+                } catch (IllegalArgumentException e) {
+                    return false;
+                }
+            }
+
+            private LocalDate parseDate(Object parameter) {
+                try {
+                    return LocalDate.parse((String) parameter);
+                } catch (NullPointerException | DateTimeParseException e) {
+                    return null;
+                }
+            }
+        }
+
     }
 
 }

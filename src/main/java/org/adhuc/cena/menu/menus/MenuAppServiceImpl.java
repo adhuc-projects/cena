@@ -43,8 +43,8 @@ class MenuAppServiceImpl implements MenuAppService {
 
     @Override
     @AsAuthenticatedUser
-    public List<Menu> getMenus(@NonNull MenuOwner owner) {
-        return List.copyOf(repository.findByOwner(owner));
+    public List<Menu> getMenus(@NonNull ListMenus query) {
+        return List.copyOf(repository.findByOwnerAndDateBetween(query.owner(), query.since(), query.until()));
     }
 
     @Override

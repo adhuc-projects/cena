@@ -15,6 +15,8 @@
  */
 package org.adhuc.cena.menu.port.adapter.persistence.memory;
 
+import static java.time.LocalDate.now;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -46,9 +48,27 @@ class InMemoryMenuRepositoryShould {
     }
 
     @Test
-    @DisplayName("throw IllegalArgumentException when finding menu by null owner")
+    @DisplayName("throw IllegalArgumentException when finding menus by null owner")
     void throwIAEFindByNullOwner() {
         assertThrows(IllegalArgumentException.class, () -> repository.findByOwner(null));
+    }
+
+    @Test
+    @DisplayName("throw IllegalArgumentException when finding menus by owner between date range with null owner")
+    void throwIAEFindByOwnerBetweenNullOwner() {
+        assertThrows(IllegalArgumentException.class, () -> repository.findByOwnerAndDateBetween(null, now(), now().plusDays(1)));
+    }
+
+    @Test
+    @DisplayName("throw IllegalArgumentException when finding menus by owner between date range with null lower bound")
+    void throwIAEFindByOwnerBetweenNullSince() {
+        assertThrows(IllegalArgumentException.class, () -> repository.findByOwnerAndDateBetween(OWNER, null, now().plusDays(1)));
+    }
+
+    @Test
+    @DisplayName("throw IllegalArgumentException when finding menus by owner between date range with null upper bound")
+    void throwIAEFindByOwnerBetweenNullUntil() {
+        assertThrows(IllegalArgumentException.class, () -> repository.findByOwnerAndDateBetween(OWNER, now(), null));
     }
 
     @Test
@@ -93,6 +113,12 @@ class InMemoryMenuRepositoryShould {
             assertThat(repository.findByOwner(OWNER)).isEmpty();
         }
 
+        @Test
+        @DisplayName("return empty collection when finding menus for owner between date range")
+        void returnEmptyCollectionForOwnerAndDateBetween() {
+            assertThat(repository.findByOwnerAndDateBetween(OWNER, now(), now().plusDays(6))).isEmpty();
+        }
+
         @Nested
         @DisplayName("with today's lunch")
         class WithTodayLunch {
@@ -106,10 +132,49 @@ class InMemoryMenuRepositoryShould {
             }
 
             @Test
-            @DisplayName("return a collection containing today's lunch")
-            void returnCollectionContainingTodayLunch() {
+            @DisplayName("return a collection for owner containing today's lunch")
+            void returnCollectionForOwnerContainingTodayLunch() {
                 assertThat(repository.findByOwner(OWNER)).usingFieldByFieldElementComparator()
                         .containsExactly(todayLunch);
+            }
+
+            @Test
+            @DisplayName("return a collection for owner within the week starting today containing today's lunch")
+            void returnCollectionForOwnerAndDateBetweenWeekStartingTodayContainingTodayLunch() {
+                assertThat(repository.findByOwnerAndDateBetween(OWNER, now(), now().plusDays(6)))
+                        .usingFieldByFieldElementComparator().containsExactly(todayLunch);
+            }
+
+            @Test
+            @DisplayName("return a collection for owner for today containing today's lunch")
+            void returnCollectionForOwnerAndDateBetweenTodayContainingTodayLunch() {
+                assertThat(repository.findByOwnerAndDateBetween(OWNER, now(), now()))
+                        .usingFieldByFieldElementComparator().containsExactly(todayLunch);
+            }
+
+            @Test
+            @DisplayName("return empty collection for owner within the week starting tomorrow")
+            void returnEmptyCollectionForOwnerAndDateBetweenWeekStartingTomorrow() {
+                assertThat(repository.findByOwnerAndDateBetween(OWNER, now().plusDays(1), now().plusDays(7))).isEmpty();
+            }
+
+            @Test
+            @DisplayName("return empty collection for owner within the week ending yesterday")
+            void returnEmptyCollectionForOwnerAndDateBetweenWeekEndingYesterday() {
+                assertThat(repository.findByOwnerAndDateBetween(OWNER, now().minusDays(7), now().minusDays(1))).isEmpty();
+            }
+
+            @Test
+            @DisplayName("return empty collection for owner and date with upper bound lower than lower bound")
+            void returnEmptyCollectionForOwnerAndDateWithUntilLowerThanSince() {
+                assertThat(repository.findByOwnerAndDateBetween(OWNER, now().plusDays(1), now())).isEmpty();
+            }
+
+            @Test
+            @DisplayName("return a collection for owner within the week ending today containing today's lunch")
+            void returnCollectionForOwnerAndDateBetweenWeekEndingTodayContainingTodayLunch() {
+                assertThat(repository.findByOwnerAndDateBetween(OWNER, now().minusDays(6), now()))
+                        .usingFieldByFieldElementComparator().containsExactly(todayLunch);
             }
 
             @Test

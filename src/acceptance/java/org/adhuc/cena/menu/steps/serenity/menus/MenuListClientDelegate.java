@@ -55,6 +55,17 @@ final class MenuListClientDelegate {
     }
 
     /**
+     * Fetches the menus owned by the currently authenticated user for the specified date range from server.
+     *
+     * @param since the date range lower bound.
+     * @param until the date range upper bound.
+     * @return the fetched menus.
+     */
+    public List<MenuValue> fetchMenus(LocalDate since, LocalDate until) {
+        return fetchMenus(restClientDelegate::rest, since, until);
+    }
+
+    /**
      * Fetches the menus owned by the specified owner from server.
      *
      * @param owner the authentication type corresponding to the menu owner.
@@ -64,8 +75,24 @@ final class MenuListClientDelegate {
         return fetchMenus(() -> restClientDelegate.rest(owner));
     }
 
+    /**
+     * Fetches the menus owned by the specified owner for the specified date range from server.
+     *
+     * @param owner the authentication type corresponding to the menu owner.
+     * @param since the date range lower bound.
+     * @param until the date range upper bound.
+     * @return the fetched menus.
+     */
+    public List<MenuValue> fetchMenus(AuthenticationType owner, LocalDate since, LocalDate until) {
+        return fetchMenus(() -> restClientDelegate.rest(owner), since, until);
+    }
+
     private List<MenuValue> fetchMenus(Supplier<RequestSpecification> requestSpecificationSupplier) {
         return getRawMenuList(requestSpecificationSupplier).getList("_embedded.data", MenuValue.class);
+    }
+
+    private List<MenuValue> fetchMenus(Supplier<RequestSpecification> requestSpecificationSupplier, LocalDate since, LocalDate until) {
+        return getRawMenuList(requestSpecificationSupplier, since, until).getList("_embedded.data", MenuValue.class);
     }
 
     /**
@@ -138,6 +165,23 @@ final class MenuListClientDelegate {
      */
     private JsonPath getRawMenuList(Supplier<RequestSpecification> requestSpecificationSupplier) {
         var response = requestSpecificationSupplier.get().get(menusResourceUrl).then();
+        return statusAssertionDelegate.assertOk(response).extract().jsonPath();
+    }
+
+    /**
+     * Retrieves menus list for a date range. This method factorizes the server call, response status assertion and JSON
+     * path extraction.
+     *
+     * @param requestSpecificationSupplier the request specification supplier, to call API with specific authenticated user.
+     * @param since the date range lower bound.
+     * @param until the date range upper bound.
+     * @return the {@link JsonPath} corresponding to the menus list.
+     */
+    private JsonPath getRawMenuList(Supplier<RequestSpecification> requestSpecificationSupplier, LocalDate since, LocalDate until) {
+        var response = requestSpecificationSupplier.get()
+                .param("filter[date][since]", since.toString())
+                .param("filter[date][until]", until.toString())
+                .get(menusResourceUrl).then();
         return statusAssertionDelegate.assertOk(response).extract().jsonPath();
     }
 

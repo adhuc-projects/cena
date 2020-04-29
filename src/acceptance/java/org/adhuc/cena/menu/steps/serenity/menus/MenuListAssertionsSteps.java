@@ -19,6 +19,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.adhuc.cena.menu.steps.serenity.menus.MenuValue.COMPARATOR;
 
+import java.util.Collection;
+import java.util.Comparator;
+
 import net.thucydides.core.annotations.Step;
 
 import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
@@ -36,14 +39,29 @@ public class MenuListAssertionsSteps {
     private final MenuListClientDelegate listClient = new MenuListClientDelegate(
             resourceUrlResolverDelegate.menusResourceUrl());
 
+    @Step("Assert empty menus list {0}")
+    public void assertEmptyMenusList(Collection<MenuValue> menus) {
+        assertThat(menus).isEmpty();
+    }
+
     @Step("Assert menu {0} is in menus list")
     public void assertInMenusList(MenuValue menu) {
         assertThat(listClient.getFromMenusList(menu)).isPresent().get().usingComparator(COMPARATOR).isEqualTo(menu);
     }
 
+    @Step("Assert menus {0} are in menus list {1}")
+    public void assertInMenusList(Collection<MenuValue> expected, Collection<MenuValue> actual, Comparator<MenuValue> comparator) {
+        assertThat(actual).usingElementComparator(comparator).containsAll(expected);
+    }
+
     @Step("Assert menu {0} is not in menus list")
     public void assertNotInMenusList(MenuValue menu) {
         assertThat(listClient.getFromMenusList(menu)).isNotPresent();
+    }
+
+    @Step("Assert menus {0} are not in menus list {1}")
+    public void assertNotInMenusList(Collection<MenuValue> expected, Collection<MenuValue> actual, Comparator<MenuValue> comparator) {
+        assertThat(actual).usingElementComparator(comparator).doesNotContainAnyElementsOf(expected);
     }
 
 }

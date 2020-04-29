@@ -15,6 +15,7 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.menus;
 
+import static java.time.LocalDate.now;
 import static java.util.stream.Collectors.toList;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,14 +28,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_XML;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import static org.adhuc.cena.menu.menus.DateRange.*;
 import static org.adhuc.cena.menu.menus.MenuMother.*;
 import static org.adhuc.cena.menu.support.UserProvider.AUTHENTICATED_USER;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -53,7 +53,10 @@ import org.adhuc.cena.menu.common.AlreadyExistingEntityException;
 import org.adhuc.cena.menu.menus.*;
 import org.adhuc.cena.menu.recipes.RecipeId;
 import org.adhuc.cena.menu.recipes.RecipeMother;
-import org.adhuc.cena.menu.support.*;
+import org.adhuc.cena.menu.support.WithAuthenticatedUser;
+import org.adhuc.cena.menu.support.WithCommunityUser;
+import org.adhuc.cena.menu.support.WithIngredientManager;
+import org.adhuc.cena.menu.support.WithSuperAdministrator;
 
 /**
  * The {@link MenusController} test class.
@@ -85,6 +88,93 @@ class MenusControllerShould {
                 .andExpect(status().isUnauthorized());
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"invalid", "01-01-2020", "2020/01/01", "2020-02-30"})
+    @WithAuthenticatedUser
+    @DisplayName("respond Bad Request when listing menus with invalid since date")
+    void respond400OnListWithInvalidSince(String value) throws Exception {
+        mvc.perform(get(MENUS_API_URL).queryParam("filter[date][since]", value))
+                .andExpect(status().isBadRequest());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"invalid", "01-01-2020", "2020/01/01", "2020-02-30"})
+    @WithAuthenticatedUser
+    @DisplayName("respond Bad Request when listing menus with invalid until date")
+    void respond400OnListWithInvalidUntil(String value) throws Exception {
+        mvc.perform(get(MENUS_API_URL).queryParam("filter[date][until]", value))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("respond Bad Request when listing menus with until date lower than since date")
+    void respond400OnListWithUntilLowerThanSince() throws Exception {
+        mvc.perform(get(MENUS_API_URL).queryParam("filter[date][until]", now().minusDays(1).toString()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("call application service when listing menus with no date range")
+    void callServiceOnListWithNoDateRange() throws Exception {
+        var commandCaptor = ArgumentCaptor.forClass(ListMenus.class);
+        var expectedQuery = new ListMenus(MENU_OWNER, defaultRange());
+
+        mvc.perform(get(MENUS_API_URL)).andExpect(status().isOk());
+
+        verify(menuAppServiceMock).getMenus(commandCaptor.capture());
+        assertThat(commandCaptor.getValue()).isEqualTo(expectedQuery);
+    }
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("call application service when listing menus with since date")
+    void callServiceOnListWithSince() throws Exception {
+        var since = now().plusDays(1);
+        var commandCaptor = ArgumentCaptor.forClass(ListMenus.class);
+        var expectedQuery = new ListMenus(MENU_OWNER, since(since));
+
+        mvc.perform(get(MENUS_API_URL).queryParam("filter[date][since]", since.toString()))
+                .andExpect(status().isOk());
+
+        verify(menuAppServiceMock).getMenus(commandCaptor.capture());
+        assertThat(commandCaptor.getValue()).isEqualTo(expectedQuery);
+    }
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("call application service when listing menus with until date")
+    void callServiceOnListWithUntil() throws Exception {
+        var until = now().plusDays(1);
+        var commandCaptor = ArgumentCaptor.forClass(ListMenus.class);
+        var expectedQuery = new ListMenus(MENU_OWNER, until(until));
+
+        mvc.perform(get(MENUS_API_URL).queryParam("filter[date][until]", until.toString()))
+                .andExpect(status().isOk());
+
+        verify(menuAppServiceMock).getMenus(commandCaptor.capture());
+        assertThat(commandCaptor.getValue()).isEqualTo(expectedQuery);
+    }
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("call application service when listing menus with date range")
+    void callServiceOnListWithDateRange() throws Exception {
+        var since = now().plusDays(1);
+        var until = now().plusDays(2);
+        var commandCaptor = ArgumentCaptor.forClass(ListMenus.class);
+        var expectedQuery = new ListMenus(MENU_OWNER, range(since, until));
+
+        mvc.perform(get(MENUS_API_URL)
+                .queryParam("filter[date][since]", since.toString())
+                .queryParam("filter[date][until]", until.toString()))
+                .andExpect(status().isOk());
+
+        verify(menuAppServiceMock).getMenus(commandCaptor.capture());
+        assertThat(commandCaptor.getValue()).isEqualTo(expectedQuery);
+    }
+
     @Nested
     @DisplayName("with 2 menus")
     class With2Menus {
@@ -94,11 +184,11 @@ class MenusControllerShould {
         @BeforeEach
         void setUp() {
             menus = List.of(
-                    builder().withOwnerName(MENU_OWNER_NAME).withDate(TODAY_LUNCH_DATE).withMealType(TODAY_LUNCH_MEAL_TYPE)
+                    MenuMother.builder().withOwnerName(MENU_OWNER_NAME).withDate(TODAY_LUNCH_DATE).withMealType(TODAY_LUNCH_MEAL_TYPE)
                             .withCovers(TODAY_LUNCH_COVERS).withMainCourseRecipes(TODAY_LUNCH_MAIN_COURSE_RECIPES).build(),
-                    builder().withOwnerName(MENU_OWNER_NAME).withDate(TOMORROW_DINNER_DATE).withMealType(TOMORROW_DINNER_MEAL_TYPE)
-                    .withCovers(TOMORROW_DINNER_COVERS).withMainCourseRecipes(TOMORROW_DINNER_MAIN_COURSE_RECIPES).build());
-            when(menuAppServiceMock.getMenus(MENU_OWNER)).thenReturn(menus);
+                    MenuMother.builder().withOwnerName(MENU_OWNER_NAME).withDate(TOMORROW_DINNER_DATE).withMealType(TOMORROW_DINNER_MEAL_TYPE)
+                            .withCovers(TOMORROW_DINNER_COVERS).withMainCourseRecipes(TOMORROW_DINNER_MAIN_COURSE_RECIPES).build());
+            when(menuAppServiceMock.getMenus(listQuery(MENU_OWNER))).thenReturn(menus);
         }
 
         @Test
@@ -152,7 +242,7 @@ class MenusControllerShould {
     class WithEmptyList {
         @BeforeEach
         void setUp() {
-            when(menuAppServiceMock.getMenus(MENU_OWNER)).thenReturn(List.of());
+            when(menuAppServiceMock.getMenus(listQuery(MENU_OWNER))).thenReturn(List.of());
         }
 
         @Test
@@ -172,7 +262,7 @@ class MenusControllerShould {
         mvc.perform(post(MENUS_API_URL)
                 .contentType(HAL_JSON)
                 .content(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"covers\":2,\"mainCourseRecipes\":[\"%s\"]}",
-                        LocalDate.now(), RecipeMother.ID))
+                        now(), RecipeMother.ID))
         ).andExpect(status().isUnauthorized());
     }
 
@@ -223,7 +313,7 @@ class MenusControllerShould {
     void respond400OnCreationWithoutMealType() throws Exception {
         mvc.perform(post(MENUS_API_URL)
                 .contentType(APPLICATION_JSON)
-                .content(String.format("{\"date\":\"%s\",\"covers\":2,\"mainCourseRecipes\":[\"%s\"]}", LocalDate.now(), RecipeMother.ID))
+                .content(String.format("{\"date\":\"%s\",\"covers\":2,\"mainCourseRecipes\":[\"%s\"]}", now(), RecipeMother.ID))
         ).andExpect(status().isBadRequest())
                 .andExpect(jsonPath("details").isArray())
                 .andExpect(jsonPath("details", hasSize(1)))
@@ -237,7 +327,7 @@ class MenusControllerShould {
         mvc.perform(post(MENUS_API_URL)
                 .contentType(APPLICATION_JSON)
                 .content(String.format("{\"date\":\"%s\",\"mealType\":\"UNKNOWN\",\"covers\":2,\"mainCourseRecipes\":[\"%s\"]}",
-                        LocalDate.now(), RecipeMother.ID))
+                        now(), RecipeMother.ID))
         ).andExpect(status().isBadRequest());
     }
 
@@ -248,7 +338,7 @@ class MenusControllerShould {
         mvc.perform(post(MENUS_API_URL)
                 .contentType(APPLICATION_JSON)
                 .content(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"mainCourseRecipes\":[\"%s\"]}",
-                        LocalDate.now(), RecipeMother.ID))
+                        now(), RecipeMother.ID))
         ).andExpect(status().isBadRequest())
                 .andExpect(jsonPath("details").isArray())
                 .andExpect(jsonPath("details", hasSize(1)))
@@ -263,7 +353,7 @@ class MenusControllerShould {
         mvc.perform(post(MENUS_API_URL)
                 .contentType(APPLICATION_JSON)
                 .content(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"covers\":%d,\"mainCourseRecipes\":[\"%s\"]}",
-                        LocalDate.now(), covers, RecipeMother.ID))
+                        now(), covers, RecipeMother.ID))
         ).andExpect(status().isBadRequest())
                 .andExpect(jsonPath("details").isArray())
                 .andExpect(jsonPath("details", hasSize(1)))
@@ -277,7 +367,7 @@ class MenusControllerShould {
     void respond400OnCreationWithoutMainCourseRecipes() throws Exception {
         mvc.perform(post(MENUS_API_URL)
                 .contentType(APPLICATION_JSON)
-                .content(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"covers\":2}", LocalDate.now()))
+                .content(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"covers\":2}", now()))
         ).andExpect(status().isBadRequest())
                 .andExpect(jsonPath("details").isArray())
                 .andExpect(jsonPath("details", hasSize(1)))
@@ -290,7 +380,7 @@ class MenusControllerShould {
     void respond400OnCreationWithEmptyMainCourseRecipes() throws Exception {
         mvc.perform(post(MENUS_API_URL)
                 .contentType(APPLICATION_JSON)
-                .content(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"covers\":2,\"mainCourseRecipes\":[]}", LocalDate.now()))
+                .content(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"covers\":2,\"mainCourseRecipes\":[]}", now()))
         ).andExpect(status().isBadRequest())
                 .andExpect(jsonPath("details").isArray())
                 .andExpect(jsonPath("details", hasSize(1)))
@@ -303,7 +393,7 @@ class MenusControllerShould {
     void respond400OnCreationWithInvalidMainCourseRecipes() throws Exception {
         mvc.perform(post(MENUS_API_URL)
                 .contentType(APPLICATION_JSON)
-                .content(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"covers\":2,\"mainCourseRecipes\":[\"invalid\"]}", LocalDate.now()))
+                .content(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"covers\":2,\"mainCourseRecipes\":[\"invalid\"]}", now()))
         ).andExpect(status().isBadRequest());
     }
 
@@ -315,7 +405,7 @@ class MenusControllerShould {
         mvc.perform(post(MENUS_API_URL)
                 .contentType(APPLICATION_JSON)
                 .content(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"covers\":2,\"mainCourseRecipes\":[\"%s\"]}",
-                        LocalDate.now(), RecipeMother.ID))
+                        now(), RecipeMother.ID))
         ).andExpect(status().isConflict());
     }
 
@@ -326,7 +416,7 @@ class MenusControllerShould {
         mvc.perform(post(MENUS_API_URL)
                 .contentType(APPLICATION_JSON)
                 .content(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"covers\":2,\"mainCourseRecipes\":[\"%s\"]}",
-                        LocalDate.now(), RecipeMother.ID))
+                        now(), RecipeMother.ID))
         ).andExpect(status().isCreated());
     }
 
@@ -337,7 +427,7 @@ class MenusControllerShould {
         mvc.perform(post(MENUS_API_URL)
                 .contentType(HAL_JSON)
                 .content(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"covers\":2,\"mainCourseRecipes\":[\"%s\"]}",
-                        LocalDate.now(), RecipeMother.ID))
+                        now(), RecipeMother.ID))
         ).andExpect(status().isCreated());
     }
 
@@ -348,9 +438,9 @@ class MenusControllerShould {
         mvc.perform(post(MENUS_API_URL)
                 .contentType(HAL_JSON)
                 .content(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"covers\":2,\"mainCourseRecipes\":[\"%s\"]}",
-                        LocalDate.now(), RecipeMother.ID))
+                        now(), RecipeMother.ID))
         ).andExpect(header().exists(LOCATION))
-                .andExpect(header().string(LOCATION, String.format("http://localhost/api/menus/%s-LUNCH", LocalDate.now())));
+                .andExpect(header().string(LOCATION, String.format("http://localhost/api/menus/%s-LUNCH", now())));
     }
 
     @Test
@@ -358,12 +448,12 @@ class MenusControllerShould {
     @DisplayName("call application service when creating menu")
     void callServiceOnCreation() throws Exception {
         var commandCaptor = ArgumentCaptor.forClass(CreateMenu.class);
-        var expectedCommand = createCommand(builder().withOwnerName(MENU_OWNER_NAME).build());
+        var expectedCommand = createCommand(MenuMother.builder().withOwnerName(MENU_OWNER_NAME).build());
 
         mvc.perform(post(MENUS_API_URL)
                 .contentType(HAL_JSON)
                 .content(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"covers\":2,\"mainCourseRecipes\":[\"%s\"]}",
-                        LocalDate.now(), RecipeMother.ID))
+                        now(), RecipeMother.ID))
         ).andExpect(status().isCreated());
 
         verify(menuAppServiceMock).createMenu(commandCaptor.capture());
@@ -377,7 +467,7 @@ class MenusControllerShould {
         mvc.perform(post(MENUS_API_URL)
                 .contentType(HAL_JSON)
                 .content(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"covers\":2,\"mainCourseRecipes\":[\"%s\"]}",
-                        LocalDate.now(), RecipeMother.ID))
+                        now(), RecipeMother.ID))
         ).andExpect(status().isCreated());
     }
 
@@ -388,7 +478,7 @@ class MenusControllerShould {
         mvc.perform(post(MENUS_API_URL)
                 .contentType(HAL_JSON)
                 .content(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"covers\":2,\"mainCourseRecipes\":[\"%s\"]}",
-                        LocalDate.now(), RecipeMother.ID))
+                        now(), RecipeMother.ID))
         ).andExpect(status().isCreated());
     }
 

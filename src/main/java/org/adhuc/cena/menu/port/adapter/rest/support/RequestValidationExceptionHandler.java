@@ -118,7 +118,7 @@ class RequestValidationExceptionHandler extends ResponseEntityExceptionHandler {
         static final Function<ViolatedElement, String> WITH_NAME_AND_NULL_VALUE =
                 v -> String.format("Invalid %s '%s': %s. Actual value is <null>", v.type, v.name, v.violation);
         static final Function<ViolatedElement, String> REQUEST_VIOLATION =
-                v -> String.format("Invalid %s : %s", v.type, v.violation);
+                v -> String.format("Invalid %s: %s", v.type, v.violation);
 
         @NonNull
         private ViolatedElementType type;
@@ -138,7 +138,8 @@ class RequestValidationExceptionHandler extends ResponseEntityExceptionHandler {
     private enum ViolatedElementType {
         REQUEST_PROPERTY(ElementKind.PROPERTY, "request body property", ViolatedElement.WITH_NAME_AND_VALUE, ViolatedElement.WITH_NAME_AND_NULL_VALUE),
         REQUEST_BODY(ElementKind.BEAN, "request", ViolatedElement.REQUEST_VIOLATION, ViolatedElement.REQUEST_VIOLATION),
-        QUERY_PARAMETER(ElementKind.PARAMETER, "query parameter", ViolatedElement.WITH_NAME_AND_VALUE, ViolatedElement.WITH_NAME_AND_NULL_VALUE);
+        QUERY_PARAMETER(ElementKind.PARAMETER, "query parameter", ViolatedElement.WITH_NAME_AND_VALUE, ViolatedElement.WITH_NAME_AND_NULL_VALUE),
+        CROSS_PARAMETER(ElementKind.CROSS_PARAMETER, "query parameters", ViolatedElement.REQUEST_VIOLATION, ViolatedElement.REQUEST_VIOLATION);
 
         private ElementKind kind;
         private String name;

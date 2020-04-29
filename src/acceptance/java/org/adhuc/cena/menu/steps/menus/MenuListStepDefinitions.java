@@ -15,15 +15,24 @@
  */
 package org.adhuc.cena.menu.steps.menus;
 
+import static java.util.stream.Collectors.toList;
+
+import static org.adhuc.cena.menu.steps.serenity.menus.MenuValue.COMPARATOR;
 import static org.adhuc.cena.menu.steps.serenity.menus.MenuValue.builder;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 import cucumber.runtime.java.StepDefAnnotation;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.authentication.AuthenticationTypeTransformer;
@@ -64,15 +73,15 @@ public class MenuListStepDefinitions {
 
     @Given("^the following existing menus$")
     public void existingMenus(DataTable dataTable) {
-        dataTable.asMaps(String.class, String.class).stream()
-                .map(attributes -> new OwnedMenu(authenticationTypes.transform(attributes.get(OWNER_ATTRIBUTE)),
-                        builder()
-                        .withDate(menuDateTransformer.transform(attributes.get(DATE_ATTRIBUTE)))
-                        .withMealType(attributes.get(MEAL_TYPE_ATTRIBUTE))
-                        .withCovers(Integer.parseInt(attributes.get(COVERS_ATTRIBUTE)))
-                        .withMainCourseRecipes(recipeList.storedAssumedRecipe(attributes.get(MAIN_COURSE_RECIPES_ATTRIBUTE)))
-                        .build()))
-                .forEach(ownedMenu -> menuListAssumptions.assumeInMenusListOwnedBy(ownedMenu.menu, ownedMenu.owner));
+        var menusByOwner = new HashMap<AuthenticationType, List<MenuValue>>();
+        transformToOwnedMenus(dataTable).forEach(ownedMenu -> {
+            if (!menusByOwner.containsKey(ownedMenu.owner)) {
+                menusByOwner.put(ownedMenu.owner, new ArrayList<>());
+            }
+            menusByOwner.get(ownedMenu.owner).add(ownedMenu.menu);
+        });
+        menusByOwner.entrySet().stream().forEach(menusForOwner ->
+                menuListAssumptions.assumeInMenusListOwnedBy(menusForOwner.getValue(), menusForOwner.getKey()));
     }
 
     @Given("^an existing menu from the recipe for today's (.*)$")
@@ -81,9 +90,39 @@ public class MenuListStepDefinitions {
                 .withMainCourseRecipes(recipeList.storedRecipe()).build());
     }
 
+    @Given("^no existing menu$")
+    public void noExistingMenu() {
+        menuListAssumptions.assumeEmptyMenusList();
+    }
+
     @Given("^no existing menu for today's (.*)$")
     public void noExistingMenu(String mealType) {
         menuListAssumptions.assumeNotInMenusList(LocalDate.now(), mealType);
+    }
+
+    @When("^he lists the menus$")
+    public void listMenus() {
+        var menus = menuList.getMenus();
+        menuList.storeMenus(menus);
+    }
+
+    @Then("^the menus list is empty$")
+    public void emptyMenuList() {
+        menuListAssertions.assertEmptyMenusList(menuList.storedMenus());
+    }
+
+    @Then("^the menus list contains the following menus$")
+    public void followingMenusFoundInList(DataTable dataTable) {
+        var menus = transformToOwnedMenus(dataTable)
+                .stream().map(OwnedMenu::menu).collect(toList());
+        menuListAssertions.assertInMenusList(menus, menuList.storedMenus(), COMPARATOR);
+    }
+
+    @Then("^the menus list does not contain the following menus$")
+    public void followingMenusNotFoundInList(DataTable dataTable) {
+        var menus = transformToOwnedMenus(dataTable)
+                .stream().map(OwnedMenu::menu).collect(toList());
+        menuListAssertions.assertNotInMenusList(menus, menuList.storedMenus(), COMPARATOR);
     }
 
     @Then("^the menu can be found in the menus list starting from today$")
@@ -96,7 +135,21 @@ public class MenuListStepDefinitions {
         menuListAssertions.assertNotInMenusList(menuList.storedMenu());
     }
 
+    private List<OwnedMenu> transformToOwnedMenus(DataTable dataTable) {
+        return dataTable.asMaps(String.class, String.class).stream()
+                .map(attributes -> new OwnedMenu(authenticationTypes.transform(attributes.get(OWNER_ATTRIBUTE)),
+                        builder()
+                                .withDate(menuDateTransformer.transform(attributes.get(DATE_ATTRIBUTE)))
+                                .withMealType(attributes.get(MEAL_TYPE_ATTRIBUTE))
+                                .withCovers(Integer.parseInt(attributes.get(COVERS_ATTRIBUTE)))
+                                .withMainCourseRecipes(recipeList.storedAssumedRecipe(attributes.get(MAIN_COURSE_RECIPES_ATTRIBUTE)))
+                                .build()))
+                .collect(toList());
+    }
+
     @RequiredArgsConstructor
+    @Getter
+    @Accessors(fluent = true)
     private static final class OwnedMenu {
         private final AuthenticationType owner;
         private final MenuValue menu;

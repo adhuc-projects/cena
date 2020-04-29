@@ -17,8 +17,8 @@ package org.adhuc.cena.menu.port.adapter.rest.menus;
 
 import static io.restassured.RestAssured.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import static org.adhuc.cena.menu.common.ExceptionCode.INVALID_REQUEST;
@@ -80,6 +80,164 @@ class MenusValidationTests {
         RestAssured.port = port;
         menuRepository.deleteAll();
         recipeRepository.save(recipe());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"invalid", "01-01-2020", "2020/01/01", "2020-02-30"})
+    @DisplayName("respond Bad Request with validation error on menus list retrieval when request defines a since date query parameter with invalid value")
+    void respond400OnListInvalidSinceDateQueryParam(String value) {
+        var error = given()
+                .log().all()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                        properties.getSecurity().getUser().getPassword())
+                .queryParam("filter[date][since]", value)
+                .when()
+                .get(MENUS_API_URL)
+                .then()
+                .statusCode(BAD_REQUEST.value())
+                .extract().jsonPath().getObject("", Error.class);
+        assertThat(error)
+                .hasCode(INVALID_REQUEST)
+                .hasMessage("Validation error")
+                .detailsContainsExactly("Invalid query parameter 'filter[date][since]': must be a valid date in 'yyyy-MM-dd' format. Actual value is '" + value + "'");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"invalid", "01-01-2020", "2020/01/01", "2020-02-30"})
+    @DisplayName("respond Bad Request with validation error on menus list retrieval when request defines a until date query parameter with invalid value")
+    void respond400OnListInvalidUntilDateQueryParam(String value) {
+        var error = given()
+                .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                        properties.getSecurity().getUser().getPassword())
+                .queryParam("filter[date][until]", value)
+                .when()
+                .get(MENUS_API_URL)
+                .then()
+                .statusCode(BAD_REQUEST.value())
+                .extract().jsonPath().getObject("", Error.class);
+        assertThat(error)
+                .hasCode(INVALID_REQUEST)
+                .hasMessage("Validation error")
+                .detailsContainsExactly("Invalid query parameter 'filter[date][until]': must be a valid date in 'yyyy-MM-dd' format. Actual value is '" + value + "'");
+    }
+
+    @Test
+    @DisplayName("respond Bad Request with validation error on menus list retrieval when request defines since and until query parameters with invalid value")
+    void respond400OnListInvalidSinceDateAndUntilDateQueryParam() {
+        var error = given()
+                .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                        properties.getSecurity().getUser().getPassword())
+                .queryParam("filter[date][since]", "since")
+                .queryParam("filter[date][until]", "until")
+                .when()
+                .get(MENUS_API_URL)
+                .then()
+                .statusCode(BAD_REQUEST.value())
+                .extract().jsonPath().getObject("", Error.class);
+        assertThat(error)
+                .hasCode(INVALID_REQUEST)
+                .hasMessage("Validation error")
+                .detailsContainsExactlyInAnyOrder(
+                        "Invalid query parameter 'filter[date][since]': must be a valid date in 'yyyy-MM-dd' format. Actual value is 'since'",
+                        "Invalid query parameter 'filter[date][until]': must be a valid date in 'yyyy-MM-dd' format. Actual value is 'until'"
+                );
+    }
+
+    @Test
+    @DisplayName("respond Bad Request with validation error on menus list retrieval when request defines a since date higher than until date")
+    void respond400OnListSinceDateQueryParamHigherThanUntilDateQueryParam() {
+        var error = given()
+                .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                        properties.getSecurity().getUser().getPassword())
+                .queryParam("filter[date][since]", LocalDate.now().toString())
+                .queryParam("filter[date][until]", LocalDate.now().minusDays(1).toString())
+                .when()
+                .get(MENUS_API_URL)
+                .then()
+                .statusCode(BAD_REQUEST.value())
+                .extract().jsonPath().getObject("", Error.class);
+        assertThat(error)
+                .hasCode(INVALID_REQUEST)
+                .hasMessage("Validation error")
+                .detailsContainsExactly("Invalid query parameters: lower bound filter[date][since] must be lower than or equal to upper bound filter[date][until]");
+    }
+
+    @Test
+    @DisplayName("respond Bad Request with validation error on menus list retrieval when request defines until date before today")
+    void respond400OnListUntilDateBeforeTodayQueryParam() {
+        var error = given()
+                .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                        properties.getSecurity().getUser().getPassword())
+                .queryParam("filter[date][until]", LocalDate.now().minusDays(1).toString())
+                .when()
+                .get(MENUS_API_URL)
+                .then()
+                .statusCode(BAD_REQUEST.value())
+                .extract().jsonPath().getObject("", Error.class);
+        assertThat(error)
+                .hasCode(INVALID_REQUEST)
+                .hasMessage("Validation error")
+                .detailsContainsExactly("Invalid query parameters: lower bound filter[date][since] must be lower than or equal to upper bound filter[date][until]");
+    }
+
+    @Test
+    @DisplayName("respond OK on menus list retrieval when request does not define date range")
+    void respond200OnListWithNoDateRange() {
+        var error = given()
+                .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                        properties.getSecurity().getUser().getPassword())
+                .when()
+                .get(MENUS_API_URL)
+                .then()
+                .statusCode(OK.value());
+    }
+
+    @Test
+    @DisplayName("respond OK on menus list retrieval when request defines since date")
+    void respond200OnListWithSinceDate() {
+        given()
+                .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                properties.getSecurity().getUser().getPassword())
+                .queryParam("filter[date][since]", LocalDate.now().toString())
+                .when()
+                .get(MENUS_API_URL)
+                .then()
+                .statusCode(OK.value());
+    }
+
+    @Test
+    @DisplayName("respond OK on menus list retrieval when request defines until date")
+    void respond200OnListWithUntilDate() {
+        given()
+                .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                properties.getSecurity().getUser().getPassword())
+                .queryParam("filter[date][until]", LocalDate.now().toString())
+                .when()
+                .get(MENUS_API_URL)
+                .then()
+                .statusCode(OK.value());
+    }
+
+    @Test
+    @DisplayName("respond OK on menus list retrieval when request defines date range")
+    void respond200OnListWithDateRange() {
+        given()
+                .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                properties.getSecurity().getUser().getPassword())
+                .queryParam("filter[date][since]", LocalDate.now().plusDays(1).toString())
+                .queryParam("filter[date][until]", LocalDate.now().plusDays(2).toString())
+                .when()
+                .get(MENUS_API_URL)
+                .then()
+                .statusCode(OK.value());
     }
 
     @Test

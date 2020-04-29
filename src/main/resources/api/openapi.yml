@@ -261,6 +261,19 @@ paths:
         - Menus
       security:
         - basicAuth:[]
+      parameters:
+        - in: query
+          name: filter[date][since]
+          schema:
+            type: string
+            format: date
+          description: The inclusive lower bound date to filter menus on. This date defaults to today
+        - in: query
+          name: filter[date][until]
+          schema:
+            type: string
+            format: date
+          description: The inclusive upper bound date to filter menus on. This date defaults to lower bound + 6 days
       responses:
         200:
           $ref: '#/components/responses/Menus'
@@ -961,7 +974,7 @@ components:
               properties:
                 href:
                   type: string
-                  example: 'https://cena.adhuc.org/api/menus'
+                  example: 'https://cena.adhuc.org/api/menus?filter[date][since]=2020-01-01&filter[date][until]=2020-01-07'
     Menu:
       description: A menu detail
       type: object
@@ -1025,7 +1038,7 @@ components:
     MealType:
       description: Meal type for a menu
       type: string
-      enum: ['LUNCH', 'DINER']
+      enum: ['LUNCH', 'DINNER']
     Error:
       description: General error structure
       type: object

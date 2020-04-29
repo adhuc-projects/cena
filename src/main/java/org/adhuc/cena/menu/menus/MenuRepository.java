@@ -15,6 +15,7 @@
  */
 package org.adhuc.cena.menu.menus;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -38,6 +39,17 @@ public interface MenuRepository {
      * @return the menus owned by the owner.
      */
     Collection<Menu> findByOwner(MenuOwner owner);
+
+    /**
+     * Finds all the menus stored in the repository owned by the specified owner, whose date are between the specified
+     * range inclusively.
+     *
+     * @param owner the menu owner to filter on.
+     * @param since the inclusive lower bound date to filter menus on.
+     * @param until the inclusive upper bound date to filter menus on.
+     * @return the menus owned by the owner.
+     */
+    Collection<Menu> findByOwnerAndDateBetween(MenuOwner owner, LocalDate since, LocalDate until);
 
     /**
      * Indicates whether a menu exists with the specified identity.

@@ -83,7 +83,7 @@ class MenuAppServiceWithSecurityShould {
     @WithCommunityUser
     @DisplayName("deny menu listing access to community user")
     void denyMenuListingAsCommunityUser() {
-        assertThrows(AccessDeniedException.class, () -> service.getMenus(MENU_OWNER));
+        assertThrows(AccessDeniedException.class, () -> service.getMenus(listQuery(MENU_OWNER)));
     }
 
     // TODO manage access restrictions to menus based on authenticated user
@@ -92,21 +92,21 @@ class MenuAppServiceWithSecurityShould {
     @WithAuthenticatedUser
     @DisplayName("grant menu listing access to authenticated user")
     void grantMenuListingAsAuthenticatedUser() {
-        assertThat(service.getMenus(MENU_OWNER)).isNotEmpty();
+        assertThat(service.getMenus(listQuery(MENU_OWNER))).isNotEmpty();
     }
 
     @Test
     @WithIngredientManager
     @DisplayName("grant menu listing access to ingredient manager")
     void grantMenuListingAsIngredientManager() {
-        assertThat(service.getMenus(MENU_OWNER)).isNotEmpty();
+        assertThat(service.getMenus(listQuery(MENU_OWNER))).isNotEmpty();
     }
 
     @Test
     @WithSuperAdministrator
     @DisplayName("grant menu listing access to super administrator")
     void grantMenuListingAsSuperAdministrator() {
-        assertThat(service.getMenus(MENU_OWNER)).isNotEmpty();
+        assertThat(service.getMenus(listQuery(MENU_OWNER))).isNotEmpty();
     }
 
     @Test

@@ -15,11 +15,15 @@
  */
 package org.adhuc.cena.menu.menus;
 
+import static java.time.LocalDate.now;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
+import static org.adhuc.cena.menu.menus.DateRange.since;
+import static org.adhuc.cena.menu.menus.DateRange.until;
 import static org.adhuc.cena.menu.menus.MenuMother.*;
 import static org.adhuc.cena.menu.recipes.RecipeMother.TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID;
 import static org.adhuc.cena.menu.recipes.RecipeMother.recipe;
@@ -68,7 +72,7 @@ class MenuAppServiceImplShould {
     @Test
     @DisplayName("return unmodifiable list of menus")
     void returnUnmodifiableListOfMenus() {
-        assertThrows(UnsupportedOperationException.class, () -> service.getMenus(OWNER).add(menu()));
+        assertThrows(UnsupportedOperationException.class, () -> service.getMenus(listQuery()).add(menu()));
     }
 
     @Test
@@ -110,7 +114,7 @@ class MenuAppServiceImplShould {
         @Test
         @DisplayName("return empty list of menus for owner")
         void returnEmptyMenusList() {
-            assertThat(service.getMenus(OWNER)).isEmpty();
+            assertThat(service.getMenus(listQuery())).isEmpty();
         }
 
         @Test
@@ -164,10 +168,36 @@ class MenuAppServiceImplShould {
             }
 
             @Test
-            @DisplayName("return list of menus containing today's lunch")
-            void returnMenusListWithTodayLunch() {
-                assertThat(service.getMenus(OWNER)).isNotEmpty().usingFieldByFieldElementComparator()
+            @DisplayName("return empty list of menus querying for one week until yesterday")
+            void returnEmptyMenusListUntilYesterday() {
+                assertThat(service.getMenus(new ListMenus(OWNER, since(now().minusWeeks(1))))).isEmpty();
+            }
+
+            @Test
+            @DisplayName("return empty list of menus querying for one week since tomorrow")
+            void returnEmptyMenusListSinceTomorrow() {
+                assertThat(service.getMenus(new ListMenus(OWNER, since(now().plusDays(1))))).isEmpty();
+            }
+
+            @Test
+            @DisplayName("return list of menus containing today's lunch querying for one week since today")
+            void returnMenusListWithTodayLunchSinceToday() {
+                assertThat(service.getMenus(listQuery())).isNotEmpty().usingFieldByFieldElementComparator()
                         .containsExactly(todayLunch);
+            }
+
+            @Test
+            @DisplayName("return list of menus containing today's lunch querying for one week until today")
+            void returnMenusListWithTodayLunchUntilToday() {
+                assertThat(service.getMenus(new ListMenus(OWNER, since(now().minusDays(6)))))
+                        .isNotEmpty().usingFieldByFieldElementComparator().containsExactly(todayLunch);
+            }
+
+            @Test
+            @DisplayName("return list of menus containing today's lunch querying for today")
+            void returnMenusListWithTodayLunchForToday() {
+                assertThat(service.getMenus(new ListMenus(OWNER, until(now()))))
+                        .isNotEmpty().usingFieldByFieldElementComparator().containsExactly(todayLunch);
             }
 
             @Test
@@ -247,14 +277,28 @@ class MenuAppServiceImplShould {
                 @Test
                 @DisplayName("return list containing all menus for owner")
                 void returnMenusListWithAllMenus() {
-                    assertThat(service.getMenus(OWNER)).isNotEmpty().usingFieldByFieldElementComparator()
+                    assertThat(service.getMenus(listQuery())).isNotEmpty().usingFieldByFieldElementComparator()
                             .containsExactlyInAnyOrder(todayLunch, tomorrowDinner);
+                }
+
+                @Test
+                @DisplayName("return list of menus containing tomorrow's dinner querying for one week since tomorrow")
+                void returnMenusListWithTomorrowDinnerSinceTomorrow() {
+                    assertThat(service.getMenus(new ListMenus(OWNER, since(now().plusDays(1)))))
+                            .isNotEmpty().usingFieldByFieldElementComparator().containsExactly(tomorrowDinner);
+                }
+
+                @Test
+                @DisplayName("return list of menus containing today's lunch querying for one week until today")
+                void returnMenusListWithTodayLunchUntilToday() {
+                    assertThat(service.getMenus(new ListMenus(OWNER, since(now().minusDays(6)))))
+                            .isNotEmpty().usingFieldByFieldElementComparator().containsExactly(todayLunch);
                 }
 
                 @Test
                 @DisplayName("return list containing all menus for other owner")
                 void returnOtherMenusListForOtherOwner() {
-                    assertThat(service.getMenus(OTHER_OWNER)).isNotEmpty().usingFieldByFieldElementComparator()
+                    assertThat(service.getMenus(listQuery(OTHER_OWNER))).isNotEmpty().usingFieldByFieldElementComparator()
                             .containsExactly(todayLunchOtherOwner);
                 }
 

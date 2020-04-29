@@ -19,6 +19,7 @@ import static java.util.stream.Collectors.toSet;
 
 import static lombok.AccessLevel.PRIVATE;
 
+import static org.adhuc.cena.menu.menus.DateRange.defaultRange;
 import static org.adhuc.cena.menu.recipes.RecipeMother.TOMATO_CUCUMBER_MOZZA_SALAD_ID;
 import static org.adhuc.cena.menu.recipes.RecipeMother.TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID;
 
@@ -66,6 +67,14 @@ public class MenuMother {
     public static final Covers COVERS = TODAY_LUNCH_COVERS;
     public static final Set<RecipeId> MAIN_COURSE_RECIPES = TODAY_LUNCH_MAIN_COURSE_RECIPES;
     public static final MenuId ID = TODAY_LUNCH_ID;
+
+    public static ListMenus listQuery() {
+        return listQuery(OWNER);
+    }
+
+    public static ListMenus listQuery(@NonNull MenuOwner owner) {
+        return new ListMenus(owner, defaultRange());
+    }
 
     public static CreateMenu createCommand() {
         return createCommand(menu());

@@ -17,7 +17,9 @@ package org.adhuc.cena.menu.steps.menus;
 
 import java.time.LocalDate;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.function.BiFunction;
+import java.util.regex.MatchResult;
+import java.util.regex.Pattern;
 
 import cucumber.api.Transformer;
 
@@ -32,15 +34,24 @@ import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationT
  */
 public class MenuDateTransformer extends Transformer<LocalDate> {
 
-    private static final Function<String, LocalDate> DEFAULT_TRANSFORMATION = (date -> LocalDate.parse(date));
-
-    private static final Map<String, Function<String, LocalDate>> transformations = Map.of(
-            "today", date -> LocalDate.now()
+    private static final Map<Pattern, BiFunction<MatchResult, String, LocalDate>> transformations = Map.of(
+            Pattern.compile("^day before yesterday$"), (result, date) -> LocalDate.now().minusDays(2),
+            Pattern.compile("^yesterday$"), (result, date) -> LocalDate.now().minusDays(1),
+            Pattern.compile("^today$"), (result, date) -> LocalDate.now(),
+            Pattern.compile("^tomorrow$"), (result, date) -> LocalDate.now().plusDays(1),
+            Pattern.compile("^day after tomorrow$"), (result, date) -> LocalDate.now().plusDays(2),
+            Pattern.compile("^today \\+ (\\d+)$"), (result, date) -> LocalDate.now().plusDays(Integer.parseInt(result.group(1))),
+            Pattern.compile("^20\\d{2}-\\d{2}-\\d{2}$"), (result, date) -> LocalDate.parse(date)
     );
 
     @Override
     public LocalDate transform(String value) {
-        return transformations.getOrDefault(value, DEFAULT_TRANSFORMATION).apply(value);
+        var result = transformations.entrySet().stream()
+                .filter(t -> t.getKey().matcher(value).matches())
+                .findFirst().orElseThrow(() -> new AssertionError("Cannot parse \"" + value + "\" as a date"));
+        var matcher = result.getKey().matcher(value);
+        matcher.matches();
+        return result.getValue().apply(matcher.toMatchResult(), value);
     }
 
 }

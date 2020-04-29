@@ -117,7 +117,7 @@ class RecipeIngredientsOpenApiValidationTests {
         assertThat(error)
                 .hasCode(INVALID_REQUEST)
                 .hasMessage("Validation error")
-                .detailsContainsExactlyInAnyOrder("Invalid request : should have either none or both properties ([\"measurementUnit\",\"quantity\"])");
+                .detailsContainsExactlyInAnyOrder("Invalid request: should have either none or both properties ([\"measurementUnit\",\"quantity\"])");
     }
 
     @Test
@@ -138,7 +138,7 @@ class RecipeIngredientsOpenApiValidationTests {
         assertThat(error)
                 .hasCode(INVALID_REQUEST)
                 .hasMessage("Validation error")
-                .detailsContainsExactlyInAnyOrder("Invalid request : should have either none or both properties ([\"measurementUnit\",\"quantity\"])");
+                .detailsContainsExactlyInAnyOrder("Invalid request: should have either none or both properties ([\"measurementUnit\",\"quantity\"])");
     }
 
     @ParameterizedTest

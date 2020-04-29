@@ -27,12 +27,12 @@ import java.util.List;
 public interface MenuAppService {
 
     /**
-     * Gets the menus for the specified owner.
+     * Gets the menus for the specified query.
      *
-     * @param owner the owner of the menus.
+     * @param query the menus listing query.
      * @return the menus (not modifiable).
      */
-    List<Menu> getMenus(MenuOwner owner);
+    List<Menu> getMenus(ListMenus query);
 
     /**
      * Gets the menu corresponding to the specified identity.

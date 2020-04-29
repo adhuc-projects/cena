@@ -18,6 +18,7 @@ package org.adhuc.cena.menu.steps.serenity.menus;
 import static org.assertj.core.api.Assumptions.assumeThat;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
@@ -43,6 +44,11 @@ public class MenuListAssumptionsSteps {
     @Steps
     private MenuDeletionSteps menuDeletion;
 
+    @Step("Assume menus list is empty")
+    public void assumeEmptyMenusList() {
+        listClient.fetchMenus().forEach(m -> menuDeletion.deleteMenu(m));
+    }
+
     @Step("Assume menu {0} is in menus list")
     public void assumeInMenusList(MenuValue menu) {
         if (listClient.getFromMenusList(menu).isEmpty()) {
@@ -59,6 +65,18 @@ public class MenuListAssumptionsSteps {
         assumeThat(listClient.fetchMenus(owner)).anyMatch(m -> m.hasSameScheduleAs(menu));
     }
 
+    @Step("Assume menus {0} are in menus list owned by {1}")
+    public void assumeInMenusListOwnedBy(List<MenuValue> menus, AuthenticationType owner) {
+        assumeThat(menus).isNotEmpty();
+        var since = menus.stream().map(MenuValue::date).min(LocalDate::compareTo).get();
+        var until = menus.stream().map(MenuValue::date).max(LocalDate::compareTo).get();
+
+        var existingMenus = listClient.fetchMenus(owner);
+        menus.stream().filter(menu -> !existingMenus.contains(menu))
+                .forEach(menu -> menuCreation.createMenuOwnedBy(menu, owner));
+        assumeThat(listClient.fetchMenus(owner, since, until)).containsAll(menus);
+    }
+
     @Step("Assume menu is not in menus list for date {0} and meal type {1}")
     public void assumeNotInMenusList(LocalDate date, String mealType) {
         listClient.getFromMenusList(date, mealType).ifPresent(m -> {
@@ -66,5 +84,4 @@ public class MenuListAssumptionsSteps {
         });
         assumeThat(listClient.fetchMenus()).noneMatch(m -> m.isScheduledAt(date, mealType));
     }
-
 }

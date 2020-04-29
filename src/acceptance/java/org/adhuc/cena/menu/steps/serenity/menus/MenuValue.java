@@ -39,10 +39,10 @@ import org.adhuc.cena.menu.util.ListComparator;
  * @version 0.3.0
  * @since 0.3.0
  */
+@Data
+@Accessors(fluent = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @RequiredArgsConstructor(access = PRIVATE)
-@Getter
-@Accessors(fluent = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(NON_EMPTY)
 public class MenuValue extends HateoasClientResourceSupport {

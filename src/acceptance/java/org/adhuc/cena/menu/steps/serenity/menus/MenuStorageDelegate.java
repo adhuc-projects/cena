@@ -17,6 +17,8 @@ package org.adhuc.cena.menu.steps.serenity.menus;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Collection;
+
 import net.serenitybdd.core.Serenity;
 
 /**
@@ -28,7 +30,53 @@ import net.serenitybdd.core.Serenity;
  */
 public final class MenuStorageDelegate {
 
+    private static final String MENUS_SESSION_KEY = "menus";
     private static final String MENU_SESSION_KEY = "menu";
+
+    /**
+     * Stores the menus.
+     *
+     * @param menus the menus to store.
+     * @return the menus.
+     */
+    public Collection<MenuValue> storeMenus(Collection<MenuValue> menus) {
+        return storeMenus(MENUS_SESSION_KEY, menus);
+    }
+
+    /**
+     * Stores the menus.
+     *
+     * @param sessionKey the session key.
+     * @param menus      the menus to store.
+     * @return the menus.
+     */
+    Collection<MenuValue> storeMenus(String sessionKey, Collection<MenuValue> menus) {
+        Serenity.setSessionVariable(sessionKey).to(menus);
+        return menus;
+    }
+
+    /**
+     * Gets the stored menus, or fails if menus were not previously stored.
+     *
+     * @return the stored menus.
+     * @throws AssertionError if menus were not previously stored.
+     */
+    public Collection<MenuValue> storedMenus() {
+        return storedMenus(MENUS_SESSION_KEY);
+    }
+
+    /**
+     * Gets the stored menus, or fails if menus were not previously stored.
+     *
+     * @param sessionKey the session key.
+     * @return the stored menus.
+     * @throws AssertionError if menus were not previously stored.
+     */
+    Collection<MenuValue> storedMenus(String sessionKey) {
+        assertThat(Serenity.hasASessionVariableCalled(sessionKey))
+                .as("Menus in session (%s) must have been set previously", sessionKey).isTrue();
+        return Serenity.sessionVariableCalled(sessionKey);
+    }
 
     /**
      * Stores the menu.

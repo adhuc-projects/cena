@@ -13,33 +13,38 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.steps.serenity.menus;
+package org.adhuc.cena.menu.menus;
 
-import java.util.Collection;
+import java.time.LocalDate;
 
-import lombok.experimental.Delegate;
-import net.thucydides.core.annotations.Step;
-
-import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
+import lombok.experimental.Accessors;
 
 /**
- * The menus list rest-service client steps definition.
+ * A menus listing query.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
  * @since 0.3.0
  */
-public class MenuListSteps {
+@Value
+@RequiredArgsConstructor
+@Accessors(fluent = true)
+public class ListMenus {
+    @NonNull
+    @Getter
+    private final MenuOwner owner;
+    @NonNull
+    private final DateRange range;
 
-    private final ResourceUrlResolverDelegate resourceUrlResolverDelegate = new ResourceUrlResolverDelegate();
-    private final MenuListClientDelegate listClient = new MenuListClientDelegate(
-            resourceUrlResolverDelegate.menusResourceUrl());
-    @Delegate
-    private final MenuStorageDelegate menuStorage = new MenuStorageDelegate();
-
-    @Step("Get menus list")
-    public Collection<MenuValue> getMenus() {
-        return listClient.fetchMenus();
+    public LocalDate since() {
+        return range.since();
     }
 
+    public LocalDate until() {
+        return range.until();
+    }
 }

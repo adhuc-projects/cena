@@ -23,10 +23,12 @@ import static org.adhuc.cena.menu.steps.serenity.support.resource.ApiClientResou
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.core.Serenity;
 
+import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationProvider;
 import org.adhuc.cena.menu.steps.serenity.support.resource.ApiClientResource;
 
 /**
- * A delegate providing convenient methods for resolving resource URLs.
+ * A delegate providing convenient methods for resolving resource URLs. Resource URLs are resolved once for each
+ * authentication, to ensure that every authentication has its access to its own resources.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
@@ -35,7 +37,7 @@ import org.adhuc.cena.menu.steps.serenity.support.resource.ApiClientResource;
 @Slf4j
 public final class ResourceUrlResolverDelegate {
 
-    private static final String API_RESOURCE_SESSION_KEY = "apiClientResource";
+    private static final String API_RESOURCE_SESSION_KEY_PREFIX = "apiClientResource";
 
     private static final String SERVICE_NAME = "menu-generation";
     private static final String EXPOSED_PORT = "8080";
@@ -43,13 +45,15 @@ public final class ResourceUrlResolverDelegate {
 
     private final String port = System.getProperty(PORT_PROPERTY_NAME, EXPOSED_PORT);
 
+    private final AuthenticationProvider authenticationProvider = AuthenticationProvider.instance();
     private final RestClientDelegate restClientDelegate = new RestClientDelegate();
 
     public ApiClientResource apiClientResource() {
-        if (!Serenity.hasASessionVariableCalled(API_RESOURCE_SESSION_KEY)) {
-            Serenity.setSessionVariable(API_RESOURCE_SESSION_KEY).to(getResource(getApiIndexUrl(), ApiClientResource.class));
+        var sessionKey = apiResourceSessionKey();
+        if (!Serenity.hasASessionVariableCalled(sessionKey)) {
+            Serenity.setSessionVariable(sessionKey).to(getResource(getApiIndexUrl(), ApiClientResource.class));
         }
-        return Serenity.sessionVariableCalled(API_RESOURCE_SESSION_KEY);
+        return Serenity.sessionVariableCalled(sessionKey);
     }
 
     public String ingredientsResourceUrl() {
@@ -76,6 +80,10 @@ public final class ResourceUrlResolverDelegate {
     private String getApiIndexUrl() {
         log.info("Call API index with port {}", port);
         return String.format("http://localhost:%s/api", port);
+    }
+
+    private String apiResourceSessionKey() {
+        return API_RESOURCE_SESSION_KEY_PREFIX + "-" + authenticationProvider.currentAuthentication();
     }
 
 }

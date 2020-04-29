@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import cucumber.api.DataTable;
+import cucumber.api.Transform;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -80,8 +81,7 @@ public class MenuListStepDefinitions {
             }
             menusByOwner.get(ownedMenu.owner).add(ownedMenu.menu);
         });
-        menusByOwner.entrySet().stream().forEach(menusForOwner ->
-                menuListAssumptions.assumeInMenusListOwnedBy(menusForOwner.getValue(), menusForOwner.getKey()));
+        menusByOwner.forEach((key, value) -> menuListAssumptions.assumeInMenusListOwnedBy(value, key));
     }
 
     @Given("^an existing menu from the recipe for today's (.*)$")
@@ -95,6 +95,12 @@ public class MenuListStepDefinitions {
         menuListAssumptions.assumeEmptyMenusList();
     }
 
+    @Given("^no existing menu between (.*) and (.*)$")
+    public void noExistingMenu(@Transform(MenuDateTransformer.class) LocalDate since,
+                               @Transform(MenuDateTransformer.class) LocalDate until) {
+        menuListAssumptions.assumeEmptyMenusList(since, until);
+    }
+
     @Given("^no existing menu for today's (.*)$")
     public void noExistingMenu(String mealType) {
         menuListAssumptions.assumeNotInMenusList(LocalDate.now(), mealType);
@@ -106,6 +112,13 @@ public class MenuListStepDefinitions {
         menuList.storeMenus(menus);
     }
 
+    @When("^he lists the menus between (.*) and (.*)$")
+    public void listMenus(@Transform(MenuDateTransformer.class) LocalDate since,
+                          @Transform(MenuDateTransformer.class) LocalDate until) {
+        var menus = menuList.getMenus(since, until);
+        menuList.storeMenus(menus);
+    }
+
     @Then("^the menus list is empty$")
     public void emptyMenuList() {
         menuListAssertions.assertEmptyMenusList(menuList.storedMenus());
@@ -113,15 +126,13 @@ public class MenuListStepDefinitions {
 
     @Then("^the menus list contains the following menus$")
     public void followingMenusFoundInList(DataTable dataTable) {
-        var menus = transformToOwnedMenus(dataTable)
-                .stream().map(OwnedMenu::menu).collect(toList());
+        var menus = transformToMenus(dataTable);
         menuListAssertions.assertInMenusList(menus, menuList.storedMenus(), COMPARATOR);
     }
 
     @Then("^the menus list does not contain the following menus$")
     public void followingMenusNotFoundInList(DataTable dataTable) {
-        var menus = transformToOwnedMenus(dataTable)
-                .stream().map(OwnedMenu::menu).collect(toList());
+        var menus = transformToMenus(dataTable);
         menuListAssertions.assertNotInMenusList(menus, menuList.storedMenus(), COMPARATOR);
     }
 
@@ -144,6 +155,17 @@ public class MenuListStepDefinitions {
                                 .withCovers(Integer.parseInt(attributes.get(COVERS_ATTRIBUTE)))
                                 .withMainCourseRecipes(recipeList.storedAssumedRecipe(attributes.get(MAIN_COURSE_RECIPES_ATTRIBUTE)))
                                 .build()))
+                .collect(toList());
+    }
+
+    private List<MenuValue> transformToMenus(DataTable dataTable) {
+        return dataTable.asMaps(String.class, String.class).stream()
+                .map(attributes -> builder()
+                        .withDate(menuDateTransformer.transform(attributes.get(DATE_ATTRIBUTE)))
+                        .withMealType(attributes.get(MEAL_TYPE_ATTRIBUTE))
+                        .withCovers(Integer.parseInt(attributes.get(COVERS_ATTRIBUTE)))
+                        .withMainCourseRecipes(recipeList.storedAssumedRecipe(attributes.get(MAIN_COURSE_RECIPES_ATTRIBUTE)))
+                        .build())
                 .collect(toList());
     }
 

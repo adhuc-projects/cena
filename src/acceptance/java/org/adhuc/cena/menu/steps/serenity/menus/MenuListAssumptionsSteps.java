@@ -49,6 +49,11 @@ public class MenuListAssumptionsSteps {
         listClient.fetchMenus().forEach(m -> menuDeletion.deleteMenu(m));
     }
 
+    @Step("Assume menus list is empty between {0} and {1}")
+    public void assumeEmptyMenusList(LocalDate since, LocalDate until) {
+        listClient.fetchMenus(since, until).forEach(m -> menuDeletion.deleteMenu(m));
+    }
+
     @Step("Assume menu {0} is in menus list")
     public void assumeInMenusList(MenuValue menu) {
         if (listClient.getFromMenusList(menu).isEmpty()) {
@@ -73,7 +78,11 @@ public class MenuListAssumptionsSteps {
 
         var existingMenus = listClient.fetchMenus(owner);
         menus.stream().filter(menu -> !existingMenus.contains(menu))
-                .forEach(menu -> menuCreation.createMenuOwnedBy(menu, owner));
+                .forEach(menu -> {
+                    existingMenus.stream().filter(menu::hasSameScheduleAs).findFirst()
+                            .ifPresent(existing -> menuDeletion.deleteMenuOwnedBy(existing, owner));
+                    menuCreation.createMenuOwnedBy(menu, owner);
+                });
         assumeThat(listClient.fetchMenus(owner, since, until)).containsAll(menus);
     }
 

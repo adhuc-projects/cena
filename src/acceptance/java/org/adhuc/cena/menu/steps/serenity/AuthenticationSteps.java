@@ -43,7 +43,7 @@ public class AuthenticationSteps {
         authenticationProvider.withAuthentication(COMMUNITY_USER);
     }
 
-    @Step("Authenticate as {}")
+    @Step("Authenticate as {0}")
     public void withAuthentication(AuthenticationType authenticationType) {
         authenticationProvider.withAuthentication(authenticationType);
     }

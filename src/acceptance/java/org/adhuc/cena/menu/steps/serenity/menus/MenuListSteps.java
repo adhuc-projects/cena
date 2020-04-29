@@ -15,6 +15,7 @@
  */
 package org.adhuc.cena.menu.steps.serenity.menus;
 
+import java.time.LocalDate;
 import java.util.Collection;
 
 import lombok.experimental.Delegate;
@@ -40,6 +41,11 @@ public class MenuListSteps {
     @Step("Get menus list")
     public Collection<MenuValue> getMenus() {
         return listClient.fetchMenus();
+    }
+
+    @Step("Get menus list between {0} and {1}")
+    public Collection<MenuValue> getMenus(LocalDate since, LocalDate until) {
+        return listClient.fetchMenus(since, until);
     }
 
 }

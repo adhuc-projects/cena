@@ -2,17 +2,8 @@
 Feature: List menus for a period of time
   As an authenticated user, I want to list menus so that I can retrieve the menus I planned for a period of time
 
-  @Edge
-  Scenario: Empty menus list
-    Given an authenticated user
-    And no existing menu
-    When he lists the menus
-    Then the menus list is empty
-
-  @Smoke
-  Scenario: List with menus for default period of time
-    Given an authenticated user
-    And the following existing recipes
+  Background:
+    Given the following existing recipes
       | name                                   | content                                                                                                                                  | servings |
       | Tomato, cucumber and mozzarella salad  | Cut everything into dices, mix it, dress it                                                                                              | 2        |
       | Tomato, cucumber, olive and feta salad | Stone olives, cut everything into dices, mix it, dress it                                                                                | 6        |
@@ -28,6 +19,31 @@ Feature: List menus for a period of time
       | Vegetarian fajitas                     | Vegetarian fajitas made easy                                                                                                             | 2        |
       | Norwegian salad                        | Norwegian salad made easy                                                                                                                | 2        |
       | Caesar salad                           | Caesar salad made easy                                                                                                                   | 4        |
+
+  @Edge
+  Scenario: Empty menus list
+    Given an authenticated user
+    And no existing menu
+    When he lists the menus
+    Then the menus list is empty
+
+  @Edge
+  Scenario: Empty menus list when menus are not in specified period of time
+    Given an authenticated user
+    And the following existing menus
+      | owner | date      | mealType | covers | mainCourseRecipes                      |
+      | user  | yesterday | lunch    | 4      | Moussaka                               |
+      | user  | yesterday | dinner   | 4      | Tomato, cucumber and mozzarella salad  |
+      | user  | today     | lunch    | 4      | Pizza Regina                           |
+      | user  | today     | dinner   | 4      | Tomato, cucumber, olive and feta salad |
+      | user  | today + 5 | dinner   | 4      | Watercress soup                        |
+    And no existing menu between tomorrow and today + 4
+    When he lists the menus between tomorrow and today + 4
+    Then the menus list is empty
+
+  @Smoke
+  Scenario: List with menus for default period of time
+    Given an authenticated user
     And the following existing menus
       | owner | date               | mealType | covers | mainCourseRecipes                      |
       | user  | yesterday          | lunch    | 4      | Moussaka                               |
@@ -45,7 +61,30 @@ Feature: List menus for a period of time
       | user  | today + 7          | dinner   | 4      | Stuffed tomatoes                       |
     When he lists the menus
     Then the menus list contains the following menus
+      | date               | mealType | covers | mainCourseRecipes                      |
+      | today              | lunch    | 4      | Pizza Regina                           |
+      | today              | dinner   | 4      | Tomato, cucumber, olive and feta salad |
+      | tomorrow           | dinner   | 4      | Tomato and cantal pie                  |
+      | day after tomorrow | dinner   | 4      | Quiche lorraine                        |
+      | today + 3          | dinner   | 4      | Gazpacho                               |
+      | today + 4          | dinner   | 4      | Caesar salad                           |
+      | today + 5          | dinner   | 4      | Watercress soup                        |
+      | today + 6          | lunch    | 4      | Lasagna                                |
+      | today + 6          | dinner   | 4      | Norwegian salad                        |
+    And the menus list does not contain the following menus
+      | date      | mealType | covers | mainCourseRecipes                     |
+      | yesterday | lunch    | 4      | Moussaka                              |
+      | yesterday | dinner   | 4      | Tomato, cucumber and mozzarella salad |
+      | today + 7 | lunch    | 4      | Chili con carne                       |
+      | today + 7 | dinner   | 4      | Stuffed tomatoes                      |
+
+  @Smoke
+  Scenario: List with menus for specified period of time
+    Given an authenticated user
+    And the following existing menus
       | owner | date               | mealType | covers | mainCourseRecipes                      |
+      | user  | yesterday          | lunch    | 4      | Moussaka                               |
+      | user  | yesterday          | dinner   | 4      | Tomato, cucumber and mozzarella salad  |
       | user  | today              | lunch    | 4      | Pizza Regina                           |
       | user  | today              | dinner   | 4      | Tomato, cucumber, olive and feta salad |
       | user  | tomorrow           | dinner   | 4      | Tomato and cantal pie                  |
@@ -55,9 +94,77 @@ Feature: List menus for a period of time
       | user  | today + 5          | dinner   | 4      | Watercress soup                        |
       | user  | today + 6          | lunch    | 4      | Lasagna                                |
       | user  | today + 6          | dinner   | 4      | Norwegian salad                        |
-    And the menus list does not contain the following menus
-      | owner | date               | mealType | covers | mainCourseRecipes                      |
-      | user  | yesterday          | lunch    | 4      | Moussaka                               |
-      | user  | yesterday          | dinner   | 4      | Tomato, cucumber and mozzarella salad  |
       | user  | today + 7          | lunch    | 4      | Chili con carne                        |
       | user  | today + 7          | dinner   | 4      | Stuffed tomatoes                       |
+    When he lists the menus between yesterday and day after tomorrow
+    Then the menus list contains the following menus
+      | date               | mealType | covers | mainCourseRecipes                      |
+      | yesterday          | lunch    | 4      | Moussaka                               |
+      | yesterday          | dinner   | 4      | Tomato, cucumber and mozzarella salad  |
+      | today              | lunch    | 4      | Pizza Regina                           |
+      | today              | dinner   | 4      | Tomato, cucumber, olive and feta salad |
+      | tomorrow           | dinner   | 4      | Tomato and cantal pie                  |
+      | day after tomorrow | dinner   | 4      | Quiche lorraine                        |
+    And the menus list does not contain the following menus
+      | date      | mealType | covers | mainCourseRecipes |
+      | today + 3 | dinner   | 4      | Gazpacho          |
+      | today + 4 | dinner   | 4      | Caesar salad      |
+      | today + 5 | dinner   | 4      | Watercress soup   |
+      | today + 6 | lunch    | 4      | Lasagna           |
+      | today + 6 | dinner   | 4      | Norwegian salad   |
+      | today + 7 | lunch    | 4      | Chili con carne   |
+      | today + 7 | dinner   | 4      | Stuffed tomatoes  |
+
+  @Security
+  Scenario: List with menus contains current user menus only
+    Given an authenticated user
+    And the following existing menus
+      | owner              | date               | mealType | covers | mainCourseRecipes                      |
+      | user               | today              | lunch    | 4      | Pizza Regina                           |
+      | user               | today              | dinner   | 4      | Tomato, cucumber, olive and feta salad |
+      | user               | tomorrow           | dinner   | 4      | Tomato and cantal pie                  |
+      | user               | day after tomorrow | dinner   | 4      | Quiche lorraine                        |
+      | ingredient manager | today              | lunch    | 4      | Chili con carne                        |
+      | ingredient manager | today              | dinner   | 4      | Watercress soup                        |
+      | ingredient manager | tomorrow           | dinner   | 4      | Stuffed tomatoes                       |
+      | ingredient manager | day after tomorrow | dinner   | 4      | Pizza Regina                           |
+    When he lists the menus between today and day after tomorrow
+    Then the menus list contains the following menus
+      | date               | mealType | covers | mainCourseRecipes                      |
+      | today              | lunch    | 4      | Pizza Regina                           |
+      | today              | dinner   | 4      | Tomato, cucumber, olive and feta salad |
+      | tomorrow           | dinner   | 4      | Tomato and cantal pie                  |
+      | day after tomorrow | dinner   | 4      | Quiche lorraine                        |
+    And the menus list does not contain the following menus
+      | date               | mealType | covers | mainCourseRecipes |
+      | today              | lunch    | 4      | Chili con carne   |
+      | today              | dinner   | 4      | Watercress soup   |
+      | tomorrow           | dinner   | 4      | Stuffed tomatoes  |
+      | day after tomorrow | dinner   | 4      | Pizza Regina      |
+
+  @Security
+  Scenario: List with menus as super administrator
+    Given an authenticated super administrator
+    And the following existing menus
+      | owner               | date               | mealType | covers | mainCourseRecipes                      |
+      | user                | today              | lunch    | 4      | Pizza Regina                           |
+      | user                | today              | dinner   | 4      | Tomato, cucumber, olive and feta salad |
+      | user                | tomorrow           | dinner   | 4      | Tomato and cantal pie                  |
+      | user                | day after tomorrow | dinner   | 4      | Quiche lorraine                        |
+      | super administrator | today              | lunch    | 4      | Chili con carne                        |
+      | super administrator | today              | dinner   | 4      | Watercress soup                        |
+      | super administrator | tomorrow           | dinner   | 4      | Stuffed tomatoes                       |
+      | super administrator | day after tomorrow | dinner   | 4      | Pizza Regina                           |
+    When he lists the menus between today and day after tomorrow
+    Then the menus list contains the following menus
+      | date               | mealType | covers | mainCourseRecipes |
+      | today              | lunch    | 4      | Chili con carne   |
+      | today              | dinner   | 4      | Watercress soup   |
+      | tomorrow           | dinner   | 4      | Stuffed tomatoes  |
+      | day after tomorrow | dinner   | 4      | Pizza Regina      |
+    And the menus list does not contain the following menus
+      | date               | mealType | covers | mainCourseRecipes                      |
+      | today              | lunch    | 4      | Pizza Regina                           |
+      | today              | dinner   | 4      | Tomato, cucumber, olive and feta salad |
+      | tomorrow           | dinner   | 4      | Tomato and cantal pie                  |
+      | day after tomorrow | dinner   | 4      | Quiche lorraine                        |

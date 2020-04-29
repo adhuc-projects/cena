@@ -15,12 +15,18 @@
  */
 package org.adhuc.cena.menu.steps.serenity.menus;
 
+import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
+
+import java.util.function.Supplier;
+
+import io.restassured.specification.RequestSpecification;
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 
 import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.RestClientDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
+import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType;
 
 /**
  * The menu deletion rest-service client steps definition.
@@ -40,7 +46,16 @@ public class MenuDeletionSteps {
 
     @Step("Delete menu {0}")
     public void deleteMenu(MenuValue menu) {
-        rest().delete(menu.selfLink());
+        deleteMenuOwnedBy(menu, this::rest);
+    }
+
+    @Step("Delete menu {0} owned by {1}")
+    public void deleteMenuOwnedBy(MenuValue menu, AuthenticationType owner) {
+        deleteMenuOwnedBy(menu, () -> rest(owner));
+    }
+
+    private void deleteMenuOwnedBy(MenuValue menu, Supplier<RequestSpecification> requestSpecificationSupplier) {
+        requestSpecificationSupplier.get().contentType(HAL_JSON_VALUE).delete(menu.selfLink()).andReturn();
     }
 
 }

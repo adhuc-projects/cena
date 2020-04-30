@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import lombok.NonNull;
 import org.springframework.context.annotation.Profile;
@@ -56,7 +55,7 @@ public class InMemoryMenuRepository implements MenuRepository {
         return menus.values().stream()
                 .filter(m -> m.owner().equals(owner))
                 .filter(m -> m.date().compareTo(since) >= 0 && m.date().compareTo(until) <= 0)
-                .collect(Collectors.toUnmodifiableSet());
+                .collect(toUnmodifiableSet());
     }
 
     @Override

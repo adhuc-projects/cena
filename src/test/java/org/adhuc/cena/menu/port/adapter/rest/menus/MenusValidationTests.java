@@ -187,7 +187,7 @@ class MenusValidationTests {
     @Test
     @DisplayName("respond OK on menus list retrieval when request does not define date range")
     void respond200OnListWithNoDateRange() {
-        var error = given()
+        given()
                 .log().ifValidationFails()
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                         properties.getSecurity().getUser().getPassword())

@@ -36,12 +36,12 @@ public class RecipeDetailStepDefinitions {
     private RecipeDetailSteps recipeDetail;
 
     @When("^he retrieves \"(.*)\" recipe$")
-    public void retrieveIngredient(String recipeName) {
+    public void retrieveRecipe(String recipeName) {
         recipeDetail.storeRecipe(recipeDetail.retrieveRecipe(recipeName));
     }
 
     @When("^he attempts retrieving \"(.*)\" recipe$")
-    public void tryToRetrieveIngredient(String recipeName) {
+    public void tryToRetrieveRecipe(String recipeName) {
         recipeDetail.attemptRetrievingRecipe(recipeName);
     }
 

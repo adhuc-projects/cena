@@ -41,6 +41,7 @@ import org.adhuc.cena.menu.util.ListComparator;
  */
 @Data
 @Accessors(fluent = true)
+@EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @RequiredArgsConstructor(access = PRIVATE)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
@@ -56,6 +57,12 @@ public class MenuValue extends HateoasClientResourceSupport {
             .thenComparing(MenuValue::mealType)
             .thenComparing(MenuValue::covers)
             .thenComparing(MenuValue::mainCourseRecipes, new ListComparator<>());
+
+    public static MenuValue buildUnknownMenuValue(LocalDate date, String mealType, String menusResourceUrl) {
+        var menu = builder().withDate(date).withMealType(mealType).build();
+        menu.addLink(SELF_LINK, String.format("%s/%s-%s", menusResourceUrl, menu.date, menu.mealType));
+        return menu;
+    }
 
     private final LocalDate date;
     private final String mealType;

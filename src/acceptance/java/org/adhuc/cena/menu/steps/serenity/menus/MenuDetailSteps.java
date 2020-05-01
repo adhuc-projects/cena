@@ -15,11 +15,18 @@
  */
 package org.adhuc.cena.menu.steps.serenity.menus;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
+
+import static org.adhuc.cena.menu.steps.serenity.support.resource.ApiClientResource.MENUS_LINK;
+
+import java.time.LocalDate;
 
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 
+import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.RestClientDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
 
@@ -36,11 +43,44 @@ public class MenuDetailSteps {
     private final RestClientDelegate restClientDelegate = new RestClientDelegate();
     @Delegate
     private final StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
+    @Delegate
+    private final MenuStorageDelegate menuStorage = new MenuStorageDelegate();
+    private final MenuListClientDelegate listClient = new MenuListClientDelegate();
+    private final ResourceUrlResolverDelegate resourceUrlResolver = new ResourceUrlResolverDelegate();
 
     @Step("Get menu from {0}")
     public MenuValue getMenuFromUrl(String menuDetailUrl) {
         rest().accept(HAL_JSON_VALUE).get(menuDetailUrl).andReturn();
         return assertOk().extract().as(MenuValue.class);
+    }
+
+    @Step("Retrieve menu scheduled for {0}'s {1}")
+    public MenuValue retrieveMenu(LocalDate date, String mealType) {
+        var menu = listClient.getFromMenusList(date, mealType);
+        return menu.orElseGet(() -> fail("Unable to retrieve menu scheduled for " + date + "'s " + mealType));
+    }
+
+    @Step("Attempt retrieving menu scheduled for {0}'s {1}")
+    public void attemptRetrievingMenu(LocalDate date, String mealType) {
+        var menusLink = resourceUrlResolver.apiClientResource().maybeLink(MENUS_LINK);
+        var original = MenuValue.buildUnknownMenuValue(date, mealType,
+                menusLink.orElseGet(resourceUrlResolver::notAccessibleMenusResourceUrl));
+        // Menus list is not accessible for community users
+        if (menusLink.isPresent()) {
+            var menu = listClient.getFromMenusList(date, mealType);
+            assertThat(menu).isNotPresent();
+        }
+        fetchMenu(original.selfLink());
+    }
+
+    @Step("Assert menu {0} is accessible")
+    public void assertMenuInfoIsAccessible(MenuValue expected) {
+        var actual = getMenuFromUrl(expected.selfLink());
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    private void fetchMenu(String menuDetailUrl) {
+        rest().accept(HAL_JSON_VALUE).get(menuDetailUrl).andReturn();
     }
 
 }

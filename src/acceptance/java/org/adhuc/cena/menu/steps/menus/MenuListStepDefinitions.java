@@ -84,7 +84,7 @@ public class MenuListStepDefinitions {
         menusByOwner.forEach((key, value) -> menuListAssumptions.assumeInMenusListOwnedBy(value, key));
     }
 
-    @Given("^an existing menu from the recipe for (.*)'s (.*)$")
+    @Given("^an existing menu from the recipe for (.*)'s (\\w+)$")
     public void existingMenu(@Transform(MenuDateTransformer.class) LocalDate date, String mealType) {
         menuListAssumptions.assumeInMenusList(builder().withDate(date).withMealType(mealType)
                 .withMainCourseRecipes(recipeList.storedRecipe()).build());
@@ -101,7 +101,7 @@ public class MenuListStepDefinitions {
         menuListAssumptions.assumeEmptyMenusList(since, until);
     }
 
-    @Given("^no existing menu for (.*)'s (.*)$")
+    @Given("^no existing menu for (.*)'s (\\w+)$")
     public void noExistingMenu(@Transform(MenuDateTransformer.class) LocalDate date, String mealType) {
         menuListAssumptions.assumeNotInMenusList(date, mealType);
     }

@@ -1,6 +1,6 @@
 @Functional @Menus
-Feature: Retrieve menu details
-  As an authenticated user, I want to retrieve a specific menu so that I can follow its recipes and list needed ingredients
+Feature: Delete a menu from the system
+  As an authenticated user, I want to delete a menu so that I can cancel scheduled menu
 
   Background:
     Given the following existing recipes
@@ -11,29 +11,29 @@ Feature: Retrieve menu details
       | Pizza Regina                           | Pizza Regina made easy                                                                                                                   | 2        |
 
   @Edge
-  Scenario: Unknown menu
+  Scenario: Delete an unknown menu
     Given an authenticated user
     And the following existing menus
-      | owner | date               | mealType | covers | mainCourseRecipes                      |
-      | user  | yesterday          | dinner   | 4      | Tomato, cucumber and mozzarella salad  |
-      | user  | today              | dinner   | 4      | Tomato, cucumber, olive and feta salad |
-      | user  | tomorrow           | dinner   | 4      | Tomato and cantal pie                  |
+      | owner | date      | mealType | covers | mainCourseRecipes                      |
+      | user  | yesterday | dinner   | 4      | Tomato, cucumber and mozzarella salad  |
+      | user  | today     | dinner   | 4      | Tomato, cucumber, olive and feta salad |
+      | user  | tomorrow  | dinner   | 4      | Tomato and cantal pie                  |
     And no existing menu for today's lunch
-    When he attempts retrieving the menu scheduled for tomorrow's lunch
+    When he attempts deleting the menu scheduled for tomorrow's lunch
     Then an error notifies that menu has not been found
 
   @Edge
-  Scenario: Other user menu
+  Scenario: Delete other user menu
     Given an authenticated ingredient manager
     And the following existing menus
       | owner | date  | mealType | covers | mainCourseRecipes |
       | user  | today | lunch    | 4      | Pizza Regina      |
     And no existing menu for today's lunch
-    When he attempts retrieving the menu scheduled for today's lunch
+    When he attempts deleting the menu scheduled for today's lunch
     Then an error notifies that menu has not been found
 
-  @Smoke
-  Scenario: Known recipe
+  @Smoke @Security
+  Scenario: Delete a menu successfully
     Given an authenticated user
     And the following existing menus
       | owner | date               | mealType | covers | mainCourseRecipes                      |
@@ -41,11 +41,12 @@ Feature: Retrieve menu details
       | user  | today              | lunch    | 4      | Pizza Regina                           |
       | user  | today              | dinner   | 4      | Tomato, cucumber, olive and feta salad |
       | user  | tomorrow           | dinner   | 4      | Tomato and cantal pie                  |
-    When he retrieves the menu scheduled for today's lunch
-    Then the menu details are accessible
+    When he deletes the menu scheduled for today's lunch
+    Then the menu is deleted
+    And the menu cannot be found in the menus list
 
-  @Edge
-  Scenario: Get menu detail as community user
+  @Security
+  Scenario: Delete a menu as community user
     Given a community user
-    When he attempts retrieving the menu scheduled for today's lunch
+    When he attempts deleting the menu scheduled for today's lunch
     Then an error notifies that user is not authenticated

@@ -13,41 +13,44 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.steps.recipes;
+package org.adhuc.cena.menu.steps.menus;
 
+import java.time.LocalDate;
+
+import cucumber.api.Transform;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import cucumber.runtime.java.StepDefAnnotation;
 import net.thucydides.core.annotations.Steps;
 
-import org.adhuc.cena.menu.steps.serenity.recipes.RecipeDeletionSteps;
+import org.adhuc.cena.menu.steps.serenity.menus.MenuDeletionSteps;
 
 /**
- * The recipe deletion steps definitions for rest-services acceptance tests.
+ * The menu deletion steps definitions for rest-services acceptance tests.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
- * @since 0.2.0
+ * @version 0.3.0
+ * @since 0.3.0
  */
 @StepDefAnnotation
-public class RecipeDeletionStepDefinitions {
+public class MenuDeletionStepDefinitions {
 
     @Steps
-    private RecipeDeletionSteps recipeDeletion;
+    private MenuDeletionSteps menuDeletion;
 
-    @When("^he attempts deleting the recipe$")
-    public void tryToDeleteRecipe() {
-        recipeDeletion.attemptDeletingRecipe(recipeDeletion.storedRecipe());
+    @When("^he attempts deleting the menu scheduled for (.*)'s (\\w+)$")
+    public void attemptDeletingMenu(@Transform(MenuDateTransformer.class) LocalDate date, String mealType) {
+        menuDeletion.attemptDeletingMenu(date, mealType);
     }
 
-    @When("^he deletes the recipe$")
-    public void deleteRecipe() {
-        recipeDeletion.deleteRecipe(recipeDeletion.storedRecipe());
+    @When("^he deletes the menu scheduled for (.*)'s (\\w+)$")
+    public void deleteMenu(@Transform(MenuDateTransformer.class) LocalDate date, String mealType) {
+        menuDeletion.storeMenu(menuDeletion.deleteMenu(date, mealType));
     }
 
-    @Then("^the recipe is deleted$")
-    public void recipeDeleted() {
-        recipeDeletion.assertRecipeSuccessfullyDeleted(recipeDeletion.storedRecipe());
+    @Then("^the menu is deleted$")
+    public void menuDeleted() {
+        menuDeletion.assertMenuSuccessfullyDeleted();
     }
 
 }

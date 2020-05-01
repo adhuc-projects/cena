@@ -23,7 +23,7 @@ import net.thucydides.core.annotations.Steps;
 import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientDeletionSteps;
 
 /**
- * The ingredient creation steps definitions for rest-services acceptance tests.
+ * The ingredient deletion steps definitions for rest-services acceptance tests.
  *
  * @author Alexandre Carbenay
  * @version 0.2.0

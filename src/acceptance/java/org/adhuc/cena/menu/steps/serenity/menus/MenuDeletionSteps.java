@@ -15,8 +15,12 @@
  */
 package org.adhuc.cena.menu.steps.serenity.menus;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 
+import static org.adhuc.cena.menu.steps.serenity.support.resource.ApiClientResource.MENUS_LINK;
+
+import java.time.LocalDate;
 import java.util.function.Supplier;
 
 import io.restassured.specification.RequestSpecification;
@@ -43,19 +47,50 @@ public class MenuDeletionSteps {
     private final ResourceUrlResolverDelegate resourceUrlResolverDelegate = new ResourceUrlResolverDelegate();
     @Delegate
     private final StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
+    @Delegate
+    private final MenuStorageDelegate menuStorage = new MenuStorageDelegate();
+    private final MenuListClientDelegate listClient = new MenuListClientDelegate();
 
     @Step("Delete menu {0}")
-    public void deleteMenu(MenuValue menu) {
-        deleteMenuOwnedBy(menu, this::rest);
+    public MenuValue deleteMenu(MenuValue menu) {
+        return deleteMenuOwnedBy(menu, this::rest);
+    }
+
+    @Step("Delete menu scheduled for {0}'s {1}")
+    public MenuValue deleteMenu(LocalDate date, String mealType) {
+        var menu = listClient.getFromMenusList(date, mealType);
+        assertThat(menu).isPresent();
+        return deleteMenuOwnedBy(menu.get(), this::rest);
     }
 
     @Step("Delete menu {0} owned by {1}")
-    public void deleteMenuOwnedBy(MenuValue menu, AuthenticationType owner) {
-        deleteMenuOwnedBy(menu, () -> rest(owner));
+    public MenuValue deleteMenuOwnedBy(MenuValue menu, AuthenticationType owner) {
+        return deleteMenuOwnedBy(menu, () -> rest(owner));
     }
 
-    private void deleteMenuOwnedBy(MenuValue menu, Supplier<RequestSpecification> requestSpecificationSupplier) {
+    private MenuValue deleteMenuOwnedBy(MenuValue menu, Supplier<RequestSpecification> requestSpecificationSupplier) {
         requestSpecificationSupplier.get().contentType(HAL_JSON_VALUE).delete(menu.selfLink()).andReturn();
+        return menu;
+    }
+
+    @Step("Attempt deleting menu scheduled for {0}'s {1}")
+    public void attemptDeletingMenu(LocalDate date, String mealType) {
+        var menusLink = resourceUrlResolverDelegate.apiClientResource().maybeLink(MENUS_LINK);
+        var expectedMenu = MenuValue.buildUnknownMenuValue(date, mealType,
+                menusLink.orElseGet(resourceUrlResolverDelegate::notAccessibleMenusResourceUrl));
+
+        // Menus list is not accessible for community users
+        if (menusLink.isPresent()) {
+            var existingMenu = listClient.getFromMenusList(date, mealType);
+            assertThat(existingMenu).isNotPresent();
+        }
+
+        rest().delete(expectedMenu.selfLink());
+    }
+
+    @Step("Assert menu has been successfully deleted")
+    public void assertMenuSuccessfullyDeleted() {
+        assertNoContent();
     }
 
 }

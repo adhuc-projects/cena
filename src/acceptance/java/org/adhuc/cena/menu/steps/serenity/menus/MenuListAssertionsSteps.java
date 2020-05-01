@@ -24,8 +24,6 @@ import java.util.Comparator;
 
 import net.thucydides.core.annotations.Step;
 
-import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
-
 /**
  * The menus list rest-service client steps definition dedicated to assertions.
  *
@@ -35,9 +33,7 @@ import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
  */
 public class MenuListAssertionsSteps {
 
-    private final ResourceUrlResolverDelegate resourceUrlResolverDelegate = new ResourceUrlResolverDelegate();
-    private final MenuListClientDelegate listClient = new MenuListClientDelegate(
-            resourceUrlResolverDelegate.menusResourceUrl());
+    private final MenuListClientDelegate listClient = new MenuListClientDelegate();
 
     @Step("Assert empty menus list {0}")
     public void assertEmptyMenusList(Collection<MenuValue> menus) {

@@ -143,6 +143,12 @@ Feature: List menus for a period of time
       | day after tomorrow | dinner   | 4      | Pizza Regina      |
 
   @Security
+  Scenario: List with menus as community user
+    Given a community user
+    When he attempts retrieving list of menus
+    Then an error notifies that user is not authenticated
+
+  @Security
   Scenario: List with menus as super administrator
     Given an authenticated super administrator
     And the following existing menus

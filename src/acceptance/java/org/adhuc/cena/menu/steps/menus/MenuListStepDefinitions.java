@@ -119,6 +119,11 @@ public class MenuListStepDefinitions {
         menuList.storeMenus(menus);
     }
 
+    @When("^he attempts retrieving list of menus$")
+    public void attemptListingMenus() {
+        menuList.attemptGetMenus();
+    }
+
     @Then("^the menus list is empty$")
     public void emptyMenuList() {
         menuListAssertions.assertEmptyMenusList(menuList.storedMenus());

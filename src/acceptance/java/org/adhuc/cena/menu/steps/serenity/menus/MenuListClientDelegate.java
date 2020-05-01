@@ -22,9 +22,9 @@ import java.util.function.Supplier;
 
 import io.restassured.path.json.JsonPath;
 import io.restassured.specification.RequestSpecification;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.RestClientDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.StatusAssertionDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType;
@@ -39,11 +39,9 @@ import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationT
 @RequiredArgsConstructor
 final class MenuListClientDelegate {
 
-    private final RestClientDelegate restClientDelegate = new RestClientDelegate();
-    private final StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
-
-    @NonNull
-    private final String menusResourceUrl;
+    private final RestClientDelegate restClient = new RestClientDelegate();
+    private final StatusAssertionDelegate statusAssertion = new StatusAssertionDelegate();
+    private final ResourceUrlResolverDelegate resourceUrlResolver = new ResourceUrlResolverDelegate();
 
     /**
      * Fetches the menus owned by the currently authenticated user from server.
@@ -51,7 +49,7 @@ final class MenuListClientDelegate {
      * @return the fetched menus.
      */
     public List<MenuValue> fetchMenus() {
-        return fetchMenus(restClientDelegate::rest);
+        return fetchMenus(restClient::rest);
     }
 
     /**
@@ -62,7 +60,7 @@ final class MenuListClientDelegate {
      * @return the fetched menus.
      */
     public List<MenuValue> fetchMenus(LocalDate since, LocalDate until) {
-        return fetchMenus(restClientDelegate::rest, since, until);
+        return fetchMenus(restClient::rest, since, until);
     }
 
     /**
@@ -72,7 +70,7 @@ final class MenuListClientDelegate {
      * @return the fetched menus.
      */
     public List<MenuValue> fetchMenus(AuthenticationType owner) {
-        return fetchMenus(() -> restClientDelegate.rest(owner));
+        return fetchMenus(() -> restClient.rest(owner));
     }
 
     /**
@@ -84,7 +82,7 @@ final class MenuListClientDelegate {
      * @return the fetched menus.
      */
     public List<MenuValue> fetchMenus(AuthenticationType owner, LocalDate since, LocalDate until) {
-        return fetchMenus(() -> restClientDelegate.rest(owner), since, until);
+        return fetchMenus(() -> restClient.rest(owner), since, until);
     }
 
     private List<MenuValue> fetchMenus(Supplier<RequestSpecification> requestSpecificationSupplier) {
@@ -119,7 +117,7 @@ final class MenuListClientDelegate {
      * @return the menu retrieved from list.
      */
     public Optional<MenuValue> getFromMenusList(LocalDate date, String mealType) {
-        var rawMenuList = date != null ? getRawMenuList(restClientDelegate::rest, date) : getRawMenuList(restClientDelegate::rest);
+        var rawMenuList = date != null ? getRawMenuList(restClient::rest, date) : getRawMenuList(restClient::rest);
         return Optional.ofNullable(rawMenuList
                 .param("date", date != null ? date.toString() : null)
                 .param("mealType", mealType != null ? mealType.toUpperCase() : null)
@@ -152,7 +150,7 @@ final class MenuListClientDelegate {
      * @return the menu retrieved from list.
      */
     public Optional<MenuValue> getFromMenusList(AuthenticationType owner, LocalDate date, String mealType) {
-        return Optional.ofNullable(getRawMenuList(() -> restClientDelegate.rest(owner))
+        return Optional.ofNullable(getRawMenuList(() -> restClient.rest(owner))
                 .param("date", date != null ? date.toString() : null)
                 .param("mealType", mealType != null ? mealType.toUpperCase() : null)
                 .getObject("_embedded.data.find { menu->menu.date == date && menu.mealType == mealType }", MenuValue.class));
@@ -165,8 +163,8 @@ final class MenuListClientDelegate {
      * @return the {@link JsonPath} corresponding to the menus list.
      */
     private JsonPath getRawMenuList(Supplier<RequestSpecification> requestSpecificationSupplier) {
-        var response = requestSpecificationSupplier.get().get(menusResourceUrl).then();
-        return statusAssertionDelegate.assertOk(response).extract().jsonPath();
+        var response = requestSpecificationSupplier.get().get(resourceUrlResolver.menusResourceUrl()).then();
+        return statusAssertion.assertOk(response).extract().jsonPath();
     }
 
     /**
@@ -180,8 +178,8 @@ final class MenuListClientDelegate {
     private JsonPath getRawMenuList(Supplier<RequestSpecification> requestSpecificationSupplier, LocalDate since) {
         var response = requestSpecificationSupplier.get()
                 .param("filter[date][since]", since.toString())
-                .get(menusResourceUrl).then();
-        return statusAssertionDelegate.assertOk(response).extract().jsonPath();
+                .get(resourceUrlResolver.menusResourceUrl()).then();
+        return statusAssertion.assertOk(response).extract().jsonPath();
     }
 
     /**
@@ -197,8 +195,8 @@ final class MenuListClientDelegate {
         var response = requestSpecificationSupplier.get()
                 .param("filter[date][since]", since.toString())
                 .param("filter[date][until]", until.toString())
-                .get(menusResourceUrl).then();
-        return statusAssertionDelegate.assertOk(response).extract().jsonPath();
+                .get(resourceUrlResolver.menusResourceUrl()).then();
+        return statusAssertion.assertOk(response).extract().jsonPath();
     }
 
 }

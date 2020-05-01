@@ -23,7 +23,6 @@ import java.util.List;
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
 
-import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType;
 
 /**
@@ -35,9 +34,7 @@ import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationT
  */
 public class MenuListAssumptionsSteps {
 
-    private final ResourceUrlResolverDelegate resourceUrlResolverDelegate = new ResourceUrlResolverDelegate();
-    private final MenuListClientDelegate listClient = new MenuListClientDelegate(
-            resourceUrlResolverDelegate.menusResourceUrl());
+    private final MenuListClientDelegate listClient = new MenuListClientDelegate();
 
     @Steps
     private MenuCreationSteps menuCreation;

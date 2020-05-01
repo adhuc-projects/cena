@@ -22,6 +22,7 @@ import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 
 import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
+import org.adhuc.cena.menu.steps.serenity.support.RestClientDelegate;
 
 /**
  * The menus list rest-service client steps definition.
@@ -32,9 +33,9 @@ import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
  */
 public class MenuListSteps {
 
-    private final ResourceUrlResolverDelegate resourceUrlResolverDelegate = new ResourceUrlResolverDelegate();
-    private final MenuListClientDelegate listClient = new MenuListClientDelegate(
-            resourceUrlResolverDelegate.menusResourceUrl());
+    private final RestClientDelegate restClient = new RestClientDelegate();
+    private final ResourceUrlResolverDelegate resourceUrlResolver = new ResourceUrlResolverDelegate();
+    private final MenuListClientDelegate listClient = new MenuListClientDelegate();
     @Delegate
     private final MenuStorageDelegate menuStorage = new MenuStorageDelegate();
 
@@ -46,6 +47,11 @@ public class MenuListSteps {
     @Step("Get menus list between {0} and {1}")
     public Collection<MenuValue> getMenus(LocalDate since, LocalDate until) {
         return listClient.fetchMenus(since, until);
+    }
+
+    @Step("Attempt getting menus list")
+    public void attemptGetMenus() {
+        restClient.rest().get(resourceUrlResolver.notAccessibleMenusResourceUrl()).andReturn();
     }
 
 }

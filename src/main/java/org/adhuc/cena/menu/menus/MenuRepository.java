@@ -17,11 +17,8 @@ package org.adhuc.cena.menu.menus;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Optional;
 
-import lombok.NonNull;
-
-import org.adhuc.cena.menu.common.EntityNotFoundException;
+import org.adhuc.cena.menu.common.Repository;
 
 /**
  * A {@link Menu} repository.
@@ -30,7 +27,12 @@ import org.adhuc.cena.menu.common.EntityNotFoundException;
  * @version 0.3.0
  * @since 0.3.0
  */
-public interface MenuRepository {
+public interface MenuRepository extends Repository<Menu, MenuId> {
+
+    @Override
+    default Class<Menu> entityType() {
+        return Menu.class;
+    }
 
     /**
      * Finds all the menus stored in the repository owned by the specified owner.
@@ -50,45 +52,6 @@ public interface MenuRepository {
      * @return the menus owned by the owner.
      */
     Collection<Menu> findByOwnerAndDateBetween(MenuOwner owner, LocalDate since, LocalDate until);
-
-    /**
-     * Indicates whether a menu exists with the specified identity.
-     *
-     * @param menuId the menu identity.
-     * @return {@code true} if menu exists with identity, {@code false} otherwise.
-     */
-    boolean exists(MenuId menuId);
-
-    /**
-     * Finds the menu corresponding to the specified identity.
-     *
-     * @param menuId the menu identity.
-     * @return the menu if existing, empty otherwise.
-     */
-    Optional<Menu> findById(MenuId menuId);
-
-    /**
-     * Finds the menu corresponding to the specified identity.
-     *
-     * @param menuId the menu identity.
-     * @return the menu if existing.
-     * @throws EntityNotFoundException if no menu could be found for identity.
-     */
-    default Menu findNotNullById(@NonNull MenuId menuId) {
-        var menu = findById(menuId);
-        if (menu.isPresent()) {
-            return menu.get();
-        }
-        throw new EntityNotFoundException(Menu.class, menuId);
-    }
-
-    /**
-     * Saves the specified menu.
-     *
-     * @param menu the menu to save.
-     * @return the saved menu.
-     */
-    <S extends Menu> S save(S menu);
 
     /**
      * Deletes all the menus stored in the repository.

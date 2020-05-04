@@ -18,19 +18,22 @@ package org.adhuc.cena.menu.ingredients;
 import java.util.Collection;
 import java.util.Optional;
 
-import lombok.NonNull;
-
-import org.adhuc.cena.menu.common.EntityNotFoundException;
 import org.adhuc.cena.menu.common.Name;
+import org.adhuc.cena.menu.common.Repository;
 
 /**
  * An {@link Ingredient} repository.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.1.0
  */
-public interface IngredientRepository {
+public interface IngredientRepository extends Repository<Ingredient, IngredientId> {
+
+    @Override
+    default Class<Ingredient> entityType() {
+        return Ingredient.class;
+    }
 
     /**
      * Finds all the ingredients stored in the repository.
@@ -38,37 +41,6 @@ public interface IngredientRepository {
      * @return all the ingredients.
      */
     Collection<Ingredient> findAll();
-
-    /**
-     * Indicates whether an ingredient exists with the specified identity.
-     *
-     * @param ingredientId the ingredient identity.
-     * @return {@code true} if ingredient exists with identity, {@code false} otherwise.
-     */
-    boolean exists(IngredientId ingredientId);
-
-    /**
-     * Finds the ingredient corresponding to the specified identity.
-     *
-     * @param ingredientId the ingredient identity.
-     * @return the ingredient if existing, empty otherwise.
-     */
-    Optional<Ingredient> findById(IngredientId ingredientId);
-
-    /**
-     * Finds the ingredient corresponding to the specified identity.
-     *
-     * @param ingredientId the ingredient identity.
-     * @return the ingredient if existing.
-     * @throws EntityNotFoundException if no ingredient could be found for identity.
-     */
-    default Ingredient findNotNullById(@NonNull IngredientId ingredientId) {
-        var ingredient = findById(ingredientId);
-        if (ingredient.isPresent()) {
-            return ingredient.get();
-        }
-        throw new EntityNotFoundException(Ingredient.class, ingredientId);
-    }
 
     /**
      * Finds the ingredient corresponding to the specified name.
@@ -85,14 +57,6 @@ public interface IngredientRepository {
      * @return the ingredient if existing, empty otherwise.
      */
     Optional<Ingredient> findByNameIgnoreCase(Name ingredientName);
-
-    /**
-     * Saves the specified ingredient.
-     *
-     * @param ingredient the ingredient to save.
-     * @return the saved ingredient.
-     */
-    <S extends Ingredient> S save(S ingredient);
 
     /**
      * Deletes all the ingredients stored in the repository.

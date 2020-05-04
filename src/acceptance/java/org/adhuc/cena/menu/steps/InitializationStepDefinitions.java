@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandre Carbenay
+ * Copyright (C) 2019-2020 Alexandre Carbenay
  *
  * This file is part of Cena Project.
  *

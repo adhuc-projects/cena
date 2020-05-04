@@ -32,7 +32,7 @@ import org.adhuc.cena.menu.ingredients.Ingredient;
  * The {@link InMemoryIngredientRepository} test class.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.1.0
  */
 @Tag("unit")
@@ -45,6 +45,18 @@ class InMemoryIngredientRepositoryShould {
     @BeforeEach
     void setUp() {
         repository = new InMemoryIngredientRepository();
+    }
+
+    @Test
+    @DisplayName("throw IllegalArgumentException when getting ingredient from null identity")
+    void throwIAEFindByIdNullId() {
+        assertThrows(IllegalArgumentException.class, () -> repository.findById(null));
+    }
+
+    @Test
+    @DisplayName("throw IllegalArgumentException when getting not null ingredient from null identity")
+    void throwIAEFindNotNullByIdNullId() {
+        assertThrows(IllegalArgumentException.class, () -> repository.findNotNullById(null));
     }
 
     @Test
@@ -99,18 +111,6 @@ class InMemoryIngredientRepositoryShould {
         @DisplayName("indicate that cucumber does not exist")
         void doesntExist() {
             assertThat(repository.exists(CUCUMBER_ID)).isFalse();
-        }
-
-        @Test
-        @DisplayName("throw IllegalArgumentException when getting ingredient from null identity")
-        void throwIAEFindByIdNullId() {
-            assertThrows(IllegalArgumentException.class, () -> repository.findById(null));
-        }
-
-        @Test
-        @DisplayName("throw IllegalArgumentException when getting not null ingredient from null identity")
-        void throwIAEFindNotNullByIdNullId() {
-            assertThrows(IllegalArgumentException.class, () -> repository.findNotNullById(null));
         }
 
         @Test

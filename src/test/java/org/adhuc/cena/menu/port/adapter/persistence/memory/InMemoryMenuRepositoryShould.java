@@ -22,11 +22,18 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.adhuc.cena.menu.menus.MenuMother.*;
 
+import java.time.LocalDate;
+import java.util.stream.Stream;
+
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import org.adhuc.cena.menu.common.EntityNotFoundException;
 import org.adhuc.cena.menu.menus.Menu;
+import org.adhuc.cena.menu.menus.MenuOwner;
 
 /**
  * The {@link InMemoryMenuRepository} test class.
@@ -53,22 +60,19 @@ class InMemoryMenuRepositoryShould {
         assertThrows(IllegalArgumentException.class, () -> repository.findByOwner(null));
     }
 
-    @Test
-    @DisplayName("throw IllegalArgumentException when finding menus by owner between date range with null owner")
-    void throwIAEFindByOwnerBetweenNullOwner() {
-        assertThrows(IllegalArgumentException.class, () -> repository.findByOwnerAndDateBetween(null, now(), now().plusDays(1)));
+    @ParameterizedTest
+    @MethodSource("invalidFindByOwnerBetweenParams")
+    @DisplayName("throw IllegalArgumentException when finding menus by owner between date range with null parameter")
+    void throwIAEFindByOwnerBetweenNullParam(MenuOwner owner, LocalDate since, LocalDate until) {
+        assertThrows(IllegalArgumentException.class, () -> repository.findByOwnerAndDateBetween(owner, since, until));
     }
 
-    @Test
-    @DisplayName("throw IllegalArgumentException when finding menus by owner between date range with null lower bound")
-    void throwIAEFindByOwnerBetweenNullSince() {
-        assertThrows(IllegalArgumentException.class, () -> repository.findByOwnerAndDateBetween(OWNER, null, now().plusDays(1)));
-    }
-
-    @Test
-    @DisplayName("throw IllegalArgumentException when finding menus by owner between date range with null upper bound")
-    void throwIAEFindByOwnerBetweenNullUntil() {
-        assertThrows(IllegalArgumentException.class, () -> repository.findByOwnerAndDateBetween(OWNER, now(), null));
+    private static Stream<Arguments> invalidFindByOwnerBetweenParams() {
+        return Stream.of(
+                Arguments.of(null, now(), now().plusDays(1)),
+                Arguments.of(OWNER, null, now().plusDays(1)),
+                Arguments.of(OWNER, now(), null)
+        );
     }
 
     @Test
@@ -215,7 +219,7 @@ class InMemoryMenuRepositoryShould {
 
             @Test
             @DisplayName("delete today's lunch successfully")
-            void deleteRecipe() {
+            void deleteMenu() {
                 repository.delete(todayLunch);
                 assertThat(repository.findByOwner(OWNER)).doesNotContain(todayLunch);
             }

@@ -33,7 +33,7 @@ import org.adhuc.cena.menu.recipes.Recipe;
  * The {@link InMemoryRecipeRepository} test class.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Tag("unit")
@@ -52,9 +52,27 @@ class InMemoryRecipeRepositoryShould {
     }
 
     @Test
+    @DisplayName("throw IllegalArgumentException when getting recipe from null identity")
+    void throwIAEFindByIdNullId() {
+        assertThrows(IllegalArgumentException.class, () -> repository.findById(null));
+    }
+
+    @Test
+    @DisplayName("throw IllegalArgumentException when getting not null recipe from null identity")
+    void throwIAEFindNotNullByIdNullId() {
+        assertThrows(IllegalArgumentException.class, () -> repository.findNotNullById(null));
+    }
+
+    @Test
     @DisplayName("throw IllegalArgumentException when saving null recipe")
     void throwIAESavingNullRecipe() {
         assertThrows(IllegalArgumentException.class, () -> repository.save(null));
+    }
+
+    @Test
+    @DisplayName("throw IllegalArgumentException when deleting null recipe")
+    void throwIAEDeletingNullRecipe() {
+        assertThrows(IllegalArgumentException.class, () -> repository.delete(null));
     }
 
     @Nested
@@ -121,24 +139,6 @@ class InMemoryRecipeRepositoryShould {
         @DisplayName("indicate that tomato, cucumber, olives and feta salad does not exist")
         void doesntExist() {
             assertThat(repository.exists(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)).isFalse();
-        }
-
-        @Test
-        @DisplayName("throw IllegalArgumentException when getting recipe from null identity")
-        void throwIAEFindByIdNullId() {
-            assertThrows(IllegalArgumentException.class, () -> repository.findById(null));
-        }
-
-        @Test
-        @DisplayName("throw IllegalArgumentException when getting not null recipe from null identity")
-        void throwIAEFindNotNullByIdNullId() {
-            assertThrows(IllegalArgumentException.class, () -> repository.findNotNullById(null));
-        }
-
-        @Test
-        @DisplayName("throw IllegalArgumentException when deleting null recipe")
-        void throwIAEDeletingNullRecipe() {
-            assertThrows(IllegalArgumentException.class, () -> repository.delete(null));
         }
 
         @Test

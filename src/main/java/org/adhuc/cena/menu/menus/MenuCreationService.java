@@ -26,8 +26,8 @@ import org.adhuc.cena.menu.common.AlreadyExistingEntityException;
 import org.adhuc.cena.menu.recipes.RecipeRepository;
 
 /**
- * An domain service dedicated to menu creation. This service ensures that a menu can be created only if its identity is
- * not already used.
+ * A domain service dedicated to menu creation. This service ensures that a menu can be created only if its identity is
+ * not already used and related recipes exist.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
@@ -44,11 +44,12 @@ class MenuCreationService {
     private RecipeRepository recipeRepository;
 
     /**
-     * Creates a menu, ensuring the identity is not already used.
+     * Creates a menu, ensuring the identity is not already used and related recipes exist.
      *
      * @param command the menu creation command.
      * @return the created menu.
      * @throws AlreadyExistingEntityException if a menu already exists with the identity specified in creation command.
+     * @throws MenuNotCreatableWithUnknownRecipeException if at least one related recipe does not exist.
      */
     Menu createMenu(CreateMenu command) {
         ensureMenuDontExist(command);

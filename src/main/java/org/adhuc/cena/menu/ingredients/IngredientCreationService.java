@@ -20,12 +20,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import org.adhuc.cena.menu.common.AlreadyExistingEntityException;
+
 /**
  * An domain service dedicated to ingredient creation. This service ensures that an ingredient can be created only if its
  * name is not already used.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.3.0
  * @since 0.1.0
  */
 @Slf4j
@@ -41,15 +43,27 @@ class IngredientCreationService {
      *
      * @param command the ingredient creation command.
      * @return the created ingredient.
+     * @throws AlreadyExistingEntityException if an ingredient already exists with the identity specified in creation command.
      * @throws IngredientNameAlreadyUsedException if the ingredient name specified in creation command is already used
      *                                            by another ingredient.
      */
     Ingredient createIngredient(CreateIngredient command) {
+        ensureIngredientDontExist(command);
+        ensureIngredientNameNotUsed(command);
+        return repository.save(new Ingredient(command));
+    }
+
+    private void ensureIngredientDontExist(CreateIngredient command) {
+        if (repository.exists(command.ingredientId())) {
+            throw new AlreadyExistingEntityException(Ingredient.class, command.ingredientId());
+        }
+    }
+
+    private void ensureIngredientNameNotUsed(CreateIngredient command) {
         var existingIngredient = repository.findByNameIgnoreCase(command.ingredientName());
         if (existingIngredient.isPresent()) {
             throw new IngredientNameAlreadyUsedException(existingIngredient.get().name());
         }
-        return repository.save(new Ingredient(command));
     }
 
 }

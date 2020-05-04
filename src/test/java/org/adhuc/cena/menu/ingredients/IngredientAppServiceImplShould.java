@@ -31,6 +31,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.adhuc.cena.menu.common.AlreadyExistingEntityException;
 import org.adhuc.cena.menu.common.EntityNotFoundException;
 import org.adhuc.cena.menu.common.Name;
 import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryIngredientRepository;
@@ -39,7 +40,7 @@ import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryIngredientRep
  * The {@link IngredientAppServiceImpl} test class.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.1.0
  */
 @Tag("unit")
@@ -157,8 +158,16 @@ class IngredientAppServiceImplShould {
         @DisplayName("fail during duplicated tomato creation")
         void failCreatingDuplicateTomato(String name) {
             var exception = assertThrows(IngredientNameAlreadyUsedException.class,
-                    () -> service.createIngredient(createCommand(ingredient(ID, new Name(name), List.of()))));
+                    () -> service.createIngredient(createCommand(ingredient(IngredientId.generate(), new Name(name), List.of()))));
             assertThat(exception).hasMessage("Ingredient name 'Tomato' already used by an existing ingredient");
+        }
+
+        @Test
+        @DisplayName("throw AlreadyExistingEntityException when creating ingredient with already used identity")
+        void throwAlreadyExistingEntityCreateRecipeAlreadyExistingId() {
+            var exception = assertThrows(AlreadyExistingEntityException.class,
+                    () -> service.createIngredient(createCommand(ingredient(ID, new Name("unused"), List.of()))));
+            assertThat(exception.getMessage()).isEqualTo("Entity of type Ingredient with identity '" + ID + "' already exists");
         }
 
         @Test

@@ -27,6 +27,7 @@ import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
 import org.junit.jupiter.api.*;
 
+import org.adhuc.cena.menu.common.AlreadyExistingEntityException;
 import org.adhuc.cena.menu.common.EntityNotFoundException;
 import org.adhuc.cena.menu.common.Name;
 import org.adhuc.cena.menu.ingredients.IngredientId;
@@ -38,7 +39,7 @@ import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryRecipeReposit
  * The {@link RecipeAppServiceImpl} test class.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Tag("unit")
@@ -57,7 +58,7 @@ class RecipeAppServiceImplShould {
     void setUp() {
         recipeRepository = new InMemoryRecipeRepository();
         ingredientRepository = new InMemoryIngredientRepository();
-        service = new RecipeAppServiceImpl(recipeRepository, ingredientRepository);
+        service = new RecipeAppServiceImpl(new RecipeCreationService(recipeRepository), recipeRepository, ingredientRepository);
 
         ingredientRepository.save(ingredient(TOMATO_ID, TOMATO, TOMATO_MEASUREMENT_TYPES));
         ingredientRepository.save(ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES));
@@ -177,6 +178,14 @@ class RecipeAppServiceImplShould {
         @DisplayName("return recipe when getting recipe from tomato, cucumber and mozzarella salad id")
         void returnTomatoCucumberAndMozzaSalad() {
             assertThat(service.getRecipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID)).isEqualToComparingFieldByField(tomatoCucumberAndMozzaSalad);
+        }
+
+        @Test
+        @DisplayName("throw AlreadyExistingEntityException when creating recipe with already used identity")
+        void throwAlreadyExistingEntityCreateRecipeAlreadyExistingId() {
+            var exception = assertThrows(AlreadyExistingEntityException.class,
+                    () -> service.createRecipe(createCommand(tomatoCucumberAndMozzaSalad)));
+            assertThat(exception.getMessage()).isEqualTo("Entity of type Recipe with identity '" + TOMATO_CUCUMBER_MOZZA_SALAD_ID + "' already exists");
         }
 
         @Test

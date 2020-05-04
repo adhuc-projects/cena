@@ -30,7 +30,7 @@ import org.adhuc.cena.menu.ingredients.IngredientRepository;
  * A {@link RecipeAppService} implementation.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Slf4j
@@ -38,6 +38,8 @@ import org.adhuc.cena.menu.ingredients.IngredientRepository;
 @RequiredArgsConstructor
 class RecipeAppServiceImpl implements RecipeAppService {
 
+    @NonNull
+    private RecipeCreationService recipeCreationService;
     @NonNull
     private RecipeRepository recipeRepository;
     @NonNull
@@ -61,9 +63,7 @@ class RecipeAppServiceImpl implements RecipeAppService {
     @AsAuthenticatedUser
     public Recipe createRecipe(@NonNull CreateRecipe command) {
         log.info("Create recipe from command {}", command);
-        var recipe = new Recipe(command.recipeId(), command.recipeName(), command.recipeContent(), command.recipeAuthor(),
-                command.servings());
-        return recipeRepository.save(recipe);
+        return recipeCreationService.createRecipe(command);
     }
 
     @Override

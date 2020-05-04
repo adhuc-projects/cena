@@ -60,6 +60,15 @@ public class Recipe extends BasicEntity<RecipeId> {
     private Map<IngredientId, RecipeIngredient> ingredients = new HashMap<>();
 
     /**
+     * Creates a recipe based on the specified creation command.
+     *
+     * @param command the recipe creation command.
+     */
+    public Recipe(@NonNull CreateRecipe command) {
+        this(command.recipeId(), command.recipeName(), command.recipeContent(), command.recipeAuthor(), command.servings());
+    }
+
+    /**
      * Creates a recipe.
      *
      * @param id       the recipe identity.
@@ -68,7 +77,7 @@ public class Recipe extends BasicEntity<RecipeId> {
      * @param author   the recipe author.
      * @param servings the number of servings for recipe.
      */
-    public Recipe(@NonNull RecipeId id, @NonNull Name name, @NonNull String content, @NonNull RecipeAuthor author,
+    Recipe(@NonNull RecipeId id, @NonNull Name name, @NonNull String content, @NonNull RecipeAuthor author,
                   @NonNull Servings servings) {
         super(id);
         hasText(content, "Cannot set recipe content with invalid value");

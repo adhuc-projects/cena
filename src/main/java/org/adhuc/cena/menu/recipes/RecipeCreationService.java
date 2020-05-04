@@ -49,8 +49,7 @@ class RecipeCreationService {
         if (recipeRepository.exists(command.recipeId())) {
             throw new AlreadyExistingEntityException(Recipe.class, command.recipeId());
         }
-        var recipe = new Recipe(command.recipeId(), command.recipeName(), command.recipeContent(), command.recipeAuthor(),
-                command.servings());
+        var recipe = new Recipe(command);
         return recipeRepository.save(recipe);
     }
 

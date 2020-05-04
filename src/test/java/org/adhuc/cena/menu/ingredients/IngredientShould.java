@@ -37,7 +37,7 @@ import org.adhuc.cena.menu.common.Name;
  * The {@link Ingredient} test class.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.1.0
  */
 @Tag("unit")
@@ -64,6 +64,19 @@ class IngredientShould {
                 Arguments.of(ID, null, MEASUREMENT_TYPES),
                 Arguments.of(ID, NAME, null)
         );
+    }
+
+    @ParameterizedTest
+    @MethodSource("validCreationParameters")
+    @DisplayName("contain id, name and measurement types from command used during creation")
+    void containCreationValuesFromCommand(IngredientId ingredientId, Name name, List<MeasurementType> measurementTypes) {
+        var command = new CreateIngredient(ingredientId, name, measurementTypes);
+        var ingredient = new Ingredient(command);
+        assertSoftly(softly -> {
+            softly.assertThat(ingredient.id()).isEqualTo(ingredientId);
+            softly.assertThat(ingredient.name()).isEqualTo(name);
+            softly.assertThat(ingredient.measurementTypes()).isEqualTo(measurementTypes);
+        });
     }
 
     @ParameterizedTest

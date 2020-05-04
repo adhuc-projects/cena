@@ -48,7 +48,7 @@ class MenuShould {
     @NullSource
     @DisplayName("not be creatable with invalid parameters")
     void notBeCreatableWithInvalidParameters(CreateMenu command) {
-        assertThrows(IllegalArgumentException.class, () -> new Menu(command));
+        assertThrows(NullPointerException.class, () -> new Menu(command));
     }
 
     @Test

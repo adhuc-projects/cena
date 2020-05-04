@@ -51,6 +51,12 @@ import org.adhuc.cena.menu.ingredients.IngredientMother;
 @DisplayName("Recipe should")
 class RecipeShould {
 
+    @Test
+    @DisplayName("not be creatable with null creation command")
+    void notBeCreatableWithNullCommand() {
+        assertThrows(NullPointerException.class, () -> new Recipe(null));
+    }
+
     @ParameterizedTest
     @MethodSource("invalidCreationParameters")
     @DisplayName("not be creatable with invalid parameters")
@@ -67,6 +73,20 @@ class RecipeShould {
                 Arguments.of(ID, NAME, CONTENT, null, SERVINGS),
                 Arguments.of(ID, NAME, CONTENT, AUTHOR, null)
         );
+    }
+
+    @Test
+    @DisplayName("contain id, name, content and author from command used during creation")
+    void containCreationValuesFromCommand() {
+        var recipe = new Recipe(createCommand());
+        assertSoftly(softly -> {
+            softly.assertThat(recipe.id()).isEqualTo(ID);
+            softly.assertThat(recipe.name()).isEqualTo(NAME);
+            softly.assertThat(recipe.content()).isEqualTo(CONTENT);
+            softly.assertThat(recipe.ingredients()).isEmpty();
+            softly.assertThat(recipe.author()).isEqualTo(AUTHOR);
+            softly.assertThat(recipe.servings()).isEqualTo(SERVINGS);
+        });
     }
 
     @Test

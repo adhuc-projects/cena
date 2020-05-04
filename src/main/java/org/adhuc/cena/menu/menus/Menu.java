@@ -46,10 +46,13 @@ public class Menu implements Entity<MenuId> {
     @NonNull
     private Set<RecipeId> mainCourseRecipes;
 
+    /**
+     * Creates a menu based on the specified creation command.
+     *
+     * @param command the menu creation command.
+     */
     public Menu(@NonNull CreateMenu command) {
-        this.id = command.menuId();
-        this.covers = command.covers();
-        this.mainCourseRecipes = command.mainCourseRecipes();
+        this(command.menuId(), command.covers(), command.mainCourseRecipes());
     }
 
     public MenuOwner owner() {

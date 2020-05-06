@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import org.adhuc.cena.menu.common.entity.AlreadyExistingEntityException;
-import org.adhuc.cena.menu.recipes.RecipeRepository;
+import org.adhuc.cena.menu.recipes.RecipeAppService;
 
 /**
  * A domain service dedicated to menu creation. This service ensures that a menu can be created only if its identity is
@@ -41,7 +41,7 @@ class MenuCreationService {
     @NonNull
     private MenuRepository menuRepository;
     @NonNull
-    private RecipeRepository recipeRepository;
+    private RecipeAppService recipeAppService;
 
     /**
      * Creates a menu, ensuring the identity is not already used and related recipes exist.
@@ -65,7 +65,7 @@ class MenuCreationService {
 
     private void ensureRecipesExist(CreateMenu command) {
         var unknownRecipes = command.mainCourseRecipes().stream()
-                .filter(recipeId -> !recipeRepository.exists(recipeId))
+                .filter(recipeId -> !recipeAppService.exists(recipeId))
                 .sorted()
                 .collect(toList());
         if (!unknownRecipes.isEmpty()) {

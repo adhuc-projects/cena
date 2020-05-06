@@ -18,6 +18,8 @@ package org.adhuc.cena.menu.recipes;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
 import static org.adhuc.cena.menu.recipes.MeasurementUnit.CENTILITER;
@@ -26,9 +28,9 @@ import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 import org.junit.jupiter.api.*;
 
 import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
+import org.adhuc.cena.menu.ingredients.Ingredient;
+import org.adhuc.cena.menu.ingredients.IngredientAppService;
 import org.adhuc.cena.menu.ingredients.IngredientMother;
-import org.adhuc.cena.menu.ingredients.IngredientRepository;
-import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryIngredientRepository;
 import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryRecipeRepository;
 
 /**
@@ -44,28 +46,16 @@ import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryRecipeReposit
 class RecipeIngredientAppServiceImplShould {
 
     private RecipeRepository recipeRepository;
-    private IngredientRepository ingredientRepository;
+    private IngredientAppService ingredientAppServiceMock;
     private RecipeIngredientAppServiceImpl service;
 
     @BeforeEach
     void setUp() {
         recipeRepository = new InMemoryRecipeRepository();
-        ingredientRepository = new InMemoryIngredientRepository();
-        var additionService = new IngredientToRecipeAdditionService(recipeRepository, ingredientRepository);
-        var removalService = new IngredientFromRecipeRemovalService(recipeRepository, ingredientRepository);
+        ingredientAppServiceMock = mock(IngredientAppService.class);
+        var additionService = new IngredientToRecipeAdditionService(recipeRepository, ingredientAppServiceMock);
+        var removalService = new IngredientFromRecipeRemovalService(recipeRepository, ingredientAppServiceMock);
         service = new RecipeIngredientAppServiceImpl(additionService, removalService, recipeRepository);
-    }
-
-    @Test
-    @DisplayName("return false when indicating if ingredients are related with no recipe")
-    void ingredientsNotRelatedWhenNoRecipe() {
-        assertThat(service.areIngredientsRelated()).isFalse();
-    }
-
-    @Test
-    @DisplayName("return false when indicating if tomato is related with no recipe")
-    void tomatoNotRelatedWhenNoRecipe() {
-        assertThat(service.isIngredientRelated(TOMATO_ID)).isFalse();
     }
 
     @Test
@@ -93,7 +83,8 @@ class RecipeIngredientAppServiceImplShould {
         void setUp() {
             recipeRepository.save(builder().build());
             assumeThat(recipeRepository.exists(RecipeMother.ID)).isTrue();
-            assumeThat(ingredientRepository.exists(IngredientMother.ID)).isFalse();
+            when(ingredientAppServiceMock.getIngredient(IngredientMother.ID))
+                    .thenThrow(new EntityNotFoundException(Ingredient.class, IngredientMother.ID));
         }
 
         @Test
@@ -114,9 +105,8 @@ class RecipeIngredientAppServiceImplShould {
     class WithUnknownRecipe {
         @BeforeEach
         void setUp() {
-            ingredientRepository.save(ingredient());
             assumeThat(recipeRepository.exists(RecipeMother.ID)).isFalse();
-            assumeThat(ingredientRepository.exists(IngredientMother.ID)).isTrue();
+            when(ingredientAppServiceMock.getIngredient(IngredientMother.ID)).thenReturn(ingredient());
         }
 
         @Test
@@ -143,33 +133,13 @@ class RecipeIngredientAppServiceImplShould {
     class WithIngredientAndRecipe {
         @BeforeEach
         void setUp() {
-            ingredientRepository.save(ingredient());
-            ingredientRepository.save(ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES));
-            assumeThat(ingredientRepository.exists(IngredientMother.ID)).isTrue();
-            assumeThat(ingredientRepository.exists(CUCUMBER_ID)).isTrue();
+            when(ingredientAppServiceMock.getIngredient(IngredientMother.ID)).thenReturn(ingredient());
+            when(ingredientAppServiceMock.getIngredient(CUCUMBER_ID)).thenReturn(ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES));
 
             recipeRepository.save(builder().withIngredient(CUCUMBER_ID, false).build());
             assumeThat(recipeRepository.exists(RecipeMother.ID)).isTrue();
             assumeThat(recipeRepository.findNotNullById(RecipeMother.ID).ingredients())
                     .containsExactly(recipeIngredient(CUCUMBER_ID, false, QUANTITY));
-        }
-
-        @Test
-        @DisplayName("return true when indicating if ingredients are related with one recipe related to ingredient")
-        void ingredientsRelatedWhenOneRecipeRelatedToIngredient() {
-            assertThat(service.areIngredientsRelated()).isTrue();
-        }
-
-        @Test
-        @DisplayName("return false when indicating if tomato is related with no recipe related to tomato")
-        void tomatoNotRelated() {
-            assertThat(service.isIngredientRelated(TOMATO_ID)).isFalse();
-        }
-
-        @Test
-        @DisplayName("return true when indicating if cucumber is related with one recipe related to cucumber")
-        void cucumberRelated() {
-            assertThat(service.isIngredientRelated(CUCUMBER_ID)).isTrue();
         }
 
         @Test

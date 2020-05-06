@@ -20,15 +20,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
-import org.adhuc.cena.menu.ingredients.Ingredient;
-import org.adhuc.cena.menu.ingredients.IngredientRepository;
+import org.adhuc.cena.menu.ingredients.IngredientAppService;
 
 /**
  * A domain service dedicated to ingredient from recipe removal. This service ensures that both ingredient and recipe
  * exist before proceeding.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Slf4j
@@ -37,7 +36,7 @@ import org.adhuc.cena.menu.ingredients.IngredientRepository;
 class IngredientFromRecipeRemovalService {
 
     private final RecipeRepository recipeRepository;
-    private final IngredientRepository ingredientRepository;
+    private final IngredientAppService ingredientAppService;
 
     /**
      * Removes an ingredient from a recipe, ensuring both ingredient and recipe exist before proceeding.
@@ -46,9 +45,8 @@ class IngredientFromRecipeRemovalService {
      * @throws EntityNotFoundException if either ingredient or recipe does not exist.
      */
     void removeIngredientFromRecipe(RemoveIngredientFromRecipe command) {
-        if (!ingredientRepository.exists(command.ingredientId())) {
-            throw new EntityNotFoundException(Ingredient.class, command.ingredientId());
-        }
+        // Ensure that ingredient exists
+        ingredientAppService.getIngredient(command.ingredientId());
         var recipe = recipeRepository.findNotNullById(command.recipeId());
         recipe.removeIngredient(command);
         recipeRepository.save(recipe);

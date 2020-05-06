@@ -41,7 +41,6 @@ import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
 import org.adhuc.cena.menu.configuration.ApplicationSecurityConfiguration;
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
 import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryIngredientRepository;
-import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryRecipeRepository;
 import org.adhuc.cena.menu.recipes.RecipeRepository;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 import org.adhuc.cena.menu.support.WithCommunityUser;
@@ -52,7 +51,7 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
  * The {@link IngredientAppServiceImpl} security tests.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.1.0
  */
 @Tag("integration")
@@ -66,6 +65,8 @@ class IngredientAppServiceWithSecurityShould {
     private IngredientAppService service;
     @Autowired
     private IngredientRepository repository;
+    @MockBean
+    private RecipeRepository recipeRepository;
     @MockBean
     private IngredientRelatedService ingredientRelatedService;
 
@@ -214,11 +215,6 @@ class IngredientAppServiceWithSecurityShould {
         @Bean
         IngredientRepository ingredientRepository() {
             return new InMemoryIngredientRepository();
-        }
-
-        @Bean
-        RecipeRepository recipeRepository() {
-            return new InMemoryRecipeRepository();
         }
     }
 

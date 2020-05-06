@@ -21,12 +21,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import static org.adhuc.cena.menu.menus.DateRange.since;
 import static org.adhuc.cena.menu.menus.DateRange.until;
 import static org.adhuc.cena.menu.menus.MenuMother.*;
 import static org.adhuc.cena.menu.recipes.RecipeMother.TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID;
-import static org.adhuc.cena.menu.recipes.RecipeMother.recipe;
 
 import java.util.Collection;
 import java.util.stream.Stream;
@@ -39,10 +40,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.adhuc.cena.menu.common.entity.AlreadyExistingEntityException;
 import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
 import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryMenuRepository;
-import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryRecipeRepository;
+import org.adhuc.cena.menu.recipes.RecipeAppService;
 import org.adhuc.cena.menu.recipes.RecipeId;
 import org.adhuc.cena.menu.recipes.RecipeMother;
-import org.adhuc.cena.menu.recipes.RecipeRepository;
 
 /**
  * The {@link MenuAppServiceImpl} test class.
@@ -57,16 +57,16 @@ import org.adhuc.cena.menu.recipes.RecipeRepository;
 class MenuAppServiceImplShould {
 
     private MenuRepository menuRepository;
-    private RecipeRepository recipeRepository;
+    private RecipeAppService recipeAppService;
     private MenuAppServiceImpl service;
 
     @BeforeEach
     void setUp() {
         menuRepository = new InMemoryMenuRepository();
-        recipeRepository = new InMemoryRecipeRepository();
-        service = new MenuAppServiceImpl(new MenuCreationService(menuRepository, recipeRepository), menuRepository);
+        recipeAppService = mock(RecipeAppService.class);
+        service = new MenuAppServiceImpl(new MenuCreationService(menuRepository, recipeAppService), menuRepository);
 
-        recipeRepository.save(recipe());
+        when(recipeAppService.exists(RecipeMother.ID)).thenReturn(true);
     }
 
     @Test
@@ -164,7 +164,7 @@ class MenuAppServiceImplShould {
                 todayLunch = menu();
                 menuRepository.save(todayLunch);
 
-                recipeRepository.save(RecipeMother.builder().withId(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID).build());
+                when(recipeAppService.exists(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)).thenReturn(true);
             }
 
             @Test

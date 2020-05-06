@@ -15,44 +15,39 @@
  */
 package org.adhuc.cena.menu.recipes;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import org.adhuc.cena.menu.ingredients.IngredientId;
+import org.adhuc.cena.menu.ingredients.IngredientRelatedService;
 
 /**
  * A {@link RecipeIngredientAppService} implementation.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
- * @since 0.2.0
+ * @version 0.3.0
+ * @since 0.3.0
  */
-@Slf4j
 @Service
 @RequiredArgsConstructor
-class RecipeIngredientAppServiceImpl implements RecipeIngredientAppService {
+class RecipeIngredientRelatedService implements IngredientRelatedService {
 
-    private final IngredientToRecipeAdditionService ingredientToRecipeAdditionService;
-    private final IngredientFromRecipeRemovalService ingredientFromRecipeRemovalService;
     private final RecipeRepository recipeRepository;
 
     @Override
-    @AsRecipeAuthor
-    public void addIngredientToRecipe(@NonNull AddIngredientToRecipe command) {
-        ingredientToRecipeAdditionService.addIngredientToRecipe(command);
+    public String relatedObjectName() {
+        return "recipe";
     }
 
     @Override
-    @AsRecipeAuthor
-    public void removeIngredientFromRecipe(@NonNull RemoveIngredientFromRecipe command) {
-        ingredientFromRecipeRemovalService.removeIngredientFromRecipe(command);
+    public boolean areIngredientsRelated() {
+        return recipeRepository.findAll().stream().anyMatch(r -> !r.ingredients().isEmpty());
     }
 
     @Override
-    @AsRecipeAuthor
-    public void removeIngredientsFromRecipe(@NonNull RemoveIngredientsFromRecipe command) {
-        var recipe = recipeRepository.findNotNullById(command.recipeId());
-        recipe.removeIngredients(command);
+    public boolean isIngredientRelated(IngredientId ingredientId) {
+        return recipeRepository.findAll().stream().anyMatch(
+                r -> r.ingredients().stream().anyMatch(i -> i.ingredientId().equals(ingredientId)));
     }
 
 }

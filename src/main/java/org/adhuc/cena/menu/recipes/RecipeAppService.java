@@ -37,6 +37,14 @@ public interface RecipeAppService {
     List<Recipe> getRecipes(QueryRecipes query);
 
     /**
+     * Indicates whether a recipe with the specified identity exists.
+     *
+     * @param recipeId the recipe identity.
+     * @return {@code true} if recipe exists, {@code false} otherwise.
+     */
+    boolean exists(RecipeId recipeId);
+
+    /**
      * Gets the recipe corresponding to the specified identity.
      *
      * @param recipeId the recipe identity.

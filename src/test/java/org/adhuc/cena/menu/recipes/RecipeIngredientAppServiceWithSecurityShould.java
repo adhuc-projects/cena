@@ -18,6 +18,7 @@ package org.adhuc.cena.menu.recipes;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
 import static org.adhuc.cena.menu.common.security.RolesDefinition.INGREDIENT_MANAGER_ROLE;
 import static org.adhuc.cena.menu.common.security.RolesDefinition.USER_ROLE;
@@ -32,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -43,8 +45,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import org.adhuc.cena.menu.configuration.ApplicationSecurityConfiguration;
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
-import org.adhuc.cena.menu.ingredients.IngredientRepository;
-import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryIngredientRepository;
+import org.adhuc.cena.menu.ingredients.IngredientAppService;
 import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryRecipeRepository;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 import org.adhuc.cena.menu.support.WithCommunityUser;
@@ -55,7 +56,7 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
  * The {@link RecipeIngredientAppServiceImpl} security tests.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Tag("integration")
@@ -74,14 +75,13 @@ class RecipeIngredientAppServiceWithSecurityShould {
     private RecipeIngredientAppService service;
     @Autowired
     private RecipeRepository repository;
-    @Autowired
-    private IngredientRepository ingredientRepository;
+    @MockBean
+    private IngredientAppService ingredientAppServiceMock;
 
     @BeforeEach
     void setUp() {
-        ingredientRepository.deleteAll();
-        ingredientRepository.save(ingredient(TOMATO_ID, TOMATO, TOMATO_MEASUREMENT_TYPES));
-        ingredientRepository.save(ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES));
+        when(ingredientAppServiceMock.getIngredient(TOMATO_ID)).thenReturn(ingredient(TOMATO_ID, TOMATO, TOMATO_MEASUREMENT_TYPES));
+        when(ingredientAppServiceMock.getIngredient(CUCUMBER_ID)).thenReturn(ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES));
 
         repository.deleteAll();
         repository.save(builder().withAuthorName(RECIPE_AUTHOR_NAME).withIngredients(CUCUMBER_ID).build());
@@ -238,11 +238,6 @@ class RecipeIngredientAppServiceWithSecurityShould {
         @Bean
         RecipeRepository recipeRepository() {
             return new InMemoryRecipeRepository();
-        }
-
-        @Bean
-        IngredientRepository ingredientRepository() {
-            return new InMemoryIngredientRepository();
         }
     }
 

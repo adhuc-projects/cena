@@ -20,15 +20,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
-import org.adhuc.cena.menu.ingredients.Ingredient;
-import org.adhuc.cena.menu.ingredients.IngredientRepository;
+import org.adhuc.cena.menu.ingredients.IngredientAppService;
 
 /**
  * A domain service dedicated to ingredient to recipe addition. This service ensures that both ingredient and recipe
  * exist before proceeding.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Slf4j
@@ -37,7 +36,7 @@ import org.adhuc.cena.menu.ingredients.IngredientRepository;
 class IngredientToRecipeAdditionService {
 
     private final RecipeRepository recipeRepository;
-    private final IngredientRepository ingredientRepository;
+    private final IngredientAppService ingredientAppService;
 
     /**
      * Adds an ingredient to a recipe, ensuring both ingredient and recipe exist before proceeding.
@@ -46,13 +45,10 @@ class IngredientToRecipeAdditionService {
      * @throws EntityNotFoundException if either ingredient or recipe does not exist.
      */
     void addIngredientToRecipe(AddIngredientToRecipe command) {
-        var ingredient = ingredientRepository.findById(command.ingredientId());
-        if (ingredient.isEmpty()) {
-            throw new EntityNotFoundException(Ingredient.class, command.ingredientId());
-        }
-        if (!command.quantity().unit().isAssociatedToOneOf(ingredient.get().measurementTypes())) {
+        var ingredient = ingredientAppService.getIngredient(command.ingredientId());
+        if (!command.quantity().unit().isAssociatedToOneOf(ingredient.measurementTypes())) {
             throw new InvalidMeasurementUnitForIngredientException(command.ingredientId(), command.recipeId(),
-                    command.quantity().unit(), ingredient.get().measurementTypes());
+                    command.quantity().unit(), ingredient.measurementTypes());
         }
         var recipe = recipeRepository.findNotNullById(command.recipeId());
         recipe.addIngredient(command);

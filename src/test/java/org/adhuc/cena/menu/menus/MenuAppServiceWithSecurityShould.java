@@ -17,9 +17,9 @@ package org.adhuc.cena.menu.menus;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
 import static org.adhuc.cena.menu.menus.MenuMother.*;
-import static org.adhuc.cena.menu.recipes.RecipeMother.recipe;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -39,7 +40,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.adhuc.cena.menu.configuration.ApplicationSecurityConfiguration;
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
 import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryMenuRepository;
-import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryRecipeRepository;
+import org.adhuc.cena.menu.recipes.RecipeAppService;
+import org.adhuc.cena.menu.recipes.RecipeMother;
 import org.adhuc.cena.menu.recipes.RecipeRepository;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 import org.adhuc.cena.menu.support.WithCommunityUser;
@@ -68,15 +70,18 @@ class MenuAppServiceWithSecurityShould {
     private MenuAppService service;
     @Autowired
     private MenuRepository menuRepository;
-    @Autowired
+    @MockBean
     private RecipeRepository recipeRepository;
+    @MockBean
+    private RecipeAppService recipeAppServiceMock;
 
     @BeforeEach
     void setUp() {
         menu = builder().withOwnerName(MENU_OWNER_NAME).build();
         menuRepository.deleteAll();
         menuRepository.save(menu);
-        recipeRepository.save(recipe());
+
+        when(recipeAppServiceMock.exists(RecipeMother.ID)).thenReturn(true);
     }
 
     @Test
@@ -178,11 +183,6 @@ class MenuAppServiceWithSecurityShould {
         @Bean
         MenuRepository menuRepository() {
             return new InMemoryMenuRepository();
-        }
-
-        @Bean
-        RecipeRepository recipeRepository() {
-            return new InMemoryRecipeRepository();
         }
     }
 

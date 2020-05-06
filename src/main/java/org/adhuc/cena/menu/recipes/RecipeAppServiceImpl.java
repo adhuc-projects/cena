@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 
 import org.adhuc.cena.menu.common.security.AsAuthenticatedUser;
 import org.adhuc.cena.menu.common.security.AsSuperAdministrator;
-import org.adhuc.cena.menu.ingredients.IngredientRepository;
+import org.adhuc.cena.menu.ingredients.IngredientAppService;
 
 /**
  * A {@link RecipeAppService} implementation.
@@ -43,15 +43,20 @@ class RecipeAppServiceImpl implements RecipeAppService {
     @NonNull
     private RecipeRepository recipeRepository;
     @NonNull
-    private IngredientRepository ingredientRepository;
+    private IngredientAppService ingredientAppService;
 
     @Override
     public List<Recipe> getRecipes(QueryRecipes query) {
         if (query.ingredientId().isPresent()) {
-            var ingredient = ingredientRepository.findNotNullById(query.ingredientId().get());
+            var ingredient = ingredientAppService.getIngredient(query.ingredientId().get());
             return List.copyOf(recipeRepository.findByIngredient(ingredient.id()));
         }
         return List.copyOf(recipeRepository.findAll());
+    }
+
+    @Override
+    public boolean exists(@NonNull RecipeId recipeId) {
+        return recipeRepository.exists(recipeId);
     }
 
     @Override

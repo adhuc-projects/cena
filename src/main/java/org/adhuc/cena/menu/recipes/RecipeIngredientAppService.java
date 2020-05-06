@@ -15,8 +15,6 @@
  */
 package org.adhuc.cena.menu.recipes;
 
-import org.adhuc.cena.menu.ingredients.IngredientRelatedService;
-
 /**
  * An application service for recipe ingredients.
  *
@@ -24,12 +22,7 @@ import org.adhuc.cena.menu.ingredients.IngredientRelatedService;
  * @version 0.2.0
  * @since 0.2.0
  */
-public interface RecipeIngredientAppService extends IngredientRelatedService {
-
-    @Override
-    default String relatedObjectName() {
-        return "recipe";
-    }
+public interface RecipeIngredientAppService {
 
     /**
      * Adds an ingredient to a recipe.

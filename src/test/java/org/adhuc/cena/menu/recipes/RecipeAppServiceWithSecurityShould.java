@@ -44,7 +44,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
 import org.adhuc.cena.menu.configuration.ApplicationSecurityConfiguration;
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
-import org.adhuc.cena.menu.ingredients.IngredientRepository;
+import org.adhuc.cena.menu.ingredients.IngredientAppService;
 import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryRecipeRepository;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 import org.adhuc.cena.menu.support.WithCommunityUser;
@@ -72,7 +72,7 @@ class RecipeAppServiceWithSecurityShould {
     @Autowired
     private RecipeRepository repository;
     @MockBean
-    private IngredientRepository ingredientRepository;
+    private IngredientAppService ingredientAppService;
 
     @BeforeEach
     void setUp() {

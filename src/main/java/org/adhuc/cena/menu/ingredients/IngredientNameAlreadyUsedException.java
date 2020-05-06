@@ -20,9 +20,9 @@ import static org.springframework.http.HttpStatus.CONFLICT;
 import lombok.NonNull;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import org.adhuc.cena.menu.common.entity.Name;
 import org.adhuc.cena.menu.common.exception.CenaException;
 import org.adhuc.cena.menu.common.exception.ExceptionCode;
-import org.adhuc.cena.menu.common.entity.Name;
 
 /**
  * An exception occurring while creating an ingredient with already used name.
@@ -42,7 +42,7 @@ public class IngredientNameAlreadyUsedException extends CenaException {
      * @param ingredientName the already used ingredient name.
      */
     public IngredientNameAlreadyUsedException(@NonNull Name ingredientName) {
-        super(String.format("Ingredient name '%s' already used by an existing ingredient", ingredientName), EXCEPTION_CODE);
+        super("Ingredient name '" + ingredientName + "' already used by an existing ingredient", EXCEPTION_CODE);
     }
 
 }

@@ -15,8 +15,6 @@
  */
 package org.adhuc.cena.menu.ingredients;
 
-import static java.lang.String.format;
-
 import static org.springframework.http.HttpStatus.CONFLICT;
 
 import lombok.NonNull;
@@ -43,7 +41,7 @@ class IngredientNotDeletableRelatedToObjectException extends CenaException {
      * @param relatedObjectName the related object name.
      */
     IngredientNotDeletableRelatedToObjectException(@NonNull String relatedObjectName) {
-        super(format("Ingredients cannot be deleted as at least one is related to at least one %s", relatedObjectName), EXCEPTION_CODE);
+        super("Ingredients cannot be deleted as at least one is related to at least one " + relatedObjectName, EXCEPTION_CODE);
     }
 
     /**
@@ -54,7 +52,7 @@ class IngredientNotDeletableRelatedToObjectException extends CenaException {
      * @param relatedObjectName the related object name.
      */
     IngredientNotDeletableRelatedToObjectException(@NonNull IngredientId ingredientId, @NonNull String relatedObjectName) {
-        super(format("Ingredient '%s' cannot be deleted as it is related to at least one %s", ingredientId, relatedObjectName), EXCEPTION_CODE);
+        super("Ingredient '" + ingredientId + "' cannot be deleted as it is related to at least one " + relatedObjectName, EXCEPTION_CODE);
     }
 
 }

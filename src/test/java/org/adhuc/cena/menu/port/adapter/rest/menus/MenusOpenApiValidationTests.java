@@ -20,8 +20,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-import static org.adhuc.cena.menu.common.ExceptionCode.INVALID_REQUEST;
-import static org.adhuc.cena.menu.common.ExceptionCode.MENU_NOT_CREATABLE_WITH_UNKNOWN_RECIPE;
+import static org.adhuc.cena.menu.common.exception.ExceptionCode.INVALID_REQUEST;
+import static org.adhuc.cena.menu.common.exception.ExceptionCode.MENU_NOT_CREATABLE_WITH_UNKNOWN_RECIPE;
 import static org.adhuc.cena.menu.port.adapter.rest.assertion.support.ErrorAssert.assertThat;
 import static org.adhuc.cena.menu.recipes.RecipeMother.TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID;
 import static org.adhuc.cena.menu.recipes.RecipeMother.recipe;

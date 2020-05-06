@@ -27,7 +27,7 @@ import lombok.AllArgsConstructor;
 import lombok.With;
 import org.springframework.http.HttpStatus;
 
-import org.adhuc.cena.menu.common.ExceptionCode;
+import org.adhuc.cena.menu.common.exception.ExceptionCode;
 
 /**
  * A REST error representation, consistent with the the error structure as returned by the {@link RestControllerErrorAttributes}.

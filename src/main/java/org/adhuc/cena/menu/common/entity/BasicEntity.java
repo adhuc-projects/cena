@@ -13,23 +13,33 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.common;
+package org.adhuc.cena.menu.common.entity;
+
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 
 /**
- * An entity definition.
+ * An abstract entity definition, containing the entity identity.
  *
  * @param <I> the identity type.
  * @author Alexandre Carbenay
  * @version 0.1.0
  * @since 0.1.0
  */
-public interface Entity<I extends Identity> {
+@RequiredArgsConstructor
+@EqualsAndHashCode(of = {"id"})
+@Accessors(fluent = true)
+public abstract class BasicEntity<I extends Identity> implements Entity<I> {
 
-    /**
-     * Gets the entity identity.
-     *
-     * @return the entity identity.
-     */
-    I id();
+    @Getter
+    @NonNull
+    private final I id;
 
+    @Override
+    public String toString() {
+        return String.format("id=%s", id);
+    }
 }

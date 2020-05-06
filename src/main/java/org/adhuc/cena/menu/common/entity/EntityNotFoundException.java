@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.common;
+package org.adhuc.cena.menu.common.entity;
 
 import static java.lang.String.format;
 
@@ -21,6 +21,9 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 import lombok.Getter;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
+import org.adhuc.cena.menu.common.exception.CenaException;
+import org.adhuc.cena.menu.common.exception.ExceptionCode;
 
 /**
  * An exception occurring while requesting a resource that cannot be found.

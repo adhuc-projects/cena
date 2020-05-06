@@ -23,8 +23,8 @@ import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.WebRequest;
 
-import org.adhuc.cena.menu.common.CenaException;
-import org.adhuc.cena.menu.common.ExceptionCode;
+import org.adhuc.cena.menu.common.exception.CenaException;
+import org.adhuc.cena.menu.common.exception.ExceptionCode;
 
 /**
  * An {@link org.springframework.boot.web.servlet.error.ErrorAttributes ErrorAttributes} implementation based on the

@@ -27,9 +27,9 @@ import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
 import org.junit.jupiter.api.*;
 
-import org.adhuc.cena.menu.common.AlreadyExistingEntityException;
-import org.adhuc.cena.menu.common.EntityNotFoundException;
-import org.adhuc.cena.menu.common.Name;
+import org.adhuc.cena.menu.common.entity.AlreadyExistingEntityException;
+import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
+import org.adhuc.cena.menu.common.entity.Name;
 import org.adhuc.cena.menu.ingredients.IngredientId;
 import org.adhuc.cena.menu.ingredients.IngredientRepository;
 import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryIngredientRepository;

@@ -24,7 +24,7 @@ import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
 import org.junit.jupiter.api.*;
 
-import org.adhuc.cena.menu.common.EntityNotFoundException;
+import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
 import org.adhuc.cena.menu.ingredients.IngredientId;
 import org.adhuc.cena.menu.ingredients.IngredientMother;
 import org.adhuc.cena.menu.recipes.Recipe;

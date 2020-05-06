@@ -20,7 +20,7 @@ import static org.adhuc.cena.menu.ingredients.MeasurementType.WEIGHT;
 
 import java.util.List;
 
-import org.adhuc.cena.menu.common.Name;
+import org.adhuc.cena.menu.common.entity.Name;
 
 /**
  * An object mother to create testing domain elements related to {@link Ingredient}s.

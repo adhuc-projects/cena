@@ -38,8 +38,8 @@ import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import org.adhuc.cena.menu.common.ExceptionCode;
-import org.adhuc.cena.menu.common.Name;
+import org.adhuc.cena.menu.common.exception.ExceptionCode;
+import org.adhuc.cena.menu.common.entity.Name;
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
 import org.adhuc.cena.menu.ingredients.IngredientNameAlreadyUsedException;
 

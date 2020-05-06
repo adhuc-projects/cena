@@ -17,6 +17,9 @@ package org.adhuc.cena.menu.menus;
 
 import java.util.List;
 
+import org.adhuc.cena.menu.common.entity.AlreadyExistingEntityException;
+import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
+
 /**
  * An application service for menus.
  *
@@ -39,7 +42,7 @@ public interface MenuAppService {
      *
      * @param menuId the menu identity.
      * @return the menu.
-     * @throws org.adhuc.cena.menu.common.EntityNotFoundException if no menu corresponds to identity.
+     * @throws EntityNotFoundException if no menu corresponds to identity.
      */
     Menu getMenu(MenuId menuId);
 
@@ -47,7 +50,7 @@ public interface MenuAppService {
      * Creates a menu.
      *
      * @param command the menu creation command.
-     * @throws org.adhuc.cena.menu.common.AlreadyExistingEntityException if a menu with meal type already exists for the
+     * @throws AlreadyExistingEntityException if a menu with meal type already exists for the
      *                                                                   owner at specified date.
      */
     Menu createMenu(CreateMenu command);

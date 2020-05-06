@@ -17,6 +17,8 @@ package org.adhuc.cena.menu.ingredients;
 
 import java.util.List;
 
+import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
+
 /**
  * An application service for ingredients.
  *
@@ -38,7 +40,7 @@ public interface IngredientAppService {
      *
      * @param ingredientId the ingredient identity.
      * @return the ingredient.
-     * @throws org.adhuc.cena.menu.common.EntityNotFoundException if no ingredient corresponds to identity.
+     * @throws EntityNotFoundException if no ingredient corresponds to identity.
      */
     Ingredient getIngredient(IngredientId ingredientId);
 

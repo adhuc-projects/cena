@@ -21,7 +21,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-import static org.adhuc.cena.menu.common.ExceptionCode.INVALID_REQUEST;
+import static org.adhuc.cena.menu.common.exception.ExceptionCode.INVALID_REQUEST;
 import static org.adhuc.cena.menu.port.adapter.rest.assertion.support.ErrorAssert.assertThat;
 
 import io.restassured.RestAssured;

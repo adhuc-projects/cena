@@ -13,10 +13,10 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.common;
+package org.adhuc.cena.menu.common.exception;
 
-import static org.adhuc.cena.menu.common.ExceptionCode.INTERNAL_ERROR;
-import static org.adhuc.cena.menu.common.ExceptionCode.INVALID_REQUEST;
+import static org.adhuc.cena.menu.common.exception.ExceptionCode.INTERNAL_ERROR;
+import static org.adhuc.cena.menu.common.exception.ExceptionCode.INVALID_REQUEST;
 
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;

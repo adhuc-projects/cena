@@ -42,8 +42,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import org.adhuc.cena.menu.common.ExceptionCode;
-import org.adhuc.cena.menu.common.Name;
+import org.adhuc.cena.menu.common.exception.ExceptionCode;
+import org.adhuc.cena.menu.common.entity.Name;
 import org.adhuc.cena.menu.ingredients.IngredientNameAlreadyUsedException;
 import org.adhuc.cena.menu.port.adapter.rest.documentation.support.ErrorsSnippet;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;

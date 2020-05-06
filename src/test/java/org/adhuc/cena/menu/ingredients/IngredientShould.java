@@ -31,7 +31,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import org.adhuc.cena.menu.common.Name;
+import org.adhuc.cena.menu.common.entity.Name;
 
 /**
  * The {@link Ingredient} test class.

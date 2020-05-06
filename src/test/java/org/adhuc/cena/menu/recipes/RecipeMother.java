@@ -34,7 +34,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.With;
 
-import org.adhuc.cena.menu.common.Name;
+import org.adhuc.cena.menu.common.entity.Name;
 import org.adhuc.cena.menu.ingredients.IngredientId;
 import org.adhuc.cena.menu.ingredients.IngredientMother;
 

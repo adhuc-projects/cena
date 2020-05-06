@@ -18,8 +18,8 @@ package org.adhuc.cena.menu.ingredients;
 import java.util.Collection;
 import java.util.Optional;
 
-import org.adhuc.cena.menu.common.Name;
-import org.adhuc.cena.menu.common.Repository;
+import org.adhuc.cena.menu.common.entity.Name;
+import org.adhuc.cena.menu.common.entity.Repository;
 
 /**
  * An {@link Ingredient} repository.

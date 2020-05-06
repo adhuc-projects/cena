@@ -49,7 +49,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import org.adhuc.cena.menu.common.AlreadyExistingEntityException;
+import org.adhuc.cena.menu.common.entity.AlreadyExistingEntityException;
 import org.adhuc.cena.menu.menus.*;
 import org.adhuc.cena.menu.recipes.RecipeId;
 import org.adhuc.cena.menu.recipes.RecipeMother;

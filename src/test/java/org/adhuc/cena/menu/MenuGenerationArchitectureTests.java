@@ -29,7 +29,7 @@ import com.tngtech.archunit.library.GeneralCodingRules;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 
-import org.adhuc.cena.menu.common.CenaException;
+import org.adhuc.cena.menu.common.exception.CenaException;
 
 /**
  * The menu generation architecture tests.

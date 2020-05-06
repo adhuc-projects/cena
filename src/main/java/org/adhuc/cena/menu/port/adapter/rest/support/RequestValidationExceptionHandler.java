@@ -20,7 +20,7 @@ import static java.util.stream.Collectors.toList;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
-import static org.adhuc.cena.menu.common.ExceptionCode.INVALID_REQUEST;
+import static org.adhuc.cena.menu.common.exception.ExceptionCode.INVALID_REQUEST;
 
 import java.util.Arrays;
 import java.util.List;

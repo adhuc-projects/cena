@@ -35,7 +35,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import org.adhuc.cena.menu.common.EntityNotFoundException;
+import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
 import org.adhuc.cena.menu.menus.Menu;
 import org.adhuc.cena.menu.menus.MenuAppService;
 import org.adhuc.cena.menu.menus.MenuId;

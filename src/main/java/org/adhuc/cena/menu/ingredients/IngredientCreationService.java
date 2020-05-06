@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import org.adhuc.cena.menu.common.AlreadyExistingEntityException;
+import org.adhuc.cena.menu.common.entity.AlreadyExistingEntityException;
 
 /**
  * An domain service dedicated to ingredient creation. This service ensures that an ingredient can be created only if its

@@ -22,8 +22,8 @@ import java.util.List;
 import lombok.NonNull;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import org.adhuc.cena.menu.common.CenaException;
-import org.adhuc.cena.menu.common.ExceptionCode;
+import org.adhuc.cena.menu.common.exception.CenaException;
+import org.adhuc.cena.menu.common.exception.ExceptionCode;
 import org.adhuc.cena.menu.recipes.RecipeId;
 
 /**

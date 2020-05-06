@@ -31,9 +31,9 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import org.adhuc.cena.menu.common.AlreadyExistingEntityException;
-import org.adhuc.cena.menu.common.EntityNotFoundException;
-import org.adhuc.cena.menu.common.Name;
+import org.adhuc.cena.menu.common.entity.AlreadyExistingEntityException;
+import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
+import org.adhuc.cena.menu.common.entity.Name;
 import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryIngredientRepository;
 
 /**

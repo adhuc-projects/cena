@@ -23,7 +23,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.ALL_VALUE;
 import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
 
-import static org.adhuc.cena.menu.common.ExceptionCode.ENTITY_NOT_FOUND;
+import static org.adhuc.cena.menu.common.exception.ExceptionCode.ENTITY_NOT_FOUND;
 import static org.adhuc.cena.menu.port.adapter.rest.assertion.support.ErrorAssert.assertThat;
 
 import java.util.List;

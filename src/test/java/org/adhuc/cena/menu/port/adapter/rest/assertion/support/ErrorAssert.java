@@ -20,7 +20,7 @@ import java.util.Objects;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
 
-import org.adhuc.cena.menu.common.ExceptionCode;
+import org.adhuc.cena.menu.common.exception.ExceptionCode;
 
 /**
  * Custom assertion definition for {@link Error}s.

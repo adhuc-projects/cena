@@ -17,6 +17,8 @@ package org.adhuc.cena.menu.recipes;
 
 import java.util.List;
 
+import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
+
 /**
  * An application service for recipes.
  *
@@ -39,7 +41,7 @@ public interface RecipeAppService {
      *
      * @param recipeId the recipe identity.
      * @return the recipe.
-     * @throws org.adhuc.cena.menu.common.EntityNotFoundException if no recipe corresponds to identity.
+     * @throws EntityNotFoundException if no recipe corresponds to identity.
      */
     Recipe getRecipe(RecipeId recipeId);
 

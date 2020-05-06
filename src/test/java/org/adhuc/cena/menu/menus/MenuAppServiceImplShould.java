@@ -36,8 +36,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import org.adhuc.cena.menu.common.AlreadyExistingEntityException;
-import org.adhuc.cena.menu.common.EntityNotFoundException;
+import org.adhuc.cena.menu.common.entity.AlreadyExistingEntityException;
+import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
 import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryMenuRepository;
 import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryRecipeRepository;
 import org.adhuc.cena.menu.recipes.RecipeId;

@@ -22,7 +22,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-import static org.adhuc.cena.menu.common.ExceptionCode.INVALID_REQUEST;
+import static org.adhuc.cena.menu.common.exception.ExceptionCode.INVALID_REQUEST;
 import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
 import static org.adhuc.cena.menu.port.adapter.rest.assertion.support.ErrorAssert.assertThat;
 

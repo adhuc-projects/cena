@@ -17,7 +17,7 @@ package org.adhuc.cena.menu.recipes;
 
 import java.util.Collection;
 
-import org.adhuc.cena.menu.common.Repository;
+import org.adhuc.cena.menu.common.entity.Repository;
 import org.adhuc.cena.menu.ingredients.IngredientId;
 
 /**

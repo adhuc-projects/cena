@@ -20,7 +20,7 @@ import java.time.LocalDate;
 import lombok.*;
 import lombok.experimental.Accessors;
 
-import org.adhuc.cena.menu.common.Identity;
+import org.adhuc.cena.menu.common.entity.Identity;
 
 /**
  * A menu identity.

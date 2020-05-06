@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.NonNull;
 import lombok.ToString;
 
-import org.adhuc.cena.menu.common.Name;
+import org.adhuc.cena.menu.common.entity.Name;
 import org.adhuc.cena.menu.recipes.CreateRecipe;
 import org.adhuc.cena.menu.recipes.RecipeAuthor;
 import org.adhuc.cena.menu.recipes.RecipeId;

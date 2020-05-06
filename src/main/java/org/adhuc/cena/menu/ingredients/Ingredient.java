@@ -23,8 +23,8 @@ import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
-import org.adhuc.cena.menu.common.BasicEntity;
-import org.adhuc.cena.menu.common.Name;
+import org.adhuc.cena.menu.common.entity.BasicEntity;
+import org.adhuc.cena.menu.common.entity.Name;
 
 /**
  * An ingredient definition.

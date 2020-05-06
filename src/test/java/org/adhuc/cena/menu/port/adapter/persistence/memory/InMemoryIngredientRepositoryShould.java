@@ -24,8 +24,8 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import org.adhuc.cena.menu.common.EntityNotFoundException;
-import org.adhuc.cena.menu.common.Name;
+import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
+import org.adhuc.cena.menu.common.entity.Name;
 import org.adhuc.cena.menu.ingredients.Ingredient;
 
 /**

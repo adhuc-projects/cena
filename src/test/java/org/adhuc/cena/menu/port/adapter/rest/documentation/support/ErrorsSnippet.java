@@ -23,7 +23,7 @@ import java.util.Map;
 import org.springframework.restdocs.operation.Operation;
 import org.springframework.restdocs.snippet.TemplatedSnippet;
 
-import org.adhuc.cena.menu.common.ExceptionCode;
+import org.adhuc.cena.menu.common.exception.ExceptionCode;
 
 /**
  * A {@link org.springframework.restdocs.snippet.Snippet} implementation that lists the exception codes from the

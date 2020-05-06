@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.port.adapter.persistence.memory;
+package org.adhuc.cena.menu.menus;
 
 import static java.util.stream.Collectors.toUnmodifiableSet;
 
@@ -27,11 +27,6 @@ import lombok.NonNull;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
-import org.adhuc.cena.menu.menus.Menu;
-import org.adhuc.cena.menu.menus.MenuId;
-import org.adhuc.cena.menu.menus.MenuOwner;
-import org.adhuc.cena.menu.menus.MenuRepository;
-
 /**
  * An in-memory {@link MenuRepository} implementation.
  *
@@ -41,7 +36,7 @@ import org.adhuc.cena.menu.menus.MenuRepository;
  */
 @Repository
 @Profile("in-memory")
-public class InMemoryMenuRepository implements MenuRepository {
+class InMemoryMenuRepository implements MenuRepository {
 
     private Map<MenuId, Menu> menus = new HashMap<>();
 

@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.port.adapter.persistence.memory;
+package org.adhuc.cena.menu.recipes;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -27,7 +27,6 @@ import org.junit.jupiter.api.*;
 import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
 import org.adhuc.cena.menu.ingredients.IngredientId;
 import org.adhuc.cena.menu.ingredients.IngredientMother;
-import org.adhuc.cena.menu.recipes.Recipe;
 
 /**
  * The {@link InMemoryRecipeRepository} test class.

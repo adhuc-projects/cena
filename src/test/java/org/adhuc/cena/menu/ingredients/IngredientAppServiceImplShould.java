@@ -34,7 +34,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.adhuc.cena.menu.common.entity.AlreadyExistingEntityException;
 import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
 import org.adhuc.cena.menu.common.entity.Name;
-import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryIngredientRepository;
 
 /**
  * The {@link IngredientAppServiceImpl} test class.

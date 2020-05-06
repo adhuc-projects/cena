@@ -24,8 +24,6 @@ import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
 import org.junit.jupiter.api.*;
 
-import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryRecipeRepository;
-
 /**
  * The {@link RecipeIngredientRelatedService} test class.
  *

@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.port.adapter.persistence.memory;
+package org.adhuc.cena.menu.menus;
 
 import static java.time.LocalDate.now;
 
@@ -32,8 +32,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
-import org.adhuc.cena.menu.menus.Menu;
-import org.adhuc.cena.menu.menus.MenuOwner;
 
 /**
  * The {@link InMemoryMenuRepository} test class.

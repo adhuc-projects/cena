@@ -31,7 +31,6 @@ import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
 import org.adhuc.cena.menu.ingredients.Ingredient;
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
 import org.adhuc.cena.menu.ingredients.IngredientMother;
-import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryRecipeRepository;
 
 /**
  * The {@link RecipeIngredientAppServiceImpl} test class.

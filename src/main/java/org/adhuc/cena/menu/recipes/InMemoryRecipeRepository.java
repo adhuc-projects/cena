@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.port.adapter.persistence.memory;
+package org.adhuc.cena.menu.recipes;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -24,9 +24,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import org.adhuc.cena.menu.ingredients.IngredientId;
-import org.adhuc.cena.menu.recipes.Recipe;
-import org.adhuc.cena.menu.recipes.RecipeId;
-import org.adhuc.cena.menu.recipes.RecipeRepository;
 
 /**
  * An in-memory {@link RecipeRepository} implementation.
@@ -37,7 +34,7 @@ import org.adhuc.cena.menu.recipes.RecipeRepository;
  */
 @Repository
 @Profile("in-memory")
-public class InMemoryRecipeRepository implements RecipeRepository {
+class InMemoryRecipeRepository implements RecipeRepository {
 
     private Map<RecipeId, Recipe> recipes = new HashMap<>();
 

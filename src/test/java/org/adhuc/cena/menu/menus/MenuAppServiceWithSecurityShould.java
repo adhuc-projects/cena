@@ -39,7 +39,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import org.adhuc.cena.menu.configuration.ApplicationSecurityConfiguration;
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
-import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryMenuRepository;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
 import org.adhuc.cena.menu.recipes.RecipeMother;
 import org.adhuc.cena.menu.recipes.RecipeRepository;

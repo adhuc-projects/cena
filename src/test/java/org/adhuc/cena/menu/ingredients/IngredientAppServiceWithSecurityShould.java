@@ -40,7 +40,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
 import org.adhuc.cena.menu.configuration.ApplicationSecurityConfiguration;
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
-import org.adhuc.cena.menu.port.adapter.persistence.memory.InMemoryIngredientRepository;
 import org.adhuc.cena.menu.recipes.RecipeRepository;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 import org.adhuc.cena.menu.support.WithCommunityUser;

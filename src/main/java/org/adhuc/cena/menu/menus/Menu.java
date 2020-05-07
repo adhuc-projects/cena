@@ -22,7 +22,7 @@ import java.util.Set;
 import lombok.*;
 import lombok.experimental.Accessors;
 
-import org.adhuc.cena.menu.common.entity.Entity;
+import org.adhuc.cena.menu.common.aggregate.Entity;
 import org.adhuc.cena.menu.recipes.RecipeId;
 
 /**

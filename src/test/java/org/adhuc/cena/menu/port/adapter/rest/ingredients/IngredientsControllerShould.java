@@ -42,7 +42,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import org.adhuc.cena.menu.common.entity.Name;
+import org.adhuc.cena.menu.common.aggregate.Name;
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
 import org.adhuc.cena.menu.ingredients.CreateIngredient;
 import org.adhuc.cena.menu.ingredients.Ingredient;

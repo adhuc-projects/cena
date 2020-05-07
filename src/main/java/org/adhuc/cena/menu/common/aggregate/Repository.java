@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.common.entity;
+package org.adhuc.cena.menu.common.aggregate;
 
 import java.util.Optional;
 

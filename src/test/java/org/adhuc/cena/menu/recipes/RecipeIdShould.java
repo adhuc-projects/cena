@@ -31,7 +31,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
-import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
+import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
 
 /**
  * The {@link RecipeId} test class.

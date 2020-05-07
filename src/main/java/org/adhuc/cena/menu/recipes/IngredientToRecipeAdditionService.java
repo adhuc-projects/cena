@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
+import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
 
 /**

@@ -18,7 +18,7 @@ package org.adhuc.cena.menu.menus;
 import java.time.LocalDate;
 import java.util.Collection;
 
-import org.adhuc.cena.menu.common.entity.Repository;
+import org.adhuc.cena.menu.common.aggregate.Repository;
 
 /**
  * A {@link Menu} repository.

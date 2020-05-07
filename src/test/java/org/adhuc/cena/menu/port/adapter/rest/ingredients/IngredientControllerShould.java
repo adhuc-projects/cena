@@ -35,7 +35,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
+import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
 import org.adhuc.cena.menu.ingredients.Ingredient;
 import org.adhuc.cena.menu.ingredients.IngredientAppService;
 import org.adhuc.cena.menu.support.WithCommunityUser;

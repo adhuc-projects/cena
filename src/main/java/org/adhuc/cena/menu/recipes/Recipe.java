@@ -28,9 +28,9 @@ import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
-import org.adhuc.cena.menu.common.entity.BasicEntity;
-import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
-import org.adhuc.cena.menu.common.entity.Name;
+import org.adhuc.cena.menu.common.aggregate.BasicEntity;
+import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
+import org.adhuc.cena.menu.common.aggregate.Name;
 import org.adhuc.cena.menu.ingredients.Ingredient;
 import org.adhuc.cena.menu.ingredients.IngredientId;
 

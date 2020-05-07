@@ -20,7 +20,7 @@ import java.util.UUID;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
-import org.adhuc.cena.menu.common.entity.UuidIdentity;
+import org.adhuc.cena.menu.common.aggregate.UuidIdentity;
 
 /**
  * An ingredient identity.

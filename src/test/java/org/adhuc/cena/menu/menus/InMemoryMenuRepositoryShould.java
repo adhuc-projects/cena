@@ -31,7 +31,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
+import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
 
 /**
  * The {@link InMemoryMenuRepository} test class.

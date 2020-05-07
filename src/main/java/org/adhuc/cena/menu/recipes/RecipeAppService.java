@@ -17,7 +17,7 @@ package org.adhuc.cena.menu.recipes;
 
 import java.util.List;
 
-import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
+import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
 
 /**
  * An application service for recipes.

@@ -21,7 +21,7 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.experimental.Accessors;
 
-import org.adhuc.cena.menu.common.entity.Name;
+import org.adhuc.cena.menu.common.aggregate.Name;
 
 /**
  * An ingredient creation command.

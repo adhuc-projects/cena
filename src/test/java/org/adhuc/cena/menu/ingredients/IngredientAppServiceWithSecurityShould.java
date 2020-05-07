@@ -37,7 +37,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
+import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
 import org.adhuc.cena.menu.configuration.ApplicationSecurityConfiguration;
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
 import org.adhuc.cena.menu.recipes.RecipeRepository;

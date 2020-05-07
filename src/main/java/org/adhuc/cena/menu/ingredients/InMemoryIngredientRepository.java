@@ -21,7 +21,7 @@ import lombok.NonNull;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
-import org.adhuc.cena.menu.common.entity.Name;
+import org.adhuc.cena.menu.common.aggregate.Name;
 
 /**
  * An in-memory {@link IngredientRepository} implementation.

@@ -20,7 +20,7 @@ import java.time.format.DateTimeParseException;
 
 import org.springframework.stereotype.Component;
 
-import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
+import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
 import org.adhuc.cena.menu.menus.MealType;
 import org.adhuc.cena.menu.menus.Menu;
 import org.adhuc.cena.menu.menus.MenuId;

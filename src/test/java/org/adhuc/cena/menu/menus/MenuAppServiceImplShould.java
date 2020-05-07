@@ -37,8 +37,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import org.adhuc.cena.menu.common.entity.AlreadyExistingEntityException;
-import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
+import org.adhuc.cena.menu.common.aggregate.AlreadyExistingEntityException;
+import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
 import org.adhuc.cena.menu.recipes.RecipeAppService;
 import org.adhuc.cena.menu.recipes.RecipeId;
 import org.adhuc.cena.menu.recipes.RecipeMother;

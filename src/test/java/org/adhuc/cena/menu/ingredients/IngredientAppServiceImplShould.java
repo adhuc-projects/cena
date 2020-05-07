@@ -31,9 +31,9 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import org.adhuc.cena.menu.common.entity.AlreadyExistingEntityException;
-import org.adhuc.cena.menu.common.entity.EntityNotFoundException;
-import org.adhuc.cena.menu.common.entity.Name;
+import org.adhuc.cena.menu.common.aggregate.AlreadyExistingEntityException;
+import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
+import org.adhuc.cena.menu.common.aggregate.Name;
 
 /**
  * The {@link IngredientAppServiceImpl} test class.

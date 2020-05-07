@@ -20,7 +20,7 @@ import static org.springframework.http.HttpStatus.CONFLICT;
 import lombok.NonNull;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import org.adhuc.cena.menu.common.entity.Name;
+import org.adhuc.cena.menu.common.aggregate.Name;
 import org.adhuc.cena.menu.common.exception.CenaException;
 import org.adhuc.cena.menu.common.exception.ExceptionCode;
 

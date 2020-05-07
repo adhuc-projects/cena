@@ -15,34 +15,27 @@
  */
 package org.adhuc.cena.menu.menus;
 
-import java.time.LocalDate;
-
-import lombok.*;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.experimental.Accessors;
 
 /**
- * A menus listing query.
+ * A menu detail query.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
  * @since 0.3.0
  */
+@Value
 @RequiredArgsConstructor
-@EqualsAndHashCode
-@ToString
 @Accessors(fluent = true)
-public class ListMenus implements OwnedBy {
+public class GetMenu implements OwnedBy {
     @NonNull
-    @Getter
-    private final MenuOwner owner;
-    @NonNull
-    private final DateRange range;
+    private final MenuId id;
 
-    public LocalDate since() {
-        return range.since();
-    }
-
-    public LocalDate until() {
-        return range.until();
+    @Override
+    public MenuOwner owner() {
+        return id.owner();
     }
 }

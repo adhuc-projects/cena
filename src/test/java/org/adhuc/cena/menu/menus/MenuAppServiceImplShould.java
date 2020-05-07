@@ -148,7 +148,7 @@ class MenuAppServiceImplShould {
         void retrieveMenuWithIdAfterCreation() {
             var menu = menu();
             service.createMenu(createCommand(menu));
-            assertThat(service.getMenu(menu.id())).isNotNull().isEqualToComparingFieldByField(menu);
+            assertThat(service.getMenu(new GetMenu(menu.id()))).isNotNull().isEqualToComparingFieldByField(menu);
         }
 
         @Nested
@@ -202,13 +202,13 @@ class MenuAppServiceImplShould {
             @Test
             @DisplayName("throw EntityNotFoundException when getting menu from unknown identity")
             void throwEntityNotFoundExceptionUnknownId() {
-                assertThrows(EntityNotFoundException.class, () -> service.getMenu(TOMORROW_DINNER_ID));
+                assertThrows(EntityNotFoundException.class, () -> service.getMenu(new GetMenu(TOMORROW_DINNER_ID)));
             }
 
             @Test
             @DisplayName("return today's lunch when getting menu from id")
             void returnTodayLunch() {
-                assertThat(service.getMenu(TODAY_LUNCH_ID)).isEqualToComparingFieldByField(todayLunch);
+                assertThat(service.getMenu(new GetMenu(TODAY_LUNCH_ID))).isEqualToComparingFieldByField(todayLunch);
             }
 
             @Test
@@ -218,7 +218,7 @@ class MenuAppServiceImplShould {
                         .withCovers(TOMORROW_DINNER_COVERS).withMainCourseRecipes(TOMORROW_DINNER_MAIN_COURSE_RECIPES).build();
                 var createdMenu = service.createMenu(createCommand(menu));
                 assertThat(createdMenu).isEqualToComparingFieldByField(menu);
-                assertThat(service.getMenu(menu.id())).isNotNull().isEqualToComparingFieldByField(menu);
+                assertThat(service.getMenu(new GetMenu(menu.id()))).isNotNull().isEqualToComparingFieldByField(menu);
             }
 
             @ParameterizedTest
@@ -243,9 +243,9 @@ class MenuAppServiceImplShould {
             @Test
             @DisplayName("delete today's lunch successfully")
             void deleteTodayLunch() {
-                assumeThat(service.getMenu(ID)).isNotNull();
+                assumeThat(service.getMenu(getQuery())).isNotNull();
                 service.deleteMenu(deleteCommand());
-                assertThrows(EntityNotFoundException.class, () -> service.getMenu(ID));
+                assertThrows(EntityNotFoundException.class, () -> service.getMenu(getQuery()));
             }
 
             @Test

@@ -15,34 +15,20 @@
  */
 package org.adhuc.cena.menu.menus;
 
-import java.time.LocalDate;
-
-import lombok.*;
-import lombok.experimental.Accessors;
-
 /**
- * A menus listing query.
+ * An action providing information about the owner of the menu(s) the action is performed on.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
  * @since 0.3.0
  */
-@RequiredArgsConstructor
-@EqualsAndHashCode
-@ToString
-@Accessors(fluent = true)
-public class ListMenus implements OwnedBy {
-    @NonNull
-    @Getter
-    private final MenuOwner owner;
-    @NonNull
-    private final DateRange range;
+public interface OwnedBy {
 
-    public LocalDate since() {
-        return range.since();
-    }
+    /**
+     * Gets the owner of the menu(s) the action is performed on.
+     *
+     * @return the owner.
+     */
+    MenuOwner owner();
 
-    public LocalDate until() {
-        return range.until();
-    }
 }

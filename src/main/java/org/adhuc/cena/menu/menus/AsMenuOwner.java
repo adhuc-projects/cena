@@ -15,34 +15,24 @@
  */
 package org.adhuc.cena.menu.menus;
 
-import java.time.LocalDate;
+import java.lang.annotation.*;
 
-import lombok.*;
-import lombok.experimental.Accessors;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
- * A menus listing query.
+ * Indicates that a service class or method is accessible only to menu's owner.
+ * <p>
+ * Using this annotation requires the query parameter used to call the service to be named {@code query} and to be an
+ * implementation of {@link OwnedBy}.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
  * @since 0.3.0
  */
-@RequiredArgsConstructor
-@EqualsAndHashCode
-@ToString
-@Accessors(fluent = true)
-public class ListMenus implements OwnedBy {
-    @NonNull
-    @Getter
-    private final MenuOwner owner;
-    @NonNull
-    private final DateRange range;
-
-    public LocalDate since() {
-        return range.since();
-    }
-
-    public LocalDate until() {
-        return range.until();
-    }
+@Target({ElementType.METHOD, ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+@Documented
+@PreAuthorize("isMenuOwner(#query)")
+@interface AsMenuOwner {
 }

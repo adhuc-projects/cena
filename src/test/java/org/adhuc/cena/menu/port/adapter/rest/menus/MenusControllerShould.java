@@ -164,7 +164,7 @@ class MenusControllerShould {
         var since = now().plusDays(1);
         var until = now().plusDays(2);
         var commandCaptor = ArgumentCaptor.forClass(ListMenus.class);
-        var expectedQuery = new ListMenus(MENU_OWNER, range(since, until));
+        var expectedQuery = new ListMenus(new MenuOwner(AUTHENTICATED_USER), range(since, until));
 
         mvc.perform(get(MENUS_API_URL)
                 .queryParam("filter[date][since]", since.toString())

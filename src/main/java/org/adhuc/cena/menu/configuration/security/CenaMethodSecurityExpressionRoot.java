@@ -23,6 +23,7 @@ import org.springframework.security.access.expression.method.MethodSecurityExpre
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import org.adhuc.cena.menu.menus.OwnedBy;
 import org.adhuc.cena.menu.recipes.RecipeId;
 import org.adhuc.cena.menu.recipes.RecipeRepository;
 
@@ -32,7 +33,7 @@ import org.adhuc.cena.menu.recipes.RecipeRepository;
  * class.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 public class CenaMethodSecurityExpressionRoot extends SecurityExpressionRoot implements MethodSecurityExpressionOperations {
@@ -59,6 +60,14 @@ public class CenaMethodSecurityExpressionRoot extends SecurityExpressionRoot imp
         var user = (UserDetails) getPrincipal();
         var recipe = recipeRepository.findNotNullById(recipeId);
         return isSuperAdministrator() || recipe.author().authorName().equals(user.getUsername());
+    }
+
+    public boolean isMenuOwner(OwnedBy ownedBy) {
+        if (!(isAuthenticated() && UserDetails.class.isAssignableFrom(getPrincipal().getClass()))) {
+            return false;
+        }
+        var user = (UserDetails) getPrincipal();
+        return ownedBy.owner().ownerName().equals(user.getUsername());
     }
 
     // Copy pasted code from org.springframework.security.access.expression.method.MethodSecurityExpressionRoot

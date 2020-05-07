@@ -38,13 +38,13 @@ public interface MenuAppService {
     List<Menu> getMenus(ListMenus query);
 
     /**
-     * Gets the menu corresponding to the specified identity.
+     * Gets the menu corresponding to the specified query.
      *
-     * @param menuId the menu identity.
+     * @param query the menu detail query.
      * @return the menu.
      * @throws EntityNotFoundException if no menu corresponds to identity.
      */
-    Menu getMenu(MenuId menuId);
+    Menu getMenu(GetMenu query);
 
     /**
      * Creates a menu.

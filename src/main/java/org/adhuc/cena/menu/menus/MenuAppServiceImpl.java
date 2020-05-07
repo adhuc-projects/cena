@@ -42,15 +42,15 @@ class MenuAppServiceImpl implements MenuAppService {
     private MenuRepository repository;
 
     @Override
-    @AsAuthenticatedUser
+    @AsMenuOwner
     public List<Menu> getMenus(@NonNull ListMenus query) {
         return List.copyOf(repository.findByOwnerAndDateBetween(query.owner(), query.since(), query.until()));
     }
 
     @Override
-    @AsAuthenticatedUser
-    public Menu getMenu(@NonNull MenuId menuId) {
-        return repository.findNotNullById(menuId);
+    @AsMenuOwner
+    public Menu getMenu(@NonNull GetMenu query) {
+        return repository.findNotNullById(query.id());
     }
 
     @Override

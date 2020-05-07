@@ -76,6 +76,14 @@ public class MenuMother {
         return new ListMenus(owner, defaultRange());
     }
 
+    public static GetMenu getQuery() {
+        return new GetMenu(ID);
+    }
+
+    public static GetMenu getQuery(String menuOwnerName) {
+        return new GetMenu(new MenuId(new MenuOwner(menuOwnerName), TODAY_LUNCH_DATE, TODAY_LUNCH_MEAL_TYPE));
+    }
+
     public static CreateMenu createCommand() {
         return createCommand(menu());
     }

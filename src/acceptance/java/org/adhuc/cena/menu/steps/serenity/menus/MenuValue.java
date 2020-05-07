@@ -58,16 +58,16 @@ public class MenuValue extends HateoasClientResourceSupport {
             .thenComparing(MenuValue::covers)
             .thenComparing(MenuValue::mainCourseRecipes, new ListComparator<>());
 
+    private final LocalDate date;
+    private final String mealType;
+    private final Integer covers;
+    private final List<String> mainCourseRecipes;
+
     public static MenuValue buildUnknownMenuValue(LocalDate date, String mealType, String menusResourceUrl) {
         var menu = builder().withDate(date).withMealType(mealType).build();
         menu.addLink(SELF_LINK, String.format("%s/%s-%s", menusResourceUrl, menu.date, menu.mealType));
         return menu;
     }
-
-    private final LocalDate date;
-    private final String mealType;
-    private final Integer covers;
-    private final List<String> mainCourseRecipes;
 
     boolean hasSameScheduleAs(@NonNull MenuValue menu) {
         return menu.date != null && menu.mealType != null && isScheduledAt(menu.date, menu.mealType);

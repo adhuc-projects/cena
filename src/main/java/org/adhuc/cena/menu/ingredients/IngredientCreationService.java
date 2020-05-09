@@ -42,15 +42,14 @@ class IngredientCreationService {
      * Creates an ingredient, ensuring the ingredient name is not already used.
      *
      * @param command the ingredient creation command.
-     * @return the created ingredient.
-     * @throws AlreadyExistingEntityException if an ingredient already exists with the identity specified in creation command.
+     * @throws AlreadyExistingEntityException     if an ingredient already exists with the identity specified in creation command.
      * @throws IngredientNameAlreadyUsedException if the ingredient name specified in creation command is already used
      *                                            by another ingredient.
      */
-    Ingredient createIngredient(CreateIngredient command) {
+    void createIngredient(CreateIngredient command) {
         ensureIngredientDontExist(command);
         ensureIngredientNameNotUsed(command);
-        return repository.save(new Ingredient(command));
+        repository.save(new Ingredient(command));
     }
 
     private void ensureIngredientDontExist(CreateIngredient command) {

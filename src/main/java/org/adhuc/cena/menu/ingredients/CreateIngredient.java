@@ -21,15 +21,17 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.experimental.Accessors;
 
+import org.adhuc.cena.menu.common.aggregate.Command;
 import org.adhuc.cena.menu.common.aggregate.Name;
 
 /**
  * An ingredient creation command.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.1.0
  */
+@Command
 @Value
 @Accessors(fluent = true)
 public class CreateIngredient {

@@ -13,29 +13,21 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.menus;
+package org.adhuc.cena.menu.common.aggregate;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
-import lombok.experimental.Accessors;
+import java.lang.annotation.*;
 
 /**
- * A menu detail query.
+ * Marker annotation for commands. A command is a value object containing information to execute action on elements of
+ * the domain.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
  * @since 0.3.0
  */
-@Value
-@RequiredArgsConstructor
-@Accessors(fluent = true)
-public class GetMenu implements OwnedBy {
-    @NonNull
-    private final MenuId id;
-
-    @Override
-    public MenuOwner owner() {
-        return id.owner();
-    }
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+@Documented
+public @interface Command {
 }

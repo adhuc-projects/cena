@@ -22,17 +22,20 @@ import org.springframework.security.access.prepost.PreAuthorize;
 /**
  * Indicates that a service class or method is accessible only to menu's owner.
  * <p>
- * Using this annotation requires the query parameter used to call the service to be named {@code query} and to be an
- * implementation of {@link OwnedBy}.
+ * Using this annotation requires the query parameter used to call the service to be named {@code ownedBy} or be
+ * annotated with {@link org.springframework.security.core.parameters.P @P("ownedBy")} and to be an implementation of
+ * {@link OwnedBy}.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
+ * @see org.springframework.security.core.parameters.P
  * @since 0.3.0
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-@PreAuthorize("isMenuOwner(#query)")
+@PreAuthorize("isMenuOwner(#ownedBy)")
 @interface AsMenuOwner {
+
 }

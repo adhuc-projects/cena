@@ -66,9 +66,9 @@ class RecipeAppServiceImpl implements RecipeAppService {
 
     @Override
     @AsAuthenticatedUser
-    public Recipe createRecipe(@NonNull CreateRecipe command) {
+    public void createRecipe(@NonNull CreateRecipe command) {
         log.info("Create recipe from command {}", command);
-        return recipeCreationService.createRecipe(command);
+        recipeCreationService.createRecipe(command);
     }
 
     @Override

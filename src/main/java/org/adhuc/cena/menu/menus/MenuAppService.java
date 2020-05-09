@@ -38,22 +38,22 @@ public interface MenuAppService {
     List<Menu> getMenus(ListMenus query);
 
     /**
-     * Gets the menu corresponding to the specified query.
+     * Gets the menu corresponding to the specified identity.
      *
-     * @param query the menu detail query.
+     * @param menuId the menu identity.
      * @return the menu.
      * @throws EntityNotFoundException if no menu corresponds to identity.
      */
-    Menu getMenu(GetMenu query);
+    Menu getMenu(MenuId menuId);
 
     /**
      * Creates a menu.
      *
      * @param command the menu creation command.
-     * @throws AlreadyExistingEntityException if a menu with meal type already exists for the
-     *                                                                   owner at specified date.
+     * @throws AlreadyExistingEntityException             if a menu with meal type already exists for the owner at specified date.
+     * @throws MenuNotCreatableWithUnknownRecipeException if at least one related recipe does not exist.
      */
-    Menu createMenu(CreateMenu command);
+    void createMenu(CreateMenu command);
 
     /**
      * Deletes a menu.

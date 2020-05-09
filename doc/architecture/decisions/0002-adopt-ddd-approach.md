@@ -1,4 +1,4 @@
-# 1. Adopt DDD approach
+# 2. Adopt DDD approach
 
 Date: 2018-12-27
 

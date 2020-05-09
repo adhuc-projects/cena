@@ -89,7 +89,7 @@ class MenuControllerShould {
     @WithAuthenticatedUser
     @DisplayName("respond Not Found when retrieving unknown menu")
     void respond404GetUnknownMenu() throws Exception {
-        when(menuAppServiceMock.getMenu(getQuery(AUTHENTICATED_USER))).thenThrow(new EntityNotFoundException(Menu.class, ID));
+        when(menuAppServiceMock.getMenu(id(AUTHENTICATED_USER))).thenThrow(new EntityNotFoundException(Menu.class, ID));
         mvc.perform(get(MENU_API_URL, ID_PARAM)).andExpect(status().isNotFound());
     }
 
@@ -130,7 +130,7 @@ class MenuControllerShould {
 
         @BeforeEach
         void setUp() {
-            when(menuAppServiceMock.getMenu(getQuery(AUTHENTICATED_USER))).thenReturn(menu());
+            when(menuAppServiceMock.getMenu(id(AUTHENTICATED_USER))).thenReturn(menu());
         }
 
         @Test

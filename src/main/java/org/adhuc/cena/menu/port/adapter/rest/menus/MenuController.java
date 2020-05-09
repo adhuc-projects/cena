@@ -25,7 +25,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import org.adhuc.cena.menu.menus.DeleteMenu;
-import org.adhuc.cena.menu.menus.GetMenu;
 import org.adhuc.cena.menu.menus.MenuAppService;
 import org.adhuc.cena.menu.menus.MenuOwner;
 
@@ -55,7 +54,7 @@ class MenuController {
     @ResponseStatus(HttpStatus.OK)
     public MenuModel getMenu(@PathVariable String menuId, Principal principal) {
         var id = menuIdConverter.parse(menuId, new MenuOwner(principal.getName()));
-        var menu = menuAppService.getMenu(new GetMenu(id));
+        var menu = menuAppService.getMenu(id);
         return modelAssembler.toModel(menu);
     }
 

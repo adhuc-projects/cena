@@ -126,7 +126,7 @@ class MenuAppServiceWithSecurityShould {
     @WithCommunityUser
     @DisplayName("deny menu detail access to community user")
     void denyMenuDetailAccessAsCommunityUser() {
-        assertThrows(AccessDeniedException.class, () -> service.getMenu(new GetMenu(ID)));
+        assertThrows(AccessDeniedException.class, () -> service.getMenu(ID));
     }
 
     @Test
@@ -136,7 +136,7 @@ class MenuAppServiceWithSecurityShould {
         var menu = builder().withOwner(OWNER).build();
         menuRepository.save(menu);
 
-        assertThrows(AccessDeniedException.class, () -> service.getMenu(new GetMenu(menu.id())));
+        assertThrows(AccessDeniedException.class, () -> service.getMenu(menu.id()));
     }
 
     @Test
@@ -146,7 +146,7 @@ class MenuAppServiceWithSecurityShould {
         var menu = builder().withOwnerName(AUTHENTICATED_USER).build();
         menuRepository.save(menu);
 
-        assertThat(service.getMenu(new GetMenu(menu.id()))).isEqualTo(menu);
+        assertThat(service.getMenu(menu.id())).isEqualTo(menu);
     }
 
     @Test
@@ -156,7 +156,7 @@ class MenuAppServiceWithSecurityShould {
         var menu = builder().withOwnerName(INGREDIENT_MANAGER).build();
         menuRepository.save(menu);
 
-        assertThat(service.getMenu(new GetMenu(menu.id()))).isEqualTo(menu);
+        assertThat(service.getMenu(menu.id())).isEqualTo(menu);
     }
 
     @Test
@@ -166,7 +166,7 @@ class MenuAppServiceWithSecurityShould {
         var menu = builder().withOwnerName(SUPER_ADMINISTRATOR).build();
         menuRepository.save(menu);
 
-        assertThat(service.getMenu(new GetMenu(menu.id()))).isEqualTo(menu);
+        assertThat(service.getMenu(menu.id())).isEqualTo(menu);
     }
 
     @Test
@@ -182,7 +182,7 @@ class MenuAppServiceWithSecurityShould {
     void grantMenuCreationAsAuthenticatedUser() {
         var menu = builder().withOwnerName(AUTHENTICATED_USER).build();
         service.createMenu(createCommand(menu));
-        assertThat(service.getMenu(new GetMenu(menu.id()))).isNotNull();
+        assertThat(service.getMenu(menu.id())).isNotNull();
     }
 
     @Test
@@ -191,7 +191,7 @@ class MenuAppServiceWithSecurityShould {
     void grantMenuCreationAsIngredientManager() {
         var menu = builder().withOwnerName(INGREDIENT_MANAGER).build();
         service.createMenu(createCommand(menu));
-        assertThat(service.getMenu(new GetMenu(menu.id()))).isNotNull();
+        assertThat(service.getMenu(menu.id())).isNotNull();
     }
 
     @Test
@@ -200,7 +200,7 @@ class MenuAppServiceWithSecurityShould {
     void grantMenuCreationAsSuperAdministrator() {
         var menu = builder().withOwnerName(SUPER_ADMINISTRATOR).build();
         service.createMenu(createCommand(menu));
-        assertThat(service.getMenu(new GetMenu(menu.id()))).isNotNull();
+        assertThat(service.getMenu(menu.id())).isNotNull();
     }
 
     @Configuration

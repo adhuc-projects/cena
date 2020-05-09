@@ -29,7 +29,7 @@ import org.adhuc.cena.menu.common.security.AsSuperAdministrator;
  * An {@link IngredientAppService} implementation.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.1.0
  */
 @Slf4j
@@ -56,9 +56,9 @@ class IngredientAppServiceImpl implements IngredientAppService {
 
     @Override
     @AsIngredientManager
-    public Ingredient createIngredient(@NonNull CreateIngredient command) {
+    public void createIngredient(@NonNull CreateIngredient command) {
         log.info("Create ingredient from command {}", command);
-        return ingredientCreationService.createIngredient(command);
+        ingredientCreationService.createIngredient(command);
     }
 
     @Override

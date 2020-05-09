@@ -17,6 +17,7 @@ package org.adhuc.cena.menu.recipes;
 
 import java.util.List;
 
+import org.adhuc.cena.menu.common.aggregate.AlreadyExistingEntityException;
 import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
 
 /**
@@ -57,8 +58,9 @@ public interface RecipeAppService {
      * Creates a recipe.
      *
      * @param command the recipe creation command.
+     * @throws AlreadyExistingEntityException if a recipe already exists with the identity specified in creation command.
      */
-    Recipe createRecipe(CreateRecipe command);
+    void createRecipe(CreateRecipe command);
 
     /**
      * Deletes the recipes.

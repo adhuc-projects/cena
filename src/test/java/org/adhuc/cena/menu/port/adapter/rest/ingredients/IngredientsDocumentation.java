@@ -15,7 +15,6 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.ingredients;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
@@ -54,7 +53,7 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
  * The ingredients related rest-services documentation.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.1.0
  */
 @Tag("integration")
@@ -96,8 +95,6 @@ class IngredientsDocumentation {
     @WithIngredientManager
     @DisplayName("generates ingredient creation example")
     void ingredientsCreateExample() throws Exception {
-        when(ingredientAppServiceMock.createIngredient(any())).thenReturn(ingredient());
-
         var fields = new ConstrainedFields(CreateIngredientRequest.class);
         mvc.perform(post(INGREDIENTS_API_URL).contentType(APPLICATION_JSON)
                 .content("{\"name\":\"Tomato\",\"measurementTypes\":[\"WEIGHT\", \"COUNT\"]}"))

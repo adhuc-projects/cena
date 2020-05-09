@@ -25,6 +25,7 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.experimental.Accessors;
 
+import org.adhuc.cena.menu.common.aggregate.Command;
 import org.adhuc.cena.menu.recipes.RecipeId;
 import org.adhuc.cena.menu.util.Assert;
 
@@ -35,6 +36,7 @@ import org.adhuc.cena.menu.util.Assert;
  * @version 0.3.0
  * @since 0.3.0
  */
+@Command
 @Value
 @Getter(AccessLevel.PACKAGE)
 @Accessors(fluent = true)

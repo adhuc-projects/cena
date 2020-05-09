@@ -20,6 +20,7 @@ import java.util.List;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import org.adhuc.cena.menu.common.security.AsAuthenticatedUser;
@@ -43,21 +44,21 @@ class MenuAppServiceImpl implements MenuAppService {
 
     @Override
     @AsMenuOwner
-    public List<Menu> getMenus(@NonNull ListMenus query) {
+    public List<Menu> getMenus(@P("ownedBy") @NonNull ListMenus query) {
         return List.copyOf(repository.findByOwnerAndDateBetween(query.owner(), query.since(), query.until()));
     }
 
     @Override
     @AsMenuOwner
-    public Menu getMenu(@NonNull GetMenu query) {
-        return repository.findNotNullById(query.id());
+    public Menu getMenu(@P("ownedBy") @NonNull MenuId menuId) {
+        return repository.findNotNullById(menuId);
     }
 
     @Override
     @AsAuthenticatedUser
-    public Menu createMenu(@NonNull CreateMenu command) {
+    public void createMenu(@NonNull CreateMenu command) {
         log.info("Create menu from command {}", command);
-        return menuCreationService.createMenu(command);
+        menuCreationService.createMenu(command);
     }
 
     @Override

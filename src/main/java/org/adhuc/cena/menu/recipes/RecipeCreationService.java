@@ -42,15 +42,13 @@ class RecipeCreationService {
      * Creates a recipe, ensuring the identity is not already used.
      *
      * @param command the recipe creation command.
-     * @return the created recipe.
      * @throws AlreadyExistingEntityException if a recipe already exists with the identity specified in creation command.
      */
-    Recipe createRecipe(CreateRecipe command) {
+    void createRecipe(CreateRecipe command) {
         if (recipeRepository.exists(command.recipeId())) {
             throw new AlreadyExistingEntityException(Recipe.class, command.recipeId());
         }
-        var recipe = new Recipe(command);
-        return recipeRepository.save(recipe);
+        recipeRepository.save(new Recipe(command));
     }
 
 }

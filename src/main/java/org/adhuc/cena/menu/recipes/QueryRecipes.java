@@ -20,15 +20,17 @@ import java.util.Optional;
 import lombok.*;
 import lombok.experimental.Accessors;
 
+import org.adhuc.cena.menu.common.aggregate.Query;
 import org.adhuc.cena.menu.ingredients.IngredientId;
 
 /**
  * A query on recipes list, containing appropriate filters to apply on recipes list.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
+@Query
 @Value
 @With
 @Accessors(fluent = true)

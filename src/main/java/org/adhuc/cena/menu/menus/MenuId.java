@@ -33,9 +33,10 @@ import org.adhuc.cena.menu.common.aggregate.Identity;
 @Accessors(fluent = true)
 @RequiredArgsConstructor
 @EqualsAndHashCode
-public class MenuId implements Identity {
+public class MenuId implements Identity, OwnedBy {
 
     @NonNull
+    @Getter(AccessLevel.PUBLIC)
     private final MenuOwner owner;
     @NonNull
     private final LocalDate date;

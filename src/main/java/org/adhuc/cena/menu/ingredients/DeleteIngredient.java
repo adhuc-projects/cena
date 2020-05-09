@@ -19,13 +19,16 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.experimental.Accessors;
 
+import org.adhuc.cena.menu.common.aggregate.Command;
+
 /**
  * An ingredient deletion command.
  *
  * @author Alexandre Carbenay
- * @version 0.1.0
+ * @version 0.3.0
  * @since 0.1.0
  */
+@Command
 @Value
 @Accessors(fluent = true)
 public class DeleteIngredient {

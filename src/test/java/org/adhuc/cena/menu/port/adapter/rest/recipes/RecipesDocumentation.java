@@ -26,7 +26,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import static org.adhuc.cena.menu.recipes.RecipeMother.recipe;
 import static org.adhuc.cena.menu.recipes.RecipeMother.recipes;
 
 import java.util.ArrayList;
@@ -104,8 +103,6 @@ class RecipesDocumentation {
     @WithAuthenticatedUser
     @DisplayName("generates recipe creation example")
     void recipesCreateExample() throws Exception {
-        when(recipeAppServiceMock.createRecipe(any())).thenReturn(recipe());
-
         var fields = new ConstrainedFields(CreateRecipeRequest.class);
         mvc.perform(post(RECIPES_API_URL).contentType(APPLICATION_JSON)
                 .content("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":2}"))

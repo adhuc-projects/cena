@@ -15,10 +15,15 @@
  */
 package org.adhuc.cena.menu;
 
+import static com.tngtech.archunit.base.DescribedPredicate.anyElementThat;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.assignableTo;
+import static com.tngtech.archunit.core.domain.properties.CanBeAnnotated.Predicates.annotatedWith;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.*;
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
 import static org.apache.commons.lang3.ArrayUtils.addAll;
 import static org.apache.commons.lang3.ArrayUtils.removeElement;
+
+import java.util.Collection;
 
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
@@ -29,7 +34,12 @@ import com.tngtech.archunit.library.GeneralCodingRules;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import org.adhuc.cena.menu.common.aggregate.Command;
+import org.adhuc.cena.menu.common.aggregate.Query;
 import org.adhuc.cena.menu.common.exception.CenaException;
+import org.adhuc.cena.menu.ingredients.Ingredient;
+import org.adhuc.cena.menu.menus.Menu;
+import org.adhuc.cena.menu.recipes.Recipe;
 
 /**
  * The menu generation architecture tests.
@@ -68,6 +78,9 @@ class MenuGenerationArchitectureTests {
     public static final ArchRules generalRules = ArchRules.in(GeneralRules.class);
 
     @ArchTest
+    public static final ArchRules domainRules = ArchRules.in(DomainRules.class);
+
+    @ArchTest
     public static final ArchRules domainDependenciesRules = ArchRules.in(DomainDependenciesRules.class);
 
     @ArchTest
@@ -102,6 +115,60 @@ class MenuGenerationArchitectureTests {
                         .should().accessClassesThat().resideOutsideOfPackages(JAVA_PACKAGES, COMMON_PACKAGES, UTIL_PACKAGES)
                         .as("Common classes should not access other domain packages")
                         .because("Common classes are definition classes that participate only in the project structure");
+
+    }
+
+    public static class DomainRules {
+
+        @ArchTest
+        public static final ArchRule domainClassesShouldNotBeSecuredWithPreAuthorize =
+                noClasses().that().resideInAnyPackage(DOMAIN_PACKAGES).and().areNotInterfaces()
+                        .should().beAnnotatedWith(PreAuthorize.class)
+                        .because("Securing domain methods should be based on specific annotations using ubiquitous language");
+
+        @ArchTest
+        public static final ArchRule domainMethodsShouldNotBeSecuredWithPreAuthorize =
+                noMembers().that().areDeclaredInClassesThat().resideInAnyPackage(DOMAIN_PACKAGES)
+                        .should().beAnnotatedWith(PreAuthorize.class)
+                        .because("Securing domain methods should be based on specific annotations using ubiquitous language");
+
+        @ArchTest
+        public static final ArchRule domainServicesImplementationsShouldNotBePublic =
+                classes().that().resideInAnyPackage(DOMAIN_PACKAGES).and().areNotInterfaces()
+                        .and().haveSimpleNameContaining(SERVICE_CLASSES_SUFFIX)
+                        .should().notBePublic()
+                        .because("Domain services should be exposed only through interfaces");
+
+        @ArchTest
+        public static final ArchRule commandObjectShouldBeImmutable =
+                classes().that().resideInAnyPackage(DOMAIN_PACKAGES).and().areAnnotatedWith(Command.class)
+                        .should().haveOnlyFinalFields()
+                        .because("Command objects should be value objects encapsulating information to execute a command");
+
+        @ArchTest
+        public static final ArchRule queryObjectShouldBeImmutable =
+                classes().that().resideInAnyPackage(DOMAIN_PACKAGES).and().areAnnotatedWith(Query.class)
+                        .should().haveOnlyFinalFields()
+                        .because("Query objects should be value objects encapsulating information to execute a query");
+
+        @ArchTest
+        public static final ArchRule commandHandlersShouldReturnVoid =
+                methods().that().areDeclaredInClassesThat().resideInAnyPackage(DOMAIN_PACKAGES)
+                        .and().haveRawParameterTypes(anyElementThat(annotatedWith(Command.class)))
+                        .and().areNotPrivate()
+                        .should().notHaveRawReturnType(assignableTo(Object.class))
+                        .because("Command handlers in command-query separation should return void");
+
+        @ArchTest
+        public static final ArchRule queryHandlersShouldReturnQueryResult =
+                methods().that().areDeclaredInClassesThat().resideInAnyPackage(DOMAIN_PACKAGES)
+                        .and().haveRawParameterTypes(anyElementThat(annotatedWith(Query.class)))
+                        .and().areNotPrivate()
+                        .should().haveRawReturnType(Ingredient.class)
+                        .orShould().haveRawReturnType(Recipe.class)
+                        .orShould().haveRawReturnType(Menu.class)
+                        .orShould().haveRawReturnType(assignableTo(Collection.class))
+                        .because("Query handlers in command-query separation should return query result");
 
     }
 
@@ -144,25 +211,6 @@ class MenuGenerationArchitectureTests {
                         .should().accessClassesThat().resideInAPackage(INGREDIENT_DOMAIN_PACKAGES)
                         .as("Menu domain classes should not access ingredient domain classes")
                         .because("Menu domain is not directly dependent on ingredient domain");
-
-        @ArchTest
-        public static final ArchRule domainClassesShouldNotBeSecuredWithPreAuthorize =
-                noClasses().that().resideInAnyPackage(DOMAIN_PACKAGES).and().areNotInterfaces()
-                        .should().beAnnotatedWith(PreAuthorize.class)
-                        .because("Securing domain methods should be based on specific annotations using ubiquitous language");
-
-        @ArchTest
-        public static final ArchRule domainMethodsShouldNotBeSecuredWithPreAuthorize =
-                noMembers().that().areDeclaredInClassesThat().resideInAnyPackage(DOMAIN_PACKAGES)
-                        .should().beAnnotatedWith(PreAuthorize.class)
-                        .because("Securing domain methods should be based on specific annotations using ubiquitous language");
-
-        @ArchTest
-        public static final ArchRule domainServicesImplementationsShouldNotBePublic =
-                classes().that().resideInAnyPackage(DOMAIN_PACKAGES).and().areNotInterfaces()
-                        .and().haveSimpleNameContaining(SERVICE_CLASSES_SUFFIX)
-                        .should().notBePublic()
-                        .because("Domain services should be exposed only through interfaces");
 
     }
 

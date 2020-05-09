@@ -47,14 +47,13 @@ class MenuCreationService {
      * Creates a menu, ensuring the identity is not already used and related recipes exist.
      *
      * @param command the menu creation command.
-     * @return the created menu.
-     * @throws AlreadyExistingEntityException if a menu already exists with the identity specified in creation command.
+     * @throws AlreadyExistingEntityException             if a menu already exists with the identity specified in creation command.
      * @throws MenuNotCreatableWithUnknownRecipeException if at least one related recipe does not exist.
      */
-    Menu createMenu(CreateMenu command) {
+    void createMenu(CreateMenu command) {
         ensureMenuDontExist(command);
         ensureRecipesExist(command);
-        return menuRepository.save(new Menu(command));
+        menuRepository.save(new Menu(command));
     }
 
     private void ensureMenuDontExist(CreateMenu command) {

@@ -20,6 +20,8 @@ import java.time.LocalDate;
 import lombok.*;
 import lombok.experimental.Accessors;
 
+import org.adhuc.cena.menu.common.aggregate.Query;
+
 /**
  * A menus listing query.
  *
@@ -27,6 +29,7 @@ import lombok.experimental.Accessors;
  * @version 0.3.0
  * @since 0.3.0
  */
+@Query
 @RequiredArgsConstructor
 @EqualsAndHashCode
 @ToString

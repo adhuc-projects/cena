@@ -95,14 +95,6 @@ class IngredientAppServiceImplShould {
         }
 
         @Test
-        @DisplayName("create ingredient successfully")
-        void createIngredient() {
-            var ingredient = ingredient();
-            var created = service.createIngredient(createCommand(ingredient));
-            assertThat(created).isNotNull().isEqualToComparingFieldByField(ingredient);
-        }
-
-        @Test
         @DisplayName("retrieve ingredient with identity after creation")
         void retrieveIngredientWithIdAfterCreation() {
             var ingredient = ingredient();
@@ -147,8 +139,7 @@ class IngredientAppServiceImplShould {
         @DisplayName("create cucumber successfully")
         void createIngredient() {
             var ingredient = ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES);
-            var createdIngredient = service.createIngredient(createCommand(ingredient));
-            assertThat(createdIngredient).isEqualToComparingFieldByField(ingredient);
+            service.createIngredient(createCommand(ingredient));
             assertThat(service.getIngredient(ingredient.id())).isNotNull().isEqualToComparingFieldByField(ingredient);
         }
 

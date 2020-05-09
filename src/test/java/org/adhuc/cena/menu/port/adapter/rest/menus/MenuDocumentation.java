@@ -76,7 +76,7 @@ class MenuDocumentation {
     @WithAuthenticatedUser
     @DisplayName("generates menu detail example")
     void menuDetailExample() throws Exception {
-        when(menuAppServiceMock.getMenu(getQuery(AUTHENTICATED_USER))).thenReturn(menu());
+        when(menuAppServiceMock.getMenu(id(AUTHENTICATED_USER))).thenReturn(menu());
 
         mvc.perform(get(MENU_API_URL, String.format("%s-%s", DATE, MEAL_TYPE))).andExpect(status().isOk())
                 .andDo(documentationHandler.document(

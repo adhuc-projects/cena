@@ -107,14 +107,6 @@ class RecipeAppServiceImplShould {
     }
 
     @Test
-    @DisplayName("create recipe successfully")
-    void createRecipe() {
-        var recipe = builder().build();
-        var created = service.createRecipe(createCommand(recipe));
-        assertThat(created).isNotNull().isEqualToComparingFieldByField(recipe);
-    }
-
-    @Test
     @DisplayName("retrieve recipe with identity after creation")
     void retrieveRecipeWithIdAfterCreation() {
         var recipe = builder().build();

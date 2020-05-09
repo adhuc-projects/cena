@@ -19,13 +19,16 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.experimental.Accessors;
 
+import org.adhuc.cena.menu.common.aggregate.Command;
+
 /**
  * An ingredient to recipe removal command.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
+@Command
 @Value
 @Accessors(fluent = true)
 public class RemoveIngredientsFromRecipe {

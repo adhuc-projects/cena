@@ -38,7 +38,8 @@ import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
-import org.adhuc.cena.menu.ingredients.IngredientAppService;
+import org.adhuc.cena.menu.ingredients.IngredientConsultationAppService;
+import org.adhuc.cena.menu.ingredients.IngredientManagementAppService;
 import org.adhuc.cena.menu.ingredients.IngredientMother;
 import org.adhuc.cena.menu.port.adapter.rest.ResultHandlerConfiguration;
 import org.adhuc.cena.menu.port.adapter.rest.ingredients.IngredientModelAssembler;
@@ -79,7 +80,9 @@ class RecipeIngredientDocumentation {
     @MockBean
     private RecipeAppService recipeAppServiceMock;
     @MockBean
-    private IngredientAppService ingredientAppServiceMock;
+    private IngredientConsultationAppService ingredientConsultationMock;
+    @MockBean
+    private IngredientManagementAppService ingredientManagementMock;
 
     @Test
     @DisplayName("generates recipe detail example")

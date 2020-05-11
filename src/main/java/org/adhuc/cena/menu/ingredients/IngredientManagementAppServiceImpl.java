@@ -15,8 +15,6 @@
  */
 package org.adhuc.cena.menu.ingredients;
 
-import java.util.List;
-
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +24,7 @@ import org.adhuc.cena.menu.common.security.AsIngredientManager;
 import org.adhuc.cena.menu.common.security.AsSuperAdministrator;
 
 /**
- * An {@link IngredientAppService} implementation.
+ * An {@link IngredientManagementAppService} implementation.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
@@ -34,28 +32,16 @@ import org.adhuc.cena.menu.common.security.AsSuperAdministrator;
  */
 @Slf4j
 @Service
+@AsIngredientManager
 @RequiredArgsConstructor
-class IngredientAppServiceImpl implements IngredientAppService {
+class IngredientManagementAppServiceImpl implements IngredientManagementAppService {
 
     @NonNull
     private IngredientCreationService ingredientCreationService;
     @NonNull
     private IngredientDeletionService ingredientDeletionService;
-    @NonNull
-    private IngredientRepository repository;
 
     @Override
-    public List<Ingredient> getIngredients() {
-        return List.copyOf(repository.findAll());
-    }
-
-    @Override
-    public Ingredient getIngredient(@NonNull IngredientId ingredientId) {
-        return repository.findNotNullById(ingredientId);
-    }
-
-    @Override
-    @AsIngredientManager
     public void createIngredient(@NonNull CreateIngredient command) {
         log.info("Create ingredient from command {}", command);
         ingredientCreationService.createIngredient(command);
@@ -68,7 +54,6 @@ class IngredientAppServiceImpl implements IngredientAppService {
     }
 
     @Override
-    @AsIngredientManager
     public void deleteIngredient(@NonNull DeleteIngredient command) {
         ingredientDeletionService.deleteIngredient(command);
     }

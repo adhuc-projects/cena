@@ -37,7 +37,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
 import org.adhuc.cena.menu.configuration.ApplicationSecurityConfiguration;
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
 import org.adhuc.cena.menu.recipes.RecipeRepository;
@@ -47,7 +46,7 @@ import org.adhuc.cena.menu.support.WithIngredientManager;
 import org.adhuc.cena.menu.support.WithSuperAdministrator;
 
 /**
- * The {@link IngredientAppServiceImpl} security tests.
+ * The {@link IngredientManagementAppServiceImpl} security tests.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
@@ -57,11 +56,11 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
 @Tag("appService")
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration
-@DisplayName("Ingredient service with security should")
-class IngredientAppServiceWithSecurityShould {
+@DisplayName("Ingredient management service with security should")
+class IngredientManagementAppServiceWithSecurityShould {
 
     @Autowired
-    private IngredientAppService service;
+    private IngredientManagementAppService service;
     @Autowired
     private IngredientRepository repository;
     @MockBean
@@ -73,48 +72,6 @@ class IngredientAppServiceWithSecurityShould {
     void setUp() {
         repository.deleteAll();
         repository.save(ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES));
-    }
-
-    @Test
-    @WithCommunityUser
-    @DisplayName("grant ingredient listing access to community user")
-    void grantIngredientListAsCommunityUser() {
-        assertThat(service.getIngredients()).isNotEmpty();
-    }
-
-    @Test
-    @WithIngredientManager
-    @DisplayName("grant ingredient listing access to ingredient manager")
-    void grantIngredientListAsIngredientManager() {
-        assertThat(service.getIngredients()).isNotEmpty();
-    }
-
-    @Test
-    @WithSuperAdministrator
-    @DisplayName("grant ingredient listing access to super administrator")
-    void grantIngredientListAsSuperAdministrator() {
-        assertThat(service.getIngredients()).isNotEmpty();
-    }
-
-    @Test
-    @WithCommunityUser
-    @DisplayName("grant ingredient detail access to community user")
-    void grantIngredientDetailAsCommunityUser() {
-        assertThat(service.getIngredient(CUCUMBER_ID)).isNotNull();
-    }
-
-    @Test
-    @WithIngredientManager
-    @DisplayName("grant ingredient listing access to ingredient manager")
-    void grantIngredientDetailAsIngredientManager() {
-        assertThat(service.getIngredient(CUCUMBER_ID)).isNotNull();
-    }
-
-    @Test
-    @WithSuperAdministrator
-    @DisplayName("grant ingredient listing access to super administrator")
-    void grantIngredientDetailAsSuperAdministrator() {
-        assertThat(service.getIngredient(CUCUMBER_ID)).isNotNull();
     }
 
     @Test
@@ -136,7 +93,7 @@ class IngredientAppServiceWithSecurityShould {
     @DisplayName("grant ingredient creation access to ingredient manager")
     void grantIngredientCreationAsIngredientManager() {
         service.createIngredient(createCommand());
-        assertThat(service.getIngredient(ID)).isNotNull();
+        assertThat(repository.exists(ID)).isTrue();
     }
 
     @Test
@@ -144,14 +101,14 @@ class IngredientAppServiceWithSecurityShould {
     @DisplayName("grant ingredient creation access to super administrator")
     void grantIngredientCreationAsSuperAdministrator() {
         service.createIngredient(createCommand());
-        assertThat(service.getIngredient(ID)).isNotNull();
+        assertThat(repository.exists(ID)).isTrue();
     }
 
     @Test
     @WithCommunityUser
     @DisplayName("deny ingredient deletion access to community user")
     void denyIngredientDeletionAsCommunityUser() {
-        assumeThat(service.getIngredient(CUCUMBER_ID)).isNotNull();
+        assumeThat(repository.exists(CUCUMBER_ID)).isTrue();
         assertThrows(AccessDeniedException.class, () -> service.deleteIngredient(deleteCommand(CUCUMBER_ID)));
     }
 
@@ -159,7 +116,7 @@ class IngredientAppServiceWithSecurityShould {
     @WithAuthenticatedUser
     @DisplayName("deny ingredient deletion access to authenticated user")
     void denyIngredientDeletionAsAuthenticatedUser() {
-        assumeThat(service.getIngredient(CUCUMBER_ID)).isNotNull();
+        assumeThat(repository.exists(CUCUMBER_ID)).isTrue();
         assertThrows(AccessDeniedException.class, () -> service.deleteIngredient(deleteCommand(CUCUMBER_ID)));
     }
 
@@ -167,25 +124,25 @@ class IngredientAppServiceWithSecurityShould {
     @WithIngredientManager
     @DisplayName("grant ingredient deletion access to ingredient manager")
     void grantIngredientDeletionAsIngredientManager() {
-        assumeThat(service.getIngredient(CUCUMBER_ID)).isNotNull();
+        assumeThat(repository.exists(CUCUMBER_ID)).isTrue();
         service.deleteIngredient(deleteCommand(CUCUMBER_ID));
-        assertThrows(EntityNotFoundException.class, () -> service.getIngredient(CUCUMBER_ID));
+        assertThat(repository.exists(CUCUMBER_ID)).isFalse();
     }
 
     @Test
     @WithSuperAdministrator
     @DisplayName("grant ingredient deletion access to super administrator")
     void grantIngredientDeletionAsSuperAdministator() {
-        assumeThat(service.getIngredient(CUCUMBER_ID)).isNotNull();
+        assumeThat(repository.exists(CUCUMBER_ID)).isTrue();
         service.deleteIngredient(deleteCommand(CUCUMBER_ID));
-        assertThrows(EntityNotFoundException.class, () -> service.getIngredient(CUCUMBER_ID));
+        assertThat(repository.exists(CUCUMBER_ID)).isFalse();
     }
 
     @Test
     @WithCommunityUser
     @DisplayName("deny ingredient deletion access to community user")
     void denyIngredientsDeletionAsCommunityUser() {
-        assumeThat(service.getIngredients()).isNotEmpty();
+        assumeThat(repository.findAll()).isNotEmpty();
         assertThrows(AccessDeniedException.class, () -> service.deleteIngredients());
     }
 
@@ -193,7 +150,7 @@ class IngredientAppServiceWithSecurityShould {
     @WithIngredientManager
     @DisplayName("deny ingredient deletion access to ingredient manager")
     void denyIngredientsDeletionAsIngredientManager() {
-        assumeThat(service.getIngredients()).isNotEmpty();
+        assumeThat(repository.findAll()).isNotEmpty();
         assertThrows(AccessDeniedException.class, () -> service.deleteIngredients());
     }
 
@@ -201,9 +158,9 @@ class IngredientAppServiceWithSecurityShould {
     @WithSuperAdministrator
     @DisplayName("grant ingredients deletion access to super administrator")
     void grantIngredientsDeletionAsSuperAdministrator() {
-        assumeThat(service.getIngredients()).isNotEmpty();
+        assumeThat(repository.findAll()).isNotEmpty();
         service.deleteIngredients();
-        assertThat(service.getIngredients()).isEmpty();
+        assertThat(repository.findAll()).isEmpty();
     }
 
     @Configuration

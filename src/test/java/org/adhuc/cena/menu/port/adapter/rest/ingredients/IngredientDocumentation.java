@@ -40,7 +40,8 @@ import org.springframework.restdocs.payload.ResponseFieldsSnippet;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
-import org.adhuc.cena.menu.ingredients.IngredientAppService;
+import org.adhuc.cena.menu.ingredients.IngredientConsultationAppService;
+import org.adhuc.cena.menu.ingredients.IngredientManagementAppService;
 import org.adhuc.cena.menu.port.adapter.rest.ResultHandlerConfiguration;
 import org.adhuc.cena.menu.support.WithIngredientManager;
 
@@ -48,7 +49,7 @@ import org.adhuc.cena.menu.support.WithIngredientManager;
  * The ingredient related rest-services documentation.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.1.0
  */
 @Tag("integration")
@@ -67,12 +68,14 @@ class IngredientDocumentation {
     private RestDocumentationResultHandler documentationHandler;
 
     @MockBean
-    private IngredientAppService ingredientAppServiceMock;
+    private IngredientConsultationAppService ingredientConsultationMock;
+    @MockBean
+    private IngredientManagementAppService ingredientManagementMock;
 
     @Test
     @DisplayName("generates ingredient detail example")
     void ingredientDetailExample() throws Exception {
-        when(ingredientAppServiceMock.getIngredient(ID)).thenReturn(ingredient());
+        when(ingredientConsultationMock.getIngredient(ID)).thenReturn(ingredient());
 
         mvc.perform(get(INGREDIENT_API_URL, ID.toString())).andExpect(status().isOk())
                 .andDo(documentationHandler.document(

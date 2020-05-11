@@ -45,7 +45,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import org.adhuc.cena.menu.configuration.ApplicationSecurityConfiguration;
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
-import org.adhuc.cena.menu.ingredients.IngredientAppService;
+import org.adhuc.cena.menu.ingredients.IngredientConsultationAppService;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 import org.adhuc.cena.menu.support.WithCommunityUser;
 import org.adhuc.cena.menu.support.WithIngredientManager;
@@ -75,7 +75,7 @@ class RecipeIngredientAppServiceWithSecurityShould {
     @Autowired
     private RecipeRepository repository;
     @MockBean
-    private IngredientAppService ingredientAppServiceMock;
+    private IngredientConsultationAppService ingredientAppServiceMock;
 
     @BeforeEach
     void setUp() {

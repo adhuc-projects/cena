@@ -44,10 +44,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import org.adhuc.cena.menu.common.aggregate.Name;
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
-import org.adhuc.cena.menu.ingredients.CreateIngredient;
-import org.adhuc.cena.menu.ingredients.Ingredient;
-import org.adhuc.cena.menu.ingredients.IngredientAppService;
-import org.adhuc.cena.menu.ingredients.IngredientNameAlreadyUsedException;
+import org.adhuc.cena.menu.ingredients.*;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 import org.adhuc.cena.menu.support.WithCommunityUser;
 import org.adhuc.cena.menu.support.WithIngredientManager;
@@ -57,7 +54,7 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
  * The {@link IngredientsController} test class.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.1.0
  */
 @Tag("integration")
@@ -72,7 +69,9 @@ class IngredientsControllerShould {
     @Autowired
     private MockMvc mvc;
     @MockBean
-    private IngredientAppService ingredientAppServiceMock;
+    private IngredientConsultationAppService ingredientConsultationMock;
+    @MockBean
+    private IngredientManagementAppService ingredientManagementMock;
 
     @Nested
     @DisplayName("with 2 ingredients")
@@ -84,7 +83,7 @@ class IngredientsControllerShould {
         void setUp() {
             ingredients = List.of(ingredient(TOMATO_ID, TOMATO, TOMATO_MEASUREMENT_TYPES),
                     ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES));
-            when(ingredientAppServiceMock.getIngredients()).thenReturn(ingredients);
+            when(ingredientConsultationMock.getIngredients()).thenReturn(ingredients);
         }
 
         @Test
@@ -133,7 +132,7 @@ class IngredientsControllerShould {
     class WithEmptyList {
         @BeforeEach
         void setUp() {
-            when(ingredientAppServiceMock.getIngredients()).thenReturn(List.of());
+            when(ingredientConsultationMock.getIngredients()).thenReturn(List.of());
         }
 
         @Test
@@ -221,7 +220,7 @@ class IngredientsControllerShould {
     @WithIngredientManager
     @DisplayName("respond Conflict when ingredient service throws IngredientNameAlreadyUsedException")
     void respond409OnCreationIngredientNameAlreadyUsed() throws Exception {
-        doThrow(new IngredientNameAlreadyUsedException(new Name("Tomato"))).when(ingredientAppServiceMock).createIngredient(any());
+        doThrow(new IngredientNameAlreadyUsedException(new Name("Tomato"))).when(ingredientManagementMock).createIngredient(any());
         mvc.perform(post(INGREDIENTS_API_URL)
                 .contentType(APPLICATION_JSON)
                 .content("{\"name\":\"Tomato\",\"measurementTypes\":[\"WEIGHT\", \"COUNT\"]}")
@@ -269,7 +268,7 @@ class IngredientsControllerShould {
                 .content(format("{\"name\":\"%s\",\"measurementTypes\":[\"WEIGHT\", \"COUNT\"]}", NAME))
         ).andExpect(status().isCreated());
 
-        verify(ingredientAppServiceMock).createIngredient(commandCaptor.capture());
+        verify(ingredientManagementMock).createIngredient(commandCaptor.capture());
         assertThat(commandCaptor.getValue()).isEqualToIgnoringGivenFields(createCommand(), "ingredientId");
     }
 
@@ -284,7 +283,7 @@ class IngredientsControllerShould {
                 .content("{\"name\":\"Tomato\"}")
         ).andExpect(status().isCreated());
 
-        verify(ingredientAppServiceMock).createIngredient(commandCaptor.capture());
+        verify(ingredientManagementMock).createIngredient(commandCaptor.capture());
         assertThat(commandCaptor.getValue()).isEqualToIgnoringGivenFields(createCommand(NAME), "ingredientId");
     }
 
@@ -299,7 +298,7 @@ class IngredientsControllerShould {
                 .content("{\"name\":\"Tomato\",\"measurementTypes\":[]}")
         ).andExpect(status().isCreated());
 
-        verify(ingredientAppServiceMock).createIngredient(commandCaptor.capture());
+        verify(ingredientManagementMock).createIngredient(commandCaptor.capture());
         assertThat(commandCaptor.getValue()).isEqualToIgnoringGivenFields(createCommand(NAME), "ingredientId");
     }
 
@@ -342,7 +341,7 @@ class IngredientsControllerShould {
         mvc.perform(delete(INGREDIENTS_API_URL))
                 .andExpect(status().isNoContent());
 
-        verify(ingredientAppServiceMock).deleteIngredients();
+        verify(ingredientManagementMock).deleteIngredients();
     }
 
     void assertJsonContainsIngredient(ResultActions resultActions, String jsonPath,

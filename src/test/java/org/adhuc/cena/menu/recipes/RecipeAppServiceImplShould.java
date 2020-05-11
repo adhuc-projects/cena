@@ -33,7 +33,7 @@ import org.adhuc.cena.menu.common.aggregate.AlreadyExistingEntityException;
 import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
 import org.adhuc.cena.menu.common.aggregate.Name;
 import org.adhuc.cena.menu.ingredients.Ingredient;
-import org.adhuc.cena.menu.ingredients.IngredientAppService;
+import org.adhuc.cena.menu.ingredients.IngredientConsultationAppService;
 import org.adhuc.cena.menu.ingredients.IngredientId;
 
 /**
@@ -52,13 +52,13 @@ class RecipeAppServiceImplShould {
     private static final IngredientId FETA_ID = IngredientId.generate();
 
     private RecipeRepository recipeRepository;
-    private IngredientAppService ingredientAppServiceMock;
+    private IngredientConsultationAppService ingredientAppServiceMock;
     private RecipeAppServiceImpl service;
 
     @BeforeEach
     void setUp() {
         recipeRepository = new InMemoryRecipeRepository();
-        ingredientAppServiceMock = mock(IngredientAppService.class);
+        ingredientAppServiceMock = mock(IngredientConsultationAppService.class);
         service = new RecipeAppServiceImpl(new RecipeCreationService(recipeRepository), recipeRepository, ingredientAppServiceMock);
 
         when(ingredientAppServiceMock.getIngredient(TOMATO_ID)).thenReturn(ingredient(TOMATO_ID, TOMATO, TOMATO_MEASUREMENT_TYPES));

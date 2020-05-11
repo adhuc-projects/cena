@@ -17,29 +17,27 @@ package org.adhuc.cena.menu.port.adapter.rest.ingredients;
 
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.adhuc.cena.menu.ingredients.IngredientAppService;
+import org.adhuc.cena.menu.ingredients.IngredientManagementAppService;
 
 /**
  * A REST controller exposing /api/ingredients resource for deletion.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.1.0
  */
 @RestController
 @ConditionalOnProperty(name = "cena.menu-generation.features.ingredients-deletion", matchIfMissing = true)
+@RequiredArgsConstructor
 class IngredientsDeletionController {
 
-    private IngredientAppService ingredientAppService;
-
-    IngredientsDeletionController(IngredientAppService ingredientAppService) {
-        this.ingredientAppService = ingredientAppService;
-    }
+    private final IngredientManagementAppService ingredientManagement;
 
     /**
      * Deletes all ingredients.
@@ -47,7 +45,7 @@ class IngredientsDeletionController {
     @DeleteMapping(path = "/api/ingredients")
     @ResponseStatus(NO_CONTENT)
     void deleteIngredients() {
-        ingredientAppService.deleteIngredients();
+        ingredientManagement.deleteIngredients();
     }
 
 }

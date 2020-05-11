@@ -37,7 +37,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
 import org.adhuc.cena.menu.ingredients.Ingredient;
-import org.adhuc.cena.menu.ingredients.IngredientAppService;
+import org.adhuc.cena.menu.ingredients.IngredientConsultationAppService;
+import org.adhuc.cena.menu.ingredients.IngredientManagementAppService;
 import org.adhuc.cena.menu.support.WithCommunityUser;
 import org.adhuc.cena.menu.support.WithIngredientManager;
 import org.adhuc.cena.menu.support.WithSuperAdministrator;
@@ -46,7 +47,7 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
  * The {@link IngredientController} test class.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.1.0
  */
 @Tag("integration")
@@ -60,12 +61,14 @@ class IngredientControllerShould {
     @Autowired
     private MockMvc mvc;
     @MockBean
-    private IngredientAppService ingredientAppServiceMock;
+    private IngredientConsultationAppService ingredientConsultationMock;
+    @MockBean
+    private IngredientManagementAppService ingredientManagementMock;
 
     @Test
     @DisplayName("respond Not Found when retrieving unknown ingredient")
     void respond404GetUnknownIngredient() throws Exception {
-        when(ingredientAppServiceMock.getIngredient(ID)).thenThrow(new EntityNotFoundException(Ingredient.class, ID));
+        when(ingredientConsultationMock.getIngredient(ID)).thenThrow(new EntityNotFoundException(Ingredient.class, ID));
         mvc.perform(get(INGREDIENT_API_URL, ID)).andExpect(status().isNotFound());
     }
 
@@ -80,7 +83,7 @@ class IngredientControllerShould {
     @WithIngredientManager
     @DisplayName("respond Not Found when deleting unknown ingredient")
     void respond404DeleteUnknownIngredient() throws Exception {
-        doThrow(new EntityNotFoundException(Ingredient.class, ID)).when(ingredientAppServiceMock).deleteIngredient(deleteCommand());
+        doThrow(new EntityNotFoundException(Ingredient.class, ID)).when(ingredientManagementMock).deleteIngredient(deleteCommand());
         mvc.perform(delete(INGREDIENT_API_URL, ID)).andExpect(status().isNotFound());
     }
 
@@ -89,7 +92,7 @@ class IngredientControllerShould {
     @DisplayName("respond No Content when deleting ingredient successfully")
     void respond204DeleteIngredient() throws Exception {
         mvc.perform(delete(INGREDIENT_API_URL, ID)).andExpect(status().isNoContent());
-        verify(ingredientAppServiceMock).deleteIngredient(deleteCommand());
+        verify(ingredientManagementMock).deleteIngredient(deleteCommand());
     }
 
     @Test
@@ -97,7 +100,7 @@ class IngredientControllerShould {
     @DisplayName("respond No Content when deleting ingredient successfully as super administrator")
     void respond204DeleteIngredientAsSuperAdmin() throws Exception {
         mvc.perform(delete(INGREDIENT_API_URL, ID)).andExpect(status().isNoContent());
-        verify(ingredientAppServiceMock).deleteIngredient(deleteCommand());
+        verify(ingredientManagementMock).deleteIngredient(deleteCommand());
     }
 
     @Nested
@@ -106,7 +109,7 @@ class IngredientControllerShould {
 
         @BeforeEach
         void setUp() {
-            when(ingredientAppServiceMock.getIngredient(ID)).thenReturn(ingredient());
+            when(ingredientConsultationMock.getIngredient(ID)).thenReturn(ingredient());
         }
 
         @Test
@@ -158,7 +161,7 @@ class IngredientControllerShould {
     @DisplayName("not contain any measurement type when retrieving ingredient without measurement type")
     void getIngredientWithoutMeasurementType() throws Exception {
         var ingredient = ingredient(ID, NAME, List.of());
-        when(ingredientAppServiceMock.getIngredient(ID)).thenReturn(ingredient);
+        when(ingredientConsultationMock.getIngredient(ID)).thenReturn(ingredient);
 
         mvc.perform(get(INGREDIENT_API_URL, ID))
                 .andExpect(jsonPath("$.id").value(ingredient.id().toString()))

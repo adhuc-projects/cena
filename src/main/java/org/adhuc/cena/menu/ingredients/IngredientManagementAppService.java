@@ -15,35 +15,18 @@
  */
 package org.adhuc.cena.menu.ingredients;
 
-import java.util.List;
-
 import org.adhuc.cena.menu.common.aggregate.AlreadyExistingEntityException;
 import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
 
 /**
- * An application service for ingredients.
+ * An application service for ingredients management. Ingredient management provides command methods for ingredient
+ * manipulation and is available only for ingredient manager or super administrator.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
  * @since 0.1.0
  */
-public interface IngredientAppService {
-
-    /**
-     * Gets the ingredients.
-     *
-     * @return the ingredients (not modifiable).
-     */
-    List<Ingredient> getIngredients();
-
-    /**
-     * Gets the ingredient corresponding to the specified identity.
-     *
-     * @param ingredientId the ingredient identity.
-     * @return the ingredient.
-     * @throws EntityNotFoundException if no ingredient corresponds to identity.
-     */
-    Ingredient getIngredient(IngredientId ingredientId);
+public interface IngredientManagementAppService {
 
     /**
      * Creates an ingredient.
@@ -70,4 +53,5 @@ public interface IngredientAppService {
      * @throws IngredientNotDeletableRelatedToObjectException if the ingredient is related to another object.
      */
     void deleteIngredient(DeleteIngredient command);
+
 }

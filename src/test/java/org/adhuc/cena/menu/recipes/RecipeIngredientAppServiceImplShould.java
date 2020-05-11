@@ -29,7 +29,7 @@ import org.junit.jupiter.api.*;
 
 import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
 import org.adhuc.cena.menu.ingredients.Ingredient;
-import org.adhuc.cena.menu.ingredients.IngredientAppService;
+import org.adhuc.cena.menu.ingredients.IngredientConsultationAppService;
 import org.adhuc.cena.menu.ingredients.IngredientMother;
 
 /**
@@ -45,13 +45,13 @@ import org.adhuc.cena.menu.ingredients.IngredientMother;
 class RecipeIngredientAppServiceImplShould {
 
     private RecipeRepository recipeRepository;
-    private IngredientAppService ingredientAppServiceMock;
+    private IngredientConsultationAppService ingredientAppServiceMock;
     private RecipeIngredientAppServiceImpl service;
 
     @BeforeEach
     void setUp() {
         recipeRepository = new InMemoryRecipeRepository();
-        ingredientAppServiceMock = mock(IngredientAppService.class);
+        ingredientAppServiceMock = mock(IngredientConsultationAppService.class);
         var additionService = new IngredientToRecipeAdditionService(recipeRepository, ingredientAppServiceMock);
         var removalService = new IngredientFromRecipeRemovalService(recipeRepository, ingredientAppServiceMock);
         service = new RecipeIngredientAppServiceImpl(additionService, removalService, recipeRepository);

@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
+import static org.adhuc.cena.menu.ingredients.IngredientMother.CUCUMBER_MEASUREMENT_TYPES;
 
 import java.util.List;
 
@@ -36,7 +37,7 @@ import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
 import org.adhuc.cena.menu.common.aggregate.Name;
 
 /**
- * The {@link IngredientAppServiceImpl} test class.
+ * The {@link IngredientManagementAppServiceImpl} test class.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
@@ -44,32 +45,20 @@ import org.adhuc.cena.menu.common.aggregate.Name;
  */
 @Tag("unit")
 @Tag("appService")
-@DisplayName("Ingredient service should")
+@DisplayName("Ingredient management service should")
 @ExtendWith(MockitoExtension.class)
-class IngredientAppServiceImplShould {
+class IngredientManagementAppServiceImplShould {
 
     private IngredientRepository ingredientRepository;
-    private IngredientAppServiceImpl service;
+    private IngredientManagementAppServiceImpl service;
     @Mock
     private IngredientRelatedService ingredientRelatedService;
 
     @BeforeEach
     void setUp() {
         ingredientRepository = new InMemoryIngredientRepository();
-        service = new IngredientAppServiceImpl(new IngredientCreationService(ingredientRepository),
-                new IngredientDeletionService(ingredientRelatedService, ingredientRepository), ingredientRepository);
-    }
-
-    @Test
-    @DisplayName("return unmodifiable list of ingredients")
-    void returnUnmodifiableListOfIngredients() {
-        assertThrows(UnsupportedOperationException.class, () -> service.getIngredients().add(ingredient()));
-    }
-
-    @Test
-    @DisplayName("throw IllegalArgumentException when getting ingredient from null identity")
-    void throwIAEGetIngredientNullId() {
-        assertThrows(IllegalArgumentException.class, () -> service.getIngredient(null));
+        service = new IngredientManagementAppServiceImpl(new IngredientCreationService(ingredientRepository),
+                new IngredientDeletionService(ingredientRelatedService, ingredientRepository));
     }
 
     @Test
@@ -91,7 +80,7 @@ class IngredientAppServiceImplShould {
         @Test
         @DisplayName("return empty list of ingredients")
         void returnEmptyIngredientList() {
-            assertThat(service.getIngredients()).isEmpty();
+            assertThat(ingredientRepository.findAll()).isEmpty();
         }
 
         @Test
@@ -99,7 +88,7 @@ class IngredientAppServiceImplShould {
         void retrieveIngredientWithIdAfterCreation() {
             var ingredient = ingredient();
             service.createIngredient(createCommand(ingredient));
-            assertThat(service.getIngredient(ingredient.id())).isNotNull().isEqualToComparingFieldByField(ingredient);
+            assertThat(ingredientRepository.findNotNullById(ingredient.id())).isNotNull().isEqualToComparingFieldByField(ingredient);
         }
 
     }
@@ -117,30 +106,11 @@ class IngredientAppServiceImplShould {
         }
 
         @Test
-        @DisplayName("return list of ingredients containing tomato")
-        void returnIngredientListWithTomato() {
-            assertThat(service.getIngredients()).isNotEmpty().usingFieldByFieldElementComparator()
-                    .containsExactly(tomato);
-        }
-
-        @Test
-        @DisplayName("throw EntityNotFoundException when getting ingredient from unknown identity")
-        void throwEntityNotFoundExceptionUnknownId() {
-            assertThrows(EntityNotFoundException.class, () -> service.getIngredient(CUCUMBER_ID));
-        }
-
-        @Test
-        @DisplayName("return tomato when getting ingredient from tomato id")
-        void returnTomato() {
-            assertThat(service.getIngredient(TOMATO_ID)).isEqualToComparingFieldByField(tomato);
-        }
-
-        @Test
         @DisplayName("create cucumber successfully")
         void createIngredient() {
             var ingredient = ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES);
             service.createIngredient(createCommand(ingredient));
-            assertThat(service.getIngredient(ingredient.id())).isNotNull().isEqualToComparingFieldByField(ingredient);
+            assertThat(ingredientRepository.findNotNullById(ingredient.id())).isNotNull().isEqualToComparingFieldByField(ingredient);
         }
 
         @ParameterizedTest
@@ -164,9 +134,9 @@ class IngredientAppServiceImplShould {
         @DisplayName("delete tomato successfully when not used in a recipe")
         void deleteTomatoNotUsedInRecipe() {
             when(ingredientRelatedService.isIngredientRelated(ID)).thenReturn(false);
-            assumeThat(service.getIngredient(ID)).isNotNull();
+            assumeThat(ingredientRepository.exists(ID)).isTrue();
             service.deleteIngredient(deleteCommand());
-            assertThrows(EntityNotFoundException.class, () -> service.getIngredient(ID));
+            assertThat(ingredientRepository.exists(ID)).isFalse();
         }
 
         @Test
@@ -174,7 +144,7 @@ class IngredientAppServiceImplShould {
         void deleteTomatoUsedInRecipe() {
             when(ingredientRelatedService.isIngredientRelated(ID)).thenReturn(true);
             when(ingredientRelatedService.relatedObjectName()).thenReturn("recipe");
-            assumeThat(service.getIngredient(ID)).isNotNull();
+            assumeThat(ingredientRepository.exists(ID)).isTrue();
             var exception = assertThrows(IngredientNotDeletableRelatedToObjectException.class, () -> service.deleteIngredient(deleteCommand()));
             assertThat(exception.getMessage()).isEqualTo("Ingredient '" + ID + "' cannot be deleted as it is related to at least one recipe");
         }
@@ -199,13 +169,6 @@ class IngredientAppServiceImplShould {
             }
 
             @Test
-            @DisplayName("return list containing all ingredients")
-            void returnIngredientListWithAllIngredients() {
-                assertThat(service.getIngredients()).isNotEmpty().usingFieldByFieldElementComparator()
-                        .containsExactlyInAnyOrder(tomato, cucumber);
-            }
-
-            @Test
             @DisplayName("fail during ingredients deletion when at least one ingredient is used in recipe")
             void deleteIngredientsUsedInRecipe() {
                 when(ingredientRelatedService.areIngredientsRelated()).thenReturn(true);
@@ -219,7 +182,7 @@ class IngredientAppServiceImplShould {
             void returnEmptyListAfterDeletion() {
                 when(ingredientRelatedService.areIngredientsRelated()).thenReturn(false);
                 service.deleteIngredients();
-                assertThat(service.getIngredients()).isEmpty();
+                assertThat(ingredientRepository.findAll()).isEmpty();
             }
 
         }

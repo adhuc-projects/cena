@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
-import org.adhuc.cena.menu.ingredients.IngredientAppService;
+import org.adhuc.cena.menu.ingredients.IngredientConsultationAppService;
 
 /**
  * A domain service dedicated to ingredient to recipe addition. This service ensures that both ingredient and recipe
@@ -36,7 +36,7 @@ import org.adhuc.cena.menu.ingredients.IngredientAppService;
 class IngredientToRecipeAdditionService {
 
     private final RecipeRepository recipeRepository;
-    private final IngredientAppService ingredientAppService;
+    private final IngredientConsultationAppService ingredientAppService;
 
     /**
      * Adds an ingredient to a recipe, ensuring both ingredient and recipe exist before proceeding.

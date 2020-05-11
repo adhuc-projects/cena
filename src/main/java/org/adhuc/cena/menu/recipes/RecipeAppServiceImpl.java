@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 
 import org.adhuc.cena.menu.common.security.AsAuthenticatedUser;
 import org.adhuc.cena.menu.common.security.AsSuperAdministrator;
-import org.adhuc.cena.menu.ingredients.IngredientAppService;
+import org.adhuc.cena.menu.ingredients.IngredientConsultationAppService;
 
 /**
  * A {@link RecipeAppService} implementation.
@@ -43,7 +43,7 @@ class RecipeAppServiceImpl implements RecipeAppService {
     @NonNull
     private RecipeRepository recipeRepository;
     @NonNull
-    private IngredientAppService ingredientAppService;
+    private IngredientConsultationAppService ingredientAppService;
 
     @Override
     public List<Recipe> getRecipes(QueryRecipes query) {

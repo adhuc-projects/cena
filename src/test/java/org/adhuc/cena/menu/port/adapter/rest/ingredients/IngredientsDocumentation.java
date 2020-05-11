@@ -42,7 +42,8 @@ import org.springframework.restdocs.snippet.TemplatedSnippet;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
-import org.adhuc.cena.menu.ingredients.IngredientAppService;
+import org.adhuc.cena.menu.ingredients.IngredientConsultationAppService;
+import org.adhuc.cena.menu.ingredients.IngredientManagementAppService;
 import org.adhuc.cena.menu.ingredients.MeasurementType;
 import org.adhuc.cena.menu.port.adapter.rest.ResultHandlerConfiguration;
 import org.adhuc.cena.menu.port.adapter.rest.documentation.support.ConstrainedFields;
@@ -72,12 +73,14 @@ class IngredientsDocumentation {
     private RestDocumentationResultHandler documentationHandler;
 
     @MockBean
-    private IngredientAppService ingredientAppServiceMock;
+    private IngredientConsultationAppService ingredientConsultationMock;
+    @MockBean
+    private IngredientManagementAppService ingredientManagementMock;
 
     @Test
     @DisplayName("generates ingredients list example")
     void ingredientsListExample() throws Exception {
-        when(ingredientAppServiceMock.getIngredients()).thenReturn(List.of(
+        when(ingredientConsultationMock.getIngredients()).thenReturn(List.of(
                 ingredient(TOMATO_ID, TOMATO, TOMATO_MEASUREMENT_TYPES),
                 ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES)));
 

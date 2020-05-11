@@ -24,7 +24,6 @@ import java.net.URISyntaxException;
 import javax.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.hateoas.server.ExposesResourceFor;
@@ -33,26 +32,27 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import org.adhuc.cena.menu.ingredients.IngredientAppService;
+import org.adhuc.cena.menu.ingredients.IngredientConsultationAppService;
 import org.adhuc.cena.menu.ingredients.IngredientId;
+import org.adhuc.cena.menu.ingredients.IngredientManagementAppService;
 
 /**
  * A REST controller exposing /api/ingredients resource.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.1.0
  */
-@Slf4j
-@RequiredArgsConstructor
 @Validated
 @RestController
 @ExposesResourceFor(IngredientModel.class)
 @RequestMapping(path = "/api/ingredients", produces = {HAL_JSON_VALUE, APPLICATION_JSON_VALUE})
+@RequiredArgsConstructor
 public class IngredientsController {
 
     private final EntityLinks links;
-    private final IngredientAppService ingredientAppService;
+    private final IngredientConsultationAppService ingredientConsultation;
+    private final IngredientManagementAppService ingredientManagement;
     private final IngredientModelAssembler modelAssembler;
 
     /**
@@ -61,7 +61,7 @@ public class IngredientsController {
     @GetMapping
     @ResponseStatus(OK)
     CollectionModel<IngredientModel> getIngredients() {
-        var ingredients = ingredientAppService.getIngredients();
+        var ingredients = ingredientConsultation.getIngredients();
         return modelAssembler.toCollectionModel(ingredients);
     }
 
@@ -71,7 +71,7 @@ public class IngredientsController {
     @PostMapping(consumes = {APPLICATION_JSON_VALUE, HAL_JSON_VALUE})
     ResponseEntity<Void> createIngredient(@RequestBody @Valid CreateIngredientRequest request, Errors errors) throws URISyntaxException {
         var identity = IngredientId.generate();
-        ingredientAppService.createIngredient(request.toCommand(identity));
+        ingredientManagement.createIngredient(request.toCommand(identity));
         return ResponseEntity.created(new URI(links.linkToItemResource(IngredientModel.class, identity).getHref())).build();
     }
 

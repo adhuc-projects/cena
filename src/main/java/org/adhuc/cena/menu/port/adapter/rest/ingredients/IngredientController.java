@@ -23,23 +23,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import org.adhuc.cena.menu.ingredients.DeleteIngredient;
-import org.adhuc.cena.menu.ingredients.IngredientAppService;
+import org.adhuc.cena.menu.ingredients.IngredientConsultationAppService;
 import org.adhuc.cena.menu.ingredients.IngredientId;
+import org.adhuc.cena.menu.ingredients.IngredientManagementAppService;
 
 /**
  * A REST controller exposing /api/ingredients/{ingredientId} resource.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.1.0
  */
 @RestController
-@RequiredArgsConstructor
 @RequestMapping(path = "/api/ingredients/{ingredientId}", produces = {HAL_JSON_VALUE, APPLICATION_JSON_VALUE})
+@RequiredArgsConstructor
 class IngredientController {
 
     private final IngredientModelAssembler modelAssembler;
-    private final IngredientAppService ingredientAppService;
+    private final IngredientConsultationAppService ingredientConsultation;
+    private final IngredientManagementAppService ingredientManagement;
 
     /**
      * Gets the ingredient information for the ingredient corresponding to the specified identity.
@@ -50,14 +52,14 @@ class IngredientController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public IngredientModel getIngredient(@PathVariable String ingredientId) {
-        var ingredient = ingredientAppService.getIngredient(new IngredientId(ingredientId));
+        var ingredient = ingredientConsultation.getIngredient(new IngredientId(ingredientId));
         return modelAssembler.toModel(ingredient);
     }
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteIngredient(@PathVariable String ingredientId) {
-        ingredientAppService.deleteIngredient(new DeleteIngredient(new IngredientId(ingredientId)));
+        ingredientManagement.deleteIngredient(new DeleteIngredient(new IngredientId(ingredientId)));
     }
 
 }

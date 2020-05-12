@@ -16,20 +16,16 @@
 package org.adhuc.cena.menu.recipes;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
 import static org.adhuc.cena.menu.recipes.QueryRecipes.query;
-import static org.adhuc.cena.menu.recipes.RecipeMother.createCommand;
-import static org.adhuc.cena.menu.recipes.RecipeMother.deleteCommand;
 import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
 import org.junit.jupiter.api.*;
 
-import org.adhuc.cena.menu.common.aggregate.AlreadyExistingEntityException;
 import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
 import org.adhuc.cena.menu.common.aggregate.Name;
 import org.adhuc.cena.menu.ingredients.Ingredient;
@@ -37,7 +33,7 @@ import org.adhuc.cena.menu.ingredients.IngredientConsultationAppService;
 import org.adhuc.cena.menu.ingredients.IngredientId;
 
 /**
- * The {@link RecipeAppServiceImpl} test class.
+ * The {@link RecipeConsultationAppServiceImpl} test class.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
@@ -45,26 +41,32 @@ import org.adhuc.cena.menu.ingredients.IngredientId;
  */
 @Tag("unit")
 @Tag("appService")
-@DisplayName("Recipe service should")
-class RecipeAppServiceImplShould {
+@DisplayName("Recipe consultation service should")
+class RecipeConsultationAppServiceImplShould {
 
     private static final IngredientId MOZZA_ID = IngredientId.generate();
     private static final IngredientId FETA_ID = IngredientId.generate();
 
     private RecipeRepository recipeRepository;
-    private IngredientConsultationAppService ingredientAppServiceMock;
-    private RecipeAppServiceImpl service;
+    private IngredientConsultationAppService ingredientConsultationMock;
+    private RecipeConsultationAppServiceImpl service;
 
     @BeforeEach
     void setUp() {
         recipeRepository = new InMemoryRecipeRepository();
-        ingredientAppServiceMock = mock(IngredientConsultationAppService.class);
-        service = new RecipeAppServiceImpl(new RecipeCreationService(recipeRepository), recipeRepository, ingredientAppServiceMock);
+        ingredientConsultationMock = mock(IngredientConsultationAppService.class);
+        service = new RecipeConsultationAppServiceImpl(recipeRepository, ingredientConsultationMock);
 
-        when(ingredientAppServiceMock.getIngredient(TOMATO_ID)).thenReturn(ingredient(TOMATO_ID, TOMATO, TOMATO_MEASUREMENT_TYPES));
-        when(ingredientAppServiceMock.getIngredient(CUCUMBER_ID)).thenReturn(ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES));
-        when(ingredientAppServiceMock.getIngredient(MOZZA_ID)).thenReturn(ingredient(MOZZA_ID, new Name("Mozzarella"), MEASUREMENT_TYPES));
-        when(ingredientAppServiceMock.getIngredient(FETA_ID)).thenReturn(ingredient(FETA_ID, new Name("Feta"), MEASUREMENT_TYPES));
+        when(ingredientConsultationMock.getIngredient(TOMATO_ID)).thenReturn(ingredient(TOMATO_ID, TOMATO, TOMATO_MEASUREMENT_TYPES));
+        when(ingredientConsultationMock.getIngredient(CUCUMBER_ID)).thenReturn(ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES));
+        when(ingredientConsultationMock.getIngredient(MOZZA_ID)).thenReturn(ingredient(MOZZA_ID, new Name("Mozzarella"), MEASUREMENT_TYPES));
+        when(ingredientConsultationMock.getIngredient(FETA_ID)).thenReturn(ingredient(FETA_ID, new Name("Feta"), MEASUREMENT_TYPES));
+    }
+
+    @Test
+    @DisplayName("throw IllegalArgumentException when getting recipes from null query")
+    void throwIAEGetRecipesNullQuery() {
+        assertThrows(IllegalArgumentException.class, () -> service.getRecipes(null));
     }
 
     @Test
@@ -77,7 +79,7 @@ class RecipeAppServiceImplShould {
     @DisplayName("throw EntityNotFoundException when filtering on unknown ingredient identity")
     void throwEntityNotFoundExceptionRecipeListFilteredOnUnknownIngredientIdentity() {
         var ingredientId = IngredientId.generate();
-        when(ingredientAppServiceMock.getIngredient(ingredientId)).thenThrow(new EntityNotFoundException(Ingredient.class, ingredientId));
+        when(ingredientConsultationMock.getIngredient(ingredientId)).thenThrow(new EntityNotFoundException(Ingredient.class, ingredientId));
 
         assertThrows(EntityNotFoundException.class, () -> service.getRecipes(query().withIngredientId(ingredientId)));
     }
@@ -92,26 +94,6 @@ class RecipeAppServiceImplShould {
     @DisplayName("throw IllegalArgumentException when getting recipe from null identity")
     void throwIAEGetRecipeNullId() {
         assertThrows(IllegalArgumentException.class, () -> service.getRecipe(null));
-    }
-
-    @Test
-    @DisplayName("throw IllegalArgumentException when creating recipe from null command")
-    void throwIAECreateRecipeNullCommand() {
-        assertThrows(IllegalArgumentException.class, () -> service.createRecipe(null));
-    }
-
-    @Test
-    @DisplayName("throw IllegalArgumentException when deleting recipe from null command")
-    void throwIAEDeleteRecipeNullCommand() {
-        assertThrows(IllegalArgumentException.class, () -> service.deleteRecipe(null));
-    }
-
-    @Test
-    @DisplayName("retrieve recipe with identity after creation")
-    void retrieveRecipeWithIdAfterCreation() {
-        var recipe = builder().build();
-        service.createRecipe(createCommand(recipe));
-        assertThat(service.getRecipe(recipe.id())).isNotNull().isEqualToComparingFieldByField(recipe);
     }
 
     @Nested
@@ -200,32 +182,6 @@ class RecipeAppServiceImplShould {
             assertThat(service.exists(TOMATO_CUCUMBER_MOZZA_SALAD_ID)).isTrue();
         }
 
-        @Test
-        @DisplayName("throw AlreadyExistingEntityException when creating recipe with already used identity")
-        void throwAlreadyExistingEntityCreateRecipeAlreadyExistingId() {
-            var exception = assertThrows(AlreadyExistingEntityException.class,
-                    () -> service.createRecipe(createCommand(tomatoCucumberAndMozzaSalad)));
-            assertThat(exception.getMessage()).isEqualTo("Entity of type Recipe with identity '" + TOMATO_CUCUMBER_MOZZA_SALAD_ID + "' already exists");
-        }
-
-        @Test
-        @DisplayName("delete tomato, cucumber and mozzarella salad successfully")
-        void deleteTomatoCucumberAndMozzaSalad() {
-            assumeThat(service.getRecipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID)).isNotNull();
-            assumeThat(service.exists(TOMATO_CUCUMBER_MOZZA_SALAD_ID)).isTrue();
-            service.deleteRecipe(deleteCommand());
-            assertThrows(EntityNotFoundException.class, () -> service.getRecipe(TOMATO_CUCUMBER_MOZZA_SALAD_ID));
-            assertThat(service.exists(TOMATO_CUCUMBER_MOZZA_SALAD_ID)).isFalse();
-        }
-
-        @Test
-        @DisplayName("throw EntityNotFoundException when deleting unknown recipe")
-        void throwEntityNotFoundDeleteUnknownRecipe() {
-            var exception = assertThrows(EntityNotFoundException.class,
-                    () -> service.deleteRecipe(deleteCommand(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)));
-            assertThat(exception.getIdentity()).isEqualTo(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID.toString());
-        }
-
         @Nested
         @DisplayName("and tomato, cucumber, olive and feta salad")
         class AndTomatoCucumberOliveAndFetaSalad {
@@ -270,13 +226,6 @@ class RecipeAppServiceImplShould {
             void returnEmptyRecipeListFilteredOnFeta() {
                 assertThat(service.getRecipes(query().withIngredientId(FETA_ID))).isNotEmpty().usingFieldByFieldElementComparator()
                         .containsExactlyInAnyOrder(tomatoCucumberOliveAndFetaSalad);
-            }
-
-            @Test
-            @DisplayName("return empty list after deleting all recipes")
-            void returnEmptyListAfterDeletion() {
-                service.deleteRecipes();
-                assertThat(service.getRecipes(query())).isEmpty();
             }
 
         }

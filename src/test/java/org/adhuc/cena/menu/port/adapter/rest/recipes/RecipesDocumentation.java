@@ -46,8 +46,9 @@ import org.adhuc.cena.menu.port.adapter.rest.ResultHandlerConfiguration;
 import org.adhuc.cena.menu.port.adapter.rest.documentation.support.ConstrainedFields;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientModelAssembler;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientsController;
-import org.adhuc.cena.menu.recipes.RecipeAppService;
-import org.adhuc.cena.menu.recipes.RecipeIngredientAppService;
+import org.adhuc.cena.menu.recipes.RecipeAdministrationAppService;
+import org.adhuc.cena.menu.recipes.RecipeConsultationAppService;
+import org.adhuc.cena.menu.recipes.RecipeAuthoringAppService;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 import org.adhuc.cena.menu.support.WithSuperAdministrator;
 
@@ -75,14 +76,16 @@ class RecipesDocumentation {
     private RestDocumentationResultHandler documentationHandler;
 
     @MockBean
-    private RecipeAppService recipeAppServiceMock;
+    private RecipeConsultationAppService recipeConsultationMock;
     @MockBean
-    private RecipeIngredientAppService recipeIngredientAppServiceMock;
+    private RecipeAuthoringAppService recipeAuthoringMock;
+    @MockBean
+    private RecipeAdministrationAppService recipeAdministrationMock;
 
     @Test
     @DisplayName("generates recipes list example")
     void recipesListExample() throws Exception {
-        when(recipeAppServiceMock.getRecipes(any())).thenReturn(new ArrayList<>(recipes()));
+        when(recipeConsultationMock.getRecipes(any())).thenReturn(new ArrayList<>(recipes()));
 
         mvc.perform(get(RECIPES_API_URL).param("filter[ingredient]", IngredientMother.ID.toString()))
                 .andExpect(status().isOk())

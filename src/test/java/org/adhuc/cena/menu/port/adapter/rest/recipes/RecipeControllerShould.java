@@ -37,8 +37,8 @@ import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientModelAssembler;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientsController;
 import org.adhuc.cena.menu.recipes.Recipe;
-import org.adhuc.cena.menu.recipes.RecipeAppService;
-import org.adhuc.cena.menu.recipes.RecipeIngredientAppService;
+import org.adhuc.cena.menu.recipes.RecipeConsultationAppService;
+import org.adhuc.cena.menu.recipes.RecipeAuthoringAppService;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 import org.adhuc.cena.menu.support.WithCommunityUser;
 import org.adhuc.cena.menu.support.WithIngredientManager;
@@ -63,14 +63,14 @@ class RecipeControllerShould {
     @Autowired
     private MockMvc mvc;
     @MockBean
-    private RecipeAppService recipeAppServiceMock;
+    private RecipeConsultationAppService recipeConsultationMock;
     @MockBean
-    private RecipeIngredientAppService recipeIngredientAppServiceMock;
+    private RecipeAuthoringAppService recipeAuthoringMock;
 
     @Test
     @DisplayName("respond Not Found when retrieving unknown recipe")
     void respond404GetUnknownRecipe() throws Exception {
-        when(recipeAppServiceMock.getRecipe(ID)).thenThrow(new EntityNotFoundException(Recipe.class, ID));
+        when(recipeConsultationMock.getRecipe(ID)).thenThrow(new EntityNotFoundException(Recipe.class, ID));
         mvc.perform(get(RECIPE_API_URL, ID)).andExpect(status().isNotFound());
     }
 
@@ -78,7 +78,7 @@ class RecipeControllerShould {
     @WithAuthenticatedUser
     @DisplayName("respond Not Found when deleting unknown recipe")
     void respond404DeleteUnknownRecipe() throws Exception {
-        doThrow(new EntityNotFoundException(Recipe.class, ID)).when(recipeAppServiceMock).deleteRecipe(deleteCommand());
+        doThrow(new EntityNotFoundException(Recipe.class, ID)).when(recipeAuthoringMock).deleteRecipe(deleteCommand());
         mvc.perform(delete(RECIPE_API_URL, ID)).andExpect(status().isNotFound());
     }
 
@@ -94,7 +94,7 @@ class RecipeControllerShould {
     @DisplayName("respond No Content when deleting recipe successfully as an authenticated user")
     void respond204OnDeletionAsAuthenticatedUser() throws Exception {
         mvc.perform(delete(RECIPE_API_URL, ID)).andExpect(status().isNoContent());
-        verify(recipeAppServiceMock).deleteRecipe(deleteCommand());
+        verify(recipeAuthoringMock).deleteRecipe(deleteCommand());
     }
 
     @Test
@@ -102,7 +102,7 @@ class RecipeControllerShould {
     @DisplayName("respond No Content when deleting recipe successfully as an ingredient manager")
     void respond204OnDeletionAsIngredientManager() throws Exception {
         mvc.perform(delete(RECIPE_API_URL, ID)).andExpect(status().isNoContent());
-        verify(recipeAppServiceMock).deleteRecipe(deleteCommand());
+        verify(recipeAuthoringMock).deleteRecipe(deleteCommand());
     }
 
     @Test
@@ -110,7 +110,7 @@ class RecipeControllerShould {
     @DisplayName("respond No Content when deleting recipe successfully as super administrator")
     void respond204DeleteRecipe() throws Exception {
         mvc.perform(delete(RECIPE_API_URL, ID)).andExpect(status().isNoContent());
-        verify(recipeAppServiceMock).deleteRecipe(deleteCommand());
+        verify(recipeAuthoringMock).deleteRecipe(deleteCommand());
     }
 
     @Nested
@@ -119,7 +119,7 @@ class RecipeControllerShould {
 
         @BeforeEach
         void setUp() {
-            when(recipeAppServiceMock.getRecipe(ID)).thenReturn(recipe());
+            when(recipeConsultationMock.getRecipe(ID)).thenReturn(recipe());
         }
 
         @Test

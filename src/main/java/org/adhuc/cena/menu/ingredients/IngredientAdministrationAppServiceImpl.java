@@ -17,38 +17,28 @@ package org.adhuc.cena.menu.ingredients;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import org.adhuc.cena.menu.common.security.AsIngredientManager;
+import org.adhuc.cena.menu.common.security.AsSuperAdministrator;
 
 /**
- * An {@link IngredientManagementAppService} implementation.
+ * An {@link IngredientAdministrationAppService} implementation.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
  * @since 0.1.0
  */
-@Slf4j
 @Service
-@AsIngredientManager
+@AsSuperAdministrator
 @RequiredArgsConstructor
-class IngredientManagementAppServiceImpl implements IngredientManagementAppService {
+class IngredientAdministrationAppServiceImpl implements IngredientAdministrationAppService {
 
-    @NonNull
-    private IngredientCreationService ingredientCreationService;
     @NonNull
     private IngredientDeletionService ingredientDeletionService;
 
     @Override
-    public void createIngredient(@NonNull CreateIngredient command) {
-        log.info("Create ingredient from command {}", command);
-        ingredientCreationService.createIngredient(command);
-    }
-
-    @Override
-    public void deleteIngredient(@NonNull DeleteIngredient command) {
-        ingredientDeletionService.deleteIngredient(command);
+    public void deleteIngredients() {
+        ingredientDeletionService.deleteIngredients();
     }
 
 }

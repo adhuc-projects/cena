@@ -66,9 +66,11 @@ class RecipesControllerShould {
     @Autowired
     private MockMvc mvc;
     @MockBean
-    private RecipeAppService recipeAppServiceMock;
+    private RecipeConsultationAppService recipeConsultationMock;
     @MockBean
-    private RecipeIngredientAppService recipeIngredientAppService;
+    private RecipeAuthoringAppService recipeAuthoringMock;
+    @MockBean
+    private RecipeAdministrationAppService recipeAdministrationMock;
 
     @Nested
     @DisplayName("with 2 recipes")
@@ -79,7 +81,7 @@ class RecipesControllerShould {
         @BeforeEach
         void setUp() {
             recipes = new ArrayList<>(recipes());
-            when(recipeAppServiceMock.getRecipes(QueryRecipes.query())).thenReturn(recipes);
+            when(recipeConsultationMock.getRecipes(QueryRecipes.query())).thenReturn(recipes);
         }
 
         @Test
@@ -128,10 +130,10 @@ class RecipesControllerShould {
     @DisplayName("not apply ingredient filter when not present")
     void notApplyIngredientFilterWhenNotPresent() throws Exception {
         var queryCaptor = ArgumentCaptor.forClass(QueryRecipes.class);
-        when(recipeAppServiceMock.getRecipes(any())).thenReturn(new ArrayList<>(recipes()));
+        when(recipeConsultationMock.getRecipes(any())).thenReturn(new ArrayList<>(recipes()));
         mvc.perform(get(RECIPES_API_URL)).andExpect(status().isOk());
         // At least once because of a Pitest error when defaulting to 1
-        verify(recipeAppServiceMock, atLeastOnce()).getRecipes(queryCaptor.capture());
+        verify(recipeConsultationMock, atLeastOnce()).getRecipes(queryCaptor.capture());
         assertThat(queryCaptor.getValue().ingredientId()).isEmpty();
     }
 
@@ -153,9 +155,9 @@ class RecipesControllerShould {
     @DisplayName("apply ingredient filter when filled with valid UUID")
     void applyIngredientFilterWhenFilled() throws Exception {
         var queryCaptor = ArgumentCaptor.forClass(QueryRecipes.class);
-        when(recipeAppServiceMock.getRecipes(any())).thenReturn(new ArrayList<>(recipes()));
+        when(recipeConsultationMock.getRecipes(any())).thenReturn(new ArrayList<>(recipes()));
         mvc.perform(get(RECIPES_API_URL).param("filter[ingredient]", IngredientMother.ID.toString())).andExpect(status().isOk());
-        verify(recipeAppServiceMock).getRecipes(queryCaptor.capture());
+        verify(recipeConsultationMock).getRecipes(queryCaptor.capture());
         assertThat(queryCaptor.getValue().ingredientId()).contains(IngredientMother.ID);
     }
 
@@ -164,7 +166,7 @@ class RecipesControllerShould {
     class WithEmptyList {
         @BeforeEach
         void setUp() {
-            when(recipeAppServiceMock.getRecipes(QueryRecipes.query())).thenReturn(List.of());
+            when(recipeConsultationMock.getRecipes(QueryRecipes.query())).thenReturn(List.of());
         }
 
         @Test
@@ -278,7 +280,7 @@ class RecipesControllerShould {
                 .content(String.format("{\"name\":\"%s\",\"content\":\"%s\",\"servings\":%d}", NAME, CONTENT, SERVINGS.value()))
         ).andExpect(status().isCreated());
 
-        verify(recipeAppServiceMock).createRecipe(commandCaptor.capture());
+        verify(recipeAuthoringMock).createRecipe(commandCaptor.capture());
         assertThat(commandCaptor.getValue()).isEqualToIgnoringGivenFields(expectedCommand, "recipeId");
     }
 
@@ -294,7 +296,7 @@ class RecipesControllerShould {
                 .content(String.format("{\"name\":\"%s\",\"content\":\"%s\"}", NAME, CONTENT))
         ).andExpect(status().isCreated());
 
-        verify(recipeAppServiceMock).createRecipe(commandCaptor.capture());
+        verify(recipeAuthoringMock).createRecipe(commandCaptor.capture());
         assertThat(commandCaptor.getValue()).isEqualToIgnoringGivenFields(expectedCommand, "recipeId");
     }
 
@@ -354,7 +356,7 @@ class RecipesControllerShould {
         mvc.perform(delete(RECIPES_API_URL))
                 .andExpect(status().isNoContent());
 
-        verify(recipeAppServiceMock).deleteRecipes();
+        verify(recipeAdministrationMock).deleteRecipes();
     }
 
     void assertJsonContainsRecipe(ResultActions resultActions, String jsonPath,

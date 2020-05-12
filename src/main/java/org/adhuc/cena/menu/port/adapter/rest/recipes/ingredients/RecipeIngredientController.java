@@ -23,9 +23,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import org.adhuc.cena.menu.ingredients.IngredientId;
-import org.adhuc.cena.menu.recipes.RecipeAppService;
+import org.adhuc.cena.menu.recipes.RecipeConsultationAppService;
 import org.adhuc.cena.menu.recipes.RecipeId;
-import org.adhuc.cena.menu.recipes.RecipeIngredientAppService;
+import org.adhuc.cena.menu.recipes.RecipeAuthoringAppService;
 import org.adhuc.cena.menu.recipes.RemoveIngredientFromRecipe;
 
 /**
@@ -41,8 +41,8 @@ import org.adhuc.cena.menu.recipes.RemoveIngredientFromRecipe;
 public class RecipeIngredientController {
 
     private final RecipeIngredientModelAssembler modelAssembler;
-    private final RecipeIngredientAppService recipeIngredientAppService;
-    private final RecipeAppService recipeAppService;
+    private final RecipeAuthoringAppService recipeIngredientAppService;
+    private final RecipeConsultationAppService recipeAppService;
 
     /**
      * Gets the recipe ingredient information for the recipe ingredient corresponding to the specified recipe and

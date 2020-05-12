@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.adhuc.cena.menu.ingredients.IngredientManagementAppService;
+import org.adhuc.cena.menu.ingredients.IngredientAdministrationAppService;
 
 /**
  * A REST controller exposing /api/ingredients resource for deletion.
@@ -37,7 +37,7 @@ import org.adhuc.cena.menu.ingredients.IngredientManagementAppService;
 @RequiredArgsConstructor
 class IngredientsDeletionController {
 
-    private final IngredientManagementAppService ingredientManagement;
+    private final IngredientAdministrationAppService ingredientAdministration;
 
     /**
      * Deletes all ingredients.
@@ -45,7 +45,7 @@ class IngredientsDeletionController {
     @DeleteMapping(path = "/api/ingredients")
     @ResponseStatus(NO_CONTENT)
     void deleteIngredients() {
-        ingredientManagement.deleteIngredients();
+        ingredientAdministration.deleteIngredients();
     }
 
 }

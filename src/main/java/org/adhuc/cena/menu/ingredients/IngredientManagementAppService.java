@@ -39,13 +39,6 @@ public interface IngredientManagementAppService {
     void createIngredient(CreateIngredient command);
 
     /**
-     * Deletes the ingredients.
-     *
-     * @throws IngredientNotDeletableRelatedToObjectException if at least one ingredient is related to another object.
-     */
-    void deleteIngredients();
-
-    /**
      * Deletes an ingredient.
      *
      * @param command the ingredient deletion command.

@@ -79,9 +79,9 @@ class RecipeIngredientsControllerShould {
     @Autowired
     private RecipeIngredientsController controller;
     @MockBean
-    private RecipeIngredientAppService recipeIngredientAppServiceMock;
+    private RecipeAuthoringAppService recipeIngredientAppServiceMock;
     @MockBean
-    private RecipeAppService recipeAppServiceMock;
+    private RecipeConsultationAppService recipeAppServiceMock;
     @MockBean
     private IngredientConsultationAppService ingredientConsultationMock;
     @MockBean

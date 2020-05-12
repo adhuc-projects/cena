@@ -33,9 +33,9 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import org.adhuc.cena.menu.recipes.RecipeAppService;
+import org.adhuc.cena.menu.recipes.RecipeConsultationAppService;
 import org.adhuc.cena.menu.recipes.RecipeId;
-import org.adhuc.cena.menu.recipes.RecipeIngredientAppService;
+import org.adhuc.cena.menu.recipes.RecipeAuthoringAppService;
 import org.adhuc.cena.menu.recipes.RemoveIngredientsFromRecipe;
 
 /**
@@ -54,8 +54,8 @@ public class RecipeIngredientsController {
 
     private final EntityLinks links;
     private final RecipeIngredientModelAssembler modelAssembler;
-    private final RecipeAppService recipeAppService;
-    private final RecipeIngredientAppService recipeIngredientAppService;
+    private final RecipeConsultationAppService recipeAppService;
+    private final RecipeAuthoringAppService recipeIngredientAppService;
 
     /**
      * Gets the recipe ingredient information for all ingredients linked to the recipe.

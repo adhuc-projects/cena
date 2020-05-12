@@ -23,23 +23,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import org.adhuc.cena.menu.recipes.DeleteRecipe;
-import org.adhuc.cena.menu.recipes.RecipeAppService;
+import org.adhuc.cena.menu.recipes.RecipeAuthoringAppService;
+import org.adhuc.cena.menu.recipes.RecipeConsultationAppService;
 import org.adhuc.cena.menu.recipes.RecipeId;
 
 /**
  * A REST controller exposing /api/recipes/{recipeId} resource.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @RestController
-@RequiredArgsConstructor
 @RequestMapping(path = "/api/recipes/{recipeId}", produces = {HAL_JSON_VALUE, APPLICATION_JSON_VALUE})
+@RequiredArgsConstructor
 public class RecipeController {
 
     private final RecipeModelAssembler modelAssembler;
-    private final RecipeAppService recipeAppService;
+    private final RecipeConsultationAppService recipeConsultation;
+    private final RecipeAuthoringAppService recipeAuthoring;
 
     /**
      * Gets the recipe information for the recipe corresponding to the specified identity.
@@ -50,14 +52,14 @@ public class RecipeController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public RecipeModel getRecipe(@PathVariable String recipeId) {
-        var recipe = recipeAppService.getRecipe(new RecipeId(recipeId));
+        var recipe = recipeConsultation.getRecipe(new RecipeId(recipeId));
         return modelAssembler.toModel(recipe);
     }
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteRecipe(@PathVariable String recipeId) {
-        recipeAppService.deleteRecipe(new DeleteRecipe(new RecipeId(recipeId)));
+        recipeAuthoring.deleteRecipe(new DeleteRecipe(new RecipeId(recipeId)));
     }
 
 }

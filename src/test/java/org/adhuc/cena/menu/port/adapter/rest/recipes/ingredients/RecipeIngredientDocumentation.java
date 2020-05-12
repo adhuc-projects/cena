@@ -46,8 +46,8 @@ import org.adhuc.cena.menu.port.adapter.rest.ingredients.IngredientModelAssemble
 import org.adhuc.cena.menu.port.adapter.rest.ingredients.IngredientsController;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.RecipeModelAssembler;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.RecipesController;
-import org.adhuc.cena.menu.recipes.RecipeAppService;
-import org.adhuc.cena.menu.recipes.RecipeIngredientAppService;
+import org.adhuc.cena.menu.recipes.RecipeConsultationAppService;
+import org.adhuc.cena.menu.recipes.RecipeAuthoringAppService;
 import org.adhuc.cena.menu.recipes.RecipeMother;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 
@@ -76,9 +76,9 @@ class RecipeIngredientDocumentation {
     private RestDocumentationResultHandler documentationHandler;
 
     @MockBean
-    private RecipeIngredientAppService recipeIngredientAppServiceMock;
+    private RecipeAuthoringAppService recipeIngredientAppServiceMock;
     @MockBean
-    private RecipeAppService recipeAppServiceMock;
+    private RecipeConsultationAppService recipeAppServiceMock;
     @MockBean
     private IngredientConsultationAppService ingredientConsultationMock;
     @MockBean

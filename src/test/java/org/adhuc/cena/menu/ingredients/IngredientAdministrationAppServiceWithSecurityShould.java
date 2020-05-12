@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
+import static org.adhuc.cena.menu.ingredients.IngredientMother.CUCUMBER_ID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -46,7 +47,7 @@ import org.adhuc.cena.menu.support.WithIngredientManager;
 import org.adhuc.cena.menu.support.WithSuperAdministrator;
 
 /**
- * The {@link IngredientManagementAppServiceImpl} security tests.
+ * The {@link IngredientAdministrationAppServiceImpl} security tests.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
@@ -56,11 +57,11 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
 @Tag("appService")
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration
-@DisplayName("Ingredient management service with security should")
-class IngredientManagementAppServiceWithSecurityShould {
+@DisplayName("Ingredient administration service with security should")
+class IngredientAdministrationAppServiceWithSecurityShould {
 
     @Autowired
-    private IngredientAdministrationAppService service;
+    private IngredientManagementAppService service;
     @Autowired
     private IngredientRepository repository;
     @MockBean
@@ -76,35 +77,66 @@ class IngredientManagementAppServiceWithSecurityShould {
 
     @Test
     @WithCommunityUser
+    @DisplayName("deny ingredient creation access to community user")
+    void denyIngredientCreationAsCommunityUser() {
+        assertThrows(AccessDeniedException.class, () -> service.createIngredient(createCommand()));
+    }
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("deny ingredient creation access to authenticated user")
+    void denyIngredientCreationAsAuthenticatedUser() {
+        assertThrows(AccessDeniedException.class, () -> service.createIngredient(createCommand()));
+    }
+
+    @Test
+    @WithIngredientManager
+    @DisplayName("grant ingredient creation access to ingredient manager")
+    void grantIngredientCreationAsIngredientManager() {
+        service.createIngredient(createCommand());
+        assertThat(repository.exists(ID)).isTrue();
+    }
+
+    @Test
+    @WithSuperAdministrator
+    @DisplayName("grant ingredient creation access to super administrator")
+    void grantIngredientCreationAsSuperAdministrator() {
+        service.createIngredient(createCommand());
+        assertThat(repository.exists(ID)).isTrue();
+    }
+
+    @Test
+    @WithCommunityUser
     @DisplayName("deny ingredient deletion access to community user")
-    void denyIngredientsDeletionAsCommunityUser() {
-        assumeThat(repository.findAll()).isNotEmpty();
-        assertThrows(AccessDeniedException.class, () -> service.deleteIngredients());
+    void denyIngredientDeletionAsCommunityUser() {
+        assumeThat(repository.exists(CUCUMBER_ID)).isTrue();
+        assertThrows(AccessDeniedException.class, () -> service.deleteIngredient(deleteCommand(CUCUMBER_ID)));
     }
 
     @Test
     @WithAuthenticatedUser
     @DisplayName("deny ingredient deletion access to authenticated user")
-    void denyIngredientsDeletionAsAuthenticatedUser() {
-        assumeThat(repository.findAll()).isNotEmpty();
-        assertThrows(AccessDeniedException.class, () -> service.deleteIngredients());
+    void denyIngredientDeletionAsAuthenticatedUser() {
+        assumeThat(repository.exists(CUCUMBER_ID)).isTrue();
+        assertThrows(AccessDeniedException.class, () -> service.deleteIngredient(deleteCommand(CUCUMBER_ID)));
     }
 
     @Test
     @WithIngredientManager
-    @DisplayName("deny ingredient deletion access to ingredient manager")
-    void denyIngredientsDeletionAsIngredientManager() {
-        assumeThat(repository.findAll()).isNotEmpty();
-        assertThrows(AccessDeniedException.class, () -> service.deleteIngredients());
+    @DisplayName("grant ingredient deletion access to ingredient manager")
+    void grantIngredientDeletionAsIngredientManager() {
+        assumeThat(repository.exists(CUCUMBER_ID)).isTrue();
+        service.deleteIngredient(deleteCommand(CUCUMBER_ID));
+        assertThat(repository.exists(CUCUMBER_ID)).isFalse();
     }
 
     @Test
     @WithSuperAdministrator
-    @DisplayName("grant ingredients deletion access to super administrator")
-    void grantIngredientsDeletionAsSuperAdministrator() {
-        assumeThat(repository.findAll()).isNotEmpty();
-        service.deleteIngredients();
-        assertThat(repository.findAll()).isEmpty();
+    @DisplayName("grant ingredient deletion access to super administrator")
+    void grantIngredientDeletionAsSuperAdministator() {
+        assumeThat(repository.exists(CUCUMBER_ID)).isTrue();
+        service.deleteIngredient(deleteCommand(CUCUMBER_ID));
+        assertThat(repository.exists(CUCUMBER_ID)).isFalse();
     }
 
     @Configuration

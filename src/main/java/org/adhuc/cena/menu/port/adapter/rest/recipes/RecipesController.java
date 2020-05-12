@@ -25,7 +25,6 @@ import java.security.Principal;
 import javax.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.hateoas.server.ExposesResourceFor;
@@ -37,26 +36,27 @@ import org.springframework.web.bind.annotation.*;
 import org.adhuc.cena.menu.ingredients.IngredientId;
 import org.adhuc.cena.menu.port.adapter.rest.support.Uuid;
 import org.adhuc.cena.menu.recipes.QueryRecipes;
-import org.adhuc.cena.menu.recipes.RecipeAppService;
+import org.adhuc.cena.menu.recipes.RecipeAuthoringAppService;
+import org.adhuc.cena.menu.recipes.RecipeConsultationAppService;
 import org.adhuc.cena.menu.recipes.RecipeId;
 
 /**
  * A REST controller exposing /api/recipes resource.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
-@Slf4j
-@RequiredArgsConstructor
 @Validated
 @RestController
 @ExposesResourceFor(RecipeModel.class)
 @RequestMapping(path = "/api/recipes", produces = {HAL_JSON_VALUE, APPLICATION_JSON_VALUE})
+@RequiredArgsConstructor
 public class RecipesController {
 
     private final EntityLinks links;
-    private final RecipeAppService recipeAppService;
+    private final RecipeConsultationAppService recipeConsultation;
+    private final RecipeAuthoringAppService recipeAuthoring;
     private final RecipeModelAssembler modelAssembler;
 
     /**
@@ -69,7 +69,7 @@ public class RecipesController {
         if (ingredient != null) {
             query = query.withIngredientId(new IngredientId(ingredient));
         }
-        var recipes = recipeAppService.getRecipes(query);
+        var recipes = recipeConsultation.getRecipes(query);
         return modelAssembler.toCollectionModel(recipes);
     }
 
@@ -79,7 +79,7 @@ public class RecipesController {
     @PostMapping
     ResponseEntity<Void> createRecipe(@RequestBody @Valid CreateRecipeRequest request, Errors errors, Principal principal) throws URISyntaxException {
         var identity = RecipeId.generate();
-        recipeAppService.createRecipe(request.toCommand(identity, principal.getName()));
+        recipeAuthoring.createRecipe(request.toCommand(identity, principal.getName()));
         return ResponseEntity.created(new URI(links.linkToItemResource(RecipeModel.class, identity).getHref())).build();
     }
 

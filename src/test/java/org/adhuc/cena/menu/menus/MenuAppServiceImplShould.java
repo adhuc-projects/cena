@@ -39,7 +39,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import org.adhuc.cena.menu.common.aggregate.AlreadyExistingEntityException;
 import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
-import org.adhuc.cena.menu.recipes.RecipeAppService;
+import org.adhuc.cena.menu.recipes.RecipeConsultationAppService;
 import org.adhuc.cena.menu.recipes.RecipeId;
 import org.adhuc.cena.menu.recipes.RecipeMother;
 
@@ -56,13 +56,13 @@ import org.adhuc.cena.menu.recipes.RecipeMother;
 class MenuAppServiceImplShould {
 
     private MenuRepository menuRepository;
-    private RecipeAppService recipeAppService;
+    private RecipeConsultationAppService recipeAppService;
     private MenuAppServiceImpl service;
 
     @BeforeEach
     void setUp() {
         menuRepository = new InMemoryMenuRepository();
-        recipeAppService = mock(RecipeAppService.class);
+        recipeAppService = mock(RecipeConsultationAppService.class);
         service = new MenuAppServiceImpl(new MenuCreationService(menuRepository, recipeAppService), menuRepository);
 
         when(recipeAppService.exists(RecipeMother.ID)).thenReturn(true);

@@ -15,14 +15,32 @@
  */
 package org.adhuc.cena.menu.recipes;
 
+import org.adhuc.cena.menu.common.aggregate.AlreadyExistingEntityException;
+
 /**
- * An application service for recipe ingredients.
+ * An application service for recipe authoring. Recipe authoring provides command methods for recipe manipulation by its
+ * author and is available only for authenticated users that are recipe authors, or super administrator.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
-public interface RecipeIngredientAppService {
+public interface RecipeAuthoringAppService {
+
+    /**
+     * Creates a recipe.
+     *
+     * @param command the recipe creation command.
+     * @throws AlreadyExistingEntityException if a recipe already exists with the identity specified in creation command.
+     */
+    void createRecipe(CreateRecipe command);
+
+    /**
+     * Deletes a recipe.
+     *
+     * @param command the recipe deletion command.
+     */
+    void deleteRecipe(DeleteRecipe command);
 
     /**
      * Adds an ingredient to a recipe.
@@ -44,4 +62,5 @@ public interface RecipeIngredientAppService {
      * @param command the ingredients recipe removal command.
      */
     void removeIngredientsFromRecipe(RemoveIngredientsFromRecipe command);
+
 }

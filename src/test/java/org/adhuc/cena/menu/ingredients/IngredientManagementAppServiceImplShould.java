@@ -78,12 +78,6 @@ class IngredientManagementAppServiceImplShould {
     class WithNoIngredient {
 
         @Test
-        @DisplayName("return empty list of ingredients")
-        void returnEmptyIngredientList() {
-            assertThat(ingredientRepository.findAll()).isEmpty();
-        }
-
-        @Test
         @DisplayName("retrieve ingredient with identity after creation")
         void retrieveIngredientWithIdAfterCreation() {
             var ingredient = ingredient();
@@ -97,12 +91,9 @@ class IngredientManagementAppServiceImplShould {
     @DisplayName("with tomato")
     class WithTomato {
 
-        private Ingredient tomato;
-
         @BeforeEach
         void setUp() {
-            tomato = ingredient(TOMATO_ID, TOMATO, TOMATO_MEASUREMENT_TYPES);
-            ingredientRepository.save(tomato);
+            ingredientRepository.save(ingredient());
         }
 
         @Test
@@ -154,37 +145,6 @@ class IngredientManagementAppServiceImplShould {
         void throwEntityNotFoundDeleteUnknownIngredient() {
             var exception = assertThrows(EntityNotFoundException.class, () -> service.deleteIngredient(deleteCommand(CUCUMBER_ID)));
             assertThat(exception.getIdentity()).isEqualTo(CUCUMBER_ID.toString());
-        }
-
-        @Nested
-        @DisplayName("and cucumber")
-        class AndCucumber {
-
-            private Ingredient cucumber;
-
-            @BeforeEach
-            void setUp() {
-                cucumber = ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES);
-                ingredientRepository.save(cucumber);
-            }
-
-            @Test
-            @DisplayName("fail during ingredients deletion when at least one ingredient is used in recipe")
-            void deleteIngredientsUsedInRecipe() {
-                when(ingredientRelatedService.areIngredientsRelated()).thenReturn(true);
-                when(ingredientRelatedService.relatedObjectName()).thenReturn("recipe");
-                var exception = assertThrows(IngredientNotDeletableRelatedToObjectException.class, () -> service.deleteIngredients());
-                assertThat(exception.getMessage()).isEqualTo("Ingredients cannot be deleted as at least one is related to at least one recipe");
-            }
-
-            @Test
-            @DisplayName("return empty list after deleting all ingredients")
-            void returnEmptyListAfterDeletion() {
-                when(ingredientRelatedService.areIngredientsRelated()).thenReturn(false);
-                service.deleteIngredients();
-                assertThat(ingredientRepository.findAll()).isEmpty();
-            }
-
         }
 
     }

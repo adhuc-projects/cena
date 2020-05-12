@@ -40,7 +40,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import org.adhuc.cena.menu.configuration.ApplicationSecurityConfiguration;
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
-import org.adhuc.cena.menu.recipes.RecipeAppService;
+import org.adhuc.cena.menu.recipes.RecipeConsultationAppService;
 import org.adhuc.cena.menu.recipes.RecipeMother;
 import org.adhuc.cena.menu.recipes.RecipeRepository;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
@@ -69,7 +69,7 @@ class MenuAppServiceWithSecurityShould {
     @MockBean
     private RecipeRepository recipeRepository;
     @MockBean
-    private RecipeAppService recipeAppServiceMock;
+    private RecipeConsultationAppService recipeAppServiceMock;
 
     @BeforeEach
     void setUp() {

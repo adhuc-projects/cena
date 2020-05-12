@@ -13,13 +13,13 @@
  * You should have received a copy of the GNU General Public License along with Cena Project. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.adhuc.cena.menu.ingredients;
+package org.adhuc.cena.menu.recipes;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assumptions.assumeThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
+import static org.adhuc.cena.menu.recipes.QueryRecipes.query;
+import static org.adhuc.cena.menu.recipes.RecipeMother.ID;
+import static org.adhuc.cena.menu.recipes.RecipeMother.recipe;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,88 +33,108 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import org.adhuc.cena.menu.configuration.ApplicationSecurityConfiguration;
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
-import org.adhuc.cena.menu.recipes.RecipeRepository;
+import org.adhuc.cena.menu.ingredients.IngredientConsultationAppService;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 import org.adhuc.cena.menu.support.WithCommunityUser;
 import org.adhuc.cena.menu.support.WithIngredientManager;
 import org.adhuc.cena.menu.support.WithSuperAdministrator;
 
 /**
- * The {@link IngredientManagementAppServiceImpl} security tests.
+ * The {@link RecipeConsultationAppServiceImpl} security tests.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
- * @since 0.1.0
+ * @since 0.2.0
  */
 @Tag("integration")
 @Tag("appService")
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration
-@DisplayName("Ingredient management service with security should")
-class IngredientManagementAppServiceWithSecurityShould {
+@DisplayName("Recipe consultation service with security should")
+class RecipeConsultationAppServiceWithSecurityShould {
 
     @Autowired
-    private IngredientAdministrationAppService service;
+    private RecipeConsultationAppService service;
     @Autowired
-    private IngredientRepository repository;
+    private RecipeRepository repository;
     @MockBean
-    private RecipeRepository recipeRepository;
-    @MockBean
-    private IngredientRelatedService ingredientRelatedService;
+    private IngredientConsultationAppService ingredientConsultationMock;
 
     @BeforeEach
     void setUp() {
         repository.deleteAll();
-        repository.save(ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES));
+        repository.save(recipe());
     }
 
     @Test
     @WithCommunityUser
-    @DisplayName("deny ingredient deletion access to community user")
-    void denyIngredientsDeletionAsCommunityUser() {
-        assumeThat(repository.findAll()).isNotEmpty();
-        assertThrows(AccessDeniedException.class, () -> service.deleteIngredients());
+    @DisplayName("grant recipes listing access to community user")
+    void grantRecipeListAsCommunityUser() {
+        assertThat(service.getRecipes(query())).isNotEmpty();
     }
 
     @Test
     @WithAuthenticatedUser
-    @DisplayName("deny ingredient deletion access to authenticated user")
-    void denyIngredientsDeletionAsAuthenticatedUser() {
-        assumeThat(repository.findAll()).isNotEmpty();
-        assertThrows(AccessDeniedException.class, () -> service.deleteIngredients());
+    @DisplayName("grant recipes listing access to authenticated user")
+    void grantRecipeListAsAuthenticatedUser() {
+        assertThat(service.getRecipes(query())).isNotEmpty();
     }
 
     @Test
     @WithIngredientManager
-    @DisplayName("deny ingredient deletion access to ingredient manager")
-    void denyIngredientsDeletionAsIngredientManager() {
-        assumeThat(repository.findAll()).isNotEmpty();
-        assertThrows(AccessDeniedException.class, () -> service.deleteIngredients());
+    @DisplayName("grant recipes listing access to ingredient manager")
+    void grantRecipeListAsIngredientManager() {
+        assertThat(service.getRecipes(query())).isNotEmpty();
     }
 
     @Test
     @WithSuperAdministrator
-    @DisplayName("grant ingredients deletion access to super administrator")
-    void grantIngredientsDeletionAsSuperAdministrator() {
-        assumeThat(repository.findAll()).isNotEmpty();
-        service.deleteIngredients();
-        assertThat(repository.findAll()).isEmpty();
+    @DisplayName("grant recipes listing access to super administrator")
+    void grantRecipeListAsSuperAdministrator() {
+        assertThat(service.getRecipes(query())).isNotEmpty();
+    }
+
+    @Test
+    @WithCommunityUser
+    @DisplayName("grant recipe detail access to community user")
+    void grantRecipeDetailAsCommunityUser() {
+        assertThat(service.getRecipe(ID)).isNotNull();
+    }
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("grant recipe detail access to authenticated user")
+    void grantRecipeDetailAsAuthenticatedUser() {
+        assertThat(service.getRecipe(ID)).isNotNull();
+    }
+
+    @Test
+    @WithIngredientManager
+    @DisplayName("grant recipe detail access to ingredient manager")
+    void grantRecipeDetailAsIngredientManager() {
+        assertThat(service.getRecipe(ID)).isNotNull();
+    }
+
+    @Test
+    @WithSuperAdministrator
+    @DisplayName("grant recipe detail access to super administrator")
+    void grantRecipeDetailAsSuperAdministrator() {
+        assertThat(service.getRecipe(ID)).isNotNull();
     }
 
     @Configuration
     @Import(ApplicationSecurityConfiguration.class)
     @EnableConfigurationProperties(MenuGenerationProperties.class)
-    @ComponentScan("org.adhuc.cena.menu.ingredients")
+    @ComponentScan("org.adhuc.cena.menu.recipes")
     static class ServiceWithSecurityConfiguration {
         @Bean
-        IngredientRepository ingredientRepository() {
-            return new InMemoryIngredientRepository();
+        RecipeRepository recipeRepository() {
+            return new InMemoryRecipeRepository();
         }
     }
 

@@ -42,6 +42,7 @@ import org.springframework.restdocs.snippet.TemplatedSnippet;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
+import org.adhuc.cena.menu.ingredients.IngredientAdministrationAppService;
 import org.adhuc.cena.menu.ingredients.IngredientConsultationAppService;
 import org.adhuc.cena.menu.ingredients.IngredientManagementAppService;
 import org.adhuc.cena.menu.ingredients.MeasurementType;
@@ -76,6 +77,8 @@ class IngredientsDocumentation {
     private IngredientConsultationAppService ingredientConsultationMock;
     @MockBean
     private IngredientManagementAppService ingredientManagementMock;
+    @MockBean
+    private IngredientAdministrationAppService ingredientAdministrationMock;
 
     @Test
     @DisplayName("generates ingredients list example")

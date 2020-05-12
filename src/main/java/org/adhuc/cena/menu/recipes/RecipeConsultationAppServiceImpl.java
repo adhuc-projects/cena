@@ -15,44 +15,49 @@
  */
 package org.adhuc.cena.menu.recipes;
 
+import java.util.List;
+
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import org.adhuc.cena.menu.ingredients.IngredientConsultationAppService;
+
 /**
- * A {@link RecipeIngredientAppService} implementation.
+ * A {@link RecipeConsultationAppService} implementation.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-class RecipeIngredientAppServiceImpl implements RecipeIngredientAppService {
+class RecipeConsultationAppServiceImpl implements RecipeConsultationAppService {
 
-    private final IngredientToRecipeAdditionService ingredientToRecipeAdditionService;
-    private final IngredientFromRecipeRemovalService ingredientFromRecipeRemovalService;
+    @NonNull
     private final RecipeRepository recipeRepository;
+    @NonNull
+    private final IngredientConsultationAppService ingredientAppService;
 
     @Override
-    @AsRecipeAuthor
-    public void addIngredientToRecipe(@NonNull AddIngredientToRecipe command) {
-        ingredientToRecipeAdditionService.addIngredientToRecipe(command);
+    public List<Recipe> getRecipes(@NonNull QueryRecipes query) {
+        if (query.ingredientId().isPresent()) {
+            var ingredient = ingredientAppService.getIngredient(query.ingredientId().get());
+            return List.copyOf(recipeRepository.findByIngredient(ingredient.id()));
+        }
+        return List.copyOf(recipeRepository.findAll());
     }
 
     @Override
-    @AsRecipeAuthor
-    public void removeIngredientFromRecipe(@NonNull RemoveIngredientFromRecipe command) {
-        ingredientFromRecipeRemovalService.removeIngredientFromRecipe(command);
+    public boolean exists(@NonNull RecipeId recipeId) {
+        return recipeRepository.exists(recipeId);
     }
 
     @Override
-    @AsRecipeAuthor
-    public void removeIngredientsFromRecipe(@NonNull RemoveIngredientsFromRecipe command) {
-        var recipe = recipeRepository.findNotNullById(command.recipeId());
-        recipe.removeIngredients(command);
+    public Recipe getRecipe(@NonNull RecipeId recipeId) {
+        return recipeRepository.findNotNullById(recipeId);
     }
 
 }

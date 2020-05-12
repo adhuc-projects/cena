@@ -17,29 +17,27 @@ package org.adhuc.cena.menu.port.adapter.rest.recipes;
 
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.adhuc.cena.menu.recipes.RecipeAppService;
+import org.adhuc.cena.menu.recipes.RecipeAdministrationAppService;
 
 /**
  * A REST controller exposing /api/recipes resource for deletion.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @RestController
 @ConditionalOnProperty(name = "cena.menu-generation.features.recipes-deletion", matchIfMissing = true)
+@RequiredArgsConstructor
 class RecipesDeletionController {
 
-    private RecipeAppService recipeAppService;
-
-    RecipesDeletionController(RecipeAppService recipeAppService) {
-        this.recipeAppService = recipeAppService;
-    }
+    private final RecipeAdministrationAppService recipeAdministration;
 
     /**
      * Deletes all recipes.
@@ -47,7 +45,7 @@ class RecipesDeletionController {
     @DeleteMapping(path = "/api/recipes")
     @ResponseStatus(NO_CONTENT)
     void deleteRecipes() {
-        recipeAppService.deleteRecipes();
+        recipeAdministration.deleteRecipes();
     }
 
 }

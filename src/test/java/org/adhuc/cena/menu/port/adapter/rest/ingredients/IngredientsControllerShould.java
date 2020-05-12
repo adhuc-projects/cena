@@ -72,6 +72,8 @@ class IngredientsControllerShould {
     private IngredientConsultationAppService ingredientConsultationMock;
     @MockBean
     private IngredientManagementAppService ingredientManagementMock;
+    @MockBean
+    private IngredientAdministrationAppService ingredientAdministrationMock;
 
     @Nested
     @DisplayName("with 2 ingredients")
@@ -341,7 +343,7 @@ class IngredientsControllerShould {
         mvc.perform(delete(INGREDIENTS_API_URL))
                 .andExpect(status().isNoContent());
 
-        verify(ingredientManagementMock).deleteIngredients();
+        verify(ingredientAdministrationMock).deleteIngredients();
     }
 
     void assertJsonContainsIngredient(ResultActions resultActions, String jsonPath,

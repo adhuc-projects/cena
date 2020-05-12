@@ -29,14 +29,15 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
-import org.adhuc.cena.menu.recipes.RecipeAppService;
+import org.adhuc.cena.menu.recipes.RecipeAuthoringAppService;
+import org.adhuc.cena.menu.recipes.RecipeConsultationAppService;
 import org.adhuc.cena.menu.support.WithSuperAdministrator;
 
 /**
  * The {@link RecipesDeletionController} test class.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Tag("integration")
@@ -52,7 +53,9 @@ class RecipesDeletionControllerShould {
     @Autowired
     private MockMvc mvc;
     @MockBean
-    private RecipeAppService recipeAppServiceMock;
+    private RecipeConsultationAppService recipeConsultationMock;
+    @MockBean
+    private RecipeAuthoringAppService recipeAuthoringMock;
 
     @Test
     @WithSuperAdministrator

@@ -22,7 +22,7 @@ import org.adhuc.cena.menu.ingredients.IngredientId;
 import org.adhuc.cena.menu.ingredients.IngredientRelatedService;
 
 /**
- * A {@link RecipeIngredientAppService} implementation.
+ * An {@link IngredientRelatedService} implementation for recipes.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0

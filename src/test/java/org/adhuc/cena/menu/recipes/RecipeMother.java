@@ -95,10 +95,6 @@ public class RecipeMother {
                 recipeIngredient.isMainIngredient(), recipeIngredient.quantity());
     }
 
-    public static AddIngredientToRecipe addIngredientCommand(@NonNull IngredientId ingredientId) {
-        return addIngredientCommand(ingredientId, ID, false, QUANTITY);
-    }
-
     public static AddIngredientToRecipe addIngredientCommand(@NonNull IngredientId ingredientId, boolean isMainIngredient) {
         return addIngredientCommand(ingredientId, ID, isMainIngredient, QUANTITY);
     }

@@ -23,6 +23,9 @@ import static org.mockito.Mockito.when;
 import static org.adhuc.cena.menu.common.security.RolesDefinition.INGREDIENT_MANAGER_ROLE;
 import static org.adhuc.cena.menu.common.security.RolesDefinition.USER_ROLE;
 import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
+import static org.adhuc.cena.menu.recipes.RecipeMother.ID;
+import static org.adhuc.cena.menu.recipes.RecipeMother.createCommand;
+import static org.adhuc.cena.menu.recipes.RecipeMother.deleteCommand;
 import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
 import org.assertj.core.api.Condition;
@@ -52,7 +55,7 @@ import org.adhuc.cena.menu.support.WithIngredientManager;
 import org.adhuc.cena.menu.support.WithSuperAdministrator;
 
 /**
- * The {@link RecipeIngredientAppServiceImpl} security tests.
+ * The {@link RecipeAuthoringAppServiceImpl} security tests.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
@@ -62,8 +65,8 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
 @Tag("appService")
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration
-@DisplayName("Recipe ingredient service with security should")
-class RecipeIngredientAppServiceWithSecurityShould {
+@DisplayName("Recipe authoring service with security should")
+class RecipeAuthoringAppServiceWithSecurityShould {
 
     private static final String RECIPE_AUTHOR_NAME = "recipe author";
 
@@ -71,20 +74,105 @@ class RecipeIngredientAppServiceWithSecurityShould {
             "tomato ingredient");
 
     @Autowired
-    private RecipeIngredientAppService service;
+    private RecipeAuthoringAppService service;
     @Autowired
     private RecipeRepository repository;
     @MockBean
-    private IngredientConsultationAppService ingredientAppServiceMock;
+    private IngredientConsultationAppService ingredientConsultationMock;
 
     @BeforeEach
     void setUp() {
-        when(ingredientAppServiceMock.getIngredient(TOMATO_ID)).thenReturn(ingredient(TOMATO_ID, TOMATO, TOMATO_MEASUREMENT_TYPES));
-        when(ingredientAppServiceMock.getIngredient(CUCUMBER_ID)).thenReturn(ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES));
+        when(ingredientConsultationMock.getIngredient(TOMATO_ID)).thenReturn(ingredient(TOMATO_ID, TOMATO, TOMATO_MEASUREMENT_TYPES));
+        when(ingredientConsultationMock.getIngredient(CUCUMBER_ID)).thenReturn(ingredient(CUCUMBER_ID, CUCUMBER, CUCUMBER_MEASUREMENT_TYPES));
 
         repository.deleteAll();
         repository.save(builder().withAuthorName(RECIPE_AUTHOR_NAME).withIngredients(CUCUMBER_ID).build());
-        assumeThat(repository.findNotNullById(RecipeMother.ID).ingredients()).noneMatch(i -> i.ingredientId().equals(TOMATO_ID));
+        assumeThat(repository.findNotNullById(ID).ingredients()).noneMatch(i -> i.ingredientId().equals(TOMATO_ID));
+    }
+
+    @Test
+    @WithCommunityUser
+    @DisplayName("deny recipe creation access to community user")
+    void denyRecipeCreationAsCommunityUser() {
+        assertThrows(AccessDeniedException.class, () -> service.createRecipe(createCommand()));
+    }
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("grant recipe creation access to authenticated user")
+    void grantRecipeCreationAsAuthenticatedUser() {
+        assumeThat(repository.exists(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)).isFalse();
+        service.createRecipe(createCommand(builder().withId(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID).build()));
+        assertThat(repository.exists(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)).isTrue();
+    }
+
+    @Test
+    @WithIngredientManager
+    @DisplayName("grant recipe creation access to ingredient manager")
+    void grantRecipeCreationAsIngredientManager() {
+        assumeThat(repository.exists(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)).isFalse();
+        service.createRecipe(createCommand(builder().withId(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID).build()));
+        assertThat(repository.exists(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)).isTrue();
+    }
+
+    @Test
+    @WithSuperAdministrator
+    @DisplayName("grant recipe creation access to super administrator")
+    void grantRecipeCreationAsSuperAdministrator() {
+        assumeThat(repository.exists(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)).isFalse();
+        service.createRecipe(createCommand(builder().withId(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID).build()));
+        assertThat(repository.exists(ID)).isTrue();
+    }
+
+    @Test
+    @WithCommunityUser
+    @DisplayName("deny recipe deletion access to community user")
+    void denyRecipeDeletionAsCommunityUser() {
+        assumeThat(repository.exists(ID)).isTrue();
+        assertThrows(AccessDeniedException.class, () -> service.deleteRecipe(deleteCommand()));
+    }
+
+    @Test
+    @WithMockUser(username = RECIPE_AUTHOR_NAME, roles = USER_ROLE)
+    @DisplayName("grant recipe deletion access to recipe author")
+    void grantRecipeDeletionAsRecipeAuthor() {
+        assumeThat(repository.exists(ID)).isTrue();
+        service.deleteRecipe(deleteCommand());
+        assertThat(repository.exists(ID)).isFalse();
+    }
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("deny recipe deletion access to authenticated user that is not recipe author")
+    void denyRecipeDeletionAsAuthenticatedUserNotRecipeAuthor() {
+        assumeThat(repository.exists(ID)).isTrue();
+        assertThrows(AccessDeniedException.class, () -> service.deleteRecipe(deleteCommand()));
+    }
+
+    @Test
+    @WithMockUser(username = RECIPE_AUTHOR_NAME, roles = INGREDIENT_MANAGER_ROLE)
+    @DisplayName("grant recipe deletion access to ingredient manager that is recipe author")
+    void grantRecipeDeletionAsIngredientManagerRecipeAuthor() {
+        assumeThat(repository.exists(ID)).isTrue();
+        service.deleteRecipe(deleteCommand());
+        assertThat(repository.exists(ID)).isFalse();
+    }
+
+    @Test
+    @WithIngredientManager
+    @DisplayName("deny recipe deletion access to ingredient manager that is not recipe author")
+    void denyRecipeDeletionAsIngredientManagerNotRecipeAuthor() {
+        assumeThat(repository.exists(ID)).isTrue();
+        assertThrows(AccessDeniedException.class, () -> service.deleteRecipe(deleteCommand()));
+    }
+
+    @Test
+    @WithSuperAdministrator
+    @DisplayName("grant recipe deletion access to super administrator")
+    void grantRecipeDeletionAsSuperAdministrator() {
+        assumeThat(repository.exists(ID)).isTrue();
+        service.deleteRecipe(deleteCommand());
+        assertThat(repository.exists(ID)).isFalse();
     }
 
     @Test
@@ -100,7 +188,7 @@ class RecipeIngredientAppServiceWithSecurityShould {
     void grantRecipeIngredientAdditionAsRecipeAuthor() {
         var command = addIngredientCommand();
         service.addIngredientToRecipe(command);
-        assertThat(repository.findNotNullById(RecipeMother.ID).ingredients()).haveExactly(1, TOMATO_PRESENT);
+        assertThat(repository.findNotNullById(ID).ingredients()).haveExactly(1, TOMATO_PRESENT);
     }
 
     @Test
@@ -115,7 +203,7 @@ class RecipeIngredientAppServiceWithSecurityShould {
     @DisplayName("grant recipe ingredient addition access to ingredient manager that is recipe author")
     void grantRecipeIngredientAdditionAsIngredientManagerRecipeAuthor() {
         service.addIngredientToRecipe(addIngredientCommand());
-        assertThat(repository.findNotNullById(RecipeMother.ID).ingredients()).haveExactly(1, TOMATO_PRESENT);
+        assertThat(repository.findNotNullById(ID).ingredients()).haveExactly(1, TOMATO_PRESENT);
     }
 
     @Test
@@ -130,7 +218,7 @@ class RecipeIngredientAppServiceWithSecurityShould {
     @DisplayName("grant recipe ingredient addition access to super administrator")
     void grantRecipeIngredientAdditionAsSuperAdministrator() {
         service.addIngredientToRecipe(addIngredientCommand());
-        assertThat(repository.findNotNullById(RecipeMother.ID).ingredients()).haveExactly(1, TOMATO_PRESENT);
+        assertThat(repository.findNotNullById(ID).ingredients()).haveExactly(1, TOMATO_PRESENT);
     }
 
     @Test
@@ -144,9 +232,9 @@ class RecipeIngredientAppServiceWithSecurityShould {
     @WithMockUser(username = RECIPE_AUTHOR_NAME, roles = USER_ROLE)
     @DisplayName("grant recipe ingredient removal access to recipe author")
     void grantRecipeIngredientRemovalAsRecipeAuthor() {
-        assumeThat(repository.findNotNullById(RecipeMother.ID).ingredients()).isNotEmpty();
+        assumeThat(repository.findNotNullById(ID).ingredients()).isNotEmpty();
         service.removeIngredientFromRecipe(removeIngredientCommand(CUCUMBER_ID));
-        assertThat(repository.findNotNullById(RecipeMother.ID).ingredients()).isEmpty();
+        assertThat(repository.findNotNullById(ID).ingredients()).isEmpty();
     }
 
     @Test
@@ -160,9 +248,9 @@ class RecipeIngredientAppServiceWithSecurityShould {
     @WithMockUser(username = RECIPE_AUTHOR_NAME, roles = INGREDIENT_MANAGER_ROLE)
     @DisplayName("grant recipe ingredient removal access to ingredient manager that is recipe author")
     void grantRecipeIngredientRemovalAsIngredientManagerRecipeAuthor() {
-        assumeThat(repository.findNotNullById(RecipeMother.ID).ingredients()).isNotEmpty();
+        assumeThat(repository.findNotNullById(ID).ingredients()).isNotEmpty();
         service.removeIngredientFromRecipe(removeIngredientCommand(CUCUMBER_ID));
-        assertThat(repository.findNotNullById(RecipeMother.ID).ingredients()).isEmpty();
+        assertThat(repository.findNotNullById(ID).ingredients()).isEmpty();
     }
 
     @Test
@@ -176,9 +264,9 @@ class RecipeIngredientAppServiceWithSecurityShould {
     @WithSuperAdministrator
     @DisplayName("grant recipe ingredient removal access to super administrator")
     void grantRecipeIngredientRemovalAsSuperAdministrator() {
-        assumeThat(repository.findNotNullById(RecipeMother.ID).ingredients()).isNotEmpty();
+        assumeThat(repository.findNotNullById(ID).ingredients()).isNotEmpty();
         service.removeIngredientFromRecipe(removeIngredientCommand(CUCUMBER_ID));
-        assertThat(repository.findNotNullById(RecipeMother.ID).ingredients()).isEmpty();
+        assertThat(repository.findNotNullById(ID).ingredients()).isEmpty();
     }
 
     @Test
@@ -192,9 +280,9 @@ class RecipeIngredientAppServiceWithSecurityShould {
     @WithMockUser(username = RECIPE_AUTHOR_NAME, roles = USER_ROLE)
     @DisplayName("grant recipe ingredients removal access to recipe author")
     void grantRecipeIngredientsRemovalAsRecipeAuthor() {
-        assumeThat(repository.findNotNullById(RecipeMother.ID).ingredients()).isNotEmpty();
+        assumeThat(repository.findNotNullById(ID).ingredients()).isNotEmpty();
         service.removeIngredientsFromRecipe(removeIngredientsCommand());
-        assertThat(repository.findNotNullById(RecipeMother.ID).ingredients()).isEmpty();
+        assertThat(repository.findNotNullById(ID).ingredients()).isEmpty();
     }
 
     @Test
@@ -208,9 +296,9 @@ class RecipeIngredientAppServiceWithSecurityShould {
     @WithMockUser(username = RECIPE_AUTHOR_NAME, roles = INGREDIENT_MANAGER_ROLE)
     @DisplayName("grant recipe ingredients removal access to ingredient manager that is recipe author")
     void grantRecipeIngredientsRemovalAsIngredientManagerRecipeAuthor() {
-        assumeThat(repository.findNotNullById(RecipeMother.ID).ingredients()).isNotEmpty();
+        assumeThat(repository.findNotNullById(ID).ingredients()).isNotEmpty();
         service.removeIngredientsFromRecipe(removeIngredientsCommand());
-        assertThat(repository.findNotNullById(RecipeMother.ID).ingredients()).isEmpty();
+        assertThat(repository.findNotNullById(ID).ingredients()).isEmpty();
     }
 
     @Test
@@ -224,9 +312,9 @@ class RecipeIngredientAppServiceWithSecurityShould {
     @WithSuperAdministrator
     @DisplayName("grant recipe ingredients removal access to super administrator")
     void grantRecipeIngredientsRemovalAsSuperAdministrator() {
-        assumeThat(repository.findNotNullById(RecipeMother.ID).ingredients()).isNotEmpty();
+        assumeThat(repository.findNotNullById(ID).ingredients()).isNotEmpty();
         service.removeIngredientsFromRecipe(removeIngredientsCommand());
-        assertThat(repository.findNotNullById(RecipeMother.ID).ingredients()).isEmpty();
+        assertThat(repository.findNotNullById(ID).ingredients()).isEmpty();
     }
 
     @Configuration

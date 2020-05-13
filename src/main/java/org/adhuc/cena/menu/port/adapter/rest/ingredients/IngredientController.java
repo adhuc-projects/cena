@@ -23,9 +23,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import org.adhuc.cena.menu.ingredients.DeleteIngredient;
-import org.adhuc.cena.menu.ingredients.IngredientConsultationAppService;
+import org.adhuc.cena.menu.ingredients.IngredientConsultation;
 import org.adhuc.cena.menu.ingredients.IngredientId;
-import org.adhuc.cena.menu.ingredients.IngredientManagementAppService;
+import org.adhuc.cena.menu.ingredients.IngredientManagement;
 
 /**
  * A REST controller exposing /api/ingredients/{ingredientId} resource.
@@ -40,8 +40,8 @@ import org.adhuc.cena.menu.ingredients.IngredientManagementAppService;
 class IngredientController {
 
     private final IngredientModelAssembler modelAssembler;
-    private final IngredientConsultationAppService ingredientConsultation;
-    private final IngredientManagementAppService ingredientManagement;
+    private final IngredientConsultation ingredientConsultation;
+    private final IngredientManagement ingredientManagement;
 
     /**
      * Gets the ingredient information for the ingredient corresponding to the specified identity.

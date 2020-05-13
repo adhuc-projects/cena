@@ -44,8 +44,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
-import org.adhuc.cena.menu.ingredients.IngredientConsultationAppService;
-import org.adhuc.cena.menu.ingredients.IngredientManagementAppService;
+import org.adhuc.cena.menu.ingredients.IngredientConsultation;
+import org.adhuc.cena.menu.ingredients.IngredientManagement;
 import org.adhuc.cena.menu.ingredients.IngredientMother;
 import org.adhuc.cena.menu.port.adapter.rest.ingredients.IngredientModelAssembler;
 import org.adhuc.cena.menu.port.adapter.rest.ingredients.IngredientsController;
@@ -79,18 +79,18 @@ class RecipeIngredientsControllerShould {
     @Autowired
     private RecipeIngredientsController controller;
     @MockBean
-    private RecipeAuthoringAppService recipeIngredientAppServiceMock;
+    private RecipeAuthoring recipeAuthoringMock;
     @MockBean
-    private RecipeConsultationAppService recipeAppServiceMock;
+    private RecipeConsultation recipeConsultationMock;
     @MockBean
-    private IngredientConsultationAppService ingredientConsultationMock;
+    private IngredientConsultation ingredientConsultationMock;
     @MockBean
-    private IngredientManagementAppService ingredientManagementMock;
+    private IngredientManagement ingredientManagementMock;
 
     @Test
     @DisplayName("respond Not Found when retrieving unknown recipe ingredients")
     void respond404GetUnknownRecipeIngredients() throws Exception {
-        when(recipeAppServiceMock.getRecipe(ID)).thenThrow(new EntityNotFoundException(Recipe.class, RecipeMother.ID));
+        when(recipeConsultationMock.getRecipe(ID)).thenThrow(new EntityNotFoundException(Recipe.class, RecipeMother.ID));
         mvc.perform(get(RECIPE_INGREDIENTS_API_URL, ID)).andExpect(status().isNotFound());
     }
 
@@ -104,7 +104,7 @@ class RecipeIngredientsControllerShould {
         void setUp() {
             var recipe = builder().withIngredient(TOMATO_ID, MAIN_INGREDIENT, QUANTITY)
                     .andIngredient(CUCUMBER_ID, false, UNDEFINED).build();
-            when(recipeAppServiceMock.getRecipe(ID)).thenReturn(recipe);
+            when(recipeConsultationMock.getRecipe(ID)).thenReturn(recipe);
             ingredients = new ArrayList<>(recipe.ingredients());
         }
 
@@ -163,7 +163,7 @@ class RecipeIngredientsControllerShould {
     class WithEmptyList {
         @BeforeEach
         void setUp() throws Exception {
-            when(recipeAppServiceMock.getRecipe(ID)).thenReturn(builder().build());
+            when(recipeConsultationMock.getRecipe(ID)).thenReturn(builder().build());
         }
 
         @Test
@@ -199,7 +199,7 @@ class RecipeIngredientsControllerShould {
     @DisplayName("respond Not Found when creating recipe ingredient for unknown recipe")
     void respond404CreateUnknownRecipe() throws Exception {
         doThrow(new EntityNotFoundException(Recipe.class, RecipeMother.ID))
-                .when(recipeIngredientAppServiceMock).addIngredientToRecipe(Mockito.any());
+                .when(recipeAuthoringMock).addIngredientToRecipe(Mockito.any());
         mvc.perform(post(RECIPE_INGREDIENTS_API_URL, ID)
                 .contentType(APPLICATION_JSON)
                 .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \"mainIngredient\":true, \"quantity\":1, \"measurementUnit\":\"DOZEN\"}")
@@ -289,7 +289,7 @@ class RecipeIngredientsControllerShould {
                 .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \"mainIngredient\":true, \"quantity\":1, \"measurementUnit\":\"DOZEN\"}")
         ).andExpect(status().isCreated());
 
-        verify(recipeIngredientAppServiceMock).addIngredientToRecipe(addIngredientCommand(IngredientMother.ID, ID, MAIN_INGREDIENT, QUANTITY));
+        verify(recipeAuthoringMock).addIngredientToRecipe(addIngredientCommand(IngredientMother.ID, ID, MAIN_INGREDIENT, QUANTITY));
     }
 
     @Test
@@ -311,7 +311,7 @@ class RecipeIngredientsControllerShould {
                 .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \"quantity\":1, \"measurementUnit\":\"DOZEN\"}")
         ).andExpect(status().isCreated());
 
-        verify(recipeIngredientAppServiceMock).addIngredientToRecipe(addIngredientCommand(IngredientMother.ID, ID, false, QUANTITY));
+        verify(recipeAuthoringMock).addIngredientToRecipe(addIngredientCommand(IngredientMother.ID, ID, false, QUANTITY));
     }
 
     @Test
@@ -333,7 +333,7 @@ class RecipeIngredientsControllerShould {
                 .content("{\"id\":\"3fa85f64-5717-4562-b3fc-2c963f66afa6\", \"mainIngredient\":true}")
         ).andExpect(status().isCreated());
 
-        verify(recipeIngredientAppServiceMock).addIngredientToRecipe(addIngredientCommand(IngredientMother.ID, ID, MAIN_INGREDIENT, UNDEFINED));
+        verify(recipeAuthoringMock).addIngredientToRecipe(addIngredientCommand(IngredientMother.ID, ID, MAIN_INGREDIENT, UNDEFINED));
     }
 
     @Test
@@ -379,7 +379,7 @@ class RecipeIngredientsControllerShould {
         mvc.perform(delete(RECIPE_INGREDIENTS_API_URL, ID))
                 .andExpect(status().isNoContent());
 
-        verify(recipeIngredientAppServiceMock).removeIngredientsFromRecipe(removeIngredientsCommand());
+        verify(recipeAuthoringMock).removeIngredientsFromRecipe(removeIngredientsCommand());
     }
 
     @Test

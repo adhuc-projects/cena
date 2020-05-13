@@ -69,11 +69,11 @@ class IngredientsControllerShould {
     @Autowired
     private MockMvc mvc;
     @MockBean
-    private IngredientConsultationAppService ingredientConsultationMock;
+    private IngredientConsultation ingredientConsultationMock;
     @MockBean
-    private IngredientManagementAppService ingredientManagementMock;
+    private IngredientManagement ingredientManagementMock;
     @MockBean
-    private IngredientAdministrationAppService ingredientAdministrationMock;
+    private IngredientAdministration ingredientAdministrationMock;
 
     @Nested
     @DisplayName("with 2 ingredients")

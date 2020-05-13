@@ -47,8 +47,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import org.adhuc.cena.menu.menus.ListMenus;
-import org.adhuc.cena.menu.menus.MenuConsultationAppService;
-import org.adhuc.cena.menu.menus.MenuManagementAppService;
+import org.adhuc.cena.menu.menus.MenuConsultation;
+import org.adhuc.cena.menu.menus.MenuManagement;
 import org.adhuc.cena.menu.menus.MenuOwner;
 import org.adhuc.cena.menu.port.adapter.rest.support.Date;
 
@@ -73,8 +73,8 @@ public class MenusController {
     private static final int UNTIL_PARAM_INDEX = 1;
 
     private final EntityLinks links;
-    private final MenuConsultationAppService menuConsultation;
-    private final MenuManagementAppService menuManagement;
+    private final MenuConsultation menuConsultation;
+    private final MenuManagement menuManagement;
     private final MenuModelAssembler modelAssembler;
 
     /**

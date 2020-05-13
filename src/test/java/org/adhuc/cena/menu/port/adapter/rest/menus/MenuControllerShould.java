@@ -65,9 +65,9 @@ class MenuControllerShould {
     private MenuController controller;
 
     @MockBean
-    private MenuConsultationAppService menuConsultationMock;
+    private MenuConsultation menuConsultationMock;
     @MockBean
-    private MenuManagementAppService menuManagementMock;
+    private MenuManagement menuManagementMock;
 
     @ParameterizedTest
     @ValueSource(strings = {"invalid", "01-01-2020-LUNCH", "LUNCH-2020-01-01", "2020-01-01-INVALID", "2020/01/01-LUNCH", "2020-01-01_LUNCH", "32-01-2020-LUNCH"})

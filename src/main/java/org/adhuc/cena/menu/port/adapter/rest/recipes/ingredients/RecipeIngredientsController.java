@@ -33,9 +33,9 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import org.adhuc.cena.menu.recipes.RecipeConsultationAppService;
+import org.adhuc.cena.menu.recipes.RecipeConsultation;
 import org.adhuc.cena.menu.recipes.RecipeId;
-import org.adhuc.cena.menu.recipes.RecipeAuthoringAppService;
+import org.adhuc.cena.menu.recipes.RecipeAuthoring;
 import org.adhuc.cena.menu.recipes.RemoveIngredientsFromRecipe;
 
 /**
@@ -54,8 +54,8 @@ public class RecipeIngredientsController {
 
     private final EntityLinks links;
     private final RecipeIngredientModelAssembler modelAssembler;
-    private final RecipeConsultationAppService recipeAppService;
-    private final RecipeAuthoringAppService recipeIngredientAppService;
+    private final RecipeConsultation recipeConsultation;
+    private final RecipeAuthoring recipeAuthoring;
 
     /**
      * Gets the recipe ingredient information for all ingredients linked to the recipe.
@@ -63,7 +63,7 @@ public class RecipeIngredientsController {
     @GetMapping
     @ResponseStatus(OK)
     CollectionModel<RecipeIngredientModel> getRecipeIngredients(@PathVariable String recipeId) {
-        return modelAssembler.toCollectionModel(recipeId, recipeAppService.getRecipe(new RecipeId(recipeId)).ingredients());
+        return modelAssembler.toCollectionModel(recipeId, recipeConsultation.getRecipe(new RecipeId(recipeId)).ingredients());
     }
 
     /**
@@ -73,7 +73,7 @@ public class RecipeIngredientsController {
     ResponseEntity<Void> createRecipeIngredient(@PathVariable String recipeId,
                                                 @RequestBody @Valid CreateRecipeIngredientRequest request,
                                                 Errors errors) throws URISyntaxException {
-        recipeIngredientAppService.addIngredientToRecipe(request.toCommand(new RecipeId(recipeId)));
+        recipeAuthoring.addIngredientToRecipe(request.toCommand(new RecipeId(recipeId)));
         return ResponseEntity.created(new URI(links.linkFor(RecipeIngredientModel.class, recipeId)
                 .slash(request.getId()).withSelfRel().getHref())).build();
     }
@@ -84,7 +84,7 @@ public class RecipeIngredientsController {
     @DeleteMapping
     @ResponseStatus(NO_CONTENT)
     void deleteRecipeIngredients(@PathVariable String recipeId) {
-        recipeIngredientAppService.removeIngredientsFromRecipe(new RemoveIngredientsFromRecipe(new RecipeId(recipeId)));
+        recipeAuthoring.removeIngredientsFromRecipe(new RemoveIngredientsFromRecipe(new RecipeId(recipeId)));
     }
 
 }

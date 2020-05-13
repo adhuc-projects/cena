@@ -37,8 +37,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
 import org.adhuc.cena.menu.ingredients.Ingredient;
-import org.adhuc.cena.menu.ingredients.IngredientConsultationAppService;
-import org.adhuc.cena.menu.ingredients.IngredientManagementAppService;
+import org.adhuc.cena.menu.ingredients.IngredientConsultation;
+import org.adhuc.cena.menu.ingredients.IngredientManagement;
 import org.adhuc.cena.menu.support.WithCommunityUser;
 import org.adhuc.cena.menu.support.WithIngredientManager;
 import org.adhuc.cena.menu.support.WithSuperAdministrator;
@@ -61,9 +61,9 @@ class IngredientControllerShould {
     @Autowired
     private MockMvc mvc;
     @MockBean
-    private IngredientConsultationAppService ingredientConsultationMock;
+    private IngredientConsultation ingredientConsultationMock;
     @MockBean
-    private IngredientManagementAppService ingredientManagementMock;
+    private IngredientManagement ingredientManagementMock;
 
     @Test
     @DisplayName("respond Not Found when retrieving unknown ingredient")

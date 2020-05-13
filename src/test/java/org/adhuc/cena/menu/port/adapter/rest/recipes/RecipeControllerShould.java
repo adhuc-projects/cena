@@ -37,8 +37,8 @@ import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientModelAssembler;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientsController;
 import org.adhuc.cena.menu.recipes.Recipe;
-import org.adhuc.cena.menu.recipes.RecipeConsultationAppService;
-import org.adhuc.cena.menu.recipes.RecipeAuthoringAppService;
+import org.adhuc.cena.menu.recipes.RecipeConsultation;
+import org.adhuc.cena.menu.recipes.RecipeAuthoring;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 import org.adhuc.cena.menu.support.WithCommunityUser;
 import org.adhuc.cena.menu.support.WithIngredientManager;
@@ -63,9 +63,9 @@ class RecipeControllerShould {
     @Autowired
     private MockMvc mvc;
     @MockBean
-    private RecipeConsultationAppService recipeConsultationMock;
+    private RecipeConsultation recipeConsultationMock;
     @MockBean
-    private RecipeAuthoringAppService recipeAuthoringMock;
+    private RecipeAuthoring recipeAuthoringMock;
 
     @Test
     @DisplayName("respond Not Found when retrieving unknown recipe")

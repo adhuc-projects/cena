@@ -17,6 +17,8 @@ package org.adhuc.cena.menu.ingredients;
 
 /**
  * An ingredient related object service, able to indicates if an ingredient is related to some object and delete relation.
+ * This service exists to avoid ingredient module to be dependent on other modules that uses it. Thus, those other
+ * modules must implement this interface so that ingredients can be deleted reliably.
  *
  * @author Alexandre Carbenay
  * @version 0.2.0

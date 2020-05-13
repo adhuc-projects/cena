@@ -30,8 +30,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import org.adhuc.cena.menu.ingredients.IngredientConsultationAppService;
-import org.adhuc.cena.menu.ingredients.IngredientManagementAppService;
+import org.adhuc.cena.menu.ingredients.IngredientConsultation;
+import org.adhuc.cena.menu.ingredients.IngredientManagement;
 import org.adhuc.cena.menu.port.adapter.rest.ingredients.IngredientModelAssembler;
 import org.adhuc.cena.menu.port.adapter.rest.ingredients.IngredientsController;
 import org.adhuc.cena.menu.support.WithIngredientManager;
@@ -54,9 +54,9 @@ class RequestValidationShould {
     @Autowired
     private MockMvc mvc;
     @MockBean
-    private IngredientConsultationAppService ingredientConsultationMock;
+    private IngredientConsultation ingredientConsultationMock;
     @MockBean
-    private IngredientManagementAppService ingredientManagementMock;
+    private IngredientManagement ingredientManagementMock;
 
     @Test
     @WithIngredientManager

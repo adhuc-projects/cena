@@ -66,11 +66,11 @@ class RecipesControllerShould {
     @Autowired
     private MockMvc mvc;
     @MockBean
-    private RecipeConsultationAppService recipeConsultationMock;
+    private RecipeConsultation recipeConsultationMock;
     @MockBean
-    private RecipeAuthoringAppService recipeAuthoringMock;
+    private RecipeAuthoring recipeAuthoringMock;
     @MockBean
-    private RecipeAdministrationAppService recipeAdministrationMock;
+    private RecipeAdministration recipeAdministrationMock;
 
     @Nested
     @DisplayName("with 2 recipes")

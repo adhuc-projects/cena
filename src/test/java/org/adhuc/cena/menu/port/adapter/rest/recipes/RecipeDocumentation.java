@@ -43,8 +43,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.adhuc.cena.menu.port.adapter.rest.ResultHandlerConfiguration;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientModelAssembler;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientsController;
-import org.adhuc.cena.menu.recipes.RecipeConsultationAppService;
-import org.adhuc.cena.menu.recipes.RecipeAuthoringAppService;
+import org.adhuc.cena.menu.recipes.RecipeConsultation;
+import org.adhuc.cena.menu.recipes.RecipeAuthoring;
 import org.adhuc.cena.menu.support.WithSuperAdministrator;
 
 /**
@@ -71,14 +71,14 @@ class RecipeDocumentation {
     private RestDocumentationResultHandler documentationHandler;
 
     @MockBean
-    private RecipeConsultationAppService recipeAppServiceMock;
+    private RecipeConsultation recipeConsultationMock;
     @MockBean
-    private RecipeAuthoringAppService recipeIngredientAppServiceMock;
+    private RecipeAuthoring recipeAuthoringMock;
 
     @Test
     @DisplayName("generates recipe detail example")
     void recipeDetailExample() throws Exception {
-        when(recipeAppServiceMock.getRecipe(ID)).thenReturn(recipe());
+        when(recipeConsultationMock.getRecipe(ID)).thenReturn(recipe());
 
         mvc.perform(get(RECIPE_API_URL, ID.toString())).andExpect(status().isOk())
                 .andDo(documentationHandler.document(

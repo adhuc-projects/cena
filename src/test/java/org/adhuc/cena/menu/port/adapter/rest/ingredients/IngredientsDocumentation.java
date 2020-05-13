@@ -42,9 +42,9 @@ import org.springframework.restdocs.snippet.TemplatedSnippet;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
-import org.adhuc.cena.menu.ingredients.IngredientAdministrationAppService;
-import org.adhuc.cena.menu.ingredients.IngredientConsultationAppService;
-import org.adhuc.cena.menu.ingredients.IngredientManagementAppService;
+import org.adhuc.cena.menu.ingredients.IngredientAdministration;
+import org.adhuc.cena.menu.ingredients.IngredientConsultation;
+import org.adhuc.cena.menu.ingredients.IngredientManagement;
 import org.adhuc.cena.menu.ingredients.MeasurementType;
 import org.adhuc.cena.menu.port.adapter.rest.ResultHandlerConfiguration;
 import org.adhuc.cena.menu.port.adapter.rest.documentation.support.ConstrainedFields;
@@ -74,11 +74,11 @@ class IngredientsDocumentation {
     private RestDocumentationResultHandler documentationHandler;
 
     @MockBean
-    private IngredientConsultationAppService ingredientConsultationMock;
+    private IngredientConsultation ingredientConsultationMock;
     @MockBean
-    private IngredientManagementAppService ingredientManagementMock;
+    private IngredientManagement ingredientManagementMock;
     @MockBean
-    private IngredientAdministrationAppService ingredientAdministrationMock;
+    private IngredientAdministration ingredientAdministrationMock;
 
     @Test
     @DisplayName("generates ingredients list example")

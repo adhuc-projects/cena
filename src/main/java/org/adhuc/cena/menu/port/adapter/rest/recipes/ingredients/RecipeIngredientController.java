@@ -23,9 +23,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import org.adhuc.cena.menu.ingredients.IngredientId;
-import org.adhuc.cena.menu.recipes.RecipeConsultationAppService;
+import org.adhuc.cena.menu.recipes.RecipeConsultation;
 import org.adhuc.cena.menu.recipes.RecipeId;
-import org.adhuc.cena.menu.recipes.RecipeAuthoringAppService;
+import org.adhuc.cena.menu.recipes.RecipeAuthoring;
 import org.adhuc.cena.menu.recipes.RemoveIngredientFromRecipe;
 
 /**
@@ -41,8 +41,8 @@ import org.adhuc.cena.menu.recipes.RemoveIngredientFromRecipe;
 public class RecipeIngredientController {
 
     private final RecipeIngredientModelAssembler modelAssembler;
-    private final RecipeAuthoringAppService recipeIngredientAppService;
-    private final RecipeConsultationAppService recipeAppService;
+    private final RecipeAuthoring recipeAuthoring;
+    private final RecipeConsultation recipeConsultation;
 
     /**
      * Gets the recipe ingredient information for the recipe ingredient corresponding to the specified recipe and
@@ -55,8 +55,7 @@ public class RecipeIngredientController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     RecipeIngredientModel getRecipeIngredient(@PathVariable String recipeId, @PathVariable String ingredientId) {
-
-        var recipe = recipeAppService.getRecipe(new RecipeId(recipeId));
+        var recipe = recipeConsultation.getRecipe(new RecipeId(recipeId));
         var ingredient = recipe.ingredient(new IngredientId(ingredientId));
         return modelAssembler.toModel(ingredient);
     }
@@ -70,7 +69,7 @@ public class RecipeIngredientController {
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteRecipe(@PathVariable String recipeId, @PathVariable String ingredientId) {
-        recipeIngredientAppService.removeIngredientFromRecipe(new RemoveIngredientFromRecipe(
+        recipeAuthoring.removeIngredientFromRecipe(new RemoveIngredientFromRecipe(
                 new IngredientId(ingredientId), new RecipeId(recipeId)));
     }
 

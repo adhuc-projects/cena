@@ -34,16 +34,16 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
 import org.adhuc.cena.menu.ingredients.Ingredient;
-import org.adhuc.cena.menu.ingredients.IngredientConsultationAppService;
-import org.adhuc.cena.menu.ingredients.IngredientManagementAppService;
+import org.adhuc.cena.menu.ingredients.IngredientConsultation;
+import org.adhuc.cena.menu.ingredients.IngredientManagement;
 import org.adhuc.cena.menu.ingredients.IngredientMother;
 import org.adhuc.cena.menu.port.adapter.rest.ingredients.IngredientModelAssembler;
 import org.adhuc.cena.menu.port.adapter.rest.ingredients.IngredientsController;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.RecipeModelAssembler;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.RecipesController;
 import org.adhuc.cena.menu.recipes.Recipe;
-import org.adhuc.cena.menu.recipes.RecipeConsultationAppService;
-import org.adhuc.cena.menu.recipes.RecipeAuthoringAppService;
+import org.adhuc.cena.menu.recipes.RecipeConsultation;
+import org.adhuc.cena.menu.recipes.RecipeAuthoring;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 import org.adhuc.cena.menu.support.WithCommunityUser;
 import org.adhuc.cena.menu.support.WithIngredientManager;
@@ -69,19 +69,19 @@ class RecipeIngredientControllerShould {
     @Autowired
     private MockMvc mvc;
     @MockBean
-    private RecipeAuthoringAppService recipeIngredientAppServiceMock;
+    private RecipeAuthoring recipeAuthoringMock;
     @MockBean
-    private RecipeConsultationAppService recipeAppServiceMock;
+    private RecipeConsultation recipeConsultationMock;
     @MockBean
-    private IngredientConsultationAppService ingredientConsultationMock;
+    private IngredientConsultation ingredientConsultationMock;
     @MockBean
-    private IngredientManagementAppService ingredientManagementMock;
+    private IngredientManagement ingredientManagementMock;
 
     @Test
     @WithAuthenticatedUser
     @DisplayName("respond Not Found when retrieving ingredient from unknown recipe")
     void respond404GetRecipeIngredientUnknownRecipe() throws Exception {
-        when(recipeAppServiceMock.getRecipe(ID)).thenThrow(new EntityNotFoundException(Recipe.class, ID));
+        when(recipeConsultationMock.getRecipe(ID)).thenThrow(new EntityNotFoundException(Recipe.class, ID));
         mvc.perform(get(RECIPE_INGREDIENT_API_URL, ID, IngredientMother.ID)).andExpect(status().isNotFound());
     }
 
@@ -89,7 +89,7 @@ class RecipeIngredientControllerShould {
     @WithAuthenticatedUser
     @DisplayName("respond Not Found when retrieving unknown ingredient from recipe")
     void respond404GetRecipeIngredientUnknownIngredient() throws Exception {
-        when(recipeAppServiceMock.getRecipe(ID)).thenReturn(builder().build());
+        when(recipeConsultationMock.getRecipe(ID)).thenReturn(builder().build());
         mvc.perform(get(RECIPE_INGREDIENT_API_URL, ID, IngredientMother.ID)).andExpect(status().isNotFound());
     }
 
@@ -97,7 +97,7 @@ class RecipeIngredientControllerShould {
     @WithAuthenticatedUser
     @DisplayName("respond Not Found when deleting ingredient from unknown recipe")
     void respond404DeleteRecipeIngredientUnknownRecipe() throws Exception {
-        doThrow(new EntityNotFoundException(Recipe.class, ID)).when(recipeIngredientAppServiceMock)
+        doThrow(new EntityNotFoundException(Recipe.class, ID)).when(recipeAuthoringMock)
                 .removeIngredientFromRecipe(removeIngredientCommand());
         mvc.perform(delete(RECIPE_INGREDIENT_API_URL, ID, IngredientMother.ID)).andExpect(status().isNotFound());
     }
@@ -106,7 +106,7 @@ class RecipeIngredientControllerShould {
     @WithAuthenticatedUser
     @DisplayName("respond Not Found when deleting unknown ingredient from recipe")
     void respond404DeleteRecipeIngredientUnknownIngredient() throws Exception {
-        doThrow(new EntityNotFoundException(Ingredient.class, IngredientMother.ID)).when(recipeIngredientAppServiceMock)
+        doThrow(new EntityNotFoundException(Ingredient.class, IngredientMother.ID)).when(recipeAuthoringMock)
                 .removeIngredientFromRecipe(removeIngredientCommand());
         mvc.perform(delete(RECIPE_INGREDIENT_API_URL, ID, IngredientMother.ID)).andExpect(status().isNotFound());
     }
@@ -131,7 +131,7 @@ class RecipeIngredientControllerShould {
     @DisplayName("call application service on recipe ingredient deletion")
     void deleteRecipeIngredientCallAppService() throws Exception {
         mvc.perform(delete(RECIPE_INGREDIENT_API_URL, ID, IngredientMother.ID)).andReturn();
-        verify(recipeIngredientAppServiceMock).removeIngredientFromRecipe(removeIngredientCommand());
+        verify(recipeAuthoringMock).removeIngredientFromRecipe(removeIngredientCommand());
     }
 
     @Test
@@ -154,7 +154,7 @@ class RecipeIngredientControllerShould {
 
         @BeforeEach
         void setUp() {
-            when(recipeAppServiceMock.getRecipe(ID)).thenReturn(recipe());
+            when(recipeConsultationMock.getRecipe(ID)).thenReturn(recipe());
         }
 
         @Test

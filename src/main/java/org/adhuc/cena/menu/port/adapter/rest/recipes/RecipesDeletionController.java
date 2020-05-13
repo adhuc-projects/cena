@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.adhuc.cena.menu.recipes.RecipeAdministrationAppService;
+import org.adhuc.cena.menu.recipes.RecipeAdministration;
 
 /**
  * A REST controller exposing /api/recipes resource for deletion.
@@ -37,7 +37,7 @@ import org.adhuc.cena.menu.recipes.RecipeAdministrationAppService;
 @RequiredArgsConstructor
 class RecipesDeletionController {
 
-    private final RecipeAdministrationAppService recipeAdministration;
+    private final RecipeAdministration recipeAdministration;
 
     /**
      * Deletes all recipes.

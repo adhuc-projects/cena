@@ -46,9 +46,9 @@ import org.adhuc.cena.menu.port.adapter.rest.ResultHandlerConfiguration;
 import org.adhuc.cena.menu.port.adapter.rest.documentation.support.ConstrainedFields;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientModelAssembler;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientsController;
-import org.adhuc.cena.menu.recipes.RecipeAdministrationAppService;
-import org.adhuc.cena.menu.recipes.RecipeConsultationAppService;
-import org.adhuc.cena.menu.recipes.RecipeAuthoringAppService;
+import org.adhuc.cena.menu.recipes.RecipeAdministration;
+import org.adhuc.cena.menu.recipes.RecipeConsultation;
+import org.adhuc.cena.menu.recipes.RecipeAuthoring;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 import org.adhuc.cena.menu.support.WithSuperAdministrator;
 
@@ -76,11 +76,11 @@ class RecipesDocumentation {
     private RestDocumentationResultHandler documentationHandler;
 
     @MockBean
-    private RecipeConsultationAppService recipeConsultationMock;
+    private RecipeConsultation recipeConsultationMock;
     @MockBean
-    private RecipeAuthoringAppService recipeAuthoringMock;
+    private RecipeAuthoring recipeAuthoringMock;
     @MockBean
-    private RecipeAdministrationAppService recipeAdministrationMock;
+    private RecipeAdministration recipeAdministrationMock;
 
     @Test
     @DisplayName("generates recipes list example")

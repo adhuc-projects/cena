@@ -16,15 +16,18 @@
 package org.adhuc.cena.menu;
 
 import static com.tngtech.archunit.base.DescribedPredicate.anyElementThat;
-import static com.tngtech.archunit.core.domain.JavaClass.Predicates.assignableTo;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.*;
 import static com.tngtech.archunit.core.domain.properties.CanBeAnnotated.Predicates.annotatedWith;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.*;
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
 import static org.apache.commons.lang3.ArrayUtils.addAll;
 import static org.apache.commons.lang3.ArrayUtils.removeElement;
 
+import java.lang.annotation.Annotation;
 import java.util.Collection;
 
+import com.tngtech.archunit.base.DescribedPredicate;
+import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchRules;
@@ -32,8 +35,13 @@ import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.library.GeneralCodingRules;
 import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
+import org.adhuc.cena.menu.common.ApplicationService;
+import org.adhuc.cena.menu.common.DomainService;
 import org.adhuc.cena.menu.common.aggregate.Command;
 import org.adhuc.cena.menu.common.aggregate.Query;
 import org.adhuc.cena.menu.common.exception.CenaException;
@@ -65,20 +73,27 @@ class MenuGenerationArchitectureTests {
     private static final String ADAPTER_PACKAGES = "org.adhuc.cena.menu.port.adapter..";
     private static final String PERSISTENCE_PACKAGES = "org.adhuc.cena.menu.port.adapter.persistence..";
     private static final String CONTROLLER_PACKAGES = "org.adhuc.cena.menu.port.adapter.rest..";
+    private static final String[] INCOMING_ADAPTERS_PACKAGES = new String[]{CONTROLLER_PACKAGES};
+    private static final String[] OUTGOING_ADAPTERS_PACKAGES = new String[]{PERSISTENCE_PACKAGES};
 
     // Third party packages
     private static final String JAVA_PACKAGES = "java..";
     private static final String LOGGING_PACKAGES = "org.slf4j..";
 
     // Object types
-    private static final String SERVICE_CLASSES_SUFFIX = "Service";
     private static final String REPOSITORY_CLASSES_SUFFIX = "Repository";
 
     @ArchTest
     public static final ArchRules generalRules = ArchRules.in(GeneralRules.class);
 
     @ArchTest
-    public static final ArchRules domainRules = ArchRules.in(DomainRules.class);
+    public static final ArchRules domainServiceRules = ArchRules.in(DomainServiceRules.class);
+
+    @ArchTest
+    public static final ArchRules domainModelRules = ArchRules.in(DomainModelRules.class);
+
+    @ArchTest
+    public static final ArchRules inMemoryRepositoriesRules = ArchRules.in(InMemoryRepositoryRules.class);
 
     @ArchTest
     public static final ArchRules domainDependenciesRules = ArchRules.in(DomainDependenciesRules.class);
@@ -110,34 +125,104 @@ class MenuGenerationArchitectureTests {
                         .because("Project enforces low package coupling through acyclic dependencies principle");
 
         @ArchTest
-        public static final ArchRule commonShouldAccessOtherPackages =
+        public static final ArchRule commonShouldNotAccessOtherDomainPackages =
                 noClasses().that().resideInAPackage(COMMON_PACKAGES)
                         .should().accessClassesThat().resideOutsideOfPackages(JAVA_PACKAGES, COMMON_PACKAGES, UTIL_PACKAGES)
                         .as("Common classes should not access other domain packages")
                         .because("Common classes are definition classes that participate only in the project structure");
 
-    }
-
-    public static class DomainRules {
+        @ArchTest
+        public static final ArchRule repositoryShouldFollowNamingConvention =
+                classes().that().areNotInterfaces().and().areAnnotatedWith(Repository.class)
+                        .should().haveSimpleNameEndingWith(REPOSITORY_CLASSES_SUFFIX)
+                        .because("Repositories must respect naming convention");
 
         @ArchTest
-        public static final ArchRule domainClassesShouldNotBeSecuredWithPreAuthorize =
+        public static final ArchRule repositoryInterfacesShouldFollowNamingConvention =
+                classes().that(isInterfaceImplementedByClassAnnotatedWith(Repository.class))
+                        .should().haveSimpleNameEndingWith(REPOSITORY_CLASSES_SUFFIX)
+                        .because("Repositories must respect naming convention");
+
+    }
+
+    public static class DomainServiceRules {
+
+        @ArchTest
+        public static final ArchRule domainServiceShouldNotBeSecuredWithPreAuthorize =
                 noClasses().that().resideInAnyPackage(DOMAIN_PACKAGES).and().areNotInterfaces()
                         .should().beAnnotatedWith(PreAuthorize.class)
                         .because("Securing domain methods should be based on specific annotations using ubiquitous language");
 
         @ArchTest
-        public static final ArchRule domainMethodsShouldNotBeSecuredWithPreAuthorize =
+        public static final ArchRule domainServiceMethodsShouldNotBeSecuredWithPreAuthorize =
                 noMembers().that().areDeclaredInClassesThat().resideInAnyPackage(DOMAIN_PACKAGES)
                         .should().beAnnotatedWith(PreAuthorize.class)
                         .because("Securing domain methods should be based on specific annotations using ubiquitous language");
 
         @ArchTest
-        public static final ArchRule domainServicesImplementationsShouldNotBePublic =
-                classes().that().resideInAnyPackage(DOMAIN_PACKAGES).and().areNotInterfaces()
-                        .and().haveSimpleNameContaining(SERVICE_CLASSES_SUFFIX)
+        public static final ArchRule serviceShouldNotBeAnnotatedWithSpringService =
+                noClasses().that().resideInAnyPackage(DOMAIN_PACKAGES)
+                        .should().beAnnotatedWith(Service.class)
+                        .because("Application and domain services should be annotated with respective dedicated annotation");
+
+        @ArchTest
+        public static final ArchRule applicationServiceShouldBePartOfDomain =
+                noClasses().that().resideOutsideOfPackages(DOMAIN_PACKAGES)
+                        .should().beAnnotatedWith(ApplicationService.class)
+                        .because("Application services are part of the domain model");
+
+        @ArchTest
+        public static final ArchRule applicationServicesImplementationsShouldNotBePublic =
+                classes().that().resideInAnyPackage(DOMAIN_PACKAGES).and().areAnnotatedWith(ApplicationService.class)
                         .should().notBePublic()
-                        .because("Domain services should be exposed only through interfaces");
+                        .because("Application services should be exposed only through interfaces");
+
+        @ArchTest
+        public static final ArchRule applicationServicesInterfacesShouldBePublic =
+                classes().that().resideInAnyPackage(DOMAIN_PACKAGES)
+                        .and(isInterfaceImplementedByClassAnnotatedWith(ApplicationService.class))
+                        .should().bePublic()
+                        .because("Application services should be exposed only through interfaces");
+
+        @ArchTest
+        public static final ArchRule domainServiceShouldBePartOfDomain =
+                noClasses().that().resideOutsideOfPackages(DOMAIN_PACKAGES)
+                        .should().beAnnotatedWith(DomainService.class)
+                        .because("Domain services are part of the domain model");
+
+        @ArchTest
+        public static final ArchRule domainServicesImplementationsShouldNotBePublic =
+                classes().that().resideInAnyPackage(DOMAIN_PACKAGES).and().areAnnotatedWith(DomainService.class)
+                        .should().notBePublic()
+                        .because("Domain services should not be exposed outside of the domain model");
+
+        @ArchTest
+        public static final ArchRule repositoryInterfaceShouldBePartOfDomain =
+                classes().that(isInterfaceImplementedByClassAnnotatedWith(Repository.class))
+                        .should().resideInAnyPackage(addAll(DOMAIN_PACKAGES, COMMON_PACKAGES))
+                        .because("Repositories interfaces are part of the domain model");
+
+        @ArchTest
+        public static final ArchRule repositoryInterfaceShouldBePublic =
+                classes().that().resideInAnyPackage(DOMAIN_PACKAGES).and(isInterfaceImplementedByClassAnnotatedWith(Repository.class))
+                        .should().bePublic()
+                        .because("Repository interfaces should be exposed publicly for outgoing adapters implementations");
+
+    }
+
+    public static class DomainModelRules {
+
+        @ArchTest
+        public static final ArchRule commandShouldBePartOfDomain =
+                noClasses().that().resideOutsideOfPackages(DOMAIN_PACKAGES)
+                        .should().beAnnotatedWith(Command.class)
+                        .because("Commands are part of the domain model");
+
+        @ArchTest
+        public static final ArchRule queryShouldBePartOfDomain =
+                noClasses().that().resideOutsideOfPackages(DOMAIN_PACKAGES)
+                        .should().beAnnotatedWith(Query.class)
+                        .because("Queries are part of the domain model");
 
         @ArchTest
         public static final ArchRule commandObjectShouldBeImmutable =
@@ -214,6 +299,38 @@ class MenuGenerationArchitectureTests {
 
     }
 
+    public static class InMemoryRepositoryRules {
+
+        private static final String IN_MEMORY_REPO_PREFIX = "InMemory";
+
+        @ArchTest
+        public static final ArchRule inMemoryRepositoryShouldBePartOfDomain =
+                noClasses().that().areAnnotatedWith(Repository.class).and().haveSimpleNameStartingWith(IN_MEMORY_REPO_PREFIX)
+                        .should().resideOutsideOfPackages(DOMAIN_PACKAGES)
+                        .because("In-memory repository implementations are part of the domain, for testability reasons");
+
+        @ArchTest
+        public static final ArchRule inMemoryRepositoryShouldImplementRepository =
+                classes().that().areAnnotatedWith(Repository.class).and().haveSimpleNameStartingWith(IN_MEMORY_REPO_PREFIX)
+                        .should().implement(simpleNameEndingWith(REPOSITORY_CLASSES_SUFFIX))
+                        .because("In-memory repository implementation must implement a domain repository");
+
+        @ArchTest
+        public static final ArchRule inMemoryRepositoryShouldNotBePublic =
+                classes().that().resideInAnyPackage(DOMAIN_PACKAGES)
+                        .and().haveSimpleNameStartingWith(IN_MEMORY_REPO_PREFIX)
+                        .and().areAnnotatedWith(Repository.class)
+                        .should().notBePublic()
+                        .because("In-memory repository implementations should not be exposed outside of the domain model");
+
+        @ArchTest
+        public static final ArchRule inMemoryRepositoryShouldHaveLimitedScope =
+                classes().that().resideInAnyPackage(DOMAIN_PACKAGES).and().haveSimpleNameStartingWith(IN_MEMORY_REPO_PREFIX)
+                        .should().beAnnotatedWith(Profile.class)
+                        .because("In-memory repository implementations should have limited scope in spring context");
+
+    }
+
     public static class AdaptersRules {
 
         @ArchTest
@@ -223,19 +340,24 @@ class MenuGenerationArchitectureTests {
                         .because("Adapters must pass through the domain to communicate with each other");
 
         @ArchTest
-        public static final ArchRule controllerShouldNotAccessRepositories =
-                noClasses().that().resideInAPackage(CONTROLLER_PACKAGES)
-                        .should().accessClassesThat().haveSimpleNameEndingWith(REPOSITORY_CLASSES_SUFFIX)
+        public static final ArchRule incomingAdaptersShouldNotAccessOutgoingAdapters =
+                noClasses().that().resideInAnyPackage(INCOMING_ADAPTERS_PACKAGES)
+                        .should().accessClassesThat().resideInAnyPackage(OUTGOING_ADAPTERS_PACKAGES)
                         .as("Controller classes should not access repositories")
                         .because("Controller adapters are incoming adapters and must rely only on services");
 
         @ArchTest
-        public static final ArchRule persistenceShouldNotAccessServices =
-                noClasses().that().resideInAPackage(PERSISTENCE_PACKAGES)
-                        .should().accessClassesThat().haveSimpleNameEndingWith(SERVICE_CLASSES_SUFFIX)
+        public static final ArchRule outgoingAdaptersShouldNotAccessServices =
+                noClasses().that().resideInAnyPackage(OUTGOING_ADAPTERS_PACKAGES)
+                        .should().accessClassesThat(resideInAnyPackage(DOMAIN_PACKAGES)
+                        .and(isInterfaceImplementedByClassAnnotatedWith(ApplicationService.class)))
                         .as("Persistence classes should not access services")
                         .because("Persistence adapters are outgoing adapters and must not rely on domain services");
 
+    }
+
+    private static DescribedPredicate<JavaClass> isInterfaceImplementedByClassAnnotatedWith(Class<? extends Annotation> annotationType) {
+        return INTERFACES.and(assignableFrom(annotatedWith(annotationType)));
     }
 
 }

@@ -50,8 +50,8 @@ import org.springframework.restdocs.snippet.TemplatedSnippet;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
-import org.adhuc.cena.menu.ingredients.IngredientConsultationAppService;
-import org.adhuc.cena.menu.ingredients.IngredientManagementAppService;
+import org.adhuc.cena.menu.ingredients.IngredientConsultation;
+import org.adhuc.cena.menu.ingredients.IngredientManagement;
 import org.adhuc.cena.menu.ingredients.IngredientMother;
 import org.adhuc.cena.menu.port.adapter.rest.ResultHandlerConfiguration;
 import org.adhuc.cena.menu.port.adapter.rest.documentation.support.ConstrainedFields;
@@ -61,8 +61,8 @@ import org.adhuc.cena.menu.port.adapter.rest.ingredients.IngredientsController;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.RecipeModelAssembler;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.RecipesController;
 import org.adhuc.cena.menu.recipes.MeasurementUnit;
-import org.adhuc.cena.menu.recipes.RecipeConsultationAppService;
-import org.adhuc.cena.menu.recipes.RecipeAuthoringAppService;
+import org.adhuc.cena.menu.recipes.RecipeConsultation;
+import org.adhuc.cena.menu.recipes.RecipeAuthoring;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 
 /**
@@ -90,18 +90,18 @@ class RecipeIngredientsDocumentation {
     private RestDocumentationResultHandler documentationHandler;
 
     @MockBean
-    private RecipeAuthoringAppService recipeIngredientAppServiceMock;
+    private RecipeAuthoring recipeAuthoringMock;
     @MockBean
-    private RecipeConsultationAppService recipeAppServiceMock;
+    private RecipeConsultation recipeConsultationMock;
     @MockBean
-    private IngredientConsultationAppService ingredientConsultationMock;
+    private IngredientConsultation ingredientConsultationMock;
     @MockBean
-    private IngredientManagementAppService ingredientManagementMock;
+    private IngredientManagement ingredientManagementMock;
 
     @Test
     @DisplayName("generates recipe ingredients list example")
     void recipeIngredientsListExample() throws Exception {
-        when(recipeAppServiceMock.getRecipe(ID)).thenReturn(recipe());
+        when(recipeConsultationMock.getRecipe(ID)).thenReturn(recipe());
 
         mvc.perform(get(RECIPE_INGREDIENTS_API_URL, ID)).andExpect(status().isOk())
                 .andDo(documentationHandler.document(

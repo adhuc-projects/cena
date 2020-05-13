@@ -48,8 +48,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 import org.adhuc.cena.menu.menus.MealType;
-import org.adhuc.cena.menu.menus.MenuConsultationAppService;
-import org.adhuc.cena.menu.menus.MenuManagementAppService;
+import org.adhuc.cena.menu.menus.MenuConsultation;
+import org.adhuc.cena.menu.menus.MenuManagement;
 import org.adhuc.cena.menu.menus.MenuOwner;
 import org.adhuc.cena.menu.port.adapter.rest.ResultHandlerConfiguration;
 import org.adhuc.cena.menu.port.adapter.rest.documentation.support.ConstrainedFields;
@@ -81,9 +81,9 @@ class MenusDocumentation {
     private RestDocumentationResultHandler documentationHandler;
 
     @MockBean
-    private MenuConsultationAppService menuConsultationMock;
+    private MenuConsultation menuConsultationMock;
     @MockBean
-    private MenuManagementAppService menuManagementMock;
+    private MenuManagement menuManagementMock;
 
     @Test
     @WithAuthenticatedUser

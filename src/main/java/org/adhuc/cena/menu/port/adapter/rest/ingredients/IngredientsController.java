@@ -32,9 +32,9 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import org.adhuc.cena.menu.ingredients.IngredientConsultationAppService;
+import org.adhuc.cena.menu.ingredients.IngredientConsultation;
 import org.adhuc.cena.menu.ingredients.IngredientId;
-import org.adhuc.cena.menu.ingredients.IngredientManagementAppService;
+import org.adhuc.cena.menu.ingredients.IngredientManagement;
 
 /**
  * A REST controller exposing /api/ingredients resource.
@@ -51,8 +51,8 @@ import org.adhuc.cena.menu.ingredients.IngredientManagementAppService;
 public class IngredientsController {
 
     private final EntityLinks links;
-    private final IngredientConsultationAppService ingredientConsultation;
-    private final IngredientManagementAppService ingredientManagement;
+    private final IngredientConsultation ingredientConsultation;
+    private final IngredientManagement ingredientManagement;
     private final IngredientModelAssembler modelAssembler;
 
     /**

@@ -23,8 +23,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import org.adhuc.cena.menu.recipes.DeleteRecipe;
-import org.adhuc.cena.menu.recipes.RecipeAuthoringAppService;
-import org.adhuc.cena.menu.recipes.RecipeConsultationAppService;
+import org.adhuc.cena.menu.recipes.RecipeAuthoring;
+import org.adhuc.cena.menu.recipes.RecipeConsultation;
 import org.adhuc.cena.menu.recipes.RecipeId;
 
 /**
@@ -40,8 +40,8 @@ import org.adhuc.cena.menu.recipes.RecipeId;
 public class RecipeController {
 
     private final RecipeModelAssembler modelAssembler;
-    private final RecipeConsultationAppService recipeConsultation;
-    private final RecipeAuthoringAppService recipeAuthoring;
+    private final RecipeConsultation recipeConsultation;
+    private final RecipeAuthoring recipeAuthoring;
 
     /**
      * Gets the recipe information for the recipe corresponding to the specified identity.

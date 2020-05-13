@@ -36,8 +36,8 @@ import org.springframework.web.bind.annotation.*;
 import org.adhuc.cena.menu.ingredients.IngredientId;
 import org.adhuc.cena.menu.port.adapter.rest.support.Uuid;
 import org.adhuc.cena.menu.recipes.QueryRecipes;
-import org.adhuc.cena.menu.recipes.RecipeAuthoringAppService;
-import org.adhuc.cena.menu.recipes.RecipeConsultationAppService;
+import org.adhuc.cena.menu.recipes.RecipeAuthoring;
+import org.adhuc.cena.menu.recipes.RecipeConsultation;
 import org.adhuc.cena.menu.recipes.RecipeId;
 
 /**
@@ -55,8 +55,8 @@ import org.adhuc.cena.menu.recipes.RecipeId;
 public class RecipesController {
 
     private final EntityLinks links;
-    private final RecipeConsultationAppService recipeConsultation;
-    private final RecipeAuthoringAppService recipeAuthoring;
+    private final RecipeConsultation recipeConsultation;
+    private final RecipeAuthoring recipeAuthoring;
     private final RecipeModelAssembler modelAssembler;
 
     /**

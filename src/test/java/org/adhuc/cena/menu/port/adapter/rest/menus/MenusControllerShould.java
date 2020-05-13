@@ -77,9 +77,9 @@ class MenusControllerShould {
     @Autowired
     private MockMvc mvc;
     @MockBean
-    private MenuConsultationAppService menuConsultationMock;
+    private MenuConsultation menuConsultationMock;
     @MockBean
-    private MenuManagementAppService menuManagementMock;
+    private MenuManagement menuManagementMock;
 
     @Test
     @WithCommunityUser

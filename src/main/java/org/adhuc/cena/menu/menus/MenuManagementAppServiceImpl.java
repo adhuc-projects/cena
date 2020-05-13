@@ -15,8 +15,6 @@
  */
 package org.adhuc.cena.menu.menus;
 
-import java.util.List;
-
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +24,7 @@ import org.springframework.stereotype.Service;
 import org.adhuc.cena.menu.common.security.AsAuthenticatedUser;
 
 /**
- * A {@link MenuAppService} implementation.
+ * A {@link MenuConsultationAppService} implementation.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
@@ -35,24 +33,12 @@ import org.adhuc.cena.menu.common.security.AsAuthenticatedUser;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-class MenuAppServiceImpl implements MenuAppService {
+class MenuManagementAppServiceImpl implements MenuManagementAppService {
 
     @NonNull
     private MenuCreationService menuCreationService;
     @NonNull
     private MenuRepository repository;
-
-    @Override
-    @AsMenuOwner
-    public List<Menu> getMenus(@P("ownedBy") @NonNull ListMenus query) {
-        return List.copyOf(repository.findByOwnerAndDateBetween(query.owner(), query.since(), query.until()));
-    }
-
-    @Override
-    @AsMenuOwner
-    public Menu getMenu(@P("ownedBy") @NonNull MenuId menuId) {
-        return repository.findNotNullById(menuId);
-    }
 
     @Override
     @AsAuthenticatedUser
@@ -62,7 +48,8 @@ class MenuAppServiceImpl implements MenuAppService {
     }
 
     @Override
-    public void deleteMenu(@NonNull DeleteMenu command) {
+    @AsMenuOwner
+    public void deleteMenu(@P("ownedBy") @NonNull DeleteMenu command) {
         repository.delete(repository.findNotNullById(command.menuId()));
     }
 

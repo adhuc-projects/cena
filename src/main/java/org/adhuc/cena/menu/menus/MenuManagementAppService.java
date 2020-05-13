@@ -15,36 +15,17 @@
  */
 package org.adhuc.cena.menu.menus;
 
-import java.util.List;
-
 import org.adhuc.cena.menu.common.aggregate.AlreadyExistingEntityException;
-import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
 
 /**
- * An application service for menus.
+ * An application service for menus management. Menu management provides command methods for menu manipulation and is
+ * available only for authenticated users that are menu owners.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
  * @since 0.3.0
  */
-public interface MenuAppService {
-
-    /**
-     * Gets the menus for the specified query.
-     *
-     * @param query the menus listing query.
-     * @return the menus (not modifiable).
-     */
-    List<Menu> getMenus(ListMenus query);
-
-    /**
-     * Gets the menu corresponding to the specified identity.
-     *
-     * @param menuId the menu identity.
-     * @return the menu.
-     * @throws EntityNotFoundException if no menu corresponds to identity.
-     */
-    Menu getMenu(MenuId menuId);
+public interface MenuManagementAppService {
 
     /**
      * Creates a menu.
@@ -61,4 +42,5 @@ public interface MenuAppService {
      * @param command the menu deletion command.
      */
     void deleteMenu(DeleteMenu command);
+
 }

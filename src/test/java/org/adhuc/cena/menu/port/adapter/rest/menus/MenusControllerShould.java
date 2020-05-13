@@ -16,7 +16,6 @@
 package org.adhuc.cena.menu.port.adapter.rest.menus;
 
 import static java.time.LocalDate.now;
-import static java.util.stream.Collectors.toList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -78,7 +77,9 @@ class MenusControllerShould {
     @Autowired
     private MockMvc mvc;
     @MockBean
-    private MenuAppService menuAppServiceMock;
+    private MenuConsultationAppService menuConsultationMock;
+    @MockBean
+    private MenuManagementAppService menuManagementMock;
 
     @Test
     @WithCommunityUser
@@ -123,7 +124,7 @@ class MenusControllerShould {
 
         mvc.perform(get(MENUS_API_URL)).andExpect(status().isOk());
 
-        verify(menuAppServiceMock).getMenus(commandCaptor.capture());
+        verify(menuConsultationMock).getMenus(commandCaptor.capture());
         assertThat(commandCaptor.getValue()).isEqualTo(expectedQuery);
     }
 
@@ -138,7 +139,7 @@ class MenusControllerShould {
         mvc.perform(get(MENUS_API_URL).queryParam("filter[date][since]", since.toString()))
                 .andExpect(status().isOk());
 
-        verify(menuAppServiceMock).getMenus(commandCaptor.capture());
+        verify(menuConsultationMock).getMenus(commandCaptor.capture());
         assertThat(commandCaptor.getValue()).isEqualTo(expectedQuery);
     }
 
@@ -153,7 +154,7 @@ class MenusControllerShould {
         mvc.perform(get(MENUS_API_URL).queryParam("filter[date][until]", until.toString()))
                 .andExpect(status().isOk());
 
-        verify(menuAppServiceMock).getMenus(commandCaptor.capture());
+        verify(menuConsultationMock).getMenus(commandCaptor.capture());
         assertThat(commandCaptor.getValue()).isEqualTo(expectedQuery);
     }
 
@@ -171,7 +172,7 @@ class MenusControllerShould {
                 .queryParam("filter[date][until]", until.toString()))
                 .andExpect(status().isOk());
 
-        verify(menuAppServiceMock).getMenus(commandCaptor.capture());
+        verify(menuConsultationMock).getMenus(commandCaptor.capture());
         assertThat(commandCaptor.getValue()).isEqualTo(expectedQuery);
     }
 
@@ -188,7 +189,7 @@ class MenusControllerShould {
                             .withCovers(TODAY_LUNCH_COVERS).withMainCourseRecipes(TODAY_LUNCH_MAIN_COURSE_RECIPES).build(),
                     MenuMother.builder().withOwnerName(MENU_OWNER_NAME).withDate(TOMORROW_DINNER_DATE).withMealType(TOMORROW_DINNER_MEAL_TYPE)
                             .withCovers(TOMORROW_DINNER_COVERS).withMainCourseRecipes(TOMORROW_DINNER_MAIN_COURSE_RECIPES).build());
-            when(menuAppServiceMock.getMenus(listQuery(MENU_OWNER))).thenReturn(menus);
+            when(menuConsultationMock.getMenus(listQuery(MENU_OWNER))).thenReturn(menus);
         }
 
         @Test
@@ -242,7 +243,7 @@ class MenusControllerShould {
     class WithEmptyList {
         @BeforeEach
         void setUp() {
-            when(menuAppServiceMock.getMenus(listQuery(MENU_OWNER))).thenReturn(List.of());
+            when(menuConsultationMock.getMenus(listQuery(MENU_OWNER))).thenReturn(List.of());
         }
 
         @Test
@@ -401,7 +402,7 @@ class MenusControllerShould {
     @WithAuthenticatedUser
     @DisplayName("respond Conflict when menu service throws AlreadyExistingEntityException")
     void respond409OnCreationAlreadyExistingEntityException() throws Exception {
-        doThrow(new AlreadyExistingEntityException(Menu.class, MenuMother.ID)).when(menuAppServiceMock).createMenu(any());
+        doThrow(new AlreadyExistingEntityException(Menu.class, MenuMother.ID)).when(menuManagementMock).createMenu(any());
         mvc.perform(post(MENUS_API_URL)
                 .contentType(APPLICATION_JSON)
                 .content(String.format("{\"date\":\"%s\",\"mealType\":\"LUNCH\",\"covers\":2,\"mainCourseRecipes\":[\"%s\"]}",
@@ -456,7 +457,7 @@ class MenusControllerShould {
                         now(), RecipeMother.ID))
         ).andExpect(status().isCreated());
 
-        verify(menuAppServiceMock).createMenu(commandCaptor.capture());
+        verify(menuManagementMock).createMenu(commandCaptor.capture());
         assertThat(commandCaptor.getValue()).isEqualTo(expectedCommand);
     }
 
@@ -492,7 +493,7 @@ class MenusControllerShould {
                 .andExpect(jsonPath(jsonPath + ".mainCourseRecipes").exists())
                 .andExpect(jsonPath(jsonPath + ".mainCourseRecipes").isArray())
                 .andExpect(jsonPath(jsonPath + ".mainCourseRecipes").value(containsInAnyOrder(
-                        menu.mainCourseRecipes().stream().map(RecipeId::toString).collect(toList()).toArray())));
+                        menu.mainCourseRecipes().stream().map(RecipeId::toString).toArray())));
     }
 
 }

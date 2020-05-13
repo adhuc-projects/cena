@@ -39,8 +39,9 @@ import org.springframework.restdocs.payload.ResponseFieldsSnippet;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
-import org.adhuc.cena.menu.menus.MenuAppService;
+import org.adhuc.cena.menu.menus.MenuConsultationAppService;
 import org.adhuc.cena.menu.menus.MenuId;
+import org.adhuc.cena.menu.menus.MenuManagementAppService;
 import org.adhuc.cena.menu.menus.MenuOwner;
 import org.adhuc.cena.menu.port.adapter.rest.ResultHandlerConfiguration;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
@@ -70,13 +71,15 @@ class MenuDocumentation {
     private RestDocumentationResultHandler documentationHandler;
 
     @MockBean
-    private MenuAppService menuAppServiceMock;
+    private MenuConsultationAppService menuConsultationMock;
+    @MockBean
+    private MenuManagementAppService menuManagementMock;
 
     @Test
     @WithAuthenticatedUser
     @DisplayName("generates menu detail example")
     void menuDetailExample() throws Exception {
-        when(menuAppServiceMock.getMenu(id(AUTHENTICATED_USER))).thenReturn(menu());
+        when(menuConsultationMock.getMenu(id(AUTHENTICATED_USER))).thenReturn(menu());
 
         mvc.perform(get(MENU_API_URL, String.format("%s-%s", DATE, MEAL_TYPE))).andExpect(status().isOk())
                 .andDo(documentationHandler.document(

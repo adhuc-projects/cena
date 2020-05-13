@@ -15,30 +15,34 @@
  */
 package org.adhuc.cena.menu.menus;
 
-import lombok.NonNull;
-import lombok.Value;
-import lombok.experimental.Accessors;
+import java.util.List;
 
-import org.adhuc.cena.menu.common.aggregate.Command;
+import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
 
 /**
- * A menu deletion command.
+ * An application service for menus consultation. Menu consultation provides query methods available for menu owners.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
  * @since 0.3.0
  */
-@Command
-@Value
-@Accessors(fluent = true)
-public class DeleteMenu implements OwnedBy {
+public interface MenuConsultationAppService {
 
-    @NonNull
-    private final MenuId menuId;
+    /**
+     * Gets the menus for the specified query.
+     *
+     * @param query the menus listing query.
+     * @return the menus (not modifiable).
+     */
+    List<Menu> getMenus(ListMenus query);
 
-    @Override
-    public MenuOwner owner() {
-        return menuId.owner();
-    }
+    /**
+     * Gets the menu corresponding to the specified identity.
+     *
+     * @param menuId the menu identity.
+     * @return the menu.
+     * @throws EntityNotFoundException if no menu corresponds to identity.
+     */
+    Menu getMenu(MenuId menuId);
 
 }

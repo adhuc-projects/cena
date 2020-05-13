@@ -47,7 +47,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import org.adhuc.cena.menu.menus.ListMenus;
-import org.adhuc.cena.menu.menus.MenuAppService;
+import org.adhuc.cena.menu.menus.MenuConsultationAppService;
+import org.adhuc.cena.menu.menus.MenuManagementAppService;
 import org.adhuc.cena.menu.menus.MenuOwner;
 import org.adhuc.cena.menu.port.adapter.rest.support.Date;
 
@@ -72,7 +73,8 @@ public class MenusController {
     private static final int UNTIL_PARAM_INDEX = 1;
 
     private final EntityLinks links;
-    private final MenuAppService menuAppService;
+    private final MenuConsultationAppService menuConsultation;
+    private final MenuManagementAppService menuManagement;
     private final MenuModelAssembler modelAssembler;
 
     /**
@@ -84,7 +86,7 @@ public class MenusController {
     CollectionModel<MenuModel> getMenus(@RequestParam(name = SINCE_PARAM, required = false) @Date(propertyName = SINCE_PARAM) String since,
                                         @RequestParam(name = UNTIL_PARAM, required = false) @Date(propertyName = UNTIL_PARAM) String until,
                                         Principal principal) {
-        var menus = menuAppService.getMenus(new ListMenus(new MenuOwner(principal.getName()), parseDateRange(since, until)));
+        var menus = menuConsultation.getMenus(new ListMenus(new MenuOwner(principal.getName()), parseDateRange(since, until)));
         return modelAssembler.toCollectionModel(menus);
     }
 
@@ -93,7 +95,7 @@ public class MenusController {
      */
     @PostMapping(consumes = {APPLICATION_JSON_VALUE, HAL_JSON_VALUE})
     ResponseEntity<Void> createMenu(@RequestBody @Valid CreateMenuRequest request, Errors errors, Principal principal) throws URISyntaxException {
-        menuAppService.createMenu(request.toCommand(principal.getName()));
+        menuManagement.createMenu(request.toCommand(principal.getName()));
         return ResponseEntity.created(new URI(links.linkToItemResource(MenuModel.class,
                 String.format("%s-%s", request.getDate(), request.getMealType())).getHref())).build();
     }

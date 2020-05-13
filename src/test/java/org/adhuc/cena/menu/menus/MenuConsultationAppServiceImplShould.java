@@ -18,33 +18,19 @@ package org.adhuc.cena.menu.menus;
 import static java.time.LocalDate.now;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import static org.adhuc.cena.menu.menus.DateRange.since;
 import static org.adhuc.cena.menu.menus.DateRange.until;
 import static org.adhuc.cena.menu.menus.MenuMother.*;
-import static org.adhuc.cena.menu.recipes.RecipeMother.TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID;
-
-import java.util.Collection;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
-import org.adhuc.cena.menu.common.aggregate.AlreadyExistingEntityException;
 import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
-import org.adhuc.cena.menu.recipes.RecipeConsultationAppService;
-import org.adhuc.cena.menu.recipes.RecipeId;
-import org.adhuc.cena.menu.recipes.RecipeMother;
 
 /**
- * The {@link MenuAppServiceImpl} test class.
+ * The {@link MenuConsultationAppServiceImpl} test class.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
@@ -52,20 +38,16 @@ import org.adhuc.cena.menu.recipes.RecipeMother;
  */
 @Tag("unit")
 @Tag("appService")
-@DisplayName("Menu service should")
-class MenuAppServiceImplShould {
+@DisplayName("Menu consultation service should")
+class MenuConsultationAppServiceImplShould {
 
     private MenuRepository menuRepository;
-    private RecipeConsultationAppService recipeAppService;
-    private MenuAppServiceImpl service;
+    private MenuConsultationAppServiceImpl service;
 
     @BeforeEach
     void setUp() {
         menuRepository = new InMemoryMenuRepository();
-        recipeAppService = mock(RecipeConsultationAppService.class);
-        service = new MenuAppServiceImpl(new MenuCreationService(menuRepository, recipeAppService), menuRepository);
-
-        when(recipeAppService.exists(RecipeMother.ID)).thenReturn(true);
+        service = new MenuConsultationAppServiceImpl(menuRepository);
     }
 
     @Test
@@ -86,18 +68,6 @@ class MenuAppServiceImplShould {
         assertThrows(IllegalArgumentException.class, () -> service.getMenu(null));
     }
 
-    @Test
-    @DisplayName("throw IllegalArgumentException when creating menu from null command")
-    void throwIAECreateMenuNullCommand() {
-        assertThrows(IllegalArgumentException.class, () -> service.createMenu(null));
-    }
-
-    @Test
-    @DisplayName("throw IllegalArgumentException when deleting menu from null command")
-    void throwIAEDeleteMenuNullCommand() {
-        assertThrows(IllegalArgumentException.class, () -> service.deleteMenu(null));
-    }
-
     @Nested
     @DisplayName("with no menu for owner")
     class WithNoMenu {
@@ -116,33 +86,6 @@ class MenuAppServiceImplShould {
             assertThat(service.getMenus(listQuery())).isEmpty();
         }
 
-        @Test
-        @DisplayName("create menu with unknown main course recipe")
-        void failCreatingMenuWithUnknownMainCourseRecipe() {
-            var exception = assertThrows(MenuNotCreatableWithUnknownRecipeException.class,
-                    () -> service.createMenu(createCommand(builder().withMainCourseRecipes(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID).build())));
-            assertThat(exception).hasMessage(String.format("Menu scheduled at %s's lunch cannot be created with unknown recipes [%s]",
-                    TODAY_LUNCH_DATE, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID));
-        }
-
-        @Test
-        @DisplayName("create menu with unknown main course recipes")
-        void failCreatingMenuWithUnknownMainCourseRecipes() {
-            var anotherRecipeId = new RecipeId("2211b1fc-a5f3-42c1-b591-fb979e0449d1");
-            var exception = assertThrows(MenuNotCreatableWithUnknownRecipeException.class,
-                    () -> service.createMenu(createCommand(builder().withMainCourseRecipes(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID, anotherRecipeId).build())));
-            assertThat(exception).hasMessage(String.format("Menu scheduled at %s's lunch cannot be created with unknown recipes [%s, %s]",
-                    TODAY_LUNCH_DATE, anotherRecipeId, TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID));
-        }
-
-        @Test
-        @DisplayName("retrieve menu with identity after creation")
-        void retrieveMenuWithIdAfterCreation() {
-            var menu = menu();
-            service.createMenu(createCommand(menu));
-            assertThat(service.getMenu(menu.id())).isNotNull().isEqualToComparingFieldByField(menu);
-        }
-
         @Nested
         @TestInstance(PER_CLASS)
         @DisplayName("with today's lunch")
@@ -154,8 +97,6 @@ class MenuAppServiceImplShould {
             void setUp() {
                 todayLunch = menu();
                 menuRepository.save(todayLunch);
-
-                when(recipeAppService.exists(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID)).thenReturn(true);
             }
 
             @Test
@@ -201,50 +142,6 @@ class MenuAppServiceImplShould {
             @DisplayName("return today's lunch when getting menu from id")
             void returnTodayLunch() {
                 assertThat(service.getMenu(TODAY_LUNCH_ID)).isEqualToComparingFieldByField(todayLunch);
-            }
-
-            @Test
-            @DisplayName("create non existing tomorrow dinner successfully")
-            void createNonExistingMenu() {
-                var menu = builder().withDate(TOMORROW_DINNER_DATE).withMealType(TOMORROW_DINNER_MEAL_TYPE)
-                        .withCovers(TOMORROW_DINNER_COVERS).withMainCourseRecipes(TOMORROW_DINNER_MAIN_COURSE_RECIPES).build();
-                service.createMenu(createCommand(menu));
-                assertThat(service.getMenu(menu.id())).isNotNull().isEqualToComparingFieldByField(menu);
-            }
-
-            @ParameterizedTest
-            @MethodSource("createDuplicateSource")
-            @DisplayName("fail during duplicated today's lunch creation")
-            void failCreatingDuplicateTodayLunch(Covers covers, Collection<RecipeId> mainCourseRecipes) {
-                var exception = assertThrows(AlreadyExistingEntityException.class,
-                        () -> service.createMenu(createCommand(builder().withCovers(covers)
-                                .withMainCourseRecipes(mainCourseRecipes).build())));
-                assertThat(exception).hasMessage(String.format("Menu is already scheduled at %s's lunch", TODAY_LUNCH_DATE));
-            }
-
-            private Stream<Arguments> createDuplicateSource() {
-                return Stream.of(
-                        Arguments.of(TODAY_LUNCH_COVERS, TODAY_LUNCH_MAIN_COURSE_RECIPES),
-                        Arguments.of(TOMORROW_DINNER_COVERS, TODAY_LUNCH_MAIN_COURSE_RECIPES),
-                        Arguments.of(TODAY_LUNCH_COVERS, TOMORROW_DINNER_MAIN_COURSE_RECIPES),
-                        Arguments.of(TOMORROW_DINNER_COVERS, TOMORROW_DINNER_MAIN_COURSE_RECIPES)
-                );
-            }
-
-            @Test
-            @DisplayName("delete today's lunch successfully")
-            void deleteTodayLunch() {
-                assumeThat(service.getMenu(ID)).isNotNull();
-                service.deleteMenu(deleteCommand());
-                assertThrows(EntityNotFoundException.class, () -> service.getMenu(ID));
-            }
-
-            @Test
-            @DisplayName("throw EntityNotFoundException when deleting unknown menu")
-            void throwEntityNotFoundDeleteUnknownMenu() {
-                var exception = assertThrows(EntityNotFoundException.class,
-                        () -> service.deleteMenu(deleteCommand(TOMORROW_DINNER_ID)));
-                assertThat(exception.getIdentity()).isEqualTo(TOMORROW_DINNER_ID.toString());
             }
 
             @Nested

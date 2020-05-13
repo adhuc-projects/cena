@@ -15,30 +15,37 @@
  */
 package org.adhuc.cena.menu.menus;
 
-import lombok.NonNull;
-import lombok.Value;
-import lombok.experimental.Accessors;
+import java.util.List;
 
-import org.adhuc.cena.menu.common.aggregate.Command;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.parameters.P;
+import org.springframework.stereotype.Service;
 
 /**
- * A menu deletion command.
+ * A {@link MenuConsultationAppService} implementation.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
  * @since 0.3.0
  */
-@Command
-@Value
-@Accessors(fluent = true)
-public class DeleteMenu implements OwnedBy {
+@Service
+@RequiredArgsConstructor
+class MenuConsultationAppServiceImpl implements MenuConsultationAppService {
 
     @NonNull
-    private final MenuId menuId;
+    private MenuRepository repository;
 
     @Override
-    public MenuOwner owner() {
-        return menuId.owner();
+    @AsMenuOwner
+    public List<Menu> getMenus(@P("ownedBy") @NonNull ListMenus query) {
+        return List.copyOf(repository.findByOwnerAndDateBetween(query.owner(), query.since(), query.until()));
+    }
+
+    @Override
+    @AsMenuOwner
+    public Menu getMenu(@P("ownedBy") @NonNull MenuId menuId) {
+        return repository.findNotNullById(menuId);
     }
 
 }

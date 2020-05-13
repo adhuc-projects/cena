@@ -48,7 +48,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 import org.adhuc.cena.menu.menus.MealType;
-import org.adhuc.cena.menu.menus.MenuAppService;
+import org.adhuc.cena.menu.menus.MenuConsultationAppService;
+import org.adhuc.cena.menu.menus.MenuManagementAppService;
 import org.adhuc.cena.menu.menus.MenuOwner;
 import org.adhuc.cena.menu.port.adapter.rest.ResultHandlerConfiguration;
 import org.adhuc.cena.menu.port.adapter.rest.documentation.support.ConstrainedFields;
@@ -80,13 +81,15 @@ class MenusDocumentation {
     private RestDocumentationResultHandler documentationHandler;
 
     @MockBean
-    private MenuAppService menuAppServiceMock;
+    private MenuConsultationAppService menuConsultationMock;
+    @MockBean
+    private MenuManagementAppService menuManagementMock;
 
     @Test
     @WithAuthenticatedUser
     @DisplayName("generates menus list example")
     void menusListExample() throws Exception {
-        when(menuAppServiceMock.getMenus(listQuery(MENU_OWNER))).thenReturn(List.of(
+        when(menuConsultationMock.getMenus(listQuery(MENU_OWNER))).thenReturn(List.of(
                 builder().withOwnerName(MENU_OWNER_NAME).withDate(TODAY_LUNCH_DATE).withMealType(TODAY_LUNCH_MEAL_TYPE)
                         .withCovers(TODAY_LUNCH_COVERS).withMainCourseRecipes(TODAY_LUNCH_MAIN_COURSE_RECIPES).build(),
                 builder().withOwnerName(MENU_OWNER_NAME).withDate(TOMORROW_DINNER_DATE).withMealType(TOMORROW_DINNER_MEAL_TYPE)

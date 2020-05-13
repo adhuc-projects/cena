@@ -21,6 +21,7 @@ import static org.mockito.Mockito.when;
 
 import static org.adhuc.cena.menu.menus.MenuMother.*;
 import static org.adhuc.cena.menu.support.UserProvider.*;
+import static org.adhuc.cena.menu.support.UserProvider.SUPER_ADMINISTRATOR;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -49,7 +50,7 @@ import org.adhuc.cena.menu.support.WithIngredientManager;
 import org.adhuc.cena.menu.support.WithSuperAdministrator;
 
 /**
- * The {@link MenuAppServiceImpl} security tests.
+ * The {@link MenuConsultationAppServiceImpl} security tests.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
@@ -59,114 +60,23 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
 @Tag("appService")
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration
-@DisplayName("Menu service with security should")
-class MenuAppServiceWithSecurityShould {
+@DisplayName("Menu management service with security should")
+class MenuManagementAppServiceWithSecurityShould {
 
     @Autowired
-    private MenuAppService service;
+    private MenuManagementAppService service;
     @Autowired
     private MenuRepository menuRepository;
     @MockBean
     private RecipeRepository recipeRepository;
     @MockBean
-    private RecipeConsultationAppService recipeAppServiceMock;
+    private RecipeConsultationAppService recipeConsultationMock;
 
     @BeforeEach
     void setUp() {
         menuRepository.deleteAll();
 
-        when(recipeAppServiceMock.exists(RecipeMother.ID)).thenReturn(true);
-    }
-
-    @Test
-    @WithCommunityUser
-    @DisplayName("deny menu listing access to community user")
-    void denyMenuListingAsCommunityUser() {
-        assertThrows(AccessDeniedException.class, () -> service.getMenus(listQuery(OWNER)));
-    }
-
-    @Test
-    @WithAuthenticatedUser
-    @DisplayName("deny menu listing access to authenticated user for menus not owned by user")
-    void denyMenuListingAsAuthenticatedUserNotOwner() {
-        assertThrows(AccessDeniedException.class, () -> service.getMenus(listQuery(OWNER)));
-    }
-
-    @Test
-    @WithAuthenticatedUser
-    @DisplayName("grant menu listing access to authenticated user")
-    void grantMenuListingAsAuthenticatedUser() {
-        var menu = builder().withOwnerName(AUTHENTICATED_USER).build();
-        menuRepository.save(menu);
-
-        assertThat(service.getMenus(listQuery(new MenuOwner(AUTHENTICATED_USER)))).isNotEmpty();
-    }
-
-    @Test
-    @WithIngredientManager
-    @DisplayName("grant menu listing access to ingredient manager")
-    void grantMenuListingAsIngredientManager() {
-        var menu = builder().withOwnerName(INGREDIENT_MANAGER).build();
-        menuRepository.save(menu);
-
-        assertThat(service.getMenus(listQuery(new MenuOwner(INGREDIENT_MANAGER)))).isNotEmpty();
-    }
-
-    @Test
-    @WithSuperAdministrator
-    @DisplayName("grant menu listing access to super administrator")
-    void grantMenuListingAsSuperAdministrator() {
-        var menu = builder().withOwnerName(SUPER_ADMINISTRATOR).build();
-        menuRepository.save(menu);
-
-        assertThat(service.getMenus(listQuery(new MenuOwner(SUPER_ADMINISTRATOR)))).isNotEmpty();
-    }
-
-    @Test
-    @WithCommunityUser
-    @DisplayName("deny menu detail access to community user")
-    void denyMenuDetailAccessAsCommunityUser() {
-        assertThrows(AccessDeniedException.class, () -> service.getMenu(ID));
-    }
-
-    @Test
-    @WithAuthenticatedUser
-    @DisplayName("grant menu detail access to authenticated user")
-    void denyMenuDetailAccessAsAuthenticatedUserNotOwner() {
-        var menu = builder().withOwner(OWNER).build();
-        menuRepository.save(menu);
-
-        assertThrows(AccessDeniedException.class, () -> service.getMenu(menu.id()));
-    }
-
-    @Test
-    @WithAuthenticatedUser
-    @DisplayName("grant menu detail access to authenticated user")
-    void grantMenuDetailAccessAsAuthenticatedUser() {
-        var menu = builder().withOwnerName(AUTHENTICATED_USER).build();
-        menuRepository.save(menu);
-
-        assertThat(service.getMenu(menu.id())).isEqualTo(menu);
-    }
-
-    @Test
-    @WithIngredientManager
-    @DisplayName("grant menu detail access to ingredient manager")
-    void grantMenuDetailAccessAsIngredientManager() {
-        var menu = builder().withOwnerName(INGREDIENT_MANAGER).build();
-        menuRepository.save(menu);
-
-        assertThat(service.getMenu(menu.id())).isEqualTo(menu);
-    }
-
-    @Test
-    @WithSuperAdministrator
-    @DisplayName("grant menu detail access to super administrator")
-    void grantMenuDetailAccessAsSuperAdministrator() {
-        var menu = builder().withOwnerName(SUPER_ADMINISTRATOR).build();
-        menuRepository.save(menu);
-
-        assertThat(service.getMenu(menu.id())).isEqualTo(menu);
+        when(recipeConsultationMock.exists(RecipeMother.ID)).thenReturn(true);
     }
 
     @Test
@@ -182,7 +92,7 @@ class MenuAppServiceWithSecurityShould {
     void grantMenuCreationAsAuthenticatedUser() {
         var menu = builder().withOwnerName(AUTHENTICATED_USER).build();
         service.createMenu(createCommand(menu));
-        assertThat(service.getMenu(menu.id())).isNotNull();
+        assertThat(menuRepository.exists(menu.id())).isTrue();
     }
 
     @Test
@@ -191,7 +101,7 @@ class MenuAppServiceWithSecurityShould {
     void grantMenuCreationAsIngredientManager() {
         var menu = builder().withOwnerName(INGREDIENT_MANAGER).build();
         service.createMenu(createCommand(menu));
-        assertThat(service.getMenu(menu.id())).isNotNull();
+        assertThat(menuRepository.exists(menu.id())).isTrue();
     }
 
     @Test
@@ -200,7 +110,57 @@ class MenuAppServiceWithSecurityShould {
     void grantMenuCreationAsSuperAdministrator() {
         var menu = builder().withOwnerName(SUPER_ADMINISTRATOR).build();
         service.createMenu(createCommand(menu));
-        assertThat(service.getMenu(menu.id())).isNotNull();
+        assertThat(menuRepository.exists(menu.id())).isTrue();
+    }
+
+    @Test
+    @WithCommunityUser
+    @DisplayName("deny menu deletion access to community user")
+    void denyMenuDeletionAsCommunityUser() {
+        assertThrows(AccessDeniedException.class, () -> service.deleteMenu(deleteCommand()));
+    }
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("deny menu deletion access to authenticated user that is not menu owner")
+    void denyMenuDeletionAsAuthenticatedUserNotOwner() {
+        var menu = builder().withOwner(OWNER).build();
+        menuRepository.save(menu);
+
+        assertThrows(AccessDeniedException.class, () -> service.deleteMenu(deleteCommand(menu.id())));
+    }
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("grant menu deletion access to authenticated user")
+    void grantMenuDeletionAsAuthenticatedUser() {
+        var menu = builder().withOwnerName(AUTHENTICATED_USER).build();
+        menuRepository.save(menu);
+
+        service.deleteMenu(deleteCommand(menu.id()));
+        assertThat(menuRepository.exists(menu.id())).isFalse();
+    }
+
+    @Test
+    @WithIngredientManager
+    @DisplayName("grant menu deletion access to ingredient manager")
+    void grantMenuDeletionAsIngredientManager() {
+        var menu = builder().withOwnerName(INGREDIENT_MANAGER).build();
+        menuRepository.save(menu);
+
+        service.deleteMenu(deleteCommand(menu.id()));
+        assertThat(menuRepository.exists(menu.id())).isFalse();
+    }
+
+    @Test
+    @WithSuperAdministrator
+    @DisplayName("grant menu deletion access to super administrator")
+    void grantMenuDeletionAsSuperAdministrator() {
+        var menu = builder().withOwnerName(SUPER_ADMINISTRATOR).build();
+        menuRepository.save(menu);
+
+        service.deleteMenu(deleteCommand(menu.id()));
+        assertThat(menuRepository.exists(menu.id())).isFalse();
     }
 
     @Configuration

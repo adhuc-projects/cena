@@ -36,10 +36,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
-import org.adhuc.cena.menu.menus.Menu;
-import org.adhuc.cena.menu.menus.MenuAppService;
-import org.adhuc.cena.menu.menus.MenuId;
-import org.adhuc.cena.menu.menus.MenuOwner;
+import org.adhuc.cena.menu.menus.*;
 import org.adhuc.cena.menu.recipes.RecipeMother;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 import org.adhuc.cena.menu.support.WithCommunityUser;
@@ -68,7 +65,9 @@ class MenuControllerShould {
     private MenuController controller;
 
     @MockBean
-    private MenuAppService menuAppServiceMock;
+    private MenuConsultationAppService menuConsultationMock;
+    @MockBean
+    private MenuManagementAppService menuManagementMock;
 
     @ParameterizedTest
     @ValueSource(strings = {"invalid", "01-01-2020-LUNCH", "LUNCH-2020-01-01", "2020-01-01-INVALID", "2020/01/01-LUNCH", "2020-01-01_LUNCH", "32-01-2020-LUNCH"})
@@ -89,7 +88,7 @@ class MenuControllerShould {
     @WithAuthenticatedUser
     @DisplayName("respond Not Found when retrieving unknown menu")
     void respond404GetUnknownMenu() throws Exception {
-        when(menuAppServiceMock.getMenu(id(AUTHENTICATED_USER))).thenThrow(new EntityNotFoundException(Menu.class, ID));
+        when(menuConsultationMock.getMenu(id(AUTHENTICATED_USER))).thenThrow(new EntityNotFoundException(Menu.class, ID));
         mvc.perform(get(MENU_API_URL, ID_PARAM)).andExpect(status().isNotFound());
     }
 
@@ -113,14 +112,14 @@ class MenuControllerShould {
     @DisplayName("respond No Content when deleting recipe successfully as an authenticated user")
     void respond204OnDeletionAsAuthenticatedUser() throws Exception {
         mvc.perform(delete(MENU_API_URL, ID_PARAM)).andExpect(status().isNoContent());
-        verify(menuAppServiceMock).deleteMenu(deleteCommand(ID));
+        verify(menuManagementMock).deleteMenu(deleteCommand(ID));
     }
 
     @Test
     @WithAuthenticatedUser
     @DisplayName("respond Not Found when deleting unknown menu")
     void respond404DeleteUnknownMenu() throws Exception {
-        doThrow(new EntityNotFoundException(Menu.class, ID)).when(menuAppServiceMock).deleteMenu(deleteCommand(ID));
+        doThrow(new EntityNotFoundException(Menu.class, ID)).when(menuManagementMock).deleteMenu(deleteCommand(ID));
         mvc.perform(delete(MENU_API_URL, ID_PARAM)).andExpect(status().isNotFound());
     }
 
@@ -130,7 +129,7 @@ class MenuControllerShould {
 
         @BeforeEach
         void setUp() {
-            when(menuAppServiceMock.getMenu(id(AUTHENTICATED_USER))).thenReturn(menu());
+            when(menuConsultationMock.getMenu(id(AUTHENTICATED_USER))).thenReturn(menu());
         }
 
         @Test

@@ -21,13 +21,12 @@ import static lombok.AccessLevel.PRIVATE;
 
 import static org.adhuc.cena.menu.ingredients.IngredientMother.CUCUMBER_ID;
 import static org.adhuc.cena.menu.ingredients.IngredientMother.TOMATO_ID;
+import static org.adhuc.cena.menu.recipes.CourseType.MAIN_COURSE;
+import static org.adhuc.cena.menu.recipes.CourseType.STARTER;
 import static org.adhuc.cena.menu.recipes.MeasurementUnit.DOZEN;
 import static org.adhuc.cena.menu.recipes.MeasurementUnit.UNIT;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -53,18 +52,21 @@ public class RecipeMother {
     public static final String TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT = "Cut everything into dices, mix it, dress it";
     public static final RecipeAuthor TOMATO_CUCUMBER_MOZZA_SALAD_AUTHOR = new RecipeAuthor("some user");
     public static final Servings TOMATO_CUCUMBER_MOZZA_SALAD_SERVINGS = new Servings(2);
+    public static final Set<CourseType> TOMATO_CUCUMBER_MOZZA_SALAD_COURSE_TYPES = Set.of(STARTER, MAIN_COURSE);
 
     public static final RecipeId TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID = new RecipeId("6ef45220-0e64-4303-9f71-ced6cefa6834");
     public static final Name TOMATO_CUCUMBER_OLIVE_FETA_SALAD_NAME = new Name("Tomato, cucumber, olive and feta salad");
     public static final String TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT = "Stone olives, cut everything into dices, mix it, dress it";
     public static final RecipeAuthor TOMATO_CUCUMBER_OLIVE_FETA_SALAD_AUTHOR = new RecipeAuthor("other user");
     public static final Servings TOMATO_CUCUMBER_OLIVE_FETA_SALAD_SERVINGS = new Servings(6);
+    public static final Set<CourseType> TOMATO_CUCUMBER_OLIVE_FETA_SALAD_COURSE_TYPES = Set.of(MAIN_COURSE);
 
     public static final RecipeId ID = TOMATO_CUCUMBER_MOZZA_SALAD_ID;
     public static final Name NAME = TOMATO_CUCUMBER_MOZZA_SALAD_NAME;
     public static final String CONTENT = TOMATO_CUCUMBER_MOZZA_SALAD_CONTENT;
     public static final RecipeAuthor AUTHOR = TOMATO_CUCUMBER_MOZZA_SALAD_AUTHOR;
     public static final Servings SERVINGS = TOMATO_CUCUMBER_MOZZA_SALAD_SERVINGS;
+    public static final Set<CourseType> COURSE_TYPES = TOMATO_CUCUMBER_MOZZA_SALAD_COURSE_TYPES;
 
     public static final boolean MAIN_INGREDIENT = true;
 
@@ -75,7 +77,8 @@ public class RecipeMother {
     }
 
     public static CreateRecipe createCommand(@NonNull Recipe recipe) {
-        return new CreateRecipe(recipe.id(), recipe.name(), recipe.content(), recipe.author(), recipe.servings());
+        return new CreateRecipe(recipe.id(), recipe.name(), recipe.content(), recipe.author(), recipe.servings(),
+                recipe.courseTypes());
     }
 
     public static DeleteRecipe deleteCommand() {
@@ -176,10 +179,12 @@ public class RecipeMother {
         private RecipeAuthor author = AUTHOR;
         @With
         private Servings servings = SERVINGS;
+        @With
+        private Set<CourseType> courseTypes = COURSE_TYPES;
         private List<RecipeIngredient> ingredients = List.of();
 
         public Builder withId(@NonNull RecipeId recipeId) {
-            return new Builder(recipeId, name, content, author, servings,
+            return new Builder(recipeId, name, content, author, servings, courseTypes,
                     ingredients.stream()
                             .map(ingredient -> new RecipeIngredient(recipeId, ingredient.ingredientId(),
                                     ingredient.isMainIngredient(), ingredient.quantity()))
@@ -187,32 +192,32 @@ public class RecipeMother {
         }
 
         public Builder withAuthorName(@NonNull String authorName) {
-            return new Builder(id, name, content, new RecipeAuthor(authorName), servings, ingredients);
+            return new Builder(id, name, content, new RecipeAuthor(authorName), servings, courseTypes, ingredients);
         }
 
         public Builder withIngredients(@NonNull IngredientId... ingredientIds) {
-            return new Builder(id, name, content, author, servings,
+            return new Builder(id, name, content, author, servings, courseTypes,
                     Arrays.stream(ingredientIds)
                             .map(ingredientId -> new RecipeIngredient(id, ingredientId, MAIN_INGREDIENT, QUANTITY))
                             .collect(toList()));
         }
 
         public Builder withIngredient(@NonNull IngredientId ingredientId, boolean isMainIngredient) {
-            return new Builder(id, name, content, author, servings, List.of(new RecipeIngredient(id, ingredientId, isMainIngredient, QUANTITY)));
+            return new Builder(id, name, content, author, servings, courseTypes, List.of(new RecipeIngredient(id, ingredientId, isMainIngredient, QUANTITY)));
         }
 
         public Builder withIngredient(@NonNull IngredientId ingredientId, boolean isMainIngredient, @NonNull Quantity quantity) {
-            return new Builder(id, name, content, author, servings, List.of(new RecipeIngredient(id, ingredientId, isMainIngredient, quantity)));
+            return new Builder(id, name, content, author, servings, courseTypes, List.of(new RecipeIngredient(id, ingredientId, isMainIngredient, quantity)));
         }
 
         public Builder andIngredient(@NonNull IngredientId ingredientId, boolean isMainIngredient, @NonNull Quantity quantity) {
             var ingredients = new HashSet<>(this.ingredients);
             ingredients.add(new RecipeIngredient(id, ingredientId, isMainIngredient, quantity));
-            return new Builder(id, name, content, author, servings, List.copyOf(ingredients));
+            return new Builder(id, name, content, author, servings, courseTypes, List.copyOf(ingredients));
         }
 
         public Recipe build() {
-            var recipe = new Recipe(id, name, content, author, servings);
+            var recipe = new Recipe(id, name, content, author, servings, courseTypes);
             ingredients.forEach(ingredient -> recipe.addIngredient(addIngredientCommand(ingredient)));
             return recipe;
         }

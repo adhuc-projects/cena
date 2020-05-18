@@ -15,33 +15,18 @@
  */
 package org.adhuc.cena.menu.recipes;
 
-import static org.adhuc.cena.menu.util.Assert.isTrue;
-
-import lombok.Value;
-import lombok.experimental.Accessors;
-
 /**
- * A number of servings for a recipe definition. Value must be positive.
+ * The course types, used to determine which recipes can be used during menu generation.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
- * @since 0.2.0
+ * @version 0.3.0
+ * @since 0.3.0
  */
-@Value
-@Accessors(fluent = true)
-public class Servings {
+public enum CourseType {
 
-    public static final Servings DEFAULT = new Servings(4);
-
-    private final int value;
-
-    public Servings(int value) {
-        isTrue(value > 0, "Cannot create number of servings for a recipe with non positive value");
-        this.value = value;
-    }
-
-    public String toString() {
-        return Integer.toString(value);
-    }
+    APERITIF,
+    STARTER,
+    MAIN_COURSE,
+    DESSERT;
 
 }

@@ -19,16 +19,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE;
 import static org.springframework.http.HttpHeaders.LOCATION;
 
-import static org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue.DEFAULT_NAME;
-import static org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue.DEFAULT_SERVINGS;
+import static org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue.*;
 import static org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType.AUTHENTICATED_USER;
 
 import java.util.function.Supplier;
 
+import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
 import lombok.experimental.Delegate;
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
+import org.assertj.core.api.SoftAssertions;
 
 import org.adhuc.cena.menu.steps.serenity.support.ResourceUrlResolverDelegate;
 import org.adhuc.cena.menu.steps.serenity.support.RestClientDelegate;
@@ -40,7 +41,7 @@ import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationT
  * The recipe creation rest-service client steps definition.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 public class RecipeCreationSteps {
@@ -65,6 +66,11 @@ public class RecipeCreationSteps {
     @Step("Create the recipe {0} without number of servings")
     public RecipeValue createRecipeWithoutServings(RecipeValue recipe) {
         return createRecipe(recipe.withoutServings(), this::rest);
+    }
+
+    @Step("Create the recipe {0} without course types")
+    public RecipeValue createRecipeWithoutCourseTypes(RecipeValue recipe) {
+        return createRecipe(recipe.withoutCourseTypes(), this::rest);
     }
 
     @Step("Create the recipe {0} as authenticated user")
@@ -92,7 +98,7 @@ public class RecipeCreationSteps {
 
     @Step("Create a recipe without content")
     public RecipeValue createRecipeWithoutContent() {
-        return createRecipe(new RecipeValue(DEFAULT_NAME, null, DEFAULT_SERVINGS));
+        return createRecipe(new RecipeValue(DEFAULT_NAME, null, DEFAULT_SERVINGS, DEFAULT_COURSE_TYPES));
     }
 
     @Step("Assert recipe {0} has been successfully created")
@@ -102,6 +108,19 @@ public class RecipeCreationSteps {
         var retrievedRecipe = recipeDetail.getRecipeFromUrl(recipeLocation);
         retrievedRecipe.assertEqualTo(recipe);
         assertThat(retrievedRecipe.author()).isEqualTo(AuthenticationProvider.instance().currentlyAuthenticatedUser());
+    }
+
+    public ValidatableResponse assertInvalidRequestConcerningUnknownCourseType(int position, String courseType) {
+        var response = assertBadRequest();
+        var jsonPath = response.extract().jsonPath();
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(jsonPath.getInt("code")).isEqualTo(101000);
+            softly.assertThat(jsonPath.getList("details", String.class)).anyMatch(d ->
+                    d.startsWith(String.format("[Path '/%s/%d'] Instance value (\"%s\") not found in enum",
+                            RecipeValue.COURSE_TYPES_FIELD, position, courseType))
+            );
+        });
+        return response;
     }
 
 }

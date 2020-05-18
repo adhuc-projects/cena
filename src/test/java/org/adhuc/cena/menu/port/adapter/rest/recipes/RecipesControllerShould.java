@@ -15,6 +15,8 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.recipes;
 
+import static java.util.stream.Collectors.joining;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -28,6 +30,7 @@ import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 import static org.adhuc.cena.menu.recipes.Servings.DEFAULT;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.hamcrest.Matchers;
@@ -51,7 +54,7 @@ import org.adhuc.cena.menu.support.*;
  * The {@link RecipesController} test class.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Tag("integration")
@@ -183,7 +186,8 @@ class RecipesControllerShould {
     void respond401OnCreationAsCommunityUser() throws Exception {
         mvc.perform(post(RECIPES_API_URL)
                 .contentType(APPLICATION_JSON)
-                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":2}")
+                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\"," +
+                        "\"servings\":2,\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\"]}")
         ).andExpect(status().isUnauthorized());
     }
 
@@ -193,7 +197,8 @@ class RecipesControllerShould {
     void respond400OnCreationWithoutName() throws Exception {
         mvc.perform(post(RECIPES_API_URL)
                 .contentType(APPLICATION_JSON)
-                .content("{\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":2}")
+                .content("{\"content\":\"Cut everything into dices, mix it, dress it\"," +
+                        "\"servings\":2,\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\"]}")
         ).andExpect(status().isBadRequest());
     }
 
@@ -203,7 +208,8 @@ class RecipesControllerShould {
     void respond400OnCreationWithBlankName() throws Exception {
         mvc.perform(post(RECIPES_API_URL)
                 .contentType(APPLICATION_JSON)
-                .content("{\"name\":\" \",\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":2}")
+                .content("{\"name\":\" \",\"content\":\"Cut everything into dices, mix it, dress it\"," +
+                        "\"servings\":2,\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\"]}")
         ).andExpect(status().isBadRequest());
     }
 
@@ -213,7 +219,8 @@ class RecipesControllerShould {
     void respond400OnCreationWithoutContent() throws Exception {
         mvc.perform(post(RECIPES_API_URL)
                 .contentType(APPLICATION_JSON)
-                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"servings\":2}")
+                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\"," +
+                        "\"servings\":2,\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\"]}")
         ).andExpect(status().isBadRequest());
     }
 
@@ -223,7 +230,8 @@ class RecipesControllerShould {
     void respond400OnCreationWithBlankContent() throws Exception {
         mvc.perform(post(RECIPES_API_URL)
                 .contentType(APPLICATION_JSON)
-                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\" \",\"servings\":2}")
+                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\" \"," +
+                        "\"servings\":2,\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\"]}")
         ).andExpect(status().isBadRequest());
     }
 
@@ -234,7 +242,8 @@ class RecipesControllerShould {
     void respond400OnCreationWithNegativeServings(int value) throws Exception {
         mvc.perform(post(RECIPES_API_URL)
                 .contentType(APPLICATION_JSON)
-                .content(String.format("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":%d}", value))
+                .content(String.format("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\"," +
+                        "\"servings\":%d,\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\"]}", value))
         ).andExpect(status().isBadRequest());
     }
 
@@ -244,7 +253,8 @@ class RecipesControllerShould {
     void respond201OnCreationJson() throws Exception {
         mvc.perform(post(RECIPES_API_URL)
                 .contentType(APPLICATION_JSON)
-                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":2}")
+                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\"," +
+                        "\"servings\":2,\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\"]}")
         ).andExpect(status().isCreated());
     }
 
@@ -254,7 +264,8 @@ class RecipesControllerShould {
     void respond201OnCreationHal() throws Exception {
         mvc.perform(post(RECIPES_API_URL)
                 .contentType(HAL_JSON)
-                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":2}")
+                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\"," +
+                        "\"servings\":2,\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\"]}")
         ).andExpect(status().isCreated());
     }
 
@@ -264,7 +275,8 @@ class RecipesControllerShould {
     void respondWithLocationAfterCreationSuccess() throws Exception {
         mvc.perform(post(RECIPES_API_URL)
                 .contentType(HAL_JSON)
-                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":2}")
+                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\"," +
+                        "\"servings\":2,\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\"]}")
         ).andExpect(header().exists(LOCATION));
     }
 
@@ -275,9 +287,10 @@ class RecipesControllerShould {
         var commandCaptor = ArgumentCaptor.forClass(CreateRecipe.class);
         var expectedCommand = createCommand(builder().withAuthorName(UserProvider.AUTHENTICATED_USER).build());
 
+        var courseTypes = COURSE_TYPES.stream().map(type -> "\"" + type.name() + "\"").collect(joining(",", "[", "]"));
         mvc.perform(post(RECIPES_API_URL)
                 .contentType(HAL_JSON)
-                .content(String.format("{\"name\":\"%s\",\"content\":\"%s\",\"servings\":%d}", NAME, CONTENT, SERVINGS.value()))
+                .content(String.format("{\"name\":\"%s\",\"content\":\"%s\",\"servings\":%d,\"courseTypes\":%s}", NAME, CONTENT, SERVINGS.value(), courseTypes))
         ).andExpect(status().isCreated());
 
         verify(recipeAuthoringMock).createRecipe(commandCaptor.capture());
@@ -286,14 +299,32 @@ class RecipesControllerShould {
 
     @Test
     @WithAuthenticatedUser
-    @DisplayName("call application service when creating recipe")
+    @DisplayName("call application service when creating recipe without servings")
     void callServiceOnCreationWithoutServings() throws Exception {
         var commandCaptor = ArgumentCaptor.forClass(CreateRecipe.class);
         var expectedCommand = createCommand(builder().withAuthorName(UserProvider.AUTHENTICATED_USER).withServings(DEFAULT).build());
 
+        var courseTypes = COURSE_TYPES.stream().map(type -> "\"" + type.name() + "\"").collect(joining(",", "[", "]"));
         mvc.perform(post(RECIPES_API_URL)
                 .contentType(HAL_JSON)
-                .content(String.format("{\"name\":\"%s\",\"content\":\"%s\"}", NAME, CONTENT))
+                .content(String.format("{\"name\":\"%s\",\"content\":\"%s\",\"courseTypes\":%s}", NAME, CONTENT, courseTypes))
+        ).andExpect(status().isCreated());
+
+        verify(recipeAuthoringMock).createRecipe(commandCaptor.capture());
+        assertThat(commandCaptor.getValue()).isEqualToIgnoringGivenFields(expectedCommand, "recipeId");
+    }
+
+    @Test
+    @WithAuthenticatedUser
+    @DisplayName("call application service when creating recipe without course type")
+    void callServiceOnCreationWithoutCourseTypes() throws Exception {
+        var commandCaptor = ArgumentCaptor.forClass(CreateRecipe.class);
+        var expectedCommand = createCommand(builder().withAuthorName(UserProvider.AUTHENTICATED_USER)
+                .withCourseTypes(Collections.emptySet()).build());
+
+        mvc.perform(post(RECIPES_API_URL)
+                .contentType(HAL_JSON)
+                .content(String.format("{\"name\":\"%s\",\"content\":\"%s\",\"servings\":%d}", NAME, CONTENT, SERVINGS.value()))
         ).andExpect(status().isCreated());
 
         verify(recipeAuthoringMock).createRecipe(commandCaptor.capture());
@@ -306,7 +337,8 @@ class RecipesControllerShould {
     void respond201OnCreationAsIngredientManager() throws Exception {
         mvc.perform(post(RECIPES_API_URL)
                 .contentType(HAL_JSON)
-                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":2}")
+                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\"," +
+                        "\"servings\":2,\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\"]}")
         ).andExpect(status().isCreated());
     }
 
@@ -316,7 +348,8 @@ class RecipesControllerShould {
     void respond201OnCreationAsSuperAdministrator() throws Exception {
         mvc.perform(post(RECIPES_API_URL)
                 .contentType(HAL_JSON)
-                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":2}")
+                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\"," +
+                        "\"servings\":2,\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\"]}")
         ).andExpect(status().isCreated());
     }
 

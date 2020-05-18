@@ -51,7 +51,7 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
  * The recipe related rest-services documentation.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Tag("integration")
@@ -105,6 +105,7 @@ class RecipeDocumentation {
                 fieldWithPath("content").description("The content of the recipe"),
                 fieldWithPath("author").description("The author name of the recipe"),
                 fieldWithPath("servings").description("The number of servings for the recipe"),
+                fieldWithPath("courseTypes").description("The <<course-types-list, types of course>> this recipe can be used for"),
                 subsectionWithPath("_links").description(linksDescription));
     }
 

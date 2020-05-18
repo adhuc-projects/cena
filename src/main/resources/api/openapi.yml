@@ -753,6 +753,8 @@ components:
           $ref: '#/components/schemas/RecipeContent'
         servings:
           $ref: '#/components/schemas/Servings'
+        courseTypes:
+          $ref: '#/components/schemas/CourseTypes'
         '_links':
           type: object
           readOnly: true
@@ -789,6 +791,8 @@ components:
           $ref: '#/components/schemas/RecipeContent'
         servings:
           $ref: '#/components/schemas/Servings'
+        courseTypes:
+          $ref: '#/components/schemas/CourseTypes'
       additionalProperties: true
     RecipeId:
       description: Recipe identity
@@ -810,6 +814,16 @@ components:
       type: integer
       example: 2
       minimum: 1
+    CourseTypes:
+      description: Recipe course types
+      type: array
+      items:
+        type: string
+        enum:
+          - APERITIF
+          - STARTER
+          - MAIN_COURSE
+          - DESSERT
     RecipeIngredients:
       description: A collection of ingredients linked to a recipe, containing ingredients detail for each ingredient
       type: object

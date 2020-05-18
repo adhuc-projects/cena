@@ -18,6 +18,7 @@ package org.adhuc.cena.menu.steps.serenity.recipes;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -48,6 +49,7 @@ public class RecipeValue extends HateoasClientResourceSupport {
 
     public static final String NAME_FIELD = "name";
     public static final String CONTENT_FIELD = "content";
+    public static final String COURSE_TYPES_FIELD = "courseTypes";
 
     private static final String RECIPE_INGREDIENTS_LINK = "ingredients";
 
@@ -59,38 +61,48 @@ public class RecipeValue extends HateoasClientResourceSupport {
     public static final int DEFAULT_SERVINGS = 2;
     // Servings set by server if no servings value is specified in creation request
     public static final int DEFAULT_SERVER_SERVINGS = 4;
+    public static final List<String> DEFAULT_COURSE_TYPES = List.of("STARTER", "MAIN_COURSE");
 
     private final String id;
     private final String name;
     private final String content;
     private final String author;
     private final Integer servings;
+    private final List<String> courseTypes;
 
     public static RecipeValue buildUnknownRecipeValue(String recipesResourceUrl) {
         return buildUnknownRecipeValue(DEFAULT_NAME, recipesResourceUrl);
     }
 
     public static RecipeValue buildUnknownRecipeValue(String name, String recipesResourceUrl) {
-        var recipe = new RecipeValue(UUID.randomUUID().toString(), name, DEFAULT_CONTENT, null, DEFAULT_SERVINGS);
+        var recipe = new RecipeValue(UUID.randomUUID().toString(), name, DEFAULT_CONTENT, null, DEFAULT_SERVINGS, DEFAULT_COURSE_TYPES);
         recipe.addLink(SELF_LINK, String.format("%s/%s", recipesResourceUrl, recipe.id));
         recipe.addLink(RECIPE_INGREDIENTS_LINK, String.format("%s/%s/ingredients", recipesResourceUrl, recipe.id));
         return recipe;
     }
 
     public RecipeValue(String name) {
-        this(name, DEFAULT_CONTENT, DEFAULT_SERVINGS);
+        this(name, DEFAULT_CONTENT, DEFAULT_SERVINGS, DEFAULT_COURSE_TYPES);
     }
 
-    public RecipeValue(String name, String content, Integer servings) {
-        this(null, name, content, null, servings);
+    public RecipeValue(String name, String content, Integer servings, List<String> courseTypes) {
+        this(null, name, content, null, servings, courseTypes);
     }
 
     RecipeValue withoutId() {
-        return new RecipeValue(null, name, content, author, servings);
+        return new RecipeValue(null, name, content, author, servings, courseTypes);
     }
 
     RecipeValue withoutServings() {
-        return new RecipeValue(id, name, content, author, null);
+        return new RecipeValue(id, name, content, author, null, courseTypes);
+    }
+
+    RecipeValue withoutCourseTypes() {
+        return new RecipeValue(id, name, content, author, servings, null);
+    }
+
+    public RecipeValue withCourseTypes(List<String> courseTypes) {
+        return new RecipeValue(id, name, content, author, servings, List.copyOf(courseTypes));
     }
 
     @JsonIgnore
@@ -105,6 +117,11 @@ public class RecipeValue extends HateoasClientResourceSupport {
                 softly.assertThat(this.servings).isEqualTo(expected.servings);
             } else {
                 softly.assertThat(this.servings).isEqualTo(DEFAULT_SERVER_SERVINGS);
+            }
+            if (expected.courseTypes == null) {
+                softly.assertThat(this.courseTypes).isNull();
+            } else {
+                softly.assertThat(this.courseTypes).containsExactlyInAnyOrderElementsOf(expected.courseTypes);
             }
         });
     }

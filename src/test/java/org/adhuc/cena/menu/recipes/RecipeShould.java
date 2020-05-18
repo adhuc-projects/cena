@@ -25,6 +25,7 @@ import static org.adhuc.cena.menu.ingredients.IngredientMother.TOMATO_ID;
 import static org.adhuc.cena.menu.recipes.MeasurementUnit.*;
 import static org.adhuc.cena.menu.recipes.RecipeMother.*;
 
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
@@ -60,23 +61,25 @@ class RecipeShould {
     @ParameterizedTest
     @MethodSource("invalidCreationParameters")
     @DisplayName("not be creatable with invalid parameters")
-    void notBeCreatableWithInvalidParameters(RecipeId recipeId, Name name, String content, RecipeAuthor author, Servings servings) {
-        assertThrows(IllegalArgumentException.class, () -> new Recipe(recipeId, name, content, author, servings));
+    void notBeCreatableWithInvalidParameters(RecipeId recipeId, Name name, String content, RecipeAuthor author,
+                                             Servings servings, Set<CourseType> courseTypes) {
+        assertThrows(IllegalArgumentException.class, () -> new Recipe(recipeId, name, content, author, servings, courseTypes));
     }
 
     private static Stream<Arguments> invalidCreationParameters() {
         return Stream.of(
-                Arguments.of(null, NAME, CONTENT, AUTHOR, SERVINGS),
-                Arguments.of(ID, null, CONTENT, AUTHOR, SERVINGS),
-                Arguments.of(ID, NAME, null, AUTHOR, SERVINGS),
-                Arguments.of(ID, NAME, "", AUTHOR, SERVINGS),
-                Arguments.of(ID, NAME, CONTENT, null, SERVINGS),
-                Arguments.of(ID, NAME, CONTENT, AUTHOR, null)
+                Arguments.of(null, NAME, CONTENT, AUTHOR, SERVINGS, COURSE_TYPES),
+                Arguments.of(ID, null, CONTENT, AUTHOR, SERVINGS, COURSE_TYPES),
+                Arguments.of(ID, NAME, null, AUTHOR, SERVINGS, COURSE_TYPES),
+                Arguments.of(ID, NAME, "", AUTHOR, SERVINGS, COURSE_TYPES),
+                Arguments.of(ID, NAME, CONTENT, null, SERVINGS, COURSE_TYPES),
+                Arguments.of(ID, NAME, CONTENT, AUTHOR, null, COURSE_TYPES),
+                Arguments.of(ID, NAME, CONTENT, AUTHOR, SERVINGS, null)
         );
     }
 
     @Test
-    @DisplayName("contain id, name, content and author from command used during creation")
+    @DisplayName("contain values from command used during creation")
     void containCreationValuesFromCommand() {
         var recipe = new Recipe(createCommand());
         assertSoftly(softly -> {
@@ -86,11 +89,19 @@ class RecipeShould {
             softly.assertThat(recipe.ingredients()).isEmpty();
             softly.assertThat(recipe.author()).isEqualTo(AUTHOR);
             softly.assertThat(recipe.servings()).isEqualTo(SERVINGS);
+            softly.assertThat(recipe.courseTypes()).isEqualTo(COURSE_TYPES);
         });
     }
 
     @Test
-    @DisplayName("contain id, name, content and author used during creation")
+    @DisplayName("return non modifiable course types set")
+    void courseTypesNotModifiable() {
+        var recipe = recipe();
+        assertThrows(UnsupportedOperationException.class, () -> recipe.courseTypes().add(CourseType.DESSERT));
+    }
+
+    @Test
+    @DisplayName("contain values used during creation")
     void containCreationValues() {
         var recipe = builder().build();
         assertSoftly(softly -> {
@@ -100,6 +111,7 @@ class RecipeShould {
             softly.assertThat(recipe.ingredients()).isEmpty();
             softly.assertThat(recipe.author()).isEqualTo(AUTHOR);
             softly.assertThat(recipe.servings()).isEqualTo(SERVINGS);
+            softly.assertThat(recipe.courseTypes()).isEqualTo(COURSE_TYPES);
         });
     }
 
@@ -296,6 +308,7 @@ class RecipeShould {
                 Arguments.of(tomatoCucumberMozzaSalad, builder().withContent(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_CONTENT).build(), true),
                 Arguments.of(tomatoCucumberMozzaSalad, builder().withAuthor(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_AUTHOR).build(), true),
                 Arguments.of(tomatoCucumberMozzaSalad, builder().withServings(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_SERVINGS).build(), true),
+                Arguments.of(tomatoCucumberMozzaSalad, builder().withCourseTypes(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_COURSE_TYPES).build(), true),
                 Arguments.of(tomatoCucumberMozzaSalad, builder().withIngredients().build(), true),
                 Arguments.of(tomatoCucumberMozzaSalad, builder().withId(TOMATO_CUCUMBER_OLIVE_FETA_SALAD_ID).build(), false)
         );

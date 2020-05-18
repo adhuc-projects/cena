@@ -86,9 +86,9 @@ Feature: Create a menu for a meal
   Scenario: Create a different menu than another user on same date and meal type
     Given an authenticated user
     And the following existing recipes
-      | name                                   | content                                                   | servings |
-      | Tomato, cucumber and mozzarella salad  | Cut everything into dices, mix it, dress it               | 2        |
-      | Tomato, cucumber, olive and feta salad | Stone olives, cut everything into dices, mix it, dress it | 6        |
+      | name                                   | content                                                   | servings | courseTypes          |
+      | Tomato, cucumber and mozzarella salad  | Cut everything into dices, mix it, dress it               | 2        | STARTER, MAIN_COURSE |
+      | Tomato, cucumber, olive and feta salad | Stone olives, cut everything into dices, mix it, dress it | 6        | STARTER, MAIN_COURSE |
     And the following existing menus
       | owner              | date  | mealType | covers | mainCourseRecipes                      |
       | ingredient manager | today | lunch    | 4      | Tomato, cucumber, olive and feta salad |
@@ -101,9 +101,9 @@ Feature: Create a menu for a meal
   Scenario: Create a menu with many main course recipes
     Given an authenticated user
     And the following existing recipes
-      | name                                   | content                                                   | servings |
-      | Tomato, cucumber and mozzarella salad  | Cut everything into dices, mix it, dress it               | 2        |
-      | Tomato, cucumber, olive and feta salad | Stone olives, cut everything into dices, mix it, dress it | 6        |
+      | name                                   | content                                                   | servings | courseTypes          |
+      | Tomato, cucumber and mozzarella salad  | Cut everything into dices, mix it, dress it               | 2        | STARTER, MAIN_COURSE |
+      | Tomato, cucumber, olive and feta salad | Stone olives, cut everything into dices, mix it, dress it | 6        | STARTER, MAIN_COURSE |
     And no existing menu for today's lunch
     When he creates a menu from the recipes for 2 covers for today's lunch
     Then the menu is created

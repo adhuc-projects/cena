@@ -17,6 +17,8 @@ package org.adhuc.cena.menu.recipes;
 
 import static org.adhuc.cena.menu.util.Assert.hasText;
 
+import java.util.Set;
+
 import lombok.NonNull;
 import lombok.Value;
 import lombok.experimental.Accessors;
@@ -41,6 +43,7 @@ public class CreateRecipe {
     private final String recipeContent;
     private final RecipeAuthor recipeAuthor;
     private final Servings servings;
+    private final Set<CourseType> courseTypes;
 
     /**
      * Creates a recipe creation command.
@@ -50,15 +53,17 @@ public class CreateRecipe {
      * @param recipeContent the recipe content.
      * @param recipeAuthor  the recipe author.
      * @param servings      the number of servings.
+     * @param courseTypes   the course types.
      */
     public CreateRecipe(@NonNull RecipeId recipeId, @NonNull Name recipeName, @NonNull String recipeContent,
-                        @NonNull RecipeAuthor recipeAuthor, @NonNull Servings servings) {
+                        @NonNull RecipeAuthor recipeAuthor, @NonNull Servings servings, @NonNull Set<CourseType> courseTypes) {
         hasText(recipeContent, "Cannot create recipe creation command with invalid recipe content");
         this.recipeId = recipeId;
         this.recipeName = recipeName;
         this.recipeContent = recipeContent;
         this.recipeAuthor = recipeAuthor;
         this.servings = servings;
+        this.courseTypes = Set.copyOf(courseTypes);
     }
 
     /**
@@ -68,10 +73,11 @@ public class CreateRecipe {
      * @param recipeName    the recipe name.
      * @param recipeContent the recipe content.
      * @param recipeAuthor  the recipe author.
+     * @param courseTypes   the course types.
      */
     public CreateRecipe(@NonNull RecipeId recipeId, @NonNull Name recipeName, @NonNull String recipeContent,
-                        @NonNull RecipeAuthor recipeAuthor) {
-        this(recipeId, recipeName, recipeContent, recipeAuthor, Servings.DEFAULT);
+                        @NonNull RecipeAuthor recipeAuthor, @NonNull Set<CourseType> courseTypes) {
+        this(recipeId, recipeName, recipeContent, recipeAuthor, Servings.DEFAULT, courseTypes);
     }
 
 }

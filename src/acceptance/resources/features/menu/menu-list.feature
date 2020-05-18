@@ -4,21 +4,21 @@ Feature: List menus for a period of time
 
   Background:
     Given the following existing recipes
-      | name                                   | content                                                                                                                                  | servings |
-      | Tomato, cucumber and mozzarella salad  | Cut everything into dices, mix it, dress it                                                                                              | 2        |
-      | Tomato, cucumber, olive and feta salad | Stone olives, cut everything into dices, mix it, dress it                                                                                | 6        |
-      | Tomato and cantal pie                  | Spread the shortcrust in a pie plate, wrap it with mustard, tomato slices and cantal slices in this order, and bake it during 20 minutes | 4        |
-      | Quiche lorraine                        | Spread the shortcrust in a pie plate, beat the eggs with milk, add lardons, pour on the pastry and bake it during 30 minutes             | 4        |
-      | Gazpacho                               | Gazpacho made easy                                                                                                                       | 4        |
-      | Chili con carne                        | Chili con carne made easy                                                                                                                | 8        |
-      | Moussaka                               | Moussaka made easy                                                                                                                       | 4        |
-      | Lasagna                                | Lasagna made easy                                                                                                                        | 8        |
-      | Pizza Regina                           | Pizza Regina made easy                                                                                                                   | 2        |
-      | Watercress soup                        | Watercress soup made easy                                                                                                                | 4        |
-      | Stuffed tomatoes                       | Stuffed tomatoes made easy                                                                                                               | 4        |
-      | Vegetarian fajitas                     | Vegetarian fajitas made easy                                                                                                             | 2        |
-      | Norwegian salad                        | Norwegian salad made easy                                                                                                                | 2        |
-      | Caesar salad                           | Caesar salad made easy                                                                                                                   | 4        |
+      | name                                   | content                                                                                                                                  | servings | courseTypes          |
+      | Tomato, cucumber and mozzarella salad  | Cut everything into dices, mix it, dress it                                                                                              | 2        | STARTER, MAIN_COURSE |
+      | Tomato, cucumber, olive and feta salad | Stone olives, cut everything into dices, mix it, dress it                                                                                | 6        | STARTER, MAIN_COURSE |
+      | Tomato and cantal pie                  | Spread the shortcrust in a pie plate, wrap it with mustard, tomato slices and cantal slices in this order, and bake it during 20 minutes | 4        | MAIN_COURSE          |
+      | Quiche lorraine                        | Spread the shortcrust in a pie plate, beat the eggs with milk, add lardons, pour on the pastry and bake it during 30 minutes             | 4        | MAIN_COURSE          |
+      | Gazpacho                               | Gazpacho made easy                                                                                                                       | 4        | STARTER, MAIN_COURSE |
+      | Chili con carne                        | Chili con carne made easy                                                                                                                | 8        | MAIN_COURSE          |
+      | Moussaka                               | Moussaka made easy                                                                                                                       | 4        | MAIN_COURSE          |
+      | Lasagna                                | Lasagna made easy                                                                                                                        | 8        | MAIN_COURSE          |
+      | Pizza Regina                           | Pizza Regina made easy                                                                                                                   | 2        | MAIN_COURSE          |
+      | Watercress soup                        | Watercress soup made easy                                                                                                                | 4        | STARTER, MAIN_COURSE |
+      | Stuffed tomatoes                       | Stuffed tomatoes made easy                                                                                                               | 4        | MAIN_COURSE          |
+      | Vegetarian fajitas                     | Vegetarian fajitas made easy                                                                                                             | 2        | MAIN_COURSE          |
+      | Norwegian salad                        | Norwegian salad made easy                                                                                                                | 2        | MAIN_COURSE          |
+      | Caesar salad                           | Caesar salad made easy                                                                                                                   | 4        | MAIN_COURSE          |
 
   @Edge
   Scenario: Empty menus list

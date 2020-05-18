@@ -4,11 +4,11 @@ Feature: Delete a menu from the system
 
   Background:
     Given the following existing recipes
-      | name                                   | content                                                                                                                                  | servings |
-      | Tomato, cucumber and mozzarella salad  | Cut everything into dices, mix it, dress it                                                                                              | 2        |
-      | Tomato, cucumber, olive and feta salad | Stone olives, cut everything into dices, mix it, dress it                                                                                | 6        |
-      | Tomato and cantal pie                  | Spread the shortcrust in a pie plate, wrap it with mustard, tomato slices and cantal slices in this order, and bake it during 20 minutes | 4        |
-      | Pizza Regina                           | Pizza Regina made easy                                                                                                                   | 2        |
+      | name                                   | content                                                                                                                                  | servings | courseTypes          |
+      | Tomato, cucumber and mozzarella salad  | Cut everything into dices, mix it, dress it                                                                                              | 2        | STARTER, MAIN_COURSE |
+      | Tomato, cucumber, olive and feta salad | Stone olives, cut everything into dices, mix it, dress it                                                                                | 6        | STARTER, MAIN_COURSE |
+      | Tomato and cantal pie                  | Spread the shortcrust in a pie plate, wrap it with mustard, tomato slices and cantal slices in this order, and bake it during 20 minutes | 4        | MAIN_COURSE          |
+      | Pizza Regina                           | Pizza Regina made easy                                                                                                                   | 2        | MAIN_COURSE          |
 
   @Edge
   Scenario: Delete an unknown menu

@@ -15,6 +15,8 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.recipes;
 
+import java.util.Collections;
+import java.util.Set;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 
@@ -23,16 +25,13 @@ import lombok.NonNull;
 import lombok.ToString;
 
 import org.adhuc.cena.menu.common.aggregate.Name;
-import org.adhuc.cena.menu.recipes.CreateRecipe;
-import org.adhuc.cena.menu.recipes.RecipeAuthor;
-import org.adhuc.cena.menu.recipes.RecipeId;
-import org.adhuc.cena.menu.recipes.Servings;
+import org.adhuc.cena.menu.recipes.*;
 
 /**
  * A request to create a recipe.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @ToString
@@ -45,6 +44,7 @@ class CreateRecipeRequest {
     private String content;
     @Positive
     private Integer servings;
+    private Set<CourseType> courseTypes;
 
     /**
      * Converts this request to a {@code CreateRecipe} command.
@@ -54,9 +54,10 @@ class CreateRecipeRequest {
      * @return the recipe creation command.
      */
     CreateRecipe toCommand(@NonNull RecipeId id, @NonNull String authorName) {
+        Set<CourseType> courseTypes = this.courseTypes != null ? this.courseTypes : Collections.emptySet();
         return servings != null
-                ? new CreateRecipe(id, new Name(name), content, new RecipeAuthor(authorName), new Servings(servings))
-                : new CreateRecipe(id, new Name(name), content, new RecipeAuthor(authorName));
+                ? new CreateRecipe(id, new Name(name), content, new RecipeAuthor(authorName), new Servings(servings), courseTypes)
+                : new CreateRecipe(id, new Name(name), content, new RecipeAuthor(authorName), courseTypes);
     }
 
 }

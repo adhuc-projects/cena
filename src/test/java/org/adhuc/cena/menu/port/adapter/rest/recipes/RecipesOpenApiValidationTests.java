@@ -45,7 +45,7 @@ import org.adhuc.cena.menu.port.adapter.rest.assertion.support.Error;
  * The Open API validation test class for recipes resources.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Tag("integration")
@@ -120,7 +120,7 @@ class RecipesOpenApiValidationTests {
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                         properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body("{}")
+                .body("{\"servings\":2,\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\"]}")
                 .when()
                 .post(RECIPES_API_URL)
                 .then()
@@ -134,6 +134,30 @@ class RecipesOpenApiValidationTests {
     }
 
     @Test
+    @DisplayName("respond Bad Request with OpenAPI validation error on creation when request does contains blank name and content properties")
+    void respond400OnCreationWithBlankNameAndContent() {
+        var error = given()
+                .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                        properties.getSecurity().getUser().getPassword())
+                .contentType(APPLICATION_JSON_VALUE)
+                .body("{\"name\":\"\",\"content\":\"\",\"servings\":2,\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\"]}")
+                .when()
+                .post(RECIPES_API_URL)
+                .then()
+                .statusCode(BAD_REQUEST.value())
+                .assertThat()
+                .extract().jsonPath().getObject("", Error.class);
+        assertThat(error)
+                .hasCode(INVALID_REQUEST)
+                .hasMessage("OpenAPI validation error")
+                .detailsContainsExactlyInAnyOrder(
+                        "[Path '/name'] String \"\" is too short (length: 0, required minimum: 1)",
+                        "[Path '/content'] String \"\" is too short (length: 0, required minimum: 1)"
+                );
+    }
+
+    @Test
     @DisplayName("respond Bad Request with OpenAPI validation error on creation when request does not contain name property")
     void respond400OnCreationWithoutName() {
         var error = given()
@@ -141,7 +165,7 @@ class RecipesOpenApiValidationTests {
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                         properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body("{\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":2}")
+                .body("{\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":2,\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\"]}")
                 .when()
                 .post(RECIPES_API_URL)
                 .then()
@@ -162,7 +186,7 @@ class RecipesOpenApiValidationTests {
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                         properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"servings\":2}")
+                .body("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"servings\":2,\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\"]}")
                 .when()
                 .post(RECIPES_API_URL)
                 .then()
@@ -183,7 +207,8 @@ class RecipesOpenApiValidationTests {
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                 properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\"}")
+                .body("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\"," +
+                        "\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\"]}")
                 .when()
                 .post(RECIPES_API_URL)
                 .then()
@@ -199,7 +224,8 @@ class RecipesOpenApiValidationTests {
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                         properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body(format("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":%d}", value))
+                .body(format("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\"," +
+                        "\"servings\":%d,\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\"]}", value))
                 .when()
                 .post(RECIPES_API_URL)
                 .then()
@@ -213,6 +239,44 @@ class RecipesOpenApiValidationTests {
     }
 
     @Test
+    @DisplayName("respond Created on creation when request does not contain courseTypes property")
+    void respond201OnCreationWithoutCourseTypes() {
+        given()
+                .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                properties.getSecurity().getUser().getPassword())
+                .contentType(APPLICATION_JSON_VALUE)
+                .body("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":2}")
+                .when()
+                .post(RECIPES_API_URL)
+                .then()
+                .statusCode(CREATED.value());
+    }
+
+    @Test
+    @DisplayName("respond Bad Request with OpenAPI validation error on creation when request contains unknown courseType")
+    void respond400OnCreationWithUnknownCourseType() {
+        var error = given()
+                .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                properties.getSecurity().getUser().getPassword())
+                .contentType(APPLICATION_JSON_VALUE)
+                .body("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\"," +
+                        "\"servings\":2,\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\",\"UNKNOWN\"]}")
+                .when()
+                .post(RECIPES_API_URL)
+                .then()
+                .statusCode(BAD_REQUEST.value())
+                .assertThat()
+                .extract().jsonPath().getObject("", Error.class);
+        assertThat(error)
+                .hasCode(INVALID_REQUEST)
+                .hasMessage("OpenAPI validation error")
+                .detailsContainsExactlyInAnyOrder("[Path '/courseTypes/2'] Instance value (\"UNKNOWN\") not found in enum " +
+                        "(possible values: [\"APERITIF\",\"STARTER\",\"MAIN_COURSE\",\"DESSERT\"])");
+    }
+
+    @Test
     @DisplayName("respond Created on creation when request contains additional property")
     void respond201OnCreationWithAdditionalProperty() {
         given()
@@ -220,7 +284,8 @@ class RecipesOpenApiValidationTests {
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                 properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":2,\"other\":\"some value\"}")
+                .body("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\"," +
+                        "\"servings\":2,\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\"],\"other\":\"some value\"}")
                 .when()
                 .post(RECIPES_API_URL)
                 .then()

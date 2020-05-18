@@ -32,6 +32,25 @@ Feature: Create a recipe in the system
     Then the recipe is created
     And the recipe can be found in the list
 
+  @Edge
+  Scenario: Create a recipe without course types
+    Given an authenticated user
+    And a non-existent "Tomato, cucumber and mozzarella salad" recipe
+    When he creates the recipe without course types
+    Then the recipe is created
+    And the recipe can be found in the list
+
+  @Edge
+  Scenario: Create a recipe with unknown course type
+    Given an authenticated user
+    And a non-existent "Tomato, cucumber and mozzarella salad" recipe
+    When he creates the recipe with the following course types
+      | STARTER     |
+      | MAIN_COURSE |
+      | UNKNOWN     |
+    Then an error notifies that recipe cannot be created with unknown "UNKNOWN" course type
+    And the recipe cannot be found in the list
+
   @Security
   Scenario: Create a recipe as community user
     Given a community user

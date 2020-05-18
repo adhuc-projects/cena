@@ -57,6 +57,8 @@ public class Recipe extends BasicEntity<RecipeId> {
     private RecipeAuthor author;
     @Getter
     private Servings servings;
+    @Getter
+    private Set<CourseType> courseTypes;
     private Map<IngredientId, RecipeIngredient> ingredients = new HashMap<>();
 
     /**
@@ -65,26 +67,29 @@ public class Recipe extends BasicEntity<RecipeId> {
      * @param command the recipe creation command.
      */
     public Recipe(@NonNull CreateRecipe command) {
-        this(command.recipeId(), command.recipeName(), command.recipeContent(), command.recipeAuthor(), command.servings());
+        this(command.recipeId(), command.recipeName(), command.recipeContent(), command.recipeAuthor(), command.servings(),
+                command.courseTypes());
     }
 
     /**
      * Creates a recipe.
      *
-     * @param id       the recipe identity.
-     * @param name     the recipe name.
-     * @param content  the recipe content.
-     * @param author   the recipe author.
-     * @param servings the number of servings for recipe.
+     * @param id          the recipe identity.
+     * @param name        the recipe name.
+     * @param content     the recipe content.
+     * @param author      the recipe author.
+     * @param servings    the number of servings for recipe.
+     * @param courseTypes the recipe course types.
      */
     Recipe(@NonNull RecipeId id, @NonNull Name name, @NonNull String content, @NonNull RecipeAuthor author,
-                  @NonNull Servings servings) {
+           @NonNull Servings servings, @NonNull Set<CourseType> courseTypes) {
         super(id);
         hasText(content, "Cannot set recipe content with invalid value");
         this.name = name;
         this.content = content;
         this.author = author;
         this.servings = servings;
+        this.courseTypes = courseTypes;
     }
 
     /**

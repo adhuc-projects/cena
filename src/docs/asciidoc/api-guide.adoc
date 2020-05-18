@@ -294,6 +294,13 @@ include::{snippets}/recipes-create-example/curl-request.adoc[]
 
 include::{snippets}/recipes-create-example/http-response.adoc[]
 
+[[course-types-list]]
+==== Course types list
+
+Here is the list of all course types that can be used to create a recipe.
+
+include::{snippets}/recipes-create-example/course-types.adoc[]
+
 [[resources-recipes-delete]]
 === Deleting recipes
 

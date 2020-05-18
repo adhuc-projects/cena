@@ -15,8 +15,7 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.recipes;
 
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -25,6 +24,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import static org.adhuc.cena.menu.recipes.RecipeMother.*;
+
+import java.util.List;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
@@ -37,8 +38,8 @@ import org.adhuc.cena.menu.common.aggregate.EntityNotFoundException;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientModelAssembler;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientsController;
 import org.adhuc.cena.menu.recipes.Recipe;
-import org.adhuc.cena.menu.recipes.RecipeConsultation;
 import org.adhuc.cena.menu.recipes.RecipeAuthoring;
+import org.adhuc.cena.menu.recipes.RecipeConsultation;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 import org.adhuc.cena.menu.support.WithCommunityUser;
 import org.adhuc.cena.menu.support.WithIngredientManager;
@@ -48,7 +49,7 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
  * The {@link RecipeController} test class.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Tag("integration")
@@ -145,11 +146,17 @@ class RecipeControllerShould {
         @Test
         @DisplayName("contain recipe data")
         void getRecipeFoundContainsData() throws Exception {
+            var recipe = recipe();
+            var courseTypes = List.copyOf(recipe.courseTypes());
             mvc.perform(get(RECIPE_API_URL, ID))
-                    .andExpect(jsonPath("$.id").value(recipe().id().toString()))
-                    .andExpect(jsonPath("$.name").value(recipe().name().value()))
-                    .andExpect(jsonPath("$.content").value(recipe().content()))
-                    .andExpect(jsonPath("$.servings").value(recipe().servings().value()));
+                    .andExpect(jsonPath("$.id").value(recipe.id().toString()))
+                    .andExpect(jsonPath("$.name").value(recipe.name().value()))
+                    .andExpect(jsonPath("$.content").value(recipe.content()))
+                    .andExpect(jsonPath("$.servings").value(recipe.servings().value()))
+                    .andExpect(jsonPath("$.courseTypes").isArray())
+                    .andExpect(jsonPath("$.courseTypes", hasSize(2)))
+                    .andExpect(jsonPath("$.courseTypes[0]").value(courseTypes.get(0).toString()))
+                    .andExpect(jsonPath("$.courseTypes[1]").value(courseTypes.get(1).toString()));
         }
 
         @Test

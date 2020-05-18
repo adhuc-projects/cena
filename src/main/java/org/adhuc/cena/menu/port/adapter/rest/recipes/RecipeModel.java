@@ -15,24 +15,31 @@
  */
 package org.adhuc.cena.menu.port.adapter.rest.recipes;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
+
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.NonNull;
 import lombok.ToString;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
+import org.adhuc.cena.menu.recipes.CourseType;
 import org.adhuc.cena.menu.recipes.Recipe;
 
 /**
  * A REST resource encapsulating ingredient information.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @ToString(callSuper = true)
 @Relation(collectionRelation = "data")
+@JsonInclude(NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class RecipeModel extends RepresentationModel<RecipeModel> {
 
@@ -49,6 +56,7 @@ public class RecipeModel extends RepresentationModel<RecipeModel> {
     @JsonProperty("author")
     private final String recipeAuthor;
     private final int servings;
+    private final Set<CourseType> courseTypes;
 
     RecipeModel(@NonNull Recipe recipe) {
         recipeId = recipe.id().toString();
@@ -56,6 +64,7 @@ public class RecipeModel extends RepresentationModel<RecipeModel> {
         recipeContent = recipe.content();
         recipeAuthor = recipe.author().toString();
         servings = recipe.servings().value();
+        courseTypes = recipe.courseTypes();
     }
 
 }

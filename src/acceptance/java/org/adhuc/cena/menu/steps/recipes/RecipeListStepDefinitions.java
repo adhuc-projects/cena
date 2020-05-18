@@ -21,6 +21,8 @@ import static org.adhuc.cena.menu.steps.serenity.ingredients.IngredientValue.bui
 import static org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue.COMPARATOR;
 import static org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue.buildUnknownRecipeValue;
 
+import java.util.List;
+
 import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -39,7 +41,7 @@ import org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue;
  * The recipes list steps definitions for rest-services acceptance tests.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @StepDefAnnotation
@@ -48,6 +50,7 @@ public class RecipeListStepDefinitions {
     private static final String NAME_ATTRIBUTE = "name";
     private static final String CONTENT_ATTRIBUTE = "content";
     private static final String SERVINGS_ATTRIBUTE = "servings";
+    private static final String COURSE_TYPE_ATTRIBUTE = "courseTypes";
 
     @Steps
     private RecipeListSteps recipeList;
@@ -67,7 +70,8 @@ public class RecipeListStepDefinitions {
     public void existingRecipes(DataTable dataTable) {
         var recipes = dataTable.asMaps(String.class, String.class).stream()
                 .map(attributes -> new RecipeValue(attributes.get(NAME_ATTRIBUTE), attributes.get(CONTENT_ATTRIBUTE),
-                        Integer.parseInt(attributes.get(SERVINGS_ATTRIBUTE)))).collect(toList());
+                        Integer.parseInt(attributes.get(SERVINGS_ATTRIBUTE)),
+                        List.of(attributes.get(COURSE_TYPE_ATTRIBUTE).split(", ")))).collect(toList());
         recipeList.storeAssumedRecipes(recipeListAssumptions.assumeInRecipesList(recipes));
     }
 

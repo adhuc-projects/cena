@@ -15,6 +15,7 @@
  */
 package org.adhuc.cena.menu.steps.recipes;
 
+import cucumber.api.DataTable;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import cucumber.runtime.java.StepDefAnnotation;
@@ -27,7 +28,7 @@ import org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue;
  * The recipe creation steps definitions for rest-services acceptance tests.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @StepDefAnnotation
@@ -44,6 +45,18 @@ public class RecipeCreationStepDefinitions {
     @When("^he creates the recipe without number of servings$")
     public void createRecipeWithoutServings() {
         recipeCreation.storeRecipe(recipeCreation.createRecipeWithoutServings(recipeCreation.storedRecipe()));
+    }
+
+    @When("^he creates the recipe without course types$")
+    public void createRecipeWithoutCourseTypes() {
+        recipeCreation.storeRecipe(recipeCreation.createRecipeWithoutCourseTypes(recipeCreation.storedRecipe()));
+    }
+
+    @When("^he creates the recipe with the following course types$")
+    public void createRecipeWithCourseTypes(DataTable dataTable) {
+        var courseTypes = dataTable.asList(String.class);
+        var recipe = recipeCreation.storeRecipe(recipeCreation.storedRecipe().withCourseTypes(courseTypes));
+        recipeCreation.createRecipe(recipe);
     }
 
     @When("^he creates a recipe without name$")
@@ -69,6 +82,12 @@ public class RecipeCreationStepDefinitions {
     @Then("^an error notifies that recipe must have a content$")
     public void errorOnRecipeCreationWithoutContent() {
         recipeCreation.assertInvalidRequestConcerningMissingBodyField(RecipeValue.CONTENT_FIELD);
+    }
+
+    @Then("^an error notifies that recipe cannot be created with unknown \"(.*)\" course type$")
+    public void errorOnRecipeCreationWithUnknownCourseType(String unknownCourseType) {
+        int position = recipeCreation.storedRecipe().courseTypes().indexOf(unknownCourseType);
+        recipeCreation.assertInvalidRequestConcerningUnknownCourseType(position, unknownCourseType);
     }
 
 }

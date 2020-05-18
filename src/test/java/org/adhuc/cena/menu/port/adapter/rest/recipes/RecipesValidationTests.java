@@ -46,7 +46,7 @@ import org.adhuc.cena.menu.port.adapter.rest.assertion.support.Error;
  * The validation test class for recipes resources disabling Open API validation.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Tag("integration")
@@ -123,7 +123,7 @@ class RecipesValidationTests {
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                         properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body("{}")
+                .body("{\"servings\":2,\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\"]}")
                 .when()
                 .post(RECIPES_API_URL)
                 .then()
@@ -147,7 +147,7 @@ class RecipesValidationTests {
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                         properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body("{\"name\":\"\",\"content\":\"\"}")
+                .body("{\"name\":\"\",\"content\":\"\",\"servings\":2,\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\"]}")
                 .when()
                 .post(RECIPES_API_URL)
                 .then()
@@ -171,7 +171,8 @@ class RecipesValidationTests {
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                         properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body("{\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":2}")
+                .body("{\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":2," +
+                        "\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\"]}")
                 .when()
                 .post(RECIPES_API_URL)
                 .then()
@@ -192,7 +193,8 @@ class RecipesValidationTests {
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                         properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"servings\":2}")
+                .body("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"servings\":2," +
+                        "\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\"]}")
                 .when()
                 .post(RECIPES_API_URL)
                 .then()
@@ -213,7 +215,8 @@ class RecipesValidationTests {
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                 properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\"}")
+                .body("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\"," +
+                        "\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\"]}")
                 .when()
                 .post(RECIPES_API_URL)
                 .then()
@@ -229,7 +232,8 @@ class RecipesValidationTests {
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                         properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body(format("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":%d}", value))
+                .body(format("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\"," +
+                        "\"servings\":%d,\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\"]}", value))
                 .when()
                 .post(RECIPES_API_URL)
                 .then()
@@ -243,6 +247,38 @@ class RecipesValidationTests {
     }
 
     @Test
+    @DisplayName("respond Created on creation when request does not contain courseTypes property")
+    void respond201OnCreationWithoutCourseTypes() {
+        given()
+                .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                properties.getSecurity().getUser().getPassword())
+                .contentType(APPLICATION_JSON_VALUE)
+                .body("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\"," +
+                        "\"servings\":2,\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\"]}")
+                .when()
+                .post(RECIPES_API_URL)
+                .then()
+                .statusCode(CREATED.value());
+    }
+
+    @Test
+    @DisplayName("respond Bad Request on creation when request contains unknown courseType")
+    void respond400OnCreationWithUnknownCourseType() {
+        given()
+                .log().ifValidationFails()
+                .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
+                        properties.getSecurity().getUser().getPassword())
+                .contentType(APPLICATION_JSON_VALUE)
+                .body("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\"," +
+                        "\"servings\":2,\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\",\"UNKNOWN\"]}")
+                .when()
+                .post(RECIPES_API_URL)
+                .then()
+                .statusCode(BAD_REQUEST.value());
+    }
+
+    @Test
     @DisplayName("respond Created on creation when request contains additional property")
     void respond201OnCreationWithAdditionalProperty() {
         given()
@@ -250,7 +286,8 @@ class RecipesValidationTests {
                 .auth().preemptive().basic(properties.getSecurity().getUser().getUsername(),
                 properties.getSecurity().getUser().getPassword())
                 .contentType(APPLICATION_JSON_VALUE)
-                .body("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":2,\"other\":\"some value\"}")
+                .body("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\"," +
+                        "\"servings\":2,\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\"],\"other\":\"some value\"}")
                 .when()
                 .post(RECIPES_API_URL)
                 .then()

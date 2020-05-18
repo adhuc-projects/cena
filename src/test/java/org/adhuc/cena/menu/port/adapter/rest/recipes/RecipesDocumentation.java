@@ -29,6 +29,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.adhuc.cena.menu.recipes.RecipeMother.recipes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -38,6 +41,8 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
+import org.springframework.restdocs.operation.Operation;
+import org.springframework.restdocs.snippet.TemplatedSnippet;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -46,9 +51,10 @@ import org.adhuc.cena.menu.port.adapter.rest.ResultHandlerConfiguration;
 import org.adhuc.cena.menu.port.adapter.rest.documentation.support.ConstrainedFields;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientModelAssembler;
 import org.adhuc.cena.menu.port.adapter.rest.recipes.ingredients.RecipeIngredientsController;
+import org.adhuc.cena.menu.recipes.CourseType;
 import org.adhuc.cena.menu.recipes.RecipeAdministration;
-import org.adhuc.cena.menu.recipes.RecipeConsultation;
 import org.adhuc.cena.menu.recipes.RecipeAuthoring;
+import org.adhuc.cena.menu.recipes.RecipeConsultation;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 import org.adhuc.cena.menu.support.WithSuperAdministrator;
 
@@ -56,7 +62,7 @@ import org.adhuc.cena.menu.support.WithSuperAdministrator;
  * The recipes related rest-services documentation.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Tag("integration")
@@ -108,13 +114,16 @@ class RecipesDocumentation {
     void recipesCreateExample() throws Exception {
         var fields = new ConstrainedFields(CreateRecipeRequest.class);
         mvc.perform(post(RECIPES_API_URL).contentType(APPLICATION_JSON)
-                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\",\"servings\":2}"))
+                .content("{\"name\":\"Tomato, cucumber and mozzarella salad\",\"content\":\"Cut everything into dices, mix it, dress it\"," +
+                        "\"servings\":2,\"courseTypes\":[\"STARTER\",\"MAIN_COURSE\"]}"))
                 .andExpect(status().isCreated()).andDo(documentationHandler
                 .document(requestFields(
                         fields.withPath("name").description("The name of the recipe"),
                         fields.withPath("content").description("The content of the recipe"),
-                        fields.withPath("servings").description("The number of servings for the recipe")
-                )));
+                        fields.withPath("servings").description("The number of servings for the recipe"),
+                        fields.withPath("courseTypes").description("The <<course-types-list, types of course>> this recipe can be used for")
+                        ),
+                        new CourseTypesSnippet()));
     }
 
     @Test
@@ -123,6 +132,19 @@ class RecipesDocumentation {
     void recipesDeleteExample() throws Exception {
         mvc.perform(delete(RECIPES_API_URL))
                 .andExpect(status().isNoContent()).andDo(documentationHandler.document());
+    }
+
+    private static class CourseTypesSnippet extends TemplatedSnippet {
+        public CourseTypesSnippet() {
+            super("course-types", null);
+        }
+
+        @Override
+        protected Map<String, Object> createModel(Operation operation) {
+            final Map<String, Object> model = new HashMap<>();
+            model.put("courseTypes", List.of(CourseType.values()));
+            return model;
+        }
     }
 
 }

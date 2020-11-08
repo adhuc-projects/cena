@@ -284,6 +284,13 @@ class MenuGenerationArchitectureTests {
                         .because("Ingredient domain is not dependent on other domains");
 
         @ArchTest
+        public static final ArchRule ingredientRepositoryShouldBeUsedOnlyInIngredientDomain =
+                noClasses().that().resideOutsideOfPackage(INGREDIENT_DOMAIN_PACKAGES)
+                        .should().accessClassesThat(isRepositoryInsidePackage(INGREDIENT_DOMAIN_PACKAGES))
+                        .as("Ingredient repositories should be used only in ingredient domain")
+                        .because("Other domains should used services instead");
+
+        @ArchTest
         public static final ArchRule recipesShouldNotAccessMenus =
                 noClasses().that().resideInAPackage(RECIPE_DOMAIN_PACKAGES)
                         .should().accessClassesThat().resideInAPackage(MENU_DOMAIN_PACKAGES)
@@ -291,11 +298,25 @@ class MenuGenerationArchitectureTests {
                         .because("Recipe domain is not dependent on menu domain");
 
         @ArchTest
+        public static final ArchRule recipeRepositoryShouldBeUsedOnlyInRecipeDomain =
+                noClasses().that().resideOutsideOfPackage(RECIPE_DOMAIN_PACKAGES)
+                        .should().accessClassesThat(isRepositoryInsidePackage(RECIPE_DOMAIN_PACKAGES))
+                        .as("Recipe repositories should be used only in recipe domain")
+                        .because("Other domains should used services instead");
+
+        @ArchTest
         public static final ArchRule menusShouldNotAccessIngredients =
                 noClasses().that().resideInAPackage(MENU_DOMAIN_PACKAGES)
                         .should().accessClassesThat().resideInAPackage(INGREDIENT_DOMAIN_PACKAGES)
                         .as("Menu domain classes should not access ingredient domain classes")
                         .because("Menu domain is not directly dependent on ingredient domain");
+
+        @ArchTest
+        public static final ArchRule menuRepositoryShouldBeUsedOnlyInMenuDomain =
+                noClasses().that().resideOutsideOfPackage(MENU_DOMAIN_PACKAGES)
+                        .should().accessClassesThat(isRepositoryInsidePackage(MENU_DOMAIN_PACKAGES))
+                        .as("Menu repositories should be used only in menu domain")
+                        .because("Other domains should used services instead");
 
     }
 
@@ -358,6 +379,10 @@ class MenuGenerationArchitectureTests {
 
     private static DescribedPredicate<JavaClass> isInterfaceImplementedByClassAnnotatedWith(Class<? extends Annotation> annotationType) {
         return INTERFACES.and(assignableFrom(annotatedWith(annotationType)));
+    }
+
+    private static DescribedPredicate<JavaClass> isRepositoryInsidePackage(String packageName) {
+        return INTERFACES.and(assignableTo(org.adhuc.cena.menu.common.aggregate.Repository.class)).and(resideInAPackage(packageName));
     }
 
 }

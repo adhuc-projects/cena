@@ -24,8 +24,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import org.adhuc.cena.menu.menus.OwnedBy;
+import org.adhuc.cena.menu.recipes.RecipeConsultation;
 import org.adhuc.cena.menu.recipes.RecipeId;
-import org.adhuc.cena.menu.recipes.RecipeRepository;
 
 /**
  * A custom {@link MethodSecurityExpressionOperations} implementation for specific access controls. This implementation
@@ -42,11 +42,11 @@ public class CenaMethodSecurityExpressionRoot extends SecurityExpressionRoot imp
     private Object returnObject;
     private Object target;
 
-    private RecipeRepository recipeRepository;
+    private RecipeConsultation recipeConsultation;
 
-    CenaMethodSecurityExpressionRoot(@NonNull Authentication authentication, @NonNull RecipeRepository recipeRepository) {
+    CenaMethodSecurityExpressionRoot(@NonNull Authentication authentication, @NonNull RecipeConsultation recipeConsultation) {
         super(authentication);
-        this.recipeRepository = recipeRepository;
+        this.recipeConsultation = recipeConsultation;
     }
 
     public boolean isSuperAdministrator() {
@@ -58,7 +58,7 @@ public class CenaMethodSecurityExpressionRoot extends SecurityExpressionRoot imp
             return false;
         }
         var user = (UserDetails) getPrincipal();
-        var recipe = recipeRepository.findNotNullById(recipeId);
+        var recipe = recipeConsultation.getRecipe(recipeId);
         return isSuperAdministrator() || recipe.author().authorName().equals(user.getUsername());
     }
 

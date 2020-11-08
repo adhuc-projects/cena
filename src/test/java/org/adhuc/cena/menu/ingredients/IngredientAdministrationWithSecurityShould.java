@@ -20,7 +20,6 @@ import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.adhuc.cena.menu.ingredients.IngredientMother.*;
-import static org.adhuc.cena.menu.ingredients.IngredientMother.CUCUMBER_ID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,7 +39,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import org.adhuc.cena.menu.configuration.ApplicationSecurityConfiguration;
 import org.adhuc.cena.menu.configuration.MenuGenerationProperties;
-import org.adhuc.cena.menu.recipes.RecipeRepository;
+import org.adhuc.cena.menu.recipes.RecipeConsultation;
 import org.adhuc.cena.menu.support.WithAuthenticatedUser;
 import org.adhuc.cena.menu.support.WithCommunityUser;
 import org.adhuc.cena.menu.support.WithIngredientManager;
@@ -65,7 +64,7 @@ class IngredientAdministrationWithSecurityShould {
     @Autowired
     private IngredientRepository repository;
     @MockBean
-    private RecipeRepository recipeRepository;
+    private RecipeConsultation recipeConsultation;
     @MockBean
     private IngredientRelatedService ingredientRelatedService;
 

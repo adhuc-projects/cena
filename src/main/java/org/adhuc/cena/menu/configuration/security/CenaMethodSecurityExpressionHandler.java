@@ -22,25 +22,25 @@ import org.springframework.security.access.expression.method.MethodSecurityExpre
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import org.adhuc.cena.menu.recipes.RecipeRepository;
+import org.adhuc.cena.menu.recipes.RecipeConsultation;
 
 /**
  * A custom {@link org.springframework.security.access.expression.method.MethodSecurityExpressionHandler MethodSecurityExpressionHandler},
  * used to enhance Spring Security default implementation with custom methods declared in {@link CenaMethodSecurityExpressionRoot}.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
 @Component
 @RequiredArgsConstructor
 public class CenaMethodSecurityExpressionHandler extends DefaultMethodSecurityExpressionHandler {
 
-    private final RecipeRepository recipeRepository;
+    private final RecipeConsultation recipeConsultation;
 
     @Override
     protected MethodSecurityExpressionOperations createSecurityExpressionRoot(Authentication authentication, MethodInvocation invocation) {
-        var root = new CenaMethodSecurityExpressionRoot(authentication, recipeRepository);
+        var root = new CenaMethodSecurityExpressionRoot(authentication, recipeConsultation);
         root.setThis(invocation.getThis());
         root.setPermissionEvaluator(getPermissionEvaluator());
         root.setTrustResolver(getTrustResolver());

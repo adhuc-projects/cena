@@ -45,6 +45,7 @@ import org.adhuc.cena.menu.ingredients.IngredientMother;
 import org.adhuc.cena.menu.ingredients.IngredientRepository;
 import org.adhuc.cena.menu.port.adapter.rest.assertion.support.Error;
 import org.adhuc.cena.menu.recipes.RecipeRepository;
+import org.springframework.test.annotation.DirtiesContext;
 
 /**
  * The Open API validation test class for recipe ingredients resources.
@@ -55,6 +56,7 @@ import org.adhuc.cena.menu.recipes.RecipeRepository;
  */
 @Tag("integration")
 @Tag("openApiValidation")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @DisplayName("Recipe ingredients resource should")
 class RecipeIngredientsOpenApiValidationTests {

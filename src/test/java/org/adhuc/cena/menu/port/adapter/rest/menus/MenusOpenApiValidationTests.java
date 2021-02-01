@@ -47,6 +47,7 @@ import org.adhuc.cena.menu.port.adapter.rest.assertion.support.Error;
 import org.adhuc.cena.menu.recipes.RecipeId;
 import org.adhuc.cena.menu.recipes.RecipeMother;
 import org.adhuc.cena.menu.recipes.RecipeRepository;
+import org.springframework.test.annotation.DirtiesContext;
 
 /**
  * The Open API validation test class for menus resources.
@@ -57,6 +58,7 @@ import org.adhuc.cena.menu.recipes.RecipeRepository;
  */
 @Tag("integration")
 @Tag("openApiValidation")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @DisplayName("Menus resource should")
 class MenusOpenApiValidationTests {

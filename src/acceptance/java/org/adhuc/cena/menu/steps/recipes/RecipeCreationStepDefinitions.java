@@ -15,10 +15,9 @@
  */
 package org.adhuc.cena.menu.steps.recipes;
 
-import cucumber.api.DataTable;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import cucumber.runtime.java.StepDefAnnotation;
+import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.recipes.RecipeCreationSteps;
@@ -31,60 +30,59 @@ import org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue;
  * @version 0.3.0
  * @since 0.2.0
  */
-@StepDefAnnotation
 public class RecipeCreationStepDefinitions {
 
     @Steps
     private RecipeCreationSteps recipeCreation;
 
-    @When("^he creates the recipe$")
+    @When("he creates the recipe")
     public void createRecipe() {
         recipeCreation.createRecipe(recipeCreation.storedRecipe());
     }
 
-    @When("^he creates the recipe without number of servings$")
+    @When("he creates the recipe without number of servings")
     public void createRecipeWithoutServings() {
         recipeCreation.storeRecipe(recipeCreation.createRecipeWithoutServings(recipeCreation.storedRecipe()));
     }
 
-    @When("^he creates the recipe without course types$")
+    @When("he creates the recipe without course types")
     public void createRecipeWithoutCourseTypes() {
         recipeCreation.storeRecipe(recipeCreation.createRecipeWithoutCourseTypes(recipeCreation.storedRecipe()));
     }
 
-    @When("^he creates the recipe with the following course types$")
+    @When("he creates the recipe with the following course types")
     public void createRecipeWithCourseTypes(DataTable dataTable) {
-        var courseTypes = dataTable.asList(String.class);
+        var courseTypes = dataTable.asList();
         var recipe = recipeCreation.storeRecipe(recipeCreation.storedRecipe().withCourseTypes(courseTypes));
         recipeCreation.createRecipe(recipe);
     }
 
-    @When("^he creates a recipe without name$")
+    @When("he creates a recipe without name")
     public void createRecipeWithoutName() {
         recipeCreation.storeRecipe(recipeCreation.createRecipeWithoutName());
     }
 
-    @When("^he creates a recipe without content$")
+    @When("he creates a recipe without content")
     public void createRecipeWithoutContent() {
         recipeCreation.storeRecipe(recipeCreation.createRecipeWithoutContent());
     }
 
-    @Then("^the recipe is created$")
+    @Then("the recipe is created")
     public void recipeCreated() {
         recipeCreation.assertRecipeSuccessfullyCreated(recipeCreation.storedRecipe());
     }
 
-    @Then("^an error notifies that recipe must have a name$")
+    @Then("an error notifies that recipe must have a name")
     public void errorOnRecipeCreationWithoutName() {
         recipeCreation.assertInvalidRequestConcerningMissingBodyField(RecipeValue.NAME_FIELD);
     }
 
-    @Then("^an error notifies that recipe must have a content$")
+    @Then("an error notifies that recipe must have a content")
     public void errorOnRecipeCreationWithoutContent() {
         recipeCreation.assertInvalidRequestConcerningMissingBodyField(RecipeValue.CONTENT_FIELD);
     }
 
-    @Then("^an error notifies that recipe cannot be created with unknown \"(.*)\" course type$")
+    @Then("an error notifies that recipe cannot be created with unknown {string} course type")
     public void errorOnRecipeCreationWithUnknownCourseType(String unknownCourseType) {
         int position = recipeCreation.storedRecipe().courseTypes().indexOf(unknownCourseType);
         recipeCreation.assertInvalidRequestConcerningUnknownCourseType(position, unknownCourseType);

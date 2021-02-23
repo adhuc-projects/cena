@@ -17,10 +17,8 @@ package org.adhuc.cena.menu.steps.menus;
 
 import java.time.LocalDate;
 
-import cucumber.api.Transform;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import cucumber.runtime.java.StepDefAnnotation;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.menus.MenuCreationSteps;
@@ -35,7 +33,6 @@ import org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue;
  * @version 0.3.0
  * @since 0.3.0
  */
-@StepDefAnnotation
 public class MenuCreationStepDefinitions {
 
     @Steps
@@ -43,109 +40,109 @@ public class MenuCreationStepDefinitions {
     @Steps
     private MenuCreationSteps menuCreation;
 
-    @When("^he creates a menu from the recipe for (-?\\d+) covers for (.*)'s (\\w+)$")
-    public void createMenu(int covers, @Transform(MenuDateTransformer.class) LocalDate date, String mealType) {
+    @When("he creates a menu from the recipe for {int} covers for {menuDate}'s {word}")
+    public void createMenu(int covers, LocalDate date, String mealType) {
         menuCreation.storeMenu(
                 menuCreation.createMenu(MenuValue.builder().withDate(date).withMealType(mealType)
                         .withCovers(covers).withMainCourseRecipes(recipeList.storedRecipe()).build()));
     }
 
-    @When("^he creates a menu from \"(.*)\" recipe for (-?\\d+) covers for (.*)'s (\\w+)$")
-    public void createMenu(String recipeName, int covers, @Transform(MenuDateTransformer.class) LocalDate date, String mealType) {
+    @When("he creates a menu from {string} recipe for {int} covers for {menuDate}'s {word}")
+    public void createMenu(String recipeName, int covers, LocalDate date, String mealType) {
         menuCreation.storeMenu(
                 menuCreation.createMenu(MenuValue.builder().withDate(date).withMealType(mealType)
                         .withCovers(covers).withMainCourseRecipes(recipeList.storedAssumedRecipe(recipeName))
                         .build()));
     }
 
-    @When("^he creates a menu from the recipes for (-?\\d+) covers for (.*)'s (\\w+)$")
-    public void createMenuMultipleRecipes(int covers, @Transform(MenuDateTransformer.class) LocalDate date, String mealType) {
+    @When("he creates a menu from the recipes for {int} covers for {menuDate}'s {word}")
+    public void createMenuMultipleRecipes(int covers, LocalDate date, String mealType) {
         menuCreation.storeMenu(
                 menuCreation.createMenu(MenuValue.builder().withDate(date).withMealType(mealType)
                         .withCovers(covers).withMainCourseRecipes(recipeList.storedAssumedRecipes()).build()));
     }
 
-    @When("^he creates a menu from the recipe without date$")
+    @When("he creates a menu from the recipe without date")
     public void createMenuWithoutDate() {
         menuCreation.storeMenu(menuCreation.createMenu(MenuValue.builder().withDate(null)
                 .withMainCourseRecipes(recipeList.storedRecipe()).build()));
     }
 
-    @When("^he creates a menu from the recipe without meal type$")
+    @When("he creates a menu from the recipe without meal type")
     public void createMenuWithoutMealType() {
         menuCreation.storeMenu(menuCreation.createMenu(MenuValue.builder().withMealType(null)
                 .withMainCourseRecipes(recipeList.storedRecipe()).build()));
     }
 
-    @When("^he creates a menu from the recipe with unknown \"(.*)\" meal type$")
+    @When("he creates a menu from the recipe with unknown {string} meal type")
     public void createMenuWithInvalidMealType(String mealType) {
         menuCreation.storeMenu(menuCreation.createMenu(MenuValue.builder().withMealType(mealType)
                 .withMainCourseRecipes(recipeList.storedRecipe()).build()));
     }
 
-    @When("^he creates a menu from the recipe without covers for today's lunch$")
+    @When("he creates a menu from the recipe without covers for today's lunch")
     public void createMenuWithoutCovers() {
         menuCreation.storeMenu(menuCreation.createMenu(MenuValue.builder().withCovers(null)
                 .withMainCourseRecipes(recipeList.storedRecipe()).build()));
     }
 
-    @When("^he creates a menu without main course recipe for today's lunch$")
+    @When("he creates a menu without main course recipe for today's lunch")
     public void createMenuWithoutMainCourseRecipes() {
         menuCreation.storeMenu(menuCreation.createMenu(MenuValue.builder().withNoMainCourseRecipes().build()));
     }
 
-    @When("^he creates a menu from unknown recipe for today's lunch$")
+    @When("he creates a menu from unknown recipe for today's lunch")
     public void createMenuWithUnknownMainCourseRecipe() {
         var recipe = recipeList.storeRecipe(RecipeValue.buildUnknownRecipeValue(recipeList.recipesResourceUrl()));
         menuCreation.storeMenu(menuCreation.createMenu(MenuValue.builder().withMainCourseRecipes(recipe).build()));
     }
 
-    @When("^he tries to create a menu from the recipe for 2 covers for today's lunch$")
+    @When("he tries to create a menu from the recipe for 2 covers for today's lunch")
     public void tryToCreateMenu() {
         menuCreation.tryToCreateMenu(MenuValue.builder().withMainCourseRecipes(recipeList.storedRecipe()).build());
     }
 
-    @Then("^the menu is created$")
+    @Then("the menu is created")
     public void menuCreated() {
         menuCreation.assertMenuSuccessfullyCreated(menuCreation.storedMenu());
     }
 
-    @Then("^an error notifies that menu must have a date$")
+    @Then("an error notifies that menu must have a date")
     public void errorOnMenuCreationWithoutDate() {
         menuCreation.assertInvalidRequestConcerningMissingBodyField(MenuValue.DATE_FIELD);
     }
 
-    @Then("^an error notifies that menu must have a meal type$")
+    @Then("an error notifies that menu must have a meal type")
     public void errorOnMenuCreationWithoutMealType() {
         menuCreation.assertInvalidRequestConcerningMissingBodyField(MenuValue.MEAL_TYPE_FIELD);
     }
 
-    @Then("^an error notifies that menu cannot be created with unknown \"(.*)\" meal type$")
+    @Then("an error notifies that menu cannot be created with unknown {string} meal type")
     public void errorOnIngredientCreationWithUnknownMeasurementType(String mealType) {
         menuCreation.assertInvalidRequestConcerningUnknownMealUnit(mealType);
     }
 
-    @Then("^an error notifies that menu must have covers$")
+    @Then("an error notifies that menu must have covers")
     public void errorOnMenuCreationWithoutCovers() {
         menuCreation.assertInvalidRequestConcerningMissingBodyField(MenuValue.COVERS_FIELD);
     }
 
-    @Then("^an error notifies that menu cannot be created with invalid (-?\\d+) covers$")
+    @Then("an error notifies that menu cannot be created with invalid {int} covers")
     public void errorOnIngredientCreationWithInvalidCovers(int covers) {
         menuCreation.assertInvalidRequestConcerningInvalidCovers(covers);
     }
 
-    @Then("^an error notifies that menu must have main course recipes$")
+    @Then("an error notifies that menu must have main course recipes")
     public void errorOnMenuCreationWithoutMainCourseRecipes() {
         menuCreation.assertInvalidRequestConcerningMissingBodyField(MenuValue.MAIN_COURSE_RECIPES_FIELD);
     }
 
-    @Then("^an error notifies that menu cannot be linked to unknown recipe$")
+    @Then("an error notifies that menu cannot be linked to unknown recipe")
     public void errorOnMenuCreationWithUnknownRecipe() {
         menuCreation.assertMenuCannotBeCreatedWithUnknownRecipe(menuCreation.storedMenu(), recipeList.storedRecipe());
     }
 
-    @Then("^an error notifies that menu already exists$")
+    @Then("an error notifies that menu already exists")
     public void errorOnMenuCreationAlreadyExisting() {
         menuCreation.assertMenuAlreadyExists(menuCreation.storedMenu());
     }

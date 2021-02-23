@@ -46,7 +46,7 @@ public class IngredientDeletionSteps {
     @Delegate
     private final StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
     @Delegate
-    private final IngredientListClientDelegate listClient = new IngredientListClientDelegate(ingredientsResourceUrl());
+    private final IngredientListClientDelegate listClient = new IngredientListClientDelegate(resourceUrlResolverDelegate.ingredientsResourceUrl());
     @Delegate
     private final IngredientStorageDelegate ingredientStorage = new IngredientStorageDelegate();
 

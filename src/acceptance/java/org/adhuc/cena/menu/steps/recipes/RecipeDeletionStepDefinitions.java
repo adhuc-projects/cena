@@ -15,9 +15,8 @@
  */
 package org.adhuc.cena.menu.steps.recipes;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import cucumber.runtime.java.StepDefAnnotation;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.recipes.RecipeDeletionSteps;
@@ -26,26 +25,25 @@ import org.adhuc.cena.menu.steps.serenity.recipes.RecipeDeletionSteps;
  * The recipe deletion steps definitions for rest-services acceptance tests.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
-@StepDefAnnotation
 public class RecipeDeletionStepDefinitions {
 
     @Steps
     private RecipeDeletionSteps recipeDeletion;
 
-    @When("^he attempts deleting the recipe$")
+    @When("he attempts deleting the recipe")
     public void tryToDeleteRecipe() {
         recipeDeletion.attemptDeletingRecipe(recipeDeletion.storedRecipe());
     }
 
-    @When("^he deletes the recipe$")
+    @When("he deletes the recipe")
     public void deleteRecipe() {
         recipeDeletion.deleteRecipe(recipeDeletion.storedRecipe());
     }
 
-    @Then("^the recipe is deleted$")
+    @Then("the recipe is deleted")
     public void recipeDeleted() {
         recipeDeletion.assertRecipeSuccessfullyDeleted(recipeDeletion.storedRecipe());
     }

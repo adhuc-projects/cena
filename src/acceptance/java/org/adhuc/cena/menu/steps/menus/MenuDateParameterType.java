@@ -21,18 +21,16 @@ import java.util.function.BiFunction;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 
-import cucumber.api.Transformer;
-
-import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType;
+import io.cucumber.java.ParameterType;
 
 /**
- * A {@link Transformer} implementation for {@link AuthenticationType}s.
+ * Defines a {@link ParameterType} for menu dates.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
  * @since 0.3.0
  */
-public class MenuDateTransformer extends Transformer<LocalDate> {
+public class MenuDateParameterType {
 
     private static final Map<Pattern, BiFunction<MatchResult, String, LocalDate>> transformations = Map.of(
             Pattern.compile("^day before yesterday$"), (result, date) -> LocalDate.now().minusDays(2),
@@ -44,8 +42,8 @@ public class MenuDateTransformer extends Transformer<LocalDate> {
             Pattern.compile("^20\\d{2}-\\d{2}-\\d{2}$"), (result, date) -> LocalDate.parse(date)
     );
 
-    @Override
-    public LocalDate transform(String value) {
+    @ParameterType("(.*)")
+    public LocalDate menuDate(String value) {
         var result = transformations.entrySet().stream()
                 .filter(t -> t.getKey().matcher(value).matches())
                 .findFirst().orElseThrow(() -> new AssertionError("Cannot parse \"" + value + "\" as a date"));

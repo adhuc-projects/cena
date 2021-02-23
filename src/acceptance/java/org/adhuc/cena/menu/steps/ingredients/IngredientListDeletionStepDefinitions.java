@@ -15,9 +15,8 @@
  */
 package org.adhuc.cena.menu.steps.ingredients;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import cucumber.runtime.java.StepDefAnnotation;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientDeletionSteps;
@@ -28,10 +27,9 @@ import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientListSteps;
  * The ingredients list deletion steps definitions for rest-services acceptance tests.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.1.0
  */
-@StepDefAnnotation
 public class IngredientListDeletionStepDefinitions {
 
     @Steps
@@ -41,22 +39,22 @@ public class IngredientListDeletionStepDefinitions {
     @Steps
     private IngredientListAssertionsSteps ingredientListAssertions;
 
-    @When("^he deletes the ingredients$")
+    @When("he deletes the ingredients")
     public void deleteIngredients() {
         ingredientDeletion.deleteIngredients();
     }
 
-    @Then("^the ingredients have been deleted$")
+    @Then("the ingredients have been deleted")
     public void ingredientDeleted() {
         ingredientDeletion.assertNoContent();
     }
 
-    @Then("^no ingredient is left in the ingredients list$")
+    @Then("no ingredient is left in the ingredients list")
     public void noIngredientsLeftInList() {
         ingredientListAssertions.assertEmptyIngredientsList();
     }
 
-    @Then("^no existing ingredient has been deleted$")
+    @Then("no existing ingredient has been deleted")
     public void noExistingIngredientDeleted() {
         ingredientListAssertions.assertInIngredientsList(ingredientList.storedAssumedIngredients(), ingredientList.getIngredients());
     }

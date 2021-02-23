@@ -23,11 +23,10 @@ import static org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue.buildUnknow
 
 import java.util.List;
 
-import cucumber.api.DataTable;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import cucumber.runtime.java.StepDefAnnotation;
+import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientListSteps;
@@ -44,7 +43,6 @@ import org.adhuc.cena.menu.steps.serenity.recipes.RecipeValue;
  * @version 0.3.0
  * @since 0.2.0
  */
-@StepDefAnnotation
 public class RecipeListStepDefinitions {
 
     private static final String NAME_ATTRIBUTE = "name";
@@ -61,91 +59,91 @@ public class RecipeListStepDefinitions {
     @Steps
     private RecipeListAssertionsSteps recipeListAssertions;
 
-    @Given("^no existing recipe$")
+    @Given("no existing recipe")
     public void noExistingRecipe() {
         recipeListAssumptions.assumeEmptyRecipesList();
     }
 
-    @Given("^the following existing recipes$")
+    @Given("the following existing recipes")
     public void existingRecipes(DataTable dataTable) {
-        var recipes = dataTable.asMaps(String.class, String.class).stream()
+        var recipes = dataTable.asMaps().stream()
                 .map(attributes -> new RecipeValue(attributes.get(NAME_ATTRIBUTE), attributes.get(CONTENT_ATTRIBUTE),
                         Integer.parseInt(attributes.get(SERVINGS_ATTRIBUTE)),
                         List.of(attributes.get(COURSE_TYPE_ATTRIBUTE).split(", ")))).collect(toList());
         recipeList.storeAssumedRecipes(recipeListAssumptions.assumeInRecipesList(recipes));
     }
 
-    @Given("^an existing \"(.*)\" recipe$")
+    @Given("an existing {string} recipe")
     public void existingRecipe(String recipeName) {
         recipeList.storeRecipe(recipeListAssumptions.assumeInRecipesList(new RecipeValue(recipeName)));
     }
 
-    @Given("^an existing \"(.*)\" recipe authored by the authenticated user$")
+    @Given("an existing {string} recipe authored by the authenticated user")
     public void existingRecipeAuthoredByCurrentUser(String recipeName) {
         recipeList.storeRecipe(recipeListAssumptions.assumeInRecipesListAuthoredByCurrentUser(new RecipeValue(recipeName)));
     }
 
-    @Given("^an existing \"(.*)\" recipe authored by another user$")
+    @Given("an existing {string} recipe authored by another user")
     public void existingRecipeAuthoredByAnotherUser(String recipeName) {
         recipeList.storeRecipe(recipeListAssumptions.assumeInRecipesListAuthoredByAnotherUser(new RecipeValue(recipeName)));
     }
 
-    @Given("^a non-existent \"(.*)\" recipe$")
+    @Given("a non-existent {string} recipe")
     public void nonExistentRecipe(String recipeName) {
         recipeList.storeRecipe(recipeListAssumptions.assumeNotInRecipesList(
                 buildUnknownRecipeValue(recipeName, recipeList.recipesResourceUrl())));
     }
 
-    @When("^he lists the recipes$")
+    @When("he lists the recipes")
     public void listRecipes() {
         var recipes = recipeList.getRecipes();
         recipeList.storeRecipes(recipes);
     }
 
-    @When("^he lists the recipes composed of ingredient \"(.*)\"$")
+    @When("he lists the recipes composed of ingredient {string}")
     public void listRecipesComposedOfIngredient(String ingredientName) {
         var recipes = recipeList.getRecipesComposedOfIngredient(new IngredientValue(ingredientName));
         recipeList.storeRecipes(recipes);
     }
 
-    @When("^he lists the recipes composed of unknown ingredient$")
+    @When("he lists the recipes composed of unknown ingredient")
     public void listRecipesComposedOfUnknownIngredient() {
         recipeList.getRecipesComposedOfIngredient(
                 buildUnknownIngredientValue("unknown", ingredientList.ingredientsResourceUrl()));
     }
 
-    @Then("^the recipes list is empty$")
+    @Then("the recipes list is empty")
     public void emptyRecipeList() {
         recipeListAssertions.assertEmptyRecipesList(recipeList.storedRecipes());
     }
 
-    @Then("^the recipes list contains the existing recipes$")
+    @Then("the recipes list contains the existing recipes")
     public void existingRecipesFoundInList() {
         recipeListAssertions.assertInRecipesList(recipeList.storedAssumedRecipes(), recipeList.storedRecipes());
     }
 
-    @Then("^the recipes list contains the following recipes$")
+    @Then("the recipes list contains the following recipes")
     public void followingRecipesFoundInList(DataTable dataTable) {
-        var recipes = dataTable.asMaps(String.class, String.class).stream()
+        var recipes = dataTable.asMaps().stream()
                 .map(attributes -> new RecipeValue(attributes.get(NAME_ATTRIBUTE)))
                 .collect(toList());
         recipeListAssertions.assertInRecipesList(recipes, recipeList.storedRecipes(), COMPARATOR);
     }
 
-    @Then("^the recipes list does not contain the following recipes$")
+    @Then("the recipes list does not contain the following recipes")
     public void followingRecipesNotFoundInList(DataTable dataTable) {
-        var recipes = dataTable.asMaps(String.class, String.class).stream()
+        var recipes = dataTable.asMaps().stream()
                 .map(attributes -> new RecipeValue(attributes.get(NAME_ATTRIBUTE)))
                 .collect(toList());
         recipeListAssertions.assertNotInRecipesList(recipes, recipeList.storedRecipes());
     }
 
-    @Then("^the recipe can be found in the list$")
+    @Then("the recipe can be found in the list")
     public void recipeFoundInList() {
         recipeListAssertions.assertInRecipesList(recipeList.storedRecipe());
     }
 
-    @Then("^the recipe cannot be found in the list$")
+    @Then("the recipe cannot be found in the list")
     public void recipeNotFoundInList() {
         recipeListAssertions.assertNotInRecipesList(recipeList.storedRecipe());
     }

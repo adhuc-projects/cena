@@ -25,18 +25,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import cucumber.api.DataTable;
-import cucumber.api.Transform;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import cucumber.runtime.java.StepDefAnnotation;
+import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import net.thucydides.core.annotations.Steps;
 
-import org.adhuc.cena.menu.steps.authentication.AuthenticationTypeTransformer;
+import org.adhuc.cena.menu.steps.authentication.AuthenticationTypeParameterType;
 import org.adhuc.cena.menu.steps.serenity.menus.MenuListAssertionsSteps;
 import org.adhuc.cena.menu.steps.serenity.menus.MenuListAssumptionsSteps;
 import org.adhuc.cena.menu.steps.serenity.menus.MenuListSteps;
@@ -51,7 +49,6 @@ import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationT
  * @version 0.3.0
  * @since 0.3.0
  */
-@StepDefAnnotation
 public class MenuListStepDefinitions {
 
     private static final String OWNER_ATTRIBUTE = "owner";
@@ -60,8 +57,8 @@ public class MenuListStepDefinitions {
     private static final String COVERS_ATTRIBUTE = "covers";
     private static final String MAIN_COURSE_RECIPES_ATTRIBUTE = "mainCourseRecipes";
 
-    private static final AuthenticationTypeTransformer authenticationTypes = new AuthenticationTypeTransformer();
-    private static final MenuDateTransformer menuDateTransformer = new MenuDateTransformer();
+    private static final AuthenticationTypeParameterType authenticationTypes = new AuthenticationTypeParameterType();
+    private static final MenuDateParameterType menuDateTransformer = new MenuDateParameterType();
 
     @Steps
     private MenuListSteps menuList;
@@ -72,7 +69,7 @@ public class MenuListStepDefinitions {
     @Steps
     private RecipeListSteps recipeList;
 
-    @Given("^the following existing menus$")
+    @Given("the following existing menus")
     public void existingMenus(DataTable dataTable) {
         var menusByOwner = new HashMap<AuthenticationType, List<MenuValue>>();
         transformToOwnedMenus(dataTable).forEach(ownedMenu -> {
@@ -84,78 +81,76 @@ public class MenuListStepDefinitions {
         menusByOwner.forEach((key, value) -> menuListAssumptions.assumeInMenusListOwnedBy(value, key));
     }
 
-    @Given("^an existing menu from the recipe for (.*)'s (\\w+)$")
-    public void existingMenu(@Transform(MenuDateTransformer.class) LocalDate date, String mealType) {
+    @Given("an existing menu from the recipe for {menuDate}'s {word}")
+    public void existingMenu(LocalDate date, String mealType) {
         menuListAssumptions.assumeInMenusList(builder().withDate(date).withMealType(mealType)
                 .withMainCourseRecipes(recipeList.storedRecipe()).build());
     }
 
-    @Given("^no existing menu$")
+    @Given("no existing menu")
     public void noExistingMenu() {
         menuListAssumptions.assumeEmptyMenusList();
     }
 
-    @Given("^no existing menu between (.*) and (.*)$")
-    public void noExistingMenu(@Transform(MenuDateTransformer.class) LocalDate since,
-                               @Transform(MenuDateTransformer.class) LocalDate until) {
+    @Given("no existing menu between {menuDate} and {menuDate}")
+    public void noExistingMenu(LocalDate since, LocalDate until) {
         menuListAssumptions.assumeEmptyMenusList(since, until);
     }
 
-    @Given("^no existing menu for (.*)'s (\\w+)$")
-    public void noExistingMenu(@Transform(MenuDateTransformer.class) LocalDate date, String mealType) {
+    @Given("no existing menu for {menuDate}'s {word}")
+    public void noExistingMenu(LocalDate date, String mealType) {
         menuListAssumptions.assumeNotInMenusList(date, mealType);
     }
 
-    @When("^he lists the menus$")
+    @When("he lists the menus")
     public void listMenus() {
         var menus = menuList.getMenus();
         menuList.storeMenus(menus);
     }
 
-    @When("^he lists the menus between (.*) and (.*)$")
-    public void listMenus(@Transform(MenuDateTransformer.class) LocalDate since,
-                          @Transform(MenuDateTransformer.class) LocalDate until) {
+    @When("he lists the menus between {menuDate} and {menuDate}")
+    public void listMenus(LocalDate since, LocalDate until) {
         var menus = menuList.getMenus(since, until);
         menuList.storeMenus(menus);
     }
 
-    @When("^he attempts retrieving list of menus$")
+    @When("he attempts retrieving list of menus")
     public void attemptListingMenus() {
         menuList.attemptGetMenus();
     }
 
-    @Then("^the menus list is empty$")
+    @Then("the menus list is empty")
     public void emptyMenuList() {
         menuListAssertions.assertEmptyMenusList(menuList.storedMenus());
     }
 
-    @Then("^the menus list contains the following menus$")
+    @Then("the menus list contains the following menus")
     public void followingMenusFoundInList(DataTable dataTable) {
         var menus = transformToMenus(dataTable);
         menuListAssertions.assertInMenusList(menus, menuList.storedMenus(), COMPARATOR);
     }
 
-    @Then("^the menus list does not contain the following menus$")
+    @Then("the menus list does not contain the following menus")
     public void followingMenusNotFoundInList(DataTable dataTable) {
         var menus = transformToMenus(dataTable);
         menuListAssertions.assertNotInMenusList(menus, menuList.storedMenus(), COMPARATOR);
     }
 
-    @Then("^the menu can be found in the menus list$")
+    @Then("the menu can be found in the menus list")
     public void menuFoundInList() {
         menuListAssertions.assertInMenusList(menuList.storedMenu());
     }
 
-    @Then("^the menu cannot be found in the menus list$")
+    @Then("the menu cannot be found in the menus list")
     public void menuNotFoundInList() {
         menuListAssertions.assertNotInMenusList(menuList.storedMenu());
     }
 
     private List<OwnedMenu> transformToOwnedMenus(DataTable dataTable) {
-        return dataTable.asMaps(String.class, String.class).stream()
-                .map(attributes -> new OwnedMenu(authenticationTypes.transform(attributes.get(OWNER_ATTRIBUTE)),
+        return dataTable.asMaps().stream()
+                .map(attributes -> new OwnedMenu(authenticationTypes.user(attributes.get(OWNER_ATTRIBUTE)),
                         builder()
-                                .withDate(menuDateTransformer.transform(attributes.get(DATE_ATTRIBUTE)))
+                                .withDate(menuDateTransformer.menuDate(attributes.get(DATE_ATTRIBUTE)))
                                 .withMealType(attributes.get(MEAL_TYPE_ATTRIBUTE))
                                 .withCovers(Integer.parseInt(attributes.get(COVERS_ATTRIBUTE)))
                                 .withMainCourseRecipes(recipeList.storedAssumedRecipe(attributes.get(MAIN_COURSE_RECIPES_ATTRIBUTE)))
@@ -164,9 +159,9 @@ public class MenuListStepDefinitions {
     }
 
     private List<MenuValue> transformToMenus(DataTable dataTable) {
-        return dataTable.asMaps(String.class, String.class).stream()
+        return dataTable.asMaps().stream()
                 .map(attributes -> builder()
-                        .withDate(menuDateTransformer.transform(attributes.get(DATE_ATTRIBUTE)))
+                        .withDate(menuDateTransformer.menuDate(attributes.get(DATE_ATTRIBUTE)))
                         .withMealType(attributes.get(MEAL_TYPE_ATTRIBUTE))
                         .withCovers(Integer.parseInt(attributes.get(COVERS_ATTRIBUTE)))
                         .withMainCourseRecipes(recipeList.storedAssumedRecipe(attributes.get(MAIN_COURSE_RECIPES_ATTRIBUTE)))

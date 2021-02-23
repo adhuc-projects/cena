@@ -44,7 +44,7 @@ public class RecipeDeletionSteps {
     @Delegate
     private final StatusAssertionDelegate statusAssertionDelegate = new StatusAssertionDelegate();
     @Delegate
-    private final RecipeListClientDelegate listClient = new RecipeListClientDelegate(recipesResourceUrl());
+    private final RecipeListClientDelegate listClient = new RecipeListClientDelegate(resourceUrlResolverDelegate.recipesResourceUrl());
     @Delegate
     private final RecipeStorageDelegate recipeStorage = new RecipeStorageDelegate();
 

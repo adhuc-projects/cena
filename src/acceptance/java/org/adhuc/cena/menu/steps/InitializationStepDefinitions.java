@@ -17,8 +17,7 @@ package org.adhuc.cena.menu.steps;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import cucumber.api.java.Before;
-import cucumber.runtime.java.StepDefAnnotation;
+import io.cucumber.java.Before;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
@@ -34,7 +33,6 @@ import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationP
  * @version 0.3.0
  * @since 0.0.1
  */
-@StepDefAnnotation
 public class InitializationStepDefinitions {
 
     @Before

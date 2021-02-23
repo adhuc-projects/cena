@@ -15,9 +15,8 @@
  */
 package org.adhuc.cena.menu.steps.ingredients;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import cucumber.runtime.java.StepDefAnnotation;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientDetailSteps;
@@ -26,31 +25,30 @@ import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientDetailSteps;
  * The ingredient details steps definitions for rest-services acceptance tests.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.1.0
  */
-@StepDefAnnotation
 public class IngredientDetailStepDefinitions {
 
     @Steps
     private IngredientDetailSteps ingredientDetail;
 
-    @When("^he retrieves \"(.*)\" ingredient$")
+    @When("he retrieves {string} ingredient")
     public void retrieveIngredient(String ingredientName) {
         ingredientDetail.storeIngredient(ingredientDetail.retrieveIngredient(ingredientName));
     }
 
-    @When("^he attempts retrieving \"(.*)\" ingredient$")
+    @When("he attempts retrieving {string} ingredient")
     public void tryToRetrieveIngredient(String ingredientName) {
         ingredientDetail.attemptRetrievingIngredient(ingredientName);
     }
 
-    @Then("^the ingredient details is accessible$")
+    @Then("the ingredient details is accessible")
     public void accessibleIngredientDetails() {
         ingredientDetail.assertIngredientInfoIsAccessible(ingredientDetail.storedIngredient());
     }
 
-    @Then("^an error notifies that ingredient has not been found$")
+    @Then("an error notifies that ingredient has not been found")
     public void errorNotFoundIngredient() {
         ingredientDetail.assertNotFound();
     }

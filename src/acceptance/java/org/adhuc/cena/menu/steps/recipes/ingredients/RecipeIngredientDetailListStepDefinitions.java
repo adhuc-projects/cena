@@ -15,8 +15,7 @@
  */
 package org.adhuc.cena.menu.steps.recipes.ingredients;
 
-import cucumber.api.java.en.Then;
-import cucumber.runtime.java.StepDefAnnotation;
+import io.cucumber.java.en.Then;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientDetailSteps;
@@ -28,18 +27,17 @@ import org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientDe
  * @version 0.3.0
  * @since 0.3.0
  */
-@StepDefAnnotation
 public class RecipeIngredientDetailListStepDefinitions {
 
     @Steps
     private RecipeIngredientDetailSteps recipeIngredientDetail;
 
-    @Then("^the ingredient is a main ingredient for the recipe$")
+    @Then("the ingredient is a main ingredient for the recipe")
     public void mainRecipeIngredient() {
         recipeIngredientDetail.getRecipeIngredient(recipeIngredientDetail.storedRecipeIngredient()).assertMainIngredient(true);
     }
 
-    @Then("^the ingredient is not a main ingredient for the recipe$")
+    @Then("the ingredient is not a main ingredient for the recipe")
     public void notMainRecipeIngredient() {
         recipeIngredientDetail.getRecipeIngredient(recipeIngredientDetail.storedRecipeIngredient()).assertMainIngredient(false);
     }

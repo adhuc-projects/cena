@@ -17,10 +17,8 @@ package org.adhuc.cena.menu.steps.menus;
 
 import java.time.LocalDate;
 
-import cucumber.api.Transform;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import cucumber.runtime.java.StepDefAnnotation;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.menus.MenuDeletionSteps;
@@ -32,23 +30,22 @@ import org.adhuc.cena.menu.steps.serenity.menus.MenuDeletionSteps;
  * @version 0.3.0
  * @since 0.3.0
  */
-@StepDefAnnotation
 public class MenuDeletionStepDefinitions {
 
     @Steps
     private MenuDeletionSteps menuDeletion;
 
-    @When("^he attempts deleting the menu scheduled for (.*)'s (\\w+)$")
-    public void attemptDeletingMenu(@Transform(MenuDateTransformer.class) LocalDate date, String mealType) {
+    @When("he attempts deleting the menu scheduled for {menuDate}'s {word}")
+    public void attemptDeletingMenu(LocalDate date, String mealType) {
         menuDeletion.attemptDeletingMenu(date, mealType);
     }
 
-    @When("^he deletes the menu scheduled for (.*)'s (\\w+)$")
-    public void deleteMenu(@Transform(MenuDateTransformer.class) LocalDate date, String mealType) {
+    @When("he deletes the menu scheduled for {menuDate}'s {word}")
+    public void deleteMenu(LocalDate date, String mealType) {
         menuDeletion.storeMenu(menuDeletion.deleteMenu(date, mealType));
     }
 
-    @Then("^the menu is deleted$")
+    @Then("the menu is deleted")
     public void menuDeleted() {
         menuDeletion.assertMenuSuccessfullyDeleted();
     }

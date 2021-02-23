@@ -15,9 +15,8 @@
  */
 package org.adhuc.cena.menu.steps.recipes.ingredients;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import cucumber.runtime.java.StepDefAnnotation;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientRemovalSteps;
@@ -26,47 +25,46 @@ import org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientRe
  * The recipe's ingredients removal steps definitions for rest-services acceptance tests.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
-@StepDefAnnotation
 public class RecipeIngredientRemovalStepDefinitions {
 
     @Steps
     private RecipeIngredientRemovalSteps recipeIngredientRemoval;
 
-    @When("^he removes all the ingredients from the recipe$")
+    @When("he removes all the ingredients from the recipe")
     public void removeIngredientsFromRecipe() {
         recipeIngredientRemoval.removeIngredientsFromRecipe(recipeIngredientRemoval.storedRecipe());
     }
 
-    @When("^he removes the ingredient from the recipe$")
+    @When("he removes the ingredient from the recipe")
     public void removeIngredientFromRecipe() {
         recipeIngredientRemoval.removeIngredientFromRecipe(
                 recipeIngredientRemoval.storedIngredient(),
                 recipeIngredientRemoval.storedRecipe());
     }
 
-    @When("^he attempts removing the ingredient from the recipe$")
+    @When("he attempts removing the ingredient from the recipe")
     public void attemptRemovingIngredientFromRecipe() {
         recipeIngredientRemoval.attemptRemoveIngredientFromRecipe(
                 recipeIngredientRemoval.storedIngredient(),
                 recipeIngredientRemoval.storedRecipe());
     }
 
-    @Then("^the ingredients are removed from the recipe$")
+    @Then("the ingredients are removed from the recipe")
     public void recipeIngredientsRemoved() {
         recipeIngredientRemoval.assertIngredientsSuccessfullyRemovedFromRecipe(recipeIngredientRemoval.storedRecipe());
     }
 
-    @Then("^the ingredient is removed from the recipe$")
+    @Then("the ingredient is removed from the recipe")
     public void recipeIngredientRemoved() {
         recipeIngredientRemoval.assertIngredientSuccessfullyRemovedFromRecipe(
                 recipeIngredientRemoval.storedIngredient(),
                 recipeIngredientRemoval.storedRecipe());
     }
 
-    @Then("^an error notifies that recipe does not contain ingredient$")
+    @Then("an error notifies that recipe does not contain ingredient")
     public void errorOnRecipeIngredientDeletionNotFound() {
         recipeIngredientRemoval.assertIngredientNotRemovableFromRecipe(
                 recipeIngredientRemoval.storedIngredient(),

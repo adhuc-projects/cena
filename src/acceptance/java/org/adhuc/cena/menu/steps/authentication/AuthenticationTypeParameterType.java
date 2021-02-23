@@ -17,30 +17,30 @@ package org.adhuc.cena.menu.steps.authentication;
 
 import java.util.Map;
 
-import cucumber.api.Transformer;
 
+import io.cucumber.java.ParameterType;
 import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType;
 
 /**
- * A {@link Transformer} implementation for {@link AuthenticationType}s.
+ * Defines a {@link ParameterType} for {@link AuthenticationType}s.
  *
  * @author Alexandre Carbenay
  * @version 0.3.0
  * @since 0.3.0
  */
-public class AuthenticationTypeTransformer extends Transformer<AuthenticationType> {
+public class AuthenticationTypeParameterType {
 
-    private static Map<String, AuthenticationType> transformations = Map.of(
+    private static final Map<String, AuthenticationType> TRANSFORMATIONS = Map.of(
             "user", AuthenticationType.AUTHENTICATED_USER,
             "ingredient manager", AuthenticationType.INGREDIENT_MANAGER,
             "actuator manager", AuthenticationType.ACTUATOR_MANAGER,
             "super administrator", AuthenticationType.SUPER_ADMINISTRATOR
     );
 
-    @Override
-    public AuthenticationType transform(String value) {
-        if (transformations.containsKey(value)) {
-            return transformations.get(value);
+    @ParameterType("(.*)")
+    public AuthenticationType user(String value) {
+        if (TRANSFORMATIONS.containsKey(value)) {
+            return TRANSFORMATIONS.get(value);
         }
         throw new IllegalArgumentException("Cannot transform " + value + " into a valid authentication type");
     }

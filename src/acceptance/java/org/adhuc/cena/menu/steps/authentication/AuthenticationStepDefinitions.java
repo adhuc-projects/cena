@@ -15,14 +15,15 @@
  */
 package org.adhuc.cena.menu.steps.authentication;
 
-import cucumber.api.Transform;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.runtime.java.StepDefAnnotation;
+import io.cucumber.java.ParameterType;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.AuthenticationSteps;
 import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationType;
+
+import java.util.Map;
 
 /**
  * The authentication steps definitions for rest-services acceptance tests.
@@ -31,28 +32,27 @@ import org.adhuc.cena.menu.steps.serenity.support.authentication.AuthenticationT
  * @version 0.3.0
  * @since 0.0.1
  */
-@StepDefAnnotation
 public class AuthenticationStepDefinitions {
 
     @Steps
     private AuthenticationSteps authentication;
 
-    @Given("^a community user$")
+    @Given("a community user")
     public void communityUser() {
         authentication.withCommunityUser();
     }
 
-    @Given("^an authenticated (.*)$")
-    public void authenticated(@Transform(AuthenticationTypeTransformer.class) AuthenticationType authenticationType) {
+    @Given("an authenticated {user}")
+    public void authenticated(AuthenticationType authenticationType) {
         authentication.withAuthentication(authenticationType);
     }
 
-    @Then("^an error notifies that user is not authenticated$")
+    @Then("an error notifies that user is not authenticated")
     public void errorUserNotAuthenticated() {
         authentication.assertUserNotAuthenticated();
     }
 
-    @Then("^an error notifies that user is not authorized$")
+    @Then("an error notifies that user is not authorized")
     public void errorUserNotAuthorized() {
         authentication.assertUserNotAuthorized();
     }

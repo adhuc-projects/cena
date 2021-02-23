@@ -17,10 +17,8 @@ package org.adhuc.cena.menu.steps.menus;
 
 import java.time.LocalDate;
 
-import cucumber.api.Transform;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import cucumber.runtime.java.StepDefAnnotation;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.menus.MenuDetailSteps;
@@ -32,28 +30,27 @@ import org.adhuc.cena.menu.steps.serenity.menus.MenuDetailSteps;
  * @version 0.3.0
  * @since 0.3.0
  */
-@StepDefAnnotation
 public class MenuDetailStepDefinitions {
 
     @Steps
     private MenuDetailSteps menuDetail;
 
-    @When("^he retrieves the menu scheduled for (.*)'s (\\w+)$")
-    public void retrieveMenu(@Transform(MenuDateTransformer.class) LocalDate date, String mealType) {
+    @When("he retrieves the menu scheduled for {menuDate}'s {word}")
+    public void retrieveMenu(LocalDate date, String mealType) {
         menuDetail.storeMenu(menuDetail.retrieveMenu(date, mealType));
     }
 
-    @When("^he attempts retrieving the menu scheduled for (.*)'s (\\w+)$")
-    public void attemptRetrievingMenu(@Transform(MenuDateTransformer.class) LocalDate date, String mealType) {
+    @When("he attempts retrieving the menu scheduled for {menuDate}'s {word}")
+    public void attemptRetrievingMenu(LocalDate date, String mealType) {
         menuDetail.attemptRetrievingMenu(date, mealType);
     }
 
-    @Then("^the menu details are accessible$")
+    @Then("the menu details are accessible")
     public void accessibleMenuDetails() {
         menuDetail.assertMenuInfoIsAccessible(menuDetail.storedMenu());
     }
 
-    @Then("^an error notifies that menu has not been found$")
+    @Then("an error notifies that menu has not been found")
     public void errorNotFoundMenu() {
         menuDetail.assertNotFound();
     }

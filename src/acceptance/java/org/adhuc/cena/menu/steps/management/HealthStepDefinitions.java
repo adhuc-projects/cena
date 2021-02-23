@@ -15,10 +15,9 @@
  */
 package org.adhuc.cena.menu.steps.management;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import cucumber.runtime.java.StepDefAnnotation;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.ManagementSteps;
@@ -27,36 +26,35 @@ import org.adhuc.cena.menu.steps.serenity.ManagementSteps;
  * The health steps definitions for rest-services acceptance tests.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.0.1
  */
-@StepDefAnnotation
 public class HealthStepDefinitions {
 
     @Steps
     private ManagementSteps management;
 
-    @Given("^a running service$")
+    @Given("a running service")
     public void runningService() {
         // nothing to do here
     }
 
-    @When("^I check the service health$")
+    @When("I check the service health")
     public void checkServiceHealth() {
         management.callHealthCheckService();
     }
 
-    @Then("^the service health is ok$")
+    @Then("the service health is ok")
     public void serviceHealthIsOk() {
         management.assertResponseIsOk();
     }
 
-    @Then("^the health detail is not available$")
+    @Then("the health detail is not available")
     public void healthDetailIsNotAvailable() {
         management.assertDetailIsNotAvailable();
     }
 
-    @Then("^the health detail is available$")
+    @Then("the health detail is available")
     public void healthDetailIsAvailable() {
         management.assertDiskUsageIsAvailable();
     }

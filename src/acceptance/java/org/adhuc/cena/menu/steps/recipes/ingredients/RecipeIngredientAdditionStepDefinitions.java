@@ -15,9 +15,8 @@
  */
 package org.adhuc.cena.menu.steps.recipes.ingredients;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import cucumber.runtime.java.StepDefAnnotation;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientAdditionSteps;
@@ -30,13 +29,12 @@ import org.adhuc.cena.menu.steps.serenity.recipes.ingredients.RecipeIngredientVa
  * @version 0.3.0
  * @since 0.2.0
  */
-@StepDefAnnotation
 public class RecipeIngredientAdditionStepDefinitions {
 
     @Steps
     private RecipeIngredientAdditionSteps recipeIngredientAddition;
 
-    @When("^he adds the ingredient to the recipe specifying quantity as (\\d+) \"(.*)\"$")
+    @When("he adds the ingredient to the recipe specifying quantity as {int} {string}")
     public void addIngredientToRecipe(int quantity, String measurementUnit) {
         var recipeIngredient = recipeIngredientAddition.addIngredientToRecipe(
                 recipeIngredientAddition.storedIngredient(),
@@ -44,7 +42,7 @@ public class RecipeIngredientAdditionStepDefinitions {
         recipeIngredientAddition.storeRecipeIngredient(recipeIngredient);
     }
 
-    @When("^he adds the ingredient as main ingredient to the recipe specifying quantity as (\\d+) \"(.*)\"$")
+    @When("he adds the ingredient as main ingredient to the recipe specifying quantity as {int} {string}")
     public void addMainIngredientToRecipe(int quantity, String measurementUnit) {
         var recipeIngredient = recipeIngredientAddition.addMainIngredientToRecipe(
                 recipeIngredientAddition.storedIngredient(),
@@ -52,7 +50,7 @@ public class RecipeIngredientAdditionStepDefinitions {
         recipeIngredientAddition.storeRecipeIngredient(recipeIngredient);
     }
 
-    @When("^he adds the ingredient to the recipe without specifying whether ingredient is a main ingredient$")
+    @When("he adds the ingredient to the recipe without specifying whether ingredient is a main ingredient")
     public void addIngredientToRecipeWithoutMain() {
         var recipeIngredient = recipeIngredientAddition.addIngredientToRecipeWithoutMain(
                 recipeIngredientAddition.storedIngredient(),
@@ -60,7 +58,7 @@ public class RecipeIngredientAdditionStepDefinitions {
         recipeIngredientAddition.storeRecipeIngredient(recipeIngredient);
     }
 
-    @When("^he adds the ingredient to the recipe without specifying any quantity$")
+    @When("he adds the ingredient to the recipe without specifying any quantity")
     public void addIngredientToRecipeWithoutQuantity() {
         var recipeIngredient = recipeIngredientAddition.addIngredientToRecipeWithoutQuantity(
                 recipeIngredientAddition.storedIngredient(),
@@ -68,12 +66,12 @@ public class RecipeIngredientAdditionStepDefinitions {
         recipeIngredientAddition.storeRecipeIngredient(recipeIngredient);
     }
 
-    @When("^he add an ingredient without identity to the recipe$")
+    @When("he add an ingredient without identity to the recipe")
     public void addIngredientWithoutIdToRecipe() {
         recipeIngredientAddition.addIngredientWithoutIdToRecipe(recipeIngredientAddition.storedRecipe());
     }
 
-    @Then("^the ingredient is added to the recipe$")
+    @Then("the ingredient is added to the recipe")
     public void recipeIngredientCreated() {
         var recipeIngredient = recipeIngredientAddition.assertIngredientSuccessfullyAddedToRecipe(
                 recipeIngredientAddition.storedIngredient(),
@@ -81,12 +79,12 @@ public class RecipeIngredientAdditionStepDefinitions {
         recipeIngredientAddition.storeRecipeIngredient(recipeIngredient);
     }
 
-    @Then("^an error notifies that recipe ingredient must have an identity$")
+    @Then("an error notifies that recipe ingredient must have an identity")
     public void errorOnRecipeIngredientCreationWithoutId() {
         recipeIngredientAddition.assertInvalidRequestConcerningMissingBodyField(RecipeIngredientValue.ID_FIELD);
     }
 
-    @Then("^an error notifies that measurement unit does not correspond to ingredient measurement type$")
+    @Then("an error notifies that measurement unit does not correspond to ingredient measurement type")
     public void errorOnNonCorrespondingMeasurementUnit() {
         recipeIngredientAddition.assertNonCorrespondingMeasurementUnit(
                 recipeIngredientAddition.storedIngredient(),

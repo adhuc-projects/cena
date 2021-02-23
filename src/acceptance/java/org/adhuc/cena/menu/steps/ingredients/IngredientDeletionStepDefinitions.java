@@ -15,9 +15,8 @@
  */
 package org.adhuc.cena.menu.steps.ingredients;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import cucumber.runtime.java.StepDefAnnotation;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientDeletionSteps;
@@ -26,31 +25,30 @@ import org.adhuc.cena.menu.steps.serenity.ingredients.IngredientDeletionSteps;
  * The ingredient deletion steps definitions for rest-services acceptance tests.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.1.0
  */
-@StepDefAnnotation
 public class IngredientDeletionStepDefinitions {
 
     @Steps
     private IngredientDeletionSteps ingredientDeletion;
 
-    @When("^he attempts deleting the ingredient$")
+    @When("he attempts deleting the ingredient")
     public void tryToDeleteIngredient() {
         ingredientDeletion.attemptDeletingIngredient(ingredientDeletion.storedIngredient());
     }
 
-    @When("^he deletes the ingredient$")
+    @When("he deletes the ingredient")
     public void deleteIngredient() {
         ingredientDeletion.deleteIngredient(ingredientDeletion.storedIngredient());
     }
 
-    @Then("^the ingredient is deleted$")
+    @Then("the ingredient is deleted")
     public void ingredientDeleted() {
         ingredientDeletion.assertIngredientSuccessfullyDeleted(ingredientDeletion.storedIngredient());
     }
 
-    @Then("^an error notifies that ingredient used in a recipe cannot be deleted$")
+    @Then("an error notifies that ingredient used in a recipe cannot be deleted")
     public void errorOnIngredientDeletionUsedInRecipe() {
         ingredientDeletion.assertIngredientNotDeletableUsedInRecipe(ingredientDeletion.storedIngredient());
     }

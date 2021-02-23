@@ -4,7 +4,7 @@ buildscript {
 	}
 	configurations.maybeCreate("pitest")
 	dependencies {
-		classpath('net.serenity-bdd:serenity-gradle-plugin:2.1.8')
+		classpath('net.serenity-bdd:serenity-gradle-plugin:2.3.13')
 		classpath('info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.5')
 		pitest('org.pitest:pitest-junit5-plugin:0.8')
 	}
@@ -57,8 +57,8 @@ def swaggerVersion = '1.6.0'
 def swaggerValidatorVersion = '2.9.0'
 def archUnitVersion = '0.13.1'
 def restAssuredVersion = '4.2.0'
-def serenityVersion = '2.1.8'
-def serenityCucumberVersion = '1.9.51'
+def serenityVersion = '2.3.31'
+def serenityCucumberVersion = '2.3.13'
 def snippetsDir = file('build/generated-snippets')
 
 dependencies {
@@ -89,7 +89,7 @@ dependencies {
 	acceptanceImplementation("net.serenity-bdd:serenity-core:${serenityVersion}")
 	acceptanceImplementation("net.serenity-bdd:serenity-junit:${serenityVersion}")
 	acceptanceImplementation("net.serenity-bdd:serenity-rest-assured:${serenityVersion}")
-	acceptanceImplementation("net.serenity-bdd:serenity-cucumber:${serenityCucumberVersion}")
+	acceptanceImplementation("net.serenity-bdd:serenity-cucumber6:${serenityCucumberVersion}")
 	asciidoctor("org.springframework.restdocs:spring-restdocs-asciidoctor:${springRestDocsVersion}")
 }
 

@@ -15,9 +15,8 @@
  */
 package org.adhuc.cena.menu.steps.recipes;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import cucumber.runtime.java.StepDefAnnotation;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import net.thucydides.core.annotations.Steps;
 
 import org.adhuc.cena.menu.steps.serenity.recipes.RecipeDeletionSteps;
@@ -28,10 +27,9 @@ import org.adhuc.cena.menu.steps.serenity.recipes.RecipeListSteps;
  * The recipes list deletion steps definitions for rest-services acceptance tests.
  *
  * @author Alexandre Carbenay
- * @version 0.2.0
+ * @version 0.3.0
  * @since 0.2.0
  */
-@StepDefAnnotation
 public class RecipeListDeletionStepDefinitions {
 
     @Steps
@@ -41,22 +39,22 @@ public class RecipeListDeletionStepDefinitions {
     @Steps
     private RecipeListAssertionsSteps recipeListAssertions;
 
-    @When("^he deletes the recipes$")
+    @When("he deletes the recipes")
     public void deleteRecipes() {
         recipeDeletion.deleteRecipes();
     }
 
-    @Then("^the recipes have been deleted$")
+    @Then("the recipes have been deleted")
     public void recipesDeleted() {
         recipeDeletion.assertNoContent();
     }
 
-    @Then("^no recipe is left in the recipes list$")
+    @Then("no recipe is left in the recipes list")
     public void noRecipesLeftInList() {
         recipeListAssertions.assertEmptyRecipesList();
     }
 
-    @Then("^no existing recipe has been deleted$")
+    @Then("no existing recipe has been deleted")
     public void noExistingRecipeDeleted() {
         recipeListAssertions.assertInRecipesList(recipeList.storedAssumedRecipes(), recipeList.getRecipes());
     }

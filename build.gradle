@@ -15,8 +15,8 @@ plugins {
 	id 'eclipse'
 	id 'org.springframework.boot' version '2.2.5.RELEASE'
 	id 'com.palantir.docker' version '0.25.0'
-	id 'com.avast.gradle.docker-compose' version '0.10.9'
-	id 'org.asciidoctor.convert' version '1.5.9.2'
+	id 'com.avast.gradle.docker-compose' version '0.14.3'
+	id 'org.asciidoctor.jvm.convert' version '3.1.0'
 	id 'io.franzbecker.gradle-lombok' version '3.3.0'
 	id 'jacoco'
 	id 'info.solidsoft.pitest' version '1.4.5'
@@ -39,11 +39,11 @@ sourceSets {
 			runtimeClasspath += test.runtimeClasspath + test.output
 			srcDir file('src/acceptance/java')
 		}
-		resources.srcDir file('src/acceptance/resources')
 	}
 }
 
 configurations {
+	asciidoctorExt
 	acceptanceTestCompile.extendsFrom testCompile
 	acceptanceTestRuntime.extendsFrom testRuntime
 }
@@ -55,7 +55,7 @@ def lombokVersion = '1.18.12'
 def commonsIoVersion = '2.6'
 def swaggerVersion = '1.6.0'
 def swaggerValidatorVersion = '2.9.0'
-def archUnitVersion = '0.13.1'
+def archUnitVersion = '0.18.0'
 def restAssuredVersion = '4.2.0'
 def serenityVersion = '2.3.31'
 def serenityCucumberVersion = '2.3.13'
@@ -72,7 +72,7 @@ dependencies {
 	implementation("io.swagger:swagger-core:${swaggerVersion}")
 	implementation("com.atlassian.oai:swagger-request-validator-springmvc:${swaggerValidatorVersion}")
 	runtimeOnly('org.springframework.boot:spring-boot-devtools')
-	testCompile("com.tngtech.archunit:archunit-junit5-api:${archUnitVersion}")
+	testImplementation("com.tngtech.archunit:archunit-junit5-api:${archUnitVersion}")
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
 	testImplementation('org.springframework.security:spring-security-test')
 	testImplementation('org.springframework.restdocs:spring-restdocs-mockmvc')
@@ -90,7 +90,7 @@ dependencies {
 	acceptanceImplementation("net.serenity-bdd:serenity-junit:${serenityVersion}")
 	acceptanceImplementation("net.serenity-bdd:serenity-rest-assured:${serenityVersion}")
 	acceptanceImplementation("net.serenity-bdd:serenity-cucumber6:${serenityCucumberVersion}")
-	asciidoctor("org.springframework.restdocs:spring-restdocs-asciidoctor:${springRestDocsVersion}")
+	asciidoctorExt("org.springframework.restdocs:spring-restdocs-asciidoctor:${springRestDocsVersion}")
 }
 
 configurations {
@@ -136,34 +136,41 @@ compileJava {
 	}
 }
 
-compileTestJava {
-	inputs.property("moduleName", moduleName)
-	doFirst {
-		options.compilerArgs = [
-			'--module-path', classpath.asPath,
-			'--add-modules', 'org.assertj.core',
-			'--add-modules', 'org.hamcrest',
-			'--add-modules', 'org.junit.jupiter.api',
-			'--add-modules', 'org.junit.jupiter.params',
-			'--add-modules', 'org.mockito',
-			'--add-modules', 'rest.assured',
-			'--add-modules', 'rest.assured.all',
-			'--add-reads', "$moduleName=org.assertj.core",
-			'--add-reads', "$moduleName=org.hamcrest",
-			'--add-reads', "$moduleName=org.junit.jupiter.api",
-			'--add-reads', "$moduleName=org.junit.jupiter.params",
-			'--add-reads', "$moduleName=org.mockito",
-			'--add-reads', "$moduleName=rest.assured",
-			'--add-reads', "$moduleName=rest.assured.all",
-			'--patch-module', "$moduleName=" + files(sourceSets.test.java.srcDirs).asPath,
-		]
-		classpath = files()
-	}
-}
+// Cannot configure Java modules for tests as ArchUnit library embeds extra libs
+//compileTestJava {
+//	inputs.property("moduleName", moduleName)
+//	doFirst {
+//		options.compilerArgs = [
+//			'--module-path', classpath.asPath,
+//			'--add-modules', 'org.assertj.core',
+//			'--add-modules', 'org.hamcrest',
+//			'--add-modules', 'org.junit.jupiter.api',
+//			'--add-modules', 'org.junit.jupiter.params',
+//			'--add-modules', 'org.mockito',
+//			'--add-modules', 'rest.assured',
+//			'--add-modules', 'rest.assured.all',
+//			'--add-reads', "$moduleName=org.assertj.core",
+//			'--add-reads', "$moduleName=org.hamcrest",
+//			'--add-reads', "$moduleName=org.junit.jupiter.api",
+//			'--add-reads', "$moduleName=org.junit.jupiter.params",
+//			'--add-reads', "$moduleName=org.mockito",
+//			'--add-reads', "$moduleName=rest.assured",
+//			'--add-reads', "$moduleName=rest.assured.all",
+//			'--patch-module', "$moduleName=" + files(sourceSets.test.java.srcDirs).asPath,
+//		]
+//		classpath = files()
+//	}
+//}
 
 test {
 	useJUnitPlatform()
 	outputs.dir snippetsDir
+}
+
+// Need to clear dependencies first because Serenity.checkOutcomes is set explicitly as a dependency
+check {
+	dependsOn.clear()
+	dependsOn test
 }
 
 pitest {
@@ -182,8 +189,9 @@ jacocoTestReport {
 }
 
 asciidoctor {
-	inputs.dir snippetsDir
+	configurations 'asciidoctorExt'
 	dependsOn test
+	outputDir file('build/docs')
 }
 
 task acceptance(type: Test) {
@@ -194,11 +202,10 @@ task acceptance(type: Test) {
 	gradle.startParameter.continueOnFailure = true
 }
 dockerCompose.isRequiredBy(acceptance)
-check.dependsOn.remove("checkOutcomes")
 
 bootJar {
 	dependsOn asciidoctor
-	from("${asciidoctor.outputDir}/html5") {
+	from("${asciidoctor.outputDir}") {
 		into 'static/docs'
 	}
 	from("src/main/resources/api") {
@@ -220,4 +227,5 @@ docker {
 
 dockerCompose {
 	useComposeFiles = ['docker-compose.yml']
+	waitForTcpPorts = false
 }
